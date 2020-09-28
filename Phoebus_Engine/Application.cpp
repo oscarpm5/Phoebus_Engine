@@ -5,12 +5,7 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	window = new ModuleWindow();
 	input = new ModuleInput();
 	audio = new ModuleAudio();
-	scene_intro = new ModuleSceneIntro();
 	renderer3D = new ModuleRenderer3D();
-	camera = new ModuleCamera3D();
-	physics = new ModulePhysics3D();
-	player = new ModulePlayer();
-	map = new ModuleMap();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -18,15 +13,8 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 
 	// Main Modules
 	AddModule(window);
-	AddModule(camera);
 	AddModule(input);
 	AddModule(audio);
-	AddModule(physics);
-
-	// Scenes
-	AddModule(map);
-	AddModule(scene_intro);
-	AddModule(player);
 
 	// Renderer last!
 	AddModule(renderer3D);
