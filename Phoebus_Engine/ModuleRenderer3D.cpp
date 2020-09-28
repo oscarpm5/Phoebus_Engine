@@ -100,7 +100,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	glMatrixMode(GL_MODELVIEW);
 
-	glLoadMatrixf(mat4x4().M);
+	//glLoadMatrixf(mat4x4().M);
 
 
 	return UPDATE_CONTINUE;
