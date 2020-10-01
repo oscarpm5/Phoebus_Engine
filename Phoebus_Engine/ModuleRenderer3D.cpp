@@ -1,9 +1,14 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+
+#include "Glew/include/glew.h"
+#pragma comment(lib,"Glew/libx86/glew32.lib")
+
+
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
-#include <gl/GLU.h>#include "glmath.h"
+#include <gl/GLU.h>#include "glmath.h"
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
@@ -28,7 +33,19 @@ bool ModuleRenderer3D::Init()
 		LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
-	
+	else
+	{
+		GLenum glewError = glewInit();
+		
+		if (glewError != GLEW_OK)
+		{
+			printf("Error initializing GLEW! %s\n", glewGetErrorString(glewError));
+		}
+	}
+
+
+
+
 	if(ret == true)
 	{
 		//Use Vsync
