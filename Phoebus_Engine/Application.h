@@ -8,6 +8,7 @@
 #include "ModuleInput.h"
 #include "ModuleAudio.h"
 #include "ModuleRenderer3D.h"
+#include "ModuleRenderer2D.h"
 
 class Application
 {
@@ -16,6 +17,7 @@ public:
 	ModuleInput* input;
 	ModuleAudio* audio;
 	ModuleRenderer3D* renderer3D;
+	ModuleRenderer2D* renderer2D;
 	bool debug;
 	bool renderPrimitives;
 private:

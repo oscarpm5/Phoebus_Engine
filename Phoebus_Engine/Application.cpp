@@ -6,6 +6,7 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	input = new ModuleInput();
 	audio = new ModuleAudio();
 	renderer3D = new ModuleRenderer3D();
+	renderer2D = new ModuleRenderer2D();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -15,9 +16,10 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	AddModule(window);
 	AddModule(input);
 	AddModule(audio);
-
+	
 	// Renderer last!
 	AddModule(renderer3D);
+	AddModule(renderer2D);
 }
 
 Application::~Application()
