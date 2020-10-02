@@ -2,6 +2,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "glmath.h"
+#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 
 class ModuleRenderer2D : public Module
 {
@@ -18,7 +19,9 @@ public:
 
 public:
 
-
 	bool show_demo_window = false;
+
+private:
+	LCG seed;
 
 }; 
