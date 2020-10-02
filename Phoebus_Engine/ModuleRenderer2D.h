@@ -18,10 +18,22 @@ public:
 	void OnResize(int width, int height);
 
 public:
-
-	bool show_demo_window = false;
+	bool showDemoWindow = false;
+	
 
 private:
-	LCG seed;
+
+	//math checks
+
+		//rand
+	LCG seed; int randomRad1; int randomRad2;
+		//spheres
+	bool showSphereWindow = false;		bool sphereCol = false;
+		//cylinders
+	bool showCylWindow = false;			bool cylCol = false;
+		//triangles
+	bool showTriWindow = false;			bool triCol = false;
+		//AABB
+	bool showAABBWindow = false;		bool AABBCol = false;
 
 }; 
