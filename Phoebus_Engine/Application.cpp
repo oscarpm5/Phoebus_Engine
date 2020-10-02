@@ -7,6 +7,8 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	audio = new ModuleAudio();
 	renderer3D = new ModuleRenderer3D();
 	renderer2D = new ModuleRenderer2D();
+	camera = new ModuleCamera3D();
+
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -14,6 +16,8 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 
 	// Main Modules
 	AddModule(window);
+	AddModule(camera);
+
 	AddModule(input);
 	AddModule(audio);
 	
