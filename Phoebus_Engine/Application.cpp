@@ -4,7 +4,6 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 {
 	window = new ModuleWindow();
 	input = new ModuleInput();
-	audio = new ModuleAudio();
 	renderer3D = new ModuleRenderer3D();
 	renderer2D = new ModuleRenderer2D();
 	camera = new ModuleCamera3D();
@@ -19,7 +18,6 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	AddModule(camera);
 
 	AddModule(input);
-	AddModule(audio);
 	
 	// Renderer last!
 	AddModule(renderer3D);

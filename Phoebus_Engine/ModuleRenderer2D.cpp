@@ -10,6 +10,7 @@
 #include "Application.h"
 #include "ModuleRenderer2D.h"
 
+#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 
 
 
@@ -58,6 +59,9 @@ bool ModuleRenderer2D::Init()
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
 	ImGui_ImplOpenGL3_Init("#version 130"); //TODO: this is hardcoded. Deal with it.
 
+	//Start number generator seed
+	seed = LCG::LCG();
+
 	return ret;
 }
 
@@ -93,6 +97,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::MenuItem("Exit", "Esc")) { status = UPDATE_STOP; }
 
+			
+			int randomNum = seed.Int(10,99);
+			
+			ImGui::Text("Random Num : %i", randomNum);
 
 			ImGui::EndMenu();
 		}
