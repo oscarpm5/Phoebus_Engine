@@ -120,7 +120,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	glMatrixMode(GL_MODELVIEW);
 
-	//glLoadMatrixf(mat4x4().M);
+	glLoadMatrixf(App->camera->GetRawViewMatrix());
 
 
 	return UPDATE_CONTINUE;

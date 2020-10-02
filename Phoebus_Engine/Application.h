@@ -8,6 +8,8 @@
 #include "ModuleInput.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleRenderer2D.h"
+#include "ModuleCamera3D.h"
+
 
 class Application
 {
@@ -16,6 +18,8 @@ public:
 	ModuleInput* input;
 	ModuleRenderer3D* renderer3D;
 	ModuleRenderer2D* renderer2D;
+	ModuleCamera3D* camera;
+
 	bool debug;
 	bool renderPrimitives;
 private:
