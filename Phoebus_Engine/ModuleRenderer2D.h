@@ -3,6 +3,12 @@
 #include "Globals.h"
 #include "glmath.h"
 #include "MathGeoLib/include/Algorithm/Random/LCG.h"
+#include "imgui/imgui.h"
+
+#include <iostream> 
+#include <vector> 
+
+
 
 class ModuleRenderer2D : public Module
 {
@@ -19,8 +25,12 @@ public:
 
 public:
 	bool showDemoWindow = false;
-	
-
+	bool showAboutWindow();
+	bool showAboutWindowbool = false;
+	bool showLibs = false;
+	bool showLibsFunc();
+	bool showConfig = false;
+	bool showConfigFunc();
 private:
 
 	//math checks
@@ -36,4 +46,9 @@ private:
 		//AABB
 	bool showAABBWindow = false;		bool AABBCol = false;
 
+	//fps related business
+	//ImVector<float> fps_log[60];
+	std::vector<float> fps_log;
+	int maxFPShown = 60;
+	void CheckFPS();
 }; 

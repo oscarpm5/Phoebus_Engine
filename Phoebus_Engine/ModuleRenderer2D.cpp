@@ -63,12 +63,18 @@ bool ModuleRenderer2D::Init()
 	//Start number generator seed
 	seed = LCG::LCG();
 
+	//fps goodness
+	fps_log.resize(maxFPShown);
+
 	return ret;
 }
 
 update_status ModuleRenderer2D::PreUpdate(float dt)
 {
 	update_status status = UPDATE_CONTINUE;
+
+	//Fill fps_log with new info of past frame
+	CheckFPS();
 
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
@@ -97,7 +103,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			////End of sample
 
 			if (ImGui::MenuItem("Exit", "Esc")) { status = UPDATE_STOP; }
-
+			if (ImGui::MenuItem("About", "...")) { 
+				ImGui::SetNextWindowSize(ImVec2(435, 800));
+				showAboutWindowbool = true; 
+			}
+			if (ImGui::MenuItem("Config")) {
+				ImGui::SetNextWindowSize(ImVec2(435, 800));
+				showConfig = true;
+			}
 
 
 			ImGui::EndMenu();
@@ -187,7 +200,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
-
+	if (showAboutWindowbool) {showAboutWindow(); }
+	if (showConfig) { showConfigFunc(); }
 	if (showSphereWindow) {
 		
 		ImGui::Begin("Sphere checks");
@@ -333,4 +347,156 @@ bool ModuleRenderer2D::CleanUp()
 
 void ModuleRenderer2D::OnResize(int width, int height)
 {
+}
+
+bool ModuleRenderer2D::showAboutWindow()
+{
+	
+
+	if (!ImGui::Begin("About this Engine", &showAboutWindowbool))		//this is how you add the cross button to a window
+	{
+		ImGui::End();
+		return false;
+	}
+
+
+	//name of engine
+	const char* aux = "PHOEBUS ENGINE";
+	ImGui::TextColored(ImVec4(0, 100, 130, 150), aux);
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	//descrption
+	ImGui::Text("Welcome to Phoebus Engine! This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university");
+	ImGui::Text("The intent is to create a 3D functional engine with a focus on sound design, performance and capability (hence the engine name)");
+	ImGui::Text("We hope you'll enjoy using it as much as we enjoyed making it!");
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	//autohors
+	ImGui::Text("This Engine was made by these two brave souls: ");
+	ImGui::Spacing();
+	if (ImGui::MenuItem("Adria Serrano Lopez")) { ShellExecuteA(NULL, NULL, "https://github.com/adriaserrano97", NULL, NULL, SW_SHOWNORMAL); }
+	if (ImGui::MenuItem("Oscar Perez martin")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5", NULL, NULL, SW_SHOWNORMAL); }
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	//libraries version used with links
+	if (ImGui::MenuItem("Libraries used")) { showLibs = true; }
+	if (showLibs) { showLibsFunc(); }
+	ImGui::Spacing();
+	ImGui::Spacing();
+
+	//Project License
+	if (ImGui::MenuItem("Engine License")) { ShellExecuteA(NULL, NULL, "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL); }
+
+
+	
+
+	ImGui::End();
+
+	return true;
+}
+
+bool ModuleRenderer2D::showLibsFunc()
+{
+	if (!ImGui::Begin("Libraries used:", &showLibs))		//this is how you add the cross button to a window
+	{
+		ImGui::End();
+		return false;
+	}
+
+	ImGui::Text("MathGeoLib v1.5"); //TODO: MathGeoLib has no get version lel, stuck on 1.5 since 2004 or something
+	ImGui::Spacing();
+
+	ImGui::Text("ImGui");
+	ImGui::SameLine();
+	ImGui::Text(ImGui::GetVersion());
+	ImGui::Spacing();
+
+	ImGui::Text("SDL");
+	ImGui::SameLine();
+	SDL_version compiled;
+	SDL_VERSION(&compiled);
+	ImGui::Text("%d.%d.%d", compiled.major, compiled.minor, compiled.patch); //Because returning a string was too easy huh
+	ImGui::Spacing();
+
+	ImGui::Text("OpenGL v.");
+	GLint aux1; (glGetIntegerv(GL_MAJOR_VERSION, &aux1));
+	GLint aux2; (glGetIntegerv(GL_MINOR_VERSION, &aux2));
+	ImGui::SameLine();
+	ImGui::Text("%i.", int(aux1));
+	ImGui::SameLine();
+	ImGui::Text("%i.", int(aux2));
+	ImGui::Spacing();
+
+	ImGui::End();
+	return true;
+}
+
+bool ModuleRenderer2D::showConfigFunc()
+{
+	if (!ImGui::Begin("Configuration", &showConfig))		//this is how you add the cross button to a window
+	{
+		ImGui::End();
+		return false;
+	}
+	
+
+	if (ImGui::BeginMenu("FPS")) {
+		/*
+		char title[25];
+		sprintf_s(title, 25, "Framerate %.1f", fps_log[fps_log->size() - 1]);
+		ImGui::PlotHistogram("##framerate", fps_log->begin() , fps_log->size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
+		*/
+		ImGui::Text("This is where I would show a fps counter, if I had one");
+		ImGui::End();
+	}
+
+	if (ImGui::BeginMenu("Window")) {
+		ImGui::Text("brightness slider");
+		ImGui::Text("width slider");
+		ImGui::Text("height slider");
+		ImGui::Text("Resizable bool");
+		ImGui::Text("Borderless bool");
+		ImGui::Text("Fullscreen bool");
+		ImGui::Text("Full Desktop bool");
+		ImGui::End();
+	}
+	if (ImGui::BeginMenu("Hardware specs")) {
+		
+		int lineSize = SDL_GetCPUCacheLineSize();
+		ImGui::Text("GPU has size %i", lineSize);
+		int GPUCount = SDL_GetCPUCount();
+		ImGui::Text("PC has %i CPU's", GPUCount);
+		int systemRAM = SDL_GetSystemRAM();
+		ImGui::Text("Ram configured is %i", systemRAM);
+		ImGui::Text("Caps:");
+		ImGui::SameLine(); if (SDL_Has3DNow()) { ImGui::Text("3DNow "); }
+		ImGui::SameLine(); if (SDL_HasAVX()) { ImGui::Text("AVX "); }
+		ImGui::SameLine(); if (SDL_HasAltiVec()) { ImGui::Text("AltiVec "); }
+		ImGui::SameLine(); if (SDL_HasMMX()) { ImGui::Text("MMX "); }
+		ImGui::SameLine(); if (SDL_HasRDTSC()) { ImGui::Text("RDTSC "); }
+		ImGui::SameLine(); if (SDL_HasSSE()) { ImGui::Text("SSE "); }
+		ImGui::SameLine(); if (SDL_HasSSE2()) { ImGui::Text("SSE2 "); }
+		ImGui::SameLine(); if (SDL_HasSSE3()) { ImGui::Text("SSE3 "); }
+		ImGui::SameLine(); if (SDL_HasSSE41()) { ImGui::Text("SSE41 "); }
+		ImGui::SameLine(); if (SDL_HasSSE42()) { ImGui::Text("SSE42 "); }
+	
+		ImGui::End();
+	}
+	ImGui::End();
+	return true;
+}
+
+void ModuleRenderer2D::CheckFPS()
+{
+	/*
+	fps_log->Data[fps_log->size()-1] = seed.Int(40, 60); // placeholder
+	
+
+	for (int i = 0; i++;  fps_log->size() -2) {
+		fps_log->Data[i] = fps_log->Data[i + 1];		//cursed tech
+	}
+	*/
 }
