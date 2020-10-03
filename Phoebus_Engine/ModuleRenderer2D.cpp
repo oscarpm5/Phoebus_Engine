@@ -478,18 +478,41 @@ bool ModuleRenderer2D::showConfigFunc()
 		
 		if (ImGui::SliderInt("Width", &(App->window->w), 1, 2800)) 
 		{
-			SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
-			OpenGLOnResize(App->window->w, App->window->h);
+			if (resizable) {
+				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
+				OpenGLOnResize(App->window->w, App->window->h);
+			}
 		};
 		if (ImGui::SliderInt("Height", &(App->window->h), 1, 2800)) 
 		{	
-			SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
-			OpenGLOnResize(App->window->w, App->window->h);
+			if (resizable) {
+				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
+				OpenGLOnResize(App->window->w, App->window->h);
+			}
 		};
-		ImGui::Text("Resizable bool");
-		ImGui::Text("Borderless bool");
-		ImGui::Text("Fullscreen bool");
-		ImGui::Text("Full Desktop bool");
+		if (ImGui::Checkbox("Resizable", &resizable)) 
+		{
+			if (resizable) {
+				LOG("Resizable mode toggled to TRUE");
+			}
+			else {
+				LOG("Resizable mode toggled to FALSE");
+			}
+		}
+		if (ImGui::Checkbox("Borderless", &borderless)) 
+		{ 
+			//SDL_SetWindowFullscreen(App->window->window, );
+			LOG("TODO: this button is still not fully operational");
+		}
+		if (ImGui::Checkbox("Fullscreen", &fullscreen)) 
+		{ 
+			LOG("TODO: this button is still not fully operational");
+		}
+		if (ImGui::Checkbox("Full desktop", &fullDesktop)) 
+		{ 
+			LOG("TODO: this button is still not fully operational");
+		}
+		
 		ImGui::End();
 	}
 	if (ImGui::BeginMenu("Hardware specs")) {

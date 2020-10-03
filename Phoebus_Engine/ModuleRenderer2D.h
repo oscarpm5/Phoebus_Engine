@@ -61,4 +61,8 @@ private:
 
 	//Resize badness
 	void OpenGLOnResize(int w, int h);
+
+	//flags
+	bool resizable = true; bool borderless = false; bool fullscreen = false; bool fullDesktop = false; //TODO: move to window?
+	
 }; 
