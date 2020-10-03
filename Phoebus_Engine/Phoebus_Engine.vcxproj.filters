@@ -279,6 +279,9 @@
     <ClInclude Include="Console.h">
       <Filter>Sources\UI Elements</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleEditor3D.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -426,6 +429,9 @@
       <Filter>Sources\Tools\MathGeoLib\Time</Filter>
     </ClCompile>
     <ClCompile Include="ModuleCamera3D.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="ModuleEditor3D.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
   </ItemGroup>
