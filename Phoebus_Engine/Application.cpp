@@ -69,6 +69,23 @@ bool Application::Init()
 void Application::PrepareUpdate()
 {
 	dt = (float)ms_timer.Read() / 1000.0f;
+	
+	//FPS buffer for graph display
+	fpsBuffer.push_back(1/dt);
+	while (fpsBuffer.size()>=MAXFPSDISPLAY)
+	{
+		fpsBuffer.erase(fpsBuffer.begin());
+	}
+	//Milliseconds buffer for graph display
+	millisecondsBuffer.push_back((float)ms_timer.Read());
+	while (millisecondsBuffer.size() >= MAXFPSDISPLAY)
+	{
+		millisecondsBuffer.erase(millisecondsBuffer.begin());
+	}
+	
+
+
+
 	ms_timer.Start();
 }
 

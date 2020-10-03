@@ -22,10 +22,14 @@ public:
 
 	bool debug;
 	bool renderPrimitives;
+	std::vector<float> fpsBuffer;
+	std::vector<float> millisecondsBuffer;
+
 private:
 
 	Timer	ms_timer;
 	float	dt;
+	
 	p2List<Module*> list_modules;
 
 public:

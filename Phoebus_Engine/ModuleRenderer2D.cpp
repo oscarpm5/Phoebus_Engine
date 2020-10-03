@@ -453,12 +453,16 @@ bool ModuleRenderer2D::showConfigFunc()
 	
 
 	if (ImGui::BeginMenu("FPS")) {
-		/*
+		
 		char title[25];
-		sprintf_s(title, 25, "Framerate %.1f", fps_log[fps_log->size() - 1]);
-		ImGui::PlotHistogram("##framerate", fps_log->begin() , fps_log->size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
-		*/
-		ImGui::Text("This is where I would show a fps counter, if I had one");
+		sprintf_s(title, 25, "Framerate %.1f", App->fpsBuffer[App->fpsBuffer.size() - 1]);
+		ImGui::PlotHistogram("##framerate", &App->fpsBuffer[0], App->fpsBuffer.size(), 0, title, 0.0f, 120.0f, ImVec2(310, 100));
+		
+
+		sprintf_s(title, 25, "Milliseconds %.1f", App->millisecondsBuffer[App->millisecondsBuffer.size() - 1]);
+		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
+
+
 		ImGui::End();
 	}
 

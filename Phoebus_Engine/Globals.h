@@ -38,6 +38,10 @@ enum update_status
 #define VSYNC true
 #define TITLE "Phoebus Engine"
 
+
+#define MAXFPSDISPLAY 100 //TODO make this a configurable variable
+
+
 class Application;
 
 extern Application* App;
