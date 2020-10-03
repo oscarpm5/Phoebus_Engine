@@ -455,6 +455,7 @@ bool ModuleRenderer2D::showConfigFunc()
 
 	if (ImGui::BeginMenu("FPS")) {
 		
+		ImGui::PushStyleColor(ImGuiCol_FrameBg,ImVec4(0.16f, 0.29f, 0.48f, 0.54f));
 		char title[25];
 		sprintf_s(title, 25, "Framerate %.1f", App->fpsBuffer[App->fpsBuffer.size() - 1]);
 		ImGui::PlotHistogram("##framerate", &App->fpsBuffer[0], App->fpsBuffer.size(), 0, title, 0.0f, 120.0f, ImVec2(400, 100));
@@ -463,7 +464,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		sprintf_s(title, 25, "Milliseconds %.1f", App->millisecondsBuffer[App->millisecondsBuffer.size() - 1]);
 		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
 
-
+		ImGui::PopStyleColor();
 		ImGui::End();
 	}
 
