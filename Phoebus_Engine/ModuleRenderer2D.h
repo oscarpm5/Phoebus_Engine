@@ -3,6 +3,7 @@
 #include "Globals.h"
 #include "glmath.h"
 #include "MathGeoLib/include/Algorithm/Random/LCG.h"
+#include "Console.h"
 #include "imgui/imgui.h"
 
 #include <iostream> 
@@ -20,11 +21,15 @@ public:
 	update_status PreUpdate(float dt) override;
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
-
+	void ShowExampleAppConsole(bool* p_open);
 	void OnResize(int width, int height);
 
 public:
 	bool showDemoWindow = false;
+	bool showConsoleWindow = false;
+
+	Cnsl* console = nullptr;
+
 	bool showAboutWindow();
 	bool showAboutWindowbool = false;
 	bool showLibs = false;

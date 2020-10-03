@@ -33,6 +33,7 @@ Application::~Application()
 		delete item->data;
 		item = item->prev;
 	}
+
 }
 
 bool Application::Init()
@@ -51,7 +52,7 @@ bool Application::Init()
 	}
 
 	// After all Init calls we call Start() in all modules
-	LOG("Application Start --------------");
+	LOG("-------------- Application Start --------------");
 	item = list_modules.getFirst();
 
 	while (item != NULL && ret == true)
@@ -120,6 +121,8 @@ bool Application::CleanUp()
 		ret = item->data->CleanUp();
 		item = item->prev;
 	}
+
+	App = nullptr;
 	return ret;
 }
 

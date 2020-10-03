@@ -34,6 +34,9 @@
     <Filter Include="Sources\Tools\MathGeoLib\Time">
       <UniqueIdentifier>{a05e8f33-134c-4438-a19a-e1f902fbf2e7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\UI Elements">
+      <UniqueIdentifier>{db761346-2aba-44c7-ad74-f97c5a2a0940}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -275,6 +278,9 @@
     </ClInclude>
     <ClInclude Include="ModuleCamera3D.h">
       <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Console.h">
+      <Filter>Sources\UI Elements</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
