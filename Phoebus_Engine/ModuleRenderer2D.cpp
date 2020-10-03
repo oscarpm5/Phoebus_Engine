@@ -858,3 +858,7 @@ void ModuleRenderer2D::CheckFPS()
 	}
 	*/
 }
+void ModuleRenderer2D::ShowExampleAppConsole(bool* p_open)
+{
+	console->Draw("Example: Console", p_open);
+}
