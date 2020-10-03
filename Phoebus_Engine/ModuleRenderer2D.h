@@ -36,6 +36,7 @@ public:
 	bool showLibsFunc();
 	bool showConfig = false;
 	bool showConfigFunc();
+
 private:
 
 	//math checks
@@ -52,8 +53,12 @@ private:
 	bool showAABBWindow = false;		bool AABBCol = false;
 
 	//fps related business
+
 	//ImVector<float> fps_log[60];
 	std::vector<float> fps_log;
 	int maxFPShown = 60;
 	void CheckFPS();
+
+	//Resize badness
+	void OpenGLOnResize(int w, int h);
 }; 

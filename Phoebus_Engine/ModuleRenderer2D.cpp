@@ -9,6 +9,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer2D.h"
+#include "ModuleRenderer3D.h" //we need the projection matrix
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "MathGeoLib/include/MathGeoLib.h"
@@ -112,7 +113,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				showAboutWindowbool = true; 
 			}
 			if (ImGui::MenuItem("Config")) {
-				ImGui::SetNextWindowSize(ImVec2(435, 800));
+				//ImGui::SetNextWindowSize(ImVec2(435, 800));
 				showConfig = true;
 			}
 
@@ -456,20 +457,34 @@ bool ModuleRenderer2D::showConfigFunc()
 		
 		char title[25];
 		sprintf_s(title, 25, "Framerate %.1f", App->fpsBuffer[App->fpsBuffer.size() - 1]);
-		ImGui::PlotHistogram("##framerate", &App->fpsBuffer[0], App->fpsBuffer.size(), 0, title, 0.0f, 120.0f, ImVec2(310, 100));
+		ImGui::PlotHistogram("##framerate", &App->fpsBuffer[0], App->fpsBuffer.size(), 0, title, 0.0f, 120.0f, ImVec2(400, 100));
 		
 
 		sprintf_s(title, 25, "Milliseconds %.1f", App->millisecondsBuffer[App->millisecondsBuffer.size() - 1]);
-		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(310, 100));
+		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
 
 
 		ImGui::End();
 	}
 
 	if (ImGui::BeginMenu("Window")) {
-		ImGui::Text("brightness slider");
-		ImGui::Text("width slider");
-		ImGui::Text("height slider");
+	
+		if(ImGui::SliderFloat("Brightness", &App->window->brightness, 0, 1)) 
+		{
+			SDL_SetWindowBrightness(App->window->window, App->window->brightness);
+			
+		}
+		
+		if (ImGui::SliderInt("Width", &(App->window->w), 1, 2800)) 
+		{
+			SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
+			OpenGLOnResize(App->window->w, App->window->h);
+		};
+		if (ImGui::SliderInt("Height", &(App->window->h), 1, 2800)) 
+		{	
+			SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
+			OpenGLOnResize(App->window->w, App->window->h);
+		};
 		ImGui::Text("Resizable bool");
 		ImGui::Text("Borderless bool");
 		ImGui::Text("Fullscreen bool");
@@ -512,6 +527,27 @@ void ModuleRenderer2D::CheckFPS()
 		fps_log->Data[i] = fps_log->Data[i + 1];		//cursed tech
 	}
 	*/
+}
+void ModuleRenderer2D::OpenGLOnResize(int w, int h)
+{
+	glViewport(0, 0, w, h);
+	glScissor(0, 0, w, h);
+
+	//We set the new screen height & width
+	SDL_GetWindowSize(App->window->window, &App->window->w, &App->window->h);
+
+	//Calculate OpenGl stuff-----------------
+	float width = (float)App->window->w;
+	float height = (float)App->window->h;
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	
+	App->renderer3D->ProjectionMatrix = perspective(60.0f, (width / 2) / height, 0.225f, 512.0f);
+	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 }
 void ModuleRenderer2D::ShowExampleAppConsole(bool* p_open)
 {
