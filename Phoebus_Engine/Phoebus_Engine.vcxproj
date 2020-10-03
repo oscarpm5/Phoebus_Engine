@@ -153,7 +153,6 @@
     <ClInclude Include="Module.h" />
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleWindow.h" />
-    <ClInclude Include="p2List.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>

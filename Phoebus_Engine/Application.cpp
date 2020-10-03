@@ -18,7 +18,7 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	AddModule(camera);
 
 	AddModule(input);
-	
+
 	// Renderer last!
 	AddModule(renderer3D);
 	AddModule(renderer2D);
@@ -26,13 +26,15 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 
 Application::~Application()
 {
-	p2List_item<Module*>* item = list_modules.getLast();
-
-	while (item != NULL)
+	for (int i = list_modules.size() - 1; i >= 0; i--)
 	{
-		delete item->data;
-		item = item->prev;
+		if (list_modules[i] != nullptr)
+		{
+			delete(list_modules[i]);
+			list_modules[i] = nullptr;
+		}
 	}
+	list_modules.clear();
 
 }
 
@@ -43,22 +45,18 @@ bool Application::Init()
 	App = this;
 
 	// Call Init() in all modules
-	p2List_item<Module*>* item = list_modules.getFirst();
-
-	while (item != NULL && ret == true)
+	for (int i = 0; i < list_modules.size(); i++)
 	{
-		ret = item->data->Init();
-		item = item->next;
+		if (list_modules[i] != nullptr && ret == true)
+			ret = list_modules[i]->Init();
 	}
 
 	// After all Init calls we call Start() in all modules
 	LOG("-------------- Application Start --------------");
-	item = list_modules.getFirst();
-
-	while (item != NULL && ret == true)
+	for (int i = 0; i < list_modules.size(); i++)
 	{
-		ret = item->data->Start();
-		item = item->next;
+		if (list_modules[i] != nullptr && ret == true)
+			ret = list_modules[i]->Start();
 	}
 
 	ms_timer.Start();
@@ -69,10 +67,10 @@ bool Application::Init()
 void Application::PrepareUpdate()
 {
 	dt = (float)ms_timer.Read() / 1000.0f;
-	
+
 	//FPS buffer for graph display
-	fpsBuffer.push_back(1/dt);
-	while (fpsBuffer.size()>=MAXFPSDISPLAY)
+	fpsBuffer.push_back(1 / dt);
+	while (fpsBuffer.size() >= MAXFPSDISPLAY)
 	{
 		fpsBuffer.erase(fpsBuffer.begin());
 	}
@@ -82,7 +80,7 @@ void Application::PrepareUpdate()
 	{
 		millisecondsBuffer.erase(millisecondsBuffer.begin());
 	}
-	
+
 
 
 
@@ -100,28 +98,22 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 
-	p2List_item<Module*>* item = list_modules.getFirst();
-
-	while (item != NULL && ret == UPDATE_CONTINUE)
+	for (int i = 0; i < list_modules.size(); i++)
 	{
-		ret = item->data->PreUpdate(dt);
-		item = item->next;
+		if (list_modules[i] != nullptr && ret == true)
+			ret = list_modules[i]->PreUpdate(dt);
 	}
 
-	item = list_modules.getFirst();
-
-	while (item != NULL && ret == UPDATE_CONTINUE)
+	for (int i = 0; i < list_modules.size(); i++)
 	{
-		ret = item->data->Update(dt);
-		item = item->next;
+		if (list_modules[i] != nullptr && ret == true)
+			ret = list_modules[i]->Update(dt);
 	}
 
-	item = list_modules.getFirst();
-
-	while (item != NULL && ret == UPDATE_CONTINUE)
+	for (int i = 0; i < list_modules.size(); i++)
 	{
-		ret = item->data->PostUpdate(dt);
-		item = item->next;
+		if (list_modules[i] != nullptr && ret == true)
+			ret = list_modules[i]->PostUpdate(dt);
 	}
 
 	FinishUpdate();
@@ -131,12 +123,11 @@ update_status Application::Update()
 bool Application::CleanUp()
 {
 	bool ret = true;
-	p2List_item<Module*>* item = list_modules.getLast();
 
-	while (item != NULL && ret == true)
+	for (int i = list_modules.size()-1; i >=0; i--)
 	{
-		ret = item->data->CleanUp();
-		item = item->prev;
+		if (list_modules[i] != nullptr && ret == true)
+			ret = list_modules[i]->CleanUp();
 	}
 
 	App = nullptr;
@@ -145,7 +136,7 @@ bool Application::CleanUp()
 
 void Application::AddModule(Module* mod)
 {
-	list_modules.add(mod);
+	list_modules.push_back(mod);
 }
 
 Application* App = nullptr;
