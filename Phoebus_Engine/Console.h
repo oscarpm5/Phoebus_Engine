@@ -5,19 +5,18 @@
 #include "MathGeoLib/include/MathGeoLib.h"
 
 
-
-struct ExampleAppConsole
+struct Cnsl
 {
 	char                  InputBuf[256];
-	ImVector<char*>       Items;
-	ImVector<const char*> Commands;
-	ImVector<char*>       History;
+	std::vector<char*>       Items;
+	std::vector<const char*> Commands;
+	std::vector<char*>       History;
 	int                   HistoryPos;    // -1: new line, 0..History.Size-1 browsing history.
 	ImGuiTextFilter       Filter;
 	bool                  AutoScroll;
 	bool                  ScrollToBottom;
 
-	ExampleAppConsole()
+	Cnsl()
 	{
 		ClearLog();
 		memset(InputBuf, 0, sizeof(InputBuf));
@@ -32,10 +31,10 @@ struct ExampleAppConsole
 		ScrollToBottom = false;
 		AddLog("Welcome to Dear ImGui!");
 	}
-	~ExampleAppConsole()
+	~Cnsl()
 	{
 		ClearLog();
-		for (int i = 0; i < History.Size; i++)
+		for (int i = 0; i < History.size(); i++)
 			free(History[i]);
 	}
 
@@ -47,7 +46,7 @@ struct ExampleAppConsole
 
 	void    ClearLog()
 	{
-		for (int i = 0; i < Items.Size; i++)
+		for (int i = 0; i < Items.size(); i++)
 			free(Items[i]);
 		Items.clear();
 	}
@@ -90,7 +89,7 @@ struct ExampleAppConsole
 
 		// TODO: display items starting from the bottom
 
-		if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.Size); AddLog("some more text"); AddLog("display very important message here!"); }
+		if (ImGui::SmallButton("Add Debug Text")) { AddLog("%d some text", Items.size()); AddLog("some more text"); AddLog("display very important message here!"); }
 		ImGui::SameLine();
 		if (ImGui::SmallButton("Add Debug Error")) { AddLog("[error] something went wrong"); }
 		ImGui::SameLine();
@@ -150,7 +149,7 @@ struct ExampleAppConsole
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(4, 1)); // Tighten spacing
 		if (copy_to_clipboard)
 			ImGui::LogToClipboard();
-		for (int i = 0; i < Items.Size; i++)
+		for (int i = 0; i < Items.size(); i++)
 		{
 			const char* item = Items[i];
 			if (!Filter.PassFilter(item))
@@ -207,7 +206,7 @@ struct ExampleAppConsole
 		// Insert into history. First find match and delete it so it can be pushed to the back.
 		// This isn't trying to be smart or optimal.
 		HistoryPos = -1;
-		for (int i = History.Size - 1; i >= 0; i--)
+		for (int i = History.size() - 1; i >= 0; i--)
 			if (Stricmp(History[i], command_line) == 0)
 			{
 				free(History[i]);
@@ -224,13 +223,13 @@ struct ExampleAppConsole
 		else if (Stricmp(command_line, "HELP") == 0)
 		{
 			AddLog("Commands:");
-			for (int i = 0; i < Commands.Size; i++)
+			for (int i = 0; i < Commands.size(); i++)
 				AddLog("- %s", Commands[i]);
 		}
 		else if (Stricmp(command_line, "HISTORY") == 0)
 		{
-			int first = History.Size - 10;
-			for (int i = first > 0 ? first : 0; i < History.Size; i++)
+			int first = History.size() - 10;
+			for (int i = first > 0 ? first : 0; i < History.size(); i++)
 				AddLog("%3d: %s\n", i, History[i]);
 		}
 		else
@@ -245,7 +244,7 @@ struct ExampleAppConsole
 	// In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
 	static int TextEditCallbackStub(ImGuiInputTextCallbackData* data)
 	{
-		ExampleAppConsole* console = (ExampleAppConsole*)data->UserData;
+		Cnsl* console = (Cnsl*)data->UserData;
 		return console->TextEditCallback(data);
 	}
 
@@ -271,7 +270,7 @@ struct ExampleAppConsole
 
 			// Build a list of candidates
 			ImVector<const char*> candidates;
-			for (int i = 0; i < Commands.Size; i++)
+			for (int i = 0; i < Commands.size(); i++)
 				if (Strnicmp(Commands[i], word_start, (int)(word_end - word_start)) == 0)
 					candidates.push_back(Commands[i]);
 
@@ -327,14 +326,14 @@ struct ExampleAppConsole
 			if (data->EventKey == ImGuiKey_UpArrow)
 			{
 				if (HistoryPos == -1)
-					HistoryPos = History.Size - 1;
+					HistoryPos = History.size() - 1;
 				else if (HistoryPos > 0)
 					HistoryPos--;
 			}
 			else if (data->EventKey == ImGuiKey_DownArrow)
 			{
 				if (HistoryPos != -1)
-					if (++HistoryPos >= History.Size)
+					if (++HistoryPos >= History.size())
 						HistoryPos = -1;
 			}
 

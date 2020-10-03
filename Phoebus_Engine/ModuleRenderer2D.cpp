@@ -13,6 +13,8 @@
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "MathGeoLib/include/MathGeoLib.h"
 
+#include "Console.h"
+
 /*
 struct ExampleAppConsole
 {
@@ -364,6 +366,7 @@ struct ExampleAppConsole
 
 ModuleRenderer2D::ModuleRenderer2D(bool start_enabled)
 {
+	console = new Cnsl();
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -680,6 +683,11 @@ bool ModuleRenderer2D::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
+	if (console != nullptr)
+	{
+		delete(console);
+		console = nullptr;
+	}
 	
 	return ret;
 }
@@ -690,6 +698,5 @@ void ModuleRenderer2D::OnResize(int width, int height)
 
 void ModuleRenderer2D::ShowExampleAppConsole(bool* p_open)
 {
-	static ExampleAppConsole console;
-	console.Draw("Example: Console", p_open);
+	console->Draw("Example: Console", p_open);
 }

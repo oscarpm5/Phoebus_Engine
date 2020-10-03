@@ -22,6 +22,8 @@ public:
 	bool showDemoWindow = false;
 	bool showConsoleWindow = false;
 
+	Cnsl* console = nullptr;
+
 private:
 
 	//math checks
