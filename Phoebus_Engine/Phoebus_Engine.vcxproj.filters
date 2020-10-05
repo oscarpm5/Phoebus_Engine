@@ -40,6 +40,9 @@
     <Filter Include="Sources\Helpers">
       <UniqueIdentifier>{aca96248-d5b5-44ce-8d2a-52d968bb0beb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\Json">
+      <UniqueIdentifier>{4b9b13e4-b456-4aa2-9887-b0a4fefe6cb2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -291,6 +294,12 @@
     <ClInclude Include="Light.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Json\json.hpp">
+      <Filter>Sources\Tools\Json</Filter>
+    </ClInclude>
+    <ClInclude Include="Json\parson.h">
+      <Filter>Sources\Tools\Json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -449,6 +458,9 @@
     <ClCompile Include="Light.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="Json\parson.c">
+      <Filter>Sources\Tools\Json</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt">
@@ -473,6 +485,12 @@
     </None>
     <None Include="MathGeoLib\include\Math\Matrix.inl">
       <Filter>Sources\Tools\MathGeoLib\Math</Filter>
+    </None>
+    <None Include="Json\Example.json">
+      <Filter>Sources\Tools\Json</Filter>
+    </None>
+    <None Include="Json\README.md">
+      <Filter>Sources\Tools\Json</Filter>
     </None>
   </ItemGroup>
 </Project>
