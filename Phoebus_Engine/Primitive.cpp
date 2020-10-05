@@ -21,7 +21,7 @@ PrimitiveTypes Primitive::GetType() const
 
 void Primitive::Update()
 {
-	body.GetTransform(&transform);
+	//body.GetTransform(&transform);
 }
 
 // ------------------------------------------------------------
@@ -93,36 +93,36 @@ void Primitive::InnerRender() const
 void Primitive::SetPos(float x, float y, float z)
 {
 	transform.translate(x, y, z);
-	body.SetTransform(&transform);
+	//body.SetTransform(&transform);
 }
 
 // ------------------------------------------------------------
 void Primitive::SetRotation(float angle, const vec3 &u)
 {
 	transform.rotate(angle, u);
-	body.SetTransform(&transform);
+	//body.SetTransform(&transform);
 }
 
 // ------------------------------------------------------------
 void Primitive::Scale(float x, float y, float z)
 {
 	transform.scale(x, y, z);
-	body.SetTransform(&transform);
+	//body.SetTransform(&transform);
 }
 
 // CUBE ============================================
 
-Cube::Cube(const vec3& _size, float mass) : Primitive(), size(_size)
+PCube::PCube(const vec3& _size, float mass) : Primitive(), size(_size)
 {
 	type = PrimitiveTypes::Primitive_Cube;
 }
 
-vec3 Cube::GetSize() const
+vec3 PCube::GetSize() const
 {
 	return size;
 }
 
-void Cube::InnerRender() const
+void PCube::InnerRender() const
 {	
 	float sx = size.x * 0.5f;
 	float sy = size.y * 0.5f;
@@ -171,44 +171,44 @@ void Cube::InnerRender() const
 
 // SPHERE ============================================
 
-Sphere::Sphere(float _radius, float mass) : Primitive(), radius(_radius)
+PSphere::PSphere(float _radius, float mass) : Primitive(), radius(_radius)
 {
 	type = PrimitiveTypes::Primitive_Sphere;
-	body.SetBody(this, mass);
+	//body.SetBody(this, mass);
 }
 
-float Sphere::GetRadius() const
+float PSphere::GetRadius() const
 {
 	return radius;
 }
 
-void Sphere::InnerRender() const
+void PSphere::InnerRender() const
 {
 	glutSolidSphere(radius, 25, 25);
 }
 
 
 // CYLINDER ============================================
-Cylinder::Cylinder(float radius, float height, float mass) : Primitive(), radius(radius), height(height)
+PCylinder::PCylinder(float radius, float height, float mass) : Primitive(), radius(radius), height(height)
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
 }
 
-float Cylinder::GetRadius() const
+float PCylinder::GetRadius() const
 {
 	return radius;
 }
 
-float Cylinder::GetHeight() const
+float PCylinder::GetHeight() const
 {
 	return height;
 }
 
-void Cylinder::InnerRender() const
+void PCylinder::InnerRender() const
 {
 	glPushMatrix();
 	mat4x4 rotateMat = IdentityMatrix;
-	rotateMat.rotate(0.f, vec3(0, 0, 1));
+	rotateMat.rotate(90.f, vec3(0, 0, 1));
 	glMultMatrixf(&rotateMat);
 
 	int n = 30;
@@ -248,27 +248,27 @@ void Cylinder::InnerRender() const
 }
 
 // LINE ==================================================
-Line::Line() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)
+PLine::PLine() : Primitive(), origin(0, 0, 0), destination(1, 1, 1)
 {
 	type = PrimitiveTypes::Primitive_Line;
 }
 
-Line::Line(const vec3& A, const vec3& B) : Primitive(), origin(A), destination(B)
+PLine::PLine(const vec3& A, const vec3& B) : Primitive(), origin(A), destination(B)
 {
 	type = PrimitiveTypes::Primitive_Line;
 }
 
-vec3 Line::GetOrigin() const
+vec3 PLine::GetOrigin() const
 {
 	return origin;
 }
 
-vec3 Line::GetDestination() const
+vec3 PLine::GetDestination() const
 {
 	return destination;
 }
 
-void Line::InnerRender() const
+void PLine::InnerRender() const
 {
 	glLineWidth(2.0f);
 
@@ -283,17 +283,17 @@ void Line::InnerRender() const
 }
 
 // PLANE ==================================================
-Plane::Plane(const vec3& _normal) : Primitive(), normal(_normal)
+PPlane::PPlane(const vec3& _normal) : Primitive(), normal(_normal)
 {
 	type = PrimitiveTypes::Primitive_Plane;
 }
 
-vec3 Plane::GetNormal() const
+vec3 PPlane::GetNormal() const
 {
 	return normal;
 }
 
-void Plane::InnerRender() const
+void PPlane::InnerRender() const
 {
 	glLineWidth(1.0f);
 

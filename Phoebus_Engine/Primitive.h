@@ -2,7 +2,7 @@
 #pragma once
 #include "glmath.h"
 #include "Color.h"
-#include "PhysBody3D.h"
+//#include "PhysBody3D.h"
 
 enum PrimitiveTypes
 {
@@ -30,7 +30,7 @@ public:
 	Color color;
 	mat4x4 transform;
 	bool axis,wire;
-	PhysBody3D body;
+	//PhysBody3D body;
 
 protected:
 	virtual void InnerRender() const;
@@ -38,10 +38,11 @@ protected:
 };
 
 // ============================================
-class Cube : public Primitive
+class PCube : public Primitive
 {
 public :
-	Cube(const vec3& size = vec3(1.f,1.f,1.f), float mass = 1.f);	
+	PCube(const vec3& size = vec3(1.f,1.f,1.f), float mass = 1.f);
+
 	vec3 GetSize() const;
 protected:
 	void InnerRender() const;
@@ -50,10 +51,10 @@ private:
 };
 
 // ============================================
-class Sphere : public Primitive
+class PSphere : public Primitive
 {
 public:
-	Sphere(float radius = 1.f, float mass = 1.f);
+	PSphere(float radius = 1.f, float mass = 1.f);
 
 	float GetRadius() const;
 protected:
@@ -63,10 +64,10 @@ private:
 };
 
 // ============================================
-class Cylinder : public Primitive
+class PCylinder : public Primitive
 {
 public:
-	Cylinder(float radius = 1.f, float height = 2.f, float mass = 1.f);
+	PCylinder(float radius = 1.f, float height = 2.f, float mass = 1.f);
 
 	float GetRadius() const;
 	float GetHeight() const;
@@ -78,11 +79,11 @@ private:
 };
 
 // ============================================
-class Line : public Primitive
+class PLine : public Primitive
 {
 public:
-	Line();
-	Line(const vec3& A, const vec3& B);
+	PLine();
+	PLine(const vec3& A, const vec3& B);
 
 	vec3 GetOrigin() const;
 	vec3 GetDestination() const;
@@ -95,10 +96,10 @@ public:
 };
 
 // ============================================
-class Plane : public Primitive
+class PPlane : public Primitive
 {
 public:
-	Plane(const vec3& normal = vec3(0,1,0));
+	PPlane(const vec3& normal = vec3(0,1,0));
 
 	vec3 GetNormal() const;
 protected:

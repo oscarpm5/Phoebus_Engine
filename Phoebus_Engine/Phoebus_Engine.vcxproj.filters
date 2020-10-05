@@ -37,6 +37,9 @@
     <Filter Include="Sources\UI Elements">
       <UniqueIdentifier>{db761346-2aba-44c7-ad74-f97c5a2a0940}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Helpers">
+      <UniqueIdentifier>{aca96248-d5b5-44ce-8d2a-52d968bb0beb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -282,6 +285,12 @@
     <ClInclude Include="ModuleEditor3D.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -433,6 +442,12 @@
     </ClCompile>
     <ClCompile Include="ModuleEditor3D.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Primitive.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

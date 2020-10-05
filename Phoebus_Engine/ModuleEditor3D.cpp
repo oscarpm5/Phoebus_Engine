@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ModuleEditor3D.h"
+#include "Primitive.h"
 
 
 ModuleEditor3D::ModuleEditor3D(bool start_enabled):Module(start_enabled)
@@ -33,6 +34,9 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 update_status ModuleEditor3D::Update(float dt)
 {
+	PPlane p(vec3(0, 1, 0));
+	p.axis = true;
+	p.Render();
 	return UPDATE_CONTINUE;
 }
 
