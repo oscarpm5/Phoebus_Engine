@@ -90,6 +90,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	// Our state
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+	CreateDockingSpace();
+
 	//Main Menu bar test
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -109,9 +111,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			////End of sample
 
 			if (ImGui::MenuItem("Exit", "Esc")) { status = UPDATE_STOP; }
-			if (ImGui::MenuItem("About", "...")) { 
+			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
-				showAboutWindowbool = true; 
+				showAboutWindowbool = true;
 			}
 			if (ImGui::MenuItem("Config")) {
 				//ImGui::SetNextWindowSize(ImVec2(435, 800));
@@ -152,9 +154,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				randomRad2 = seed.Int(0, 5);
 				Cylinder aux2 = Cylinder(float3(4, 0, 0), float3(4, 0, 0), randomRad2);
 
-				if(randomRad1 + randomRad2 >= 4) //TODO: cheap AF
+				if (randomRad1 + randomRad2 >= 4) //TODO: cheap AF
 					cylCol = true;
-				else 
+				else
 					cylCol = false;
 
 				showCylWindow = true;
@@ -163,9 +165,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			if (ImGui::MenuItem("Triangles collision")) {
 
 				randomRad1 = seed.Int(0, 5);
-				Triangle aux1 = Triangle(float3(0,0,0), float3(randomRad1,0,0), float3(randomRad1/2,2,0));
+				Triangle aux1 = Triangle(float3(0, 0, 0), float3(randomRad1, 0, 0), float3(randomRad1 / 2, 2, 0));
 				randomRad2 = seed.Int(0, 5);
-				Triangle aux2 = Triangle(float3(3, 0, 0), float3(3+ randomRad2, 0, 0), float3(3+ randomRad2 / 2, 2, 0));
+				Triangle aux2 = Triangle(float3(3, 0, 0), float3(3 + randomRad2, 0, 0), float3(3 + randomRad2 / 2, 2, 0));
 
 				if (randomRad1 + randomRad2 >= 3) //TODO: cheap AF
 					triCol = true;
@@ -183,12 +185,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				AABB aux1(s1); AABB aux2(s2);
 				AABB auxSol = aux1.Intersection(aux2);
 
-				if (auxSol.Volume() != 0) { 
-					
+				if (auxSol.Volume() != 0) {
+
 					AABBCol = true;
 				}
-				else { 
-					AABBCol = false; 
+				else {
+					AABBCol = false;
 				}
 
 				showAABBWindow = true;
@@ -201,13 +203,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
 
 
+
 		ImGui::EndMainMenuBar();
 
 	}
 
 	if (showDemoWindow)
 		ImGui::ShowDemoWindow(&showDemoWindow);
-	if (showAboutWindowbool) {showAboutWindow(); }
+	if (showAboutWindowbool) { showAboutWindow(); }
 	if (showConfig) { showConfigFunc(); }
 
 	if (showConsoleWindow)
@@ -216,7 +219,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 
 	if (showSphereWindow) {
-		
+
 		ImGui::Begin("Sphere checks");
 		ImGui::Text("Sphere 1: center on [0 ,0 , 0] and rad %i", randomRad1);
 		ImGui::Text("Sphere 2: center on [3 ,3 , 3] and rad %i", randomRad2);
@@ -308,9 +311,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::Text("Failed to intersect!");
 		}
 
-		if (ImGui::MenuItem("Close window")) { 
-			
-			showAABBWindow = false; 
+		if (ImGui::MenuItem("Close window")) {
+
+			showAABBWindow = false;
 		}
 		ImGui::End();
 	}
@@ -362,7 +365,7 @@ void ModuleRenderer2D::OnResize(int width, int height)
 
 bool ModuleRenderer2D::showAboutWindow()
 {
-	
+
 
 	if (!ImGui::Begin("About this Engine", &showAboutWindowbool))		//this is how you add the cross button to a window
 	{
@@ -402,7 +405,7 @@ bool ModuleRenderer2D::showAboutWindow()
 	if (ImGui::MenuItem("Engine License")) { ShellExecuteA(NULL, NULL, "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL); }
 
 
-	
+
 
 	ImGui::End();
 
@@ -452,15 +455,15 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::End();
 		return false;
 	}
-	
+
 
 	if (ImGui::BeginMenu("FPS")) {
-		
-		ImGui::PushStyleColor(ImGuiCol_FrameBg,ImVec4(0.16f, 0.29f, 0.48f, 0.54f));
+
+		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.16f, 0.29f, 0.48f, 0.54f));
 		char title[25];
 		sprintf_s(title, 25, "Framerate %.1f", App->fpsBuffer[App->fpsBuffer.size() - 1]);
 		ImGui::PlotHistogram("##framerate", &App->fpsBuffer[0], App->fpsBuffer.size(), 0, title, 0.0f, 120.0f, ImVec2(400, 100));
-		
+
 
 		sprintf_s(title, 25, "Milliseconds %.1f", App->millisecondsBuffer[App->millisecondsBuffer.size() - 1]);
 		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
@@ -470,28 +473,28 @@ bool ModuleRenderer2D::showConfigFunc()
 	}
 
 	if (ImGui::BeginMenu("Window")) {
-	
-		if(ImGui::SliderFloat("Brightness", &App->window->brightness, 0, 1)) 
+
+		if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0, 1))
 		{
 			SDL_SetWindowBrightness(App->window->window, App->window->brightness);
-			
+
 		}
-		
-		if (ImGui::SliderInt("Width", &(App->window->w), 1, 2800)) 
+
+		if (ImGui::SliderInt("Width", &(App->window->w), 1, 2800))
 		{
 			if (resizable) {
 				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
 				OpenGLOnResize(App->window->w, App->window->h);
 			}
 		};
-		if (ImGui::SliderInt("Height", &(App->window->h), 1, 2800)) 
-		{	
+		if (ImGui::SliderInt("Height", &(App->window->h), 1, 2800))
+		{
 			if (resizable) {
 				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
 				OpenGLOnResize(App->window->w, App->window->h);
 			}
 		};
-		if (ImGui::Checkbox("Resizable", &resizable)) 
+		if (ImGui::Checkbox("Resizable", &resizable))
 		{
 			if (resizable) {
 				LOG("Resizable mode toggled to TRUE");
@@ -500,24 +503,24 @@ bool ModuleRenderer2D::showConfigFunc()
 				LOG("Resizable mode toggled to FALSE");
 			}
 		}
-		if (ImGui::Checkbox("Borderless", &borderless)) 
-		{ 
+		if (ImGui::Checkbox("Borderless", &borderless))
+		{
 			//SDL_SetWindowFullscreen(App->window->window, );
 			LOG("TODO: this button is still not fully operational");
 		}
-		if (ImGui::Checkbox("Fullscreen", &fullscreen)) 
-		{ 
+		if (ImGui::Checkbox("Fullscreen", &fullscreen))
+		{
 			LOG("TODO: this button is still not fully operational");
 		}
-		if (ImGui::Checkbox("Full desktop", &fullDesktop)) 
-		{ 
+		if (ImGui::Checkbox("Full desktop", &fullDesktop))
+		{
 			LOG("TODO: this button is still not fully operational");
 		}
-		
+
 		ImGui::End();
 	}
 	if (ImGui::BeginMenu("Hardware specs")) {
-		
+
 		int lineSize = SDL_GetCPUCacheLineSize();
 		ImGui::Text("GPU has size %i", lineSize);
 		int GPUCount = SDL_GetCPUCount();
@@ -535,7 +538,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::SameLine(); if (SDL_HasSSE3()) { ImGui::Text("SSE3 "); }
 		ImGui::SameLine(); if (SDL_HasSSE41()) { ImGui::Text("SSE41 "); }
 		ImGui::SameLine(); if (SDL_HasSSE42()) { ImGui::Text("SSE42 "); }
-	
+
 		ImGui::End();
 	}
 	ImGui::End();
@@ -546,7 +549,7 @@ void ModuleRenderer2D::CheckFPS()
 {
 	/*
 	fps_log->Data[fps_log->size()-1] = seed.Int(40, 60); // placeholder
-	
+
 
 	for (int i = 0; i++;  fps_log->size() -2) {
 		fps_log->Data[i] = fps_log->Data[i + 1];		//cursed tech
@@ -567,7 +570,7 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	
+
 	App->renderer3D->ProjectionMatrix = perspective(60.0f, (width / 2) / height, 0.225f, 512.0f);
 	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
 
@@ -577,4 +580,69 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 void ModuleRenderer2D::ShowExampleAppConsole(bool* p_open)
 {
 	console->Draw("Example: Console", p_open);
+}
+
+void ModuleRenderer2D::CreateDockingSpace()
+{
+	static bool opt_fullscreen = true;
+	static bool opt_padding = false;
+	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
+
+	// We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
+	// because it would be confusing to have two docking targets within each others.
+	ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
+	if (opt_fullscreen)
+	{
+		ImGuiViewport* viewport = ImGui::GetMainViewport();
+		ImGui::SetNextWindowPos(viewport->GetWorkPos());
+		ImGui::SetNextWindowSize(viewport->GetWorkSize());
+		ImGui::SetNextWindowViewport(viewport->ID);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+	
+	}
+	else
+	{
+		dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+	}
+
+	// When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
+	// and handle the pass-thru hole, so we ask Begin() to not render a background.
+	if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+		window_flags |= ImGuiWindowFlags_NoBackground;
+
+	// Important: note that we proceed even if Begin() returns false (aka window is collapsed).
+	// This is because we want to keep our DockSpace() active. If a DockSpace() is inactive,
+	// all active windows docked into it will lose their parent and become undocked.
+	// We cannot preserve the docking relationship between an active window and an inactive docking, otherwise
+	// any change of dockspace/settings would lead to windows being stuck in limbo and never being visible.
+	if (!opt_padding)
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+	ImGui::Begin("DockSpace Demo", NULL, window_flags);
+	if (!opt_padding)
+		ImGui::PopStyleVar();
+
+	if (opt_fullscreen)
+		ImGui::PopStyleVar(2);
+
+	// DockSpace
+	ImGuiIO& io = ImGui::GetIO();
+	if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
+	{
+		ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+		ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+	}
+	else
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		ImGui::Text("ERROR: Docking is not enabled! See Demo > Configuration.");
+		ImGui::Text("Set io.ConfigFlags |= ImGuiConfigFlags_DockingEnable in your code, or ");
+		ImGui::SameLine(0.0f, 0.0f);
+		if (ImGui::SmallButton("click here"))
+			io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+	}
+
+	ImGui::End();
 }

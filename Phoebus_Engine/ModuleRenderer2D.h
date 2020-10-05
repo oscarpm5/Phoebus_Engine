@@ -22,6 +22,7 @@ public:
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 	void ShowExampleAppConsole(bool* p_open);
+	void CreateDockingSpace();
 	void OnResize(int width, int height);
 
 public:
