@@ -3,8 +3,9 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
-#include "SDL/include/SDL.h"
 #include "Glew/include/glew.h"
+#include "SDL/include/SDL.h"
+
 //...to here
 #include "Globals.h"
 #include "Application.h"
@@ -63,7 +64,7 @@ bool ModuleRenderer2D::Init()
 
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
-	ImGui_ImplOpenGL3_Init("#version 130"); //TODO: this is hardcoded. Deal with it.
+	ImGui_ImplOpenGL3_Init("#version 140"); //TODO: this is hardcoded. Deal with it.
 
 	//Start number generator seed
 	seed = LCG::LCG();
@@ -321,11 +322,11 @@ update_status ModuleRenderer2D::PostUpdate(float dt)
 	update_status status = UPDATE_CONTINUE;
 
 	// Rendering
-	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	//ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	ImGui::Render(); ImGuiIO& io = ImGui::GetIO(); (void)io;
 	glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
-	glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 

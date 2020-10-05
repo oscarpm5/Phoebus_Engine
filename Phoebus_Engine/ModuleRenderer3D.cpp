@@ -13,6 +13,7 @@
 
 
 #include "glmath.h"
+#include"Color.h"
 
 
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
@@ -84,7 +85,7 @@ bool ModuleRenderer3D::Init()
 		
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
-
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//Check for error
 		error = glGetError();
 		if(error != GL_NO_ERROR)
@@ -105,6 +106,11 @@ bool ModuleRenderer3D::Init()
 		glEnable(GL_LIGHTING);
 		glEnable(GL_COLOR_MATERIAL);
 	}
+	LOG("-------------- OpenGL Info --------------")
+	LOG("Vendor: %s", glGetString(GL_VENDOR));
+	LOG("Renderer: %s", glGetString(GL_RENDERER));
+	LOG("OpenGL version supported %s", glGetString(GL_VERSION));
+	LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -115,6 +121,12 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
+	
+	//Set a color here TODO form the camera
+	Color c = Color(0.05f,0.05f,0.1f);
+	glClearColor(c.r, c.g, c.b, c.a);
+	
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -129,6 +141,10 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 // PostUpdate present buffer to screen
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
+	//Render here
+
+
+
 	//SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }
