@@ -457,7 +457,7 @@ bool ModuleRenderer2D::showConfigFunc()
 	}
 
 
-	if (ImGui::BeginMenu("FPS")) {
+	if (ImGui::CollapsingHeader("FPS")) {
 
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.16f, 0.29f, 0.48f, 0.54f));
 		char title[25];
@@ -469,10 +469,10 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
 
 		ImGui::PopStyleColor();
-		ImGui::End();
+		
 	}
 
-	if (ImGui::BeginMenu("Window")) {
+	if (ImGui::CollapsingHeader("Window")) {
 
 		if (ImGui::SliderFloat("Brightness", &App->window->brightness, 0, 1))
 		{
@@ -517,9 +517,9 @@ bool ModuleRenderer2D::showConfigFunc()
 			LOG("TODO: this button is still not fully operational");
 		}
 
-		ImGui::End();
+		
 	}
-	if (ImGui::BeginMenu("Hardware specs")) {
+	if (ImGui::CollapsingHeader("Hardware specs")) {
 
 		int lineSize = SDL_GetCPUCacheLineSize();
 		ImGui::Text("GPU has size %i", lineSize);
@@ -539,7 +539,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::SameLine(); if (SDL_HasSSE41()) { ImGui::Text("SSE41 "); }
 		ImGui::SameLine(); if (SDL_HasSSE42()) { ImGui::Text("SSE42 "); }
 
-		ImGui::End();
+		
 	}
 	ImGui::End();
 	return true;
