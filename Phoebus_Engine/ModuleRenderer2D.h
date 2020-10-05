@@ -38,6 +38,7 @@ public:
 	bool showConfig = false;
 	bool showConfigFunc();
 
+	
 private:
 
 	//math checks

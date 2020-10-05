@@ -90,6 +90,7 @@
     <ClInclude Include="Json\json.hpp" />
     <ClInclude Include="Json\parson.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="MathChecks.h" />
     <ClInclude Include="MathGeoLib\include\Algorithm\Random\LCG.h" />
     <ClInclude Include="MathGeoLib\include\Geometry\AABB.h" />
     <ClInclude Include="MathGeoLib\include\Geometry\AABB2D.h" />

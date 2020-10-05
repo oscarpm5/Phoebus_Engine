@@ -16,6 +16,7 @@
 #include "MathGeoLib/include/MathGeoLib.h"
 
 #include "Console.h"
+#include "MathChecks.h"
 
 
 ModuleRenderer2D::ModuleRenderer2D(bool start_enabled)
@@ -136,63 +137,23 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			//Spheres
 			if (ImGui::MenuItem("Sphere collision")) {
-
-				randomRad1 = seed.Int(0, 5);
-				Sphere aux1 = Sphere(float3(0, 0, 0), randomRad1);
-				randomRad2 = seed.Int(0, 5);
-				Sphere aux2 = Sphere(float3(3, 3, 3), randomRad2);
-
-				sphereCol = aux1.Intersects(aux2);
+				sphereCol = TestColSphere(seed);
 				showSphereWindow = true;
-
 			}
 			//Cylinders
 			if (ImGui::MenuItem("Cylinders collision")) {
-
-				randomRad1 = seed.Int(0, 5);
-				Cylinder aux1 = Cylinder(float3(0, 0, 0), float3(0, 0, 0), randomRad1);
-				randomRad2 = seed.Int(0, 5);
-				Cylinder aux2 = Cylinder(float3(4, 0, 0), float3(4, 0, 0), randomRad2);
-
-				if (randomRad1 + randomRad2 >= 4) //TODO: cheap AF
-					cylCol = true;
-				else
-					cylCol = false;
-
+				cylCol = TestColCyl(seed);
 				showCylWindow = true;
 			}
 			//Triangles
 			if (ImGui::MenuItem("Triangles collision")) {
-
-				randomRad1 = seed.Int(0, 5);
-				Triangle aux1 = Triangle(float3(0, 0, 0), float3(randomRad1, 0, 0), float3(randomRad1 / 2, 2, 0));
-				randomRad2 = seed.Int(0, 5);
-				Triangle aux2 = Triangle(float3(3, 0, 0), float3(3 + randomRad2, 0, 0), float3(3 + randomRad2 / 2, 2, 0));
-
-				if (randomRad1 + randomRad2 >= 3) //TODO: cheap AF
-					triCol = true;
-				else
-					triCol = false;
-
+				triCol = TestColTri(seed);
 				showTriWindow = true;
 			}
 
 			//AABB
 			if (ImGui::MenuItem("AABB collision")) {
-				randomRad1 = seed.Int(0, 5); Sphere s1(float3(0, 0, 0), randomRad1);
-				randomRad2 = seed.Int(0, 5); Sphere s2(float3(4, 0, 0), randomRad2);
-
-				AABB aux1(s1); AABB aux2(s2);
-				AABB auxSol = aux1.Intersection(aux2);
-
-				if (auxSol.Volume() != 0) {
-
-					AABBCol = true;
-				}
-				else {
-					AABBCol = false;
-				}
-
+				AABBCol = TestColAABB(seed);
 				showAABBWindow = true;
 			}
 
@@ -220,102 +181,19 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 	if (showSphereWindow) {
 
-		ImGui::Begin("Sphere checks");
-		ImGui::Text("Sphere 1: center on [0 ,0 , 0] and rad %i", randomRad1);
-		ImGui::Text("Sphere 2: center on [3 ,3 , 3] and rad %i", randomRad2);
-
-		if (sphereCol) {
-			ImGui::Text("Intersection succesful!");
-		}
-		else {
-			ImGui::Text("Failed to intersect!");
-		}
-		(ImGui::Text(" "));
-		if (ImGui::MenuItem("Close window")) { showSphereWindow = false; }
-		if (ImGui::MenuItem("Another one!")) {
-			randomRad1 = seed.Int(0, 5);
-			Sphere aux1 = Sphere(float3(0, 0, 0), randomRad1);
-			randomRad2 = seed.Int(0, 5);
-			Sphere aux2 = Sphere(float3(3, 3, 3), randomRad2);
-			sphereCol = aux1.Intersects(aux2);
-		}
-
-		ImGui::End();
+		ShowSphereWindow(showSphereWindow, seed, sphereCol);
 	}
 	if (showCylWindow) {
 
-		ImGui::Begin("Cylinder checks");
-		ImGui::Text("Cylinder 1: center on [0 ,0 , 0] and rad %i", randomRad1);
-		ImGui::Text("Cylinder 2: center on [4 ,0 , 0] and rad %i", randomRad2);
-
-		if (cylCol) {
-			ImGui::Text("Intersection succesful!");
-		}
-		else {
-			ImGui::Text("Failed to intersect!");
-		}
-		(ImGui::Text(" "));
-		if (ImGui::MenuItem("Close window")) { showCylWindow = false; }
-		if (ImGui::MenuItem("Another one!")) {
-			randomRad1 = seed.Int(0, 5);
-			Cylinder aux1 = Cylinder(float3(0, 0, 0), float3(0, 0, 0), randomRad1);
-			randomRad2 = seed.Int(0, 5);
-			Cylinder aux2 = Cylinder(float3(4, 0, 0), float3(4, 0, 0), randomRad2);
-
-			if (randomRad1 + randomRad2 >= 4) //TODO: cheap AF
-				cylCol = true;
-			else
-				cylCol = false;
-		}
-
-		ImGui::End();
+		ShowCylWindow(showCylWindow, seed, cylCol);
 	}
 	if (showTriWindow) {
 
-		ImGui::Begin("Triangle checks");
-		ImGui::Text("Triangle 1: flat side has %i", randomRad1);
-		ImGui::Text("Triangle 2: Is fixed 3 units away", randomRad2);
-
-		if (triCol) {
-			ImGui::Text("Intersection succesful!");
-		}
-		else {
-			ImGui::Text("Failed to intersect!");
-		}
-		(ImGui::Text(" "));
-		if (ImGui::MenuItem("Close window")) { showTriWindow = false; }
-		if (ImGui::MenuItem("Another one!")) {
-			randomRad1 = seed.Int(0, 5);
-			Triangle aux1 = Triangle(float3(0, 0, 0), float3(randomRad1, 0, 0), float3(randomRad1 / 2, 2, 0));
-			randomRad2 = seed.Int(0, 5);
-			Triangle aux2 = Triangle(float3(3, 0, 0), float3(3 + randomRad2, 0, 0), float3(3 + randomRad2 / 2, 2, 0));
-
-			if (randomRad1 >= 3) //TODO: cheap AF
-				triCol = true;
-			else
-				triCol = false;
-		}
-
-		ImGui::End();
+		ShowTriWindow(showTriWindow, seed, triCol);
 	}
 	if (showAABBWindow) {
 
-		ImGui::Begin("AABB checks");
-		ImGui::Text("AABB 1: contains sphere with center 0,0,0 with rad %i", randomRad1);
-		ImGui::Text("AABB 2: contains sphere with center 4,0,0 with rad %i", randomRad2);
-
-		if (AABBCol) {
-			ImGui::Text("Intersection succesful!");
-		}
-		else {
-			ImGui::Text("Failed to intersect!");
-		}
-
-		if (ImGui::MenuItem("Close window")) {
-
-			showAABBWindow = false;
-		}
-		ImGui::End();
+		ShowAAABBWindow( showAABBWindow,  seed,  AABBCol);
 	}
 	return status;
 }

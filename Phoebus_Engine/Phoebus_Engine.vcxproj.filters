@@ -300,6 +300,9 @@
     <ClInclude Include="Json\parson.h">
       <Filter>Sources\Tools\Json</Filter>
     </ClInclude>
+    <ClInclude Include="MathChecks.h">
+      <Filter>Sources\UI Elements</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
