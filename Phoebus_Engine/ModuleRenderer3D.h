@@ -19,6 +19,7 @@ public:
 
 	void OnResize(int width, int height);
 
+
 public:
 
 	Light lights[MAX_LIGHTS];
@@ -26,4 +27,14 @@ public:
 	SDL_GLContext context;
 	mat3x3 NormalMatrix;
 	mat4x4 ProjectionMatrix;
+	
+	
+	//rendering config bools
+
+	bool depthTesting = true;
+	bool cullFace = true;
+	bool lighting = true;
+	bool colorMaterial = true;
+	bool texture2D = true;
+	bool wireframe = false;
 };
