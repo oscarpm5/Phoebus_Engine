@@ -32,10 +32,10 @@ bool ModuleRenderer3D::Init()
 {
 	LOG("Creating 3D Renderer context");
 	bool ret = true;
-	
+
 	//Create context
 	context = SDL_GL_CreateContext(App->window->window);
-	if(context == NULL)
+	if (context == NULL)
 	{
 		LOG("OpenGL context could not be created! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
@@ -43,17 +43,17 @@ bool ModuleRenderer3D::Init()
 	else
 	{
 		GLenum glewError = glewInit();
-		
+
 		if (glewError != GLEW_OK)
 		{
 			printf("Error initializing GLEW! %s\n", glewGetErrorString(glewError));
 		}
 	}
 
-	if(ret == true)
+	if (ret == true)
 	{
 		//Use Vsync
-		if(VSYNC && SDL_GL_SetSwapInterval(1) < 0)
+		if (VSYNC && SDL_GL_SetSwapInterval(1) < 0)
 			LOG("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
 		//Initialize Projection Matrix
@@ -62,7 +62,7 @@ bool ModuleRenderer3D::Init()
 
 		//Check for error
 		GLenum error = glGetError();
-		if(error != GL_NO_ERROR)
+		if (error != GL_NO_ERROR)
 		{
 			LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
@@ -74,26 +74,26 @@ bool ModuleRenderer3D::Init()
 
 		//Check for error
 		error = glGetError();
-		if(error != GL_NO_ERROR)
+		if (error != GL_NO_ERROR)
 		{
 			LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
-		
+
 		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 		glClearDepth(1.0f);
-		
+
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		//Check for error
 		error = glGetError();
-		if(error != GL_NO_ERROR)
+		if (error != GL_NO_ERROR)
 		{
 			LOG("Error initializing OpenGL! %s\n", gluErrorString(error));
 			ret = false;
 		}
-		
+
 		GLfloat LightModelAmbient[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 		glLightModelfv(GL_LIGHT_MODEL_AMBIENT, LightModelAmbient);
 
@@ -103,12 +103,12 @@ bool ModuleRenderer3D::Init()
 		lights[0].SetPos(0.0f, 0.0f, 2.5f);
 		lights[0].Init();
 
-		GLfloat MaterialAmbient[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		GLfloat MaterialAmbient[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, MaterialAmbient);
 
-		GLfloat MaterialDiffuse[] = {1.0f, 1.0f, 1.0f, 1.0f};
+		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
-		
+
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_CULL_FACE);
 		lights[0].Active(true);
@@ -116,7 +116,7 @@ bool ModuleRenderer3D::Init()
 		glEnable(GL_COLOR_MATERIAL);
 	}
 	LOG("-------------- OpenGL Info --------------")
-	LOG("Vendor: %s", glGetString(GL_VENDOR));
+		LOG("Vendor: %s", glGetString(GL_VENDOR));
 	LOG("Renderer: %s", glGetString(GL_RENDERER));
 	LOG("OpenGL version supported %s", glGetString(GL_VERSION));
 	LOG("GLSL: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -130,12 +130,32 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-	
-	//Set a color here TODO form the camera
-	Color c = Color(0.05f,0.05f,0.1f);
-	glClearColor(c.r, c.g, c.b, c.a);
-	
 
+
+	//rendering config attributes
+	if (depthTesting)glEnable(GL_DEPTH_TEST);
+	else glDisable(GL_DEPTH_TEST);
+
+	if (cullFace)glEnable(GL_CULL_FACE);
+	else glDisable(GL_CULL_FACE);
+
+	if (lighting)glEnable(GL_LIGHTING);
+	else glDisable(GL_LIGHTING);
+
+	if (colorMaterial)glEnable(GL_COLOR_MATERIAL);
+	else glDisable(GL_COLOR_MATERIAL);
+
+	if (texture2D)glEnable(GL_TEXTURE_2D);
+	else glDisable(GL_TEXTURE_2D);
+
+	/* TODO WIREFRAME
+	if(wireframe) //set primitives to wireframe mode
+	else //set primitives to normal mode
+	*/
+
+	//Set a color here TODO form the camera
+	Color c = Color(0.05f, 0.05f, 0.1f);
+	glClearColor(c.r, c.g, c.b, c.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
