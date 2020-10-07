@@ -149,11 +149,6 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	if (texture2D)glEnable(GL_TEXTURE_2D);
 	else glDisable(GL_TEXTURE_2D);
 
-	/* TODO WIREFRAME
-	if(wireframe) //set primitives to wireframe mode
-	else //set primitives to normal mode
-	*/
-
 	//Set a color here TODO form the camera
 	Color c = Color(0.05f, 0.05f, 0.1f);
 	glClearColor(c.r, c.g, c.b, c.a);
