@@ -80,9 +80,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 {
 	update_status status = UPDATE_CONTINUE;
 
-	//Fill fps_log with new info of past frame
-	CheckFPS();
-
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
