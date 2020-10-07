@@ -59,10 +59,10 @@ bool ModuleRenderer2D::Init()
 	ImGuiStyle& style = ImGui::GetStyle();
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 	{
-		style.WindowRounding = 0.0f;
+		style.WindowRounding = 3.0f;
+		style.GrabRounding = style.FrameRounding = 2.0f;
 		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 	}
-
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
 	ImGui_ImplOpenGL3_Init("#version 140"); //TODO: this is hardcoded. Deal with it.
