@@ -1,6 +1,10 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "Primitive.h"
+
+
+#define PRIMITIVES_IN_SCENE 10
 
 class ModuleEditor3D : public Module
 {
@@ -15,6 +19,7 @@ public:
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
-public:
+private:
 	
+	PSphere SAux;
 };
