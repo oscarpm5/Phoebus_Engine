@@ -24,6 +24,11 @@ bool ModuleEditor3D::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
+
+
+	SAux = PSphere(2,1);
+	 
+
 	return ret;
 }
 
@@ -43,6 +48,7 @@ update_status ModuleEditor3D::Update(float dt)
 update_status ModuleEditor3D::PostUpdate(float dt)
 {
 	//Render
+	SAux.Render();
 	return UPDATE_CONTINUE;
 }
 
