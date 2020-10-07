@@ -19,7 +19,7 @@ public:
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
-private:
+public:
 	
 	PSphere SAux;
 };

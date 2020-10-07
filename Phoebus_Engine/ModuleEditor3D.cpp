@@ -26,7 +26,8 @@ bool ModuleEditor3D::Start()
 
 
 
-	SAux = PSphere(2,1);
+	SAux = PSphere(0.5,1);
+	SAux.SetPos(0,1,1);
 	 
 
 	return ret;

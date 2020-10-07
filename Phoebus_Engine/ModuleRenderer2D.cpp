@@ -439,7 +439,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::Checkbox("Lighting", &App->renderer3D->lighting);
 		ImGui::Checkbox("Color Material", &App->renderer3D->colorMaterial);
 		ImGui::Checkbox("Texture 2D", &App->renderer3D->texture2D);
-		ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe);
+		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {App->editor3d->SAux.wire = !App->editor3d->SAux.wire;}
 
 		ImGui::PopStyleColor();
 	}
