@@ -168,17 +168,22 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		ImGui::EndMainMenuBar();
 
 	}
-
 	if (showDemoWindow)
+	{
 		ImGui::ShowDemoWindow(&showDemoWindow);
-	if (showAboutWindowbool) { showAboutWindow(); }
-	if (showConfig) { showConfigFunc(); }
-
+	}
+	if (showAboutWindowbool)
+	{ 
+		showAboutWindow(); 
+	}
+	if (showConfig) 
+	{ 
+		showConfigFunc(); 
+	}
 	if (showConsoleWindow)
 	{
 		ShowExampleAppConsole(&showConsoleWindow);
 	}
-
 	if (showSphereWindow) {
 
 		ShowSphereWindow(showSphereWindow, seed, sphereCol);
@@ -243,7 +248,7 @@ void ModuleRenderer2D::OnResize(int width, int height)
 
 bool ModuleRenderer2D::showAboutWindow()
 {
-
+	//this can't be externalized because of ShellExecuteA command + SDL references
 
 	if (!ImGui::Begin("About this Engine", &showAboutWindowbool))		//this is how you add the cross button to a window
 	{
@@ -292,6 +297,7 @@ bool ModuleRenderer2D::showAboutWindow()
 
 bool ModuleRenderer2D::showLibsFunc()
 {
+	//this can't be externalized because of ShellExecuteA command + SDL references
 	if (!ImGui::Begin("Libraries used:", &showLibs))		//this is how you add the cross button to a window
 	{
 		ImGui::End();
@@ -423,17 +429,6 @@ bool ModuleRenderer2D::showConfigFunc()
 	return true;
 }
 
-void ModuleRenderer2D::CheckFPS()
-{
-	/*
-	fps_log->Data[fps_log->size()-1] = seed.Int(40, 60); // placeholder
-
-
-	for (int i = 0; i++;  fps_log->size() -2) {
-		fps_log->Data[i] = fps_log->Data[i + 1];		//cursed tech
-	}
-	*/
-}
 void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 {
 	glViewport(0, 0, w, h);
@@ -455,6 +450,7 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 }
+
 void ModuleRenderer2D::ShowExampleAppConsole(bool* p_open)
 {
 	console->Draw("Example: Console", p_open);

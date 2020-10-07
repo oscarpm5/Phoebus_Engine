@@ -59,7 +59,6 @@ private:
 	//ImVector<float> fps_log[60];
 	std::vector<float> fps_log;
 	int maxFPShown = 60;
-	void CheckFPS();
 
 	//Resize badness
 	void OpenGLOnResize(int w, int h);
