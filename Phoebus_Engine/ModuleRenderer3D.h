@@ -18,6 +18,15 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
+	void TestingRender();
+	void TestingRenderAtStart();
+
+private:
+	uint exampleMeshIdentifier = 0;
+	uint exampleIndexBind = 0;
+	uint exampleIndexData = 0;
+	int nVertex = 0;
+	int nIndex = 0;
 
 
 public:

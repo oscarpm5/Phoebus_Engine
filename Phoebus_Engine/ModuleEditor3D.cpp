@@ -49,7 +49,7 @@ update_status ModuleEditor3D::Update(float dt)
 update_status ModuleEditor3D::PostUpdate(float dt)
 {
 	//Render
-	SAux.Render();
+	//SAux.Render();
 	return UPDATE_CONTINUE;
 }
 

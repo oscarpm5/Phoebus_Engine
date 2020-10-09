@@ -125,6 +125,8 @@ bool ModuleRenderer3D::Init()
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	TestingRenderAtStart();
+
 	return ret;
 }
 
@@ -174,6 +176,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	//Render here
 
+	//Testing ground
+	TestingRender();
 
 	//SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
@@ -201,4 +205,101 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+}
+
+void ModuleRenderer3D::TestingRender()
+{
+	glEnableClientState(GL_VERTEX_ARRAY);
+	
+
+	/*
+	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);			//this is for printing the vertices
+	// … bind and use other buffers
+	glDrawArrays(GL_TRIANGLES, 0, nVertex);
+	*/
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, exampleIndexBind);		//this is for printing the index
+	glVertexPointer(3, GL_FLOAT, 0, NULL);
+	glDrawElements(GL_TRIANGLES, nIndex, GL_UNSIGNED_INT, NULL);
+	glDisableClientState(GL_VERTEX_ARRAY);
+	
+
+
+	
+	
+}
+
+void ModuleRenderer3D::TestingRenderAtStart()
+{
+
+	static const GLfloat g_vertex_buffer_data[] = {
+	-1.0f,-1.0f,-1.0f, 
+	-1.0f,-1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f, 
+	1.0f, 1.0f,-1.0f, 
+	-1.0f,-1.0f,-1.0f,
+	-1.0f, 1.0f,-1.0f, 
+	1.0f,-1.0f, 1.0f,
+	-1.0f,-1.0f,-1.0f,
+	1.0f,-1.0f,-1.0f,
+	1.0f, 1.0f,-1.0f,
+	1.0f,-1.0f,-1.0f,
+	-1.0f,-1.0f,-1.0f,
+	-1.0f,-1.0f,-1.0f,
+	-1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f,-1.0f,
+	1.0f,-1.0f, 1.0f,
+	-1.0f,-1.0f, 1.0f,
+	-1.0f,-1.0f,-1.0f,
+	-1.0f, 1.0f, 1.0f,
+	-1.0f,-1.0f, 1.0f,
+	1.0f,-1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f,-1.0f,-1.0f,
+	1.0f, 1.0f,-1.0f,
+	1.0f,-1.0f,-1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f,-1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f,-1.0f,
+	-1.0f, 1.0f,-1.0f,
+	1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f,-1.0f,
+	-1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f,
+	1.0f,-1.0f, 1.0f
+	};
+	nVertex = sizeof(g_vertex_buffer_data) / sizeof(float);
+	glGenBuffers(1, (GLuint*)&(exampleMeshIdentifier));
+	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+
+	static const GLfloat g_vertex_index_buffer_data[] = {
+   -1.0, -1.0,  1.0,
+	1.0, -1.0,  1.0,
+	-1.0,  1.0,  1.0,
+	1.0,  1.0,  1.0,
+	-1.0, -1.0, -1.0,
+	1.0, -1.0, -1.0,
+	-1.0,  1.0, -1.0,
+	1.0,  1.0, -1.0,
+	};
+
+	glGenBuffers(1, (GLuint*)&(exampleIndexData));
+	glBindBuffer(GL_ARRAY_BUFFER, exampleIndexData);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_index_buffer_data), g_vertex_index_buffer_data, GL_STATIC_DRAW);
+
+
+	static const GLuint g_index_buffer[] = {
+	 0, 1, 2, 3, 7, 1, 5, 4, 7, 6, 2, 4, 0, 1
+	};
+
+	nIndex = sizeof(g_index_buffer) / sizeof(GLuint);
+	glGenBuffers(1, (GLuint*)&(exampleIndexBind));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, exampleIndexBind);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * nIndex, g_vertex_index_buffer_data, GL_STATIC_DRAW);
+
 }
