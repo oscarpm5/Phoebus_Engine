@@ -228,8 +228,6 @@ void ModuleRenderer2D::OnResize(int width, int height)
 	//ImVec2 windowSize = ImVec2(width, height);
 
 	imgSize = ImVec2(width, height); //Not that window but the one we are printing in
-
-
 	//App->renderer3D->OnResize(width, height);
 
 }
@@ -601,7 +599,7 @@ bool ModuleRenderer2D::Show3DWindow()
 	}
 
 	ImVec2 winSize = ImGui::GetWindowSize();
-	winSize.y -= 10;//taking into account the menu bar
+	winSize.y -= 19;//taking into account the menu bar
 	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
 		OnResize(winSize.x, winSize.y);
 		
