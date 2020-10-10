@@ -24,10 +24,15 @@ public:
 	void ShowExampleAppConsole(bool* p_open);
 	void CreateDockingSpace();
 	void OnResize(int width, int height);
+	void Draw();
+
 
 public:
 	bool showDemoWindow = false;
 	bool showConsoleWindow = false;
+
+	bool Show3DWindow();
+	bool show3DWindow = false;
 
 	Cnsl* console = nullptr;
 
@@ -65,5 +70,7 @@ private:
 
 	//flags
 	bool resizable = true; bool borderless = false; bool fullscreen = false; bool fullDesktop = false; //TODO: move to window?
+
+	ImVec2 imgSize;
 
 }; 

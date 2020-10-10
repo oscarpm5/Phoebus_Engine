@@ -159,7 +159,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 		if (ImGui::MenuItem("Example Window")) { showDemoWindow = true; }
 		if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
-
+		if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
 
 
 		ImGui::EndMainMenuBar();
@@ -170,12 +170,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	}
 	if (showAboutWindowbool)
-	{ 
-		showAboutWindow(); 
+	{
+		showAboutWindow();
 	}
-	if (showConfig) 
-	{ 
-		showConfigFunc(); 
+	if (showConfig)
+	{
+		showConfigFunc();
 	}
 	if (showConsoleWindow)
 	{
@@ -195,15 +195,47 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 	if (showAABBWindow) {
 
-		ShowAAABBWindow( showAABBWindow,  seed,  AABBCol);
+		ShowAAABBWindow(showAABBWindow, seed, AABBCol);
 	}
+	if (show3DWindow) {
+		Show3DWindow();
+	}
+
 	return status;
 }
 
 update_status ModuleRenderer2D::PostUpdate(float dt)
 {
 	update_status status = UPDATE_CONTINUE;
+	
+	return status;
+}
 
+bool ModuleRenderer2D::CleanUp()
+{
+	bool ret = true;
+
+	//TODO: Void functions, no return, no check possible. FIX!
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
+	return ret;
+}
+
+void ModuleRenderer2D::OnResize(int width, int height)
+{
+
+	//ImVec2 windowSize = ImVec2(width, height);
+
+	imgSize = ImVec2(width, height); //Not that window but the one we are printing in
+
+
+	//App->renderer3D->OnResize(width, height);
+
+}
+
+void ModuleRenderer2D::Draw()
+{
 	// Rendering
 	//ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 	ImGui::Render(); ImGuiIO& io = ImGui::GetIO(); (void)io;
@@ -223,24 +255,6 @@ update_status ModuleRenderer2D::PostUpdate(float dt)
 		ImGui::RenderPlatformWindowsDefault();
 		SDL_GL_MakeCurrent(backup_current_window, backup_current_context);
 	}
-	SDL_GL_SwapWindow(App->window->window);
-
-	return status;
-}
-
-bool ModuleRenderer2D::CleanUp()
-{
-	bool ret = true;
-
-	//TODO: Void functions, no return, no check possible. FIX!
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplSDL2_Shutdown();
-	ImGui::DestroyContext();
-	return ret;
-}
-
-void ModuleRenderer2D::OnResize(int width, int height)
-{
 }
 
 bool ModuleRenderer2D::showAboutWindow()
@@ -336,12 +350,12 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::End();
 		return false;
 	}
-	
+
 	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f)); // Set window background to black
 
 
 	if (ImGui::CollapsingHeader("FPS")) {
-		
+
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 		ImGui::PushStyleColor(ImGuiCol_FrameBg, ImVec4(0.16f, 0.29f, 0.48f, 0.54f));
 		char title[25];
@@ -353,7 +367,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
 
 		ImGui::PopStyleColor(2);
-		
+
 	}
 
 	if (ImGui::CollapsingHeader("Window")) {
@@ -403,7 +417,7 @@ bool ModuleRenderer2D::showConfigFunc()
 			LOG("TODO: this button is still not fully operational");
 		}
 		ImGui::PopStyleColor();
-		
+
 	}
 	if (ImGui::CollapsingHeader("Hardware specs")) {
 
@@ -429,17 +443,48 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		ImGui::PopStyleColor();
 	}
-	
+
 	if (ImGui::CollapsingHeader("Rendering"))
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
-		ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting);
-		ImGui::Checkbox("Cull Faces", &App->renderer3D->cullFace);
-		ImGui::Checkbox("Lighting", &App->renderer3D->lighting);
-		ImGui::Checkbox("Color Material", &App->renderer3D->colorMaterial);
-		ImGui::Checkbox("Texture 2D", &App->renderer3D->texture2D);
-		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)){App->editor3d->SAux.wire = !App->editor3d->SAux.wire;}
+
+		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
+		{
+			if (App->renderer3D->depthTesting)glEnable(GL_DEPTH_TEST);
+			else glDisable(GL_DEPTH_TEST);
+		}
+
+
+		if (ImGui::Checkbox("Cull Faces", &App->renderer3D->cullFace))
+		{
+			if (App->renderer3D->cullFace)glEnable(GL_CULL_FACE);
+			else glDisable(GL_CULL_FACE);
+		}
+
+
+		if (ImGui::Checkbox("Lighting", &App->renderer3D->lighting))
+		{
+			if (App->renderer3D->lighting)glEnable(GL_LIGHTING);
+			else glDisable(GL_LIGHTING);
+		}
+
+
+		if (ImGui::Checkbox("Color Material", &App->renderer3D->colorMaterial))
+		{
+			if (App->renderer3D->colorMaterial)glEnable(GL_COLOR_MATERIAL);
+			else glDisable(GL_COLOR_MATERIAL);
+		}
+
+
+		if (ImGui::Checkbox("Texture 2D", &App->renderer3D->texture2D))
+		{
+			if (App->renderer3D->texture2D)glEnable(GL_TEXTURE_2D);
+			else glDisable(GL_TEXTURE_2D);
+		}
+
+
+		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) { App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire; }
 
 		ImGui::PopStyleColor();
 	}
@@ -495,7 +540,7 @@ void ModuleRenderer2D::CreateDockingSpace()
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
 		window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
-	
+
 	}
 	else
 	{
@@ -539,4 +584,33 @@ void ModuleRenderer2D::CreateDockingSpace()
 	}
 
 	ImGui::End();
+}
+
+bool ModuleRenderer2D::Show3DWindow()
+{
+	ImGuiWindowFlags flags = ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse;
+	ImGuiStyle& style = ImGui::GetStyle();
+	static ImGuiStyle ref_saved_style;
+	//style.WindowBorderSize = 0.0f;
+	style.WindowPadding = ImVec2(0.0f,0.0f);
+
+	if (!ImGui::Begin("3D Viewport", &show3DWindow, flags))
+	{
+		ImGui::End();
+		return false;
+	}
+
+	ImVec2 winSize = ImGui::GetWindowSize();
+	winSize.y -= 10;//taking into account the menu bar
+	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
+		OnResize(winSize.x, winSize.y);
+		
+	
+	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
+	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
+
+
+
+	ImGui::End();
+	return true;
 }

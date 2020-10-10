@@ -127,33 +127,16 @@ bool ModuleRenderer3D::Init()
 
 	TestingRenderAtStart();
 
+
+	SAux = PSphere(0.5, 1);
+	SAux.SetPos(0, 1, 1);
+
 	return ret;
 }
 
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-
-
-	//rendering config attributes
-	if (depthTesting)glEnable(GL_DEPTH_TEST);
-	else glDisable(GL_DEPTH_TEST);
-
-	if (cullFace)glEnable(GL_CULL_FACE);
-	else glDisable(GL_CULL_FACE);
-
-	if (lighting)glEnable(GL_LIGHTING);
-	else glDisable(GL_LIGHTING);
-
-	if (colorMaterial)glEnable(GL_COLOR_MATERIAL);
-	else glDisable(GL_COLOR_MATERIAL);
-
-	if (texture2D)glEnable(GL_TEXTURE_2D);
-	else glDisable(GL_TEXTURE_2D);
-
-	//Set a color here TODO form the camera
-	Color c = Color(0.05f, 0.05f, 0.1f);
-	glClearColor(c.r, c.g, c.b, c.a);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -163,10 +146,9 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
-
+	
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
-
 
 	return UPDATE_CONTINUE;
 }
@@ -175,11 +157,12 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	//Render here
+	
 
-	//Testing ground
-	TestingRender();
+	Draw3D();
+	App->renderer2D->Draw();
 
-	//SDL_GL_SwapWindow(App->window->window);
+	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
 }
 
@@ -187,6 +170,11 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 bool ModuleRenderer3D::CleanUp()
 {
 	LOG("Destroying 3D Renderer");
+
+
+	glDeleteRenderbuffers(1, &depthBuffer);
+	glDeleteFramebuffers(1, &frameBuffer);
+	glDeleteTextures(1, &renderTex);
 
 	SDL_GL_DeleteContext(context);
 
@@ -197,7 +185,6 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
@@ -205,12 +192,14 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+
+	GenerateBuffers();
 }
 
 void ModuleRenderer3D::TestingRender()
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
-	
+
 
 	/*
 	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
@@ -223,23 +212,23 @@ void ModuleRenderer3D::TestingRender()
 	glVertexPointer(3, GL_FLOAT, 0, NULL);
 	glDrawElements(GL_TRIANGLES, nIndex, GL_UNSIGNED_INT, NULL);
 	glDisableClientState(GL_VERTEX_ARRAY);
-	
 
 
-	
-	
+
+
+
 }
 
 void ModuleRenderer3D::TestingRenderAtStart()
 {
 
 	static const GLfloat g_vertex_buffer_data[] = {
-	-1.0f,-1.0f,-1.0f, 
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f, 
-	1.0f, 1.0f,-1.0f, 
 	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f, 
+	-1.0f,-1.0f, 1.0f,
+	-1.0f, 1.0f, 1.0f,
+	1.0f, 1.0f,-1.0f,
+	-1.0f,-1.0f,-1.0f,
+	-1.0f, 1.0f,-1.0f,
 	1.0f,-1.0f, 1.0f,
 	-1.0f,-1.0f,-1.0f,
 	1.0f,-1.0f,-1.0f,
@@ -272,7 +261,7 @@ void ModuleRenderer3D::TestingRenderAtStart()
 	1.0f,-1.0f, 1.0f
 	};
 	nVertex = sizeof(g_vertex_buffer_data) / sizeof(float);
-	glGenBuffers(1, (GLuint*)&(exampleMeshIdentifier));
+	glGenBuffers(1, (GLuint*) & (exampleMeshIdentifier));
 	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
@@ -288,7 +277,7 @@ void ModuleRenderer3D::TestingRenderAtStart()
 	1.0,  1.0, -1.0,
 	};
 
-	glGenBuffers(1, (GLuint*)&(exampleIndexData));
+	glGenBuffers(1, (GLuint*) & (exampleIndexData));
 	glBindBuffer(GL_ARRAY_BUFFER, exampleIndexData);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_index_buffer_data), g_vertex_index_buffer_data, GL_STATIC_DRAW);
 
@@ -298,8 +287,69 @@ void ModuleRenderer3D::TestingRenderAtStart()
 	};
 
 	nIndex = sizeof(g_index_buffer) / sizeof(GLuint);
-	glGenBuffers(1, (GLuint*)&(exampleIndexBind));
+	glGenBuffers(1, (GLuint*) & (exampleIndexBind));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, exampleIndexBind);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * nIndex, g_vertex_index_buffer_data, GL_STATIC_DRAW);
 
+}
+
+void ModuleRenderer3D::GenerateBuffers()
+{
+	//Delete buffers
+	glDeleteRenderbuffers(1, &depthBuffer);
+	glDeleteFramebuffers(1, &frameBuffer);
+	glDeleteTextures(1, &renderTex);
+
+	//Create Frame Buffer
+	glGenFramebuffers(1, &frameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+	//Generate the texture
+	glGenTextures(1, &renderTex);
+	glBindTexture(GL_TEXTURE_2D, renderTex);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, App->window->w, App->window->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindTexture(GL_TEXTURE_2D, 0); //unbind texture
+
+	//Generate the depth buffer
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, App->window->w, App->window->h);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
+
+	//attaching the image to the frame buffer
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);//unbind framebuffer
+}
+
+void ModuleRenderer3D::Draw3D()
+{
+
+
+	//Set a color here TODO from the camera
+	Color c = Color(0.05f, 0.05f, 0.1f);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+	glClearColor(c.r, c.g, c.b, c.a);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	//In the future render all objects here (iterate all objects and call its draw function?)
+	PPlane p(vec3(0, 1, 0));
+	p.axis = true;
+	p.Render();
+
+	SAux.Render();
+	//Testing ground
+	TestingRender();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(c.r, c.g, c.b, c.a);
 }
