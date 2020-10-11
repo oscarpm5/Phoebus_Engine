@@ -20,6 +20,41 @@
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
+
+float vertexArray[] = {
+	0.f, 0.f, 0.f,
+	10.f, 0.f, 0.f,
+	10.f, 0.f, -10.f,
+	0, 0, -10.f,
+
+	0.f, 10.f, 0.f,
+	10.f, 10.f, 0.f,
+	10.f, 10.f, -10.f,
+	0.f, 10.f, -10.f
+};
+
+
+uint indexArray[] = {
+	4, 0, 1,
+	1, 5, 4,
+
+	4, 7, 3,
+	3, 0, 4,
+
+	2, 3, 7,
+	7, 6, 2,
+
+	7, 4, 5,
+	5, 6, 7,
+
+	5, 1, 2,
+	2, 6, 5,
+
+	0, 3, 2,
+	2, 1, 0
+};
+
+
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
 {
 }
@@ -208,12 +243,15 @@ void ModuleRenderer3D::TestingRender()
 	glDrawArrays(GL_TRIANGLES, 0, nVertex);
 	*/
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, exampleIndexBind);		//this is for printing the index
-	glVertexPointer(3, GL_FLOAT, 0, NULL);
-	glDrawElements(GL_TRIANGLES, nIndex, GL_UNSIGNED_INT, NULL);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);			//this is for printing the index
+	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
+	
+	glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 
 
+
+	glDisableClientState(GL_VERTEX_ARRAY);		//... or here
 
 
 
@@ -221,8 +259,8 @@ void ModuleRenderer3D::TestingRender()
 
 void ModuleRenderer3D::TestingRenderAtStart()
 {
-
-	static const GLfloat g_vertex_buffer_data[] = {
+	// no index cube
+	static const GLfloat g_vertex_buffer[] = {
 	-1.0f,-1.0f,-1.0f,
 	-1.0f,-1.0f, 1.0f,
 	-1.0f, 1.0f, 1.0f,
@@ -260,36 +298,24 @@ void ModuleRenderer3D::TestingRenderAtStart()
 	-1.0f, 1.0f, 1.0f,
 	1.0f,-1.0f, 1.0f
 	};
-	nVertex = sizeof(g_vertex_buffer_data) / sizeof(float);
+	nVertex = sizeof(g_vertex_buffer) / sizeof(float);
 	glGenBuffers(1, (GLuint*) & (exampleMeshIdentifier));
 	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer), g_vertex_buffer, GL_STATIC_DRAW);
 
 
-	static const GLfloat g_vertex_index_buffer_data[] = {
-   -1.0, -1.0,  1.0,
-	1.0, -1.0,  1.0,
-	-1.0,  1.0,  1.0,
-	1.0,  1.0,  1.0,
-	-1.0, -1.0, -1.0,
-	1.0, -1.0, -1.0,
-	-1.0,  1.0, -1.0,
-	1.0,  1.0, -1.0,
-	};
-
-	glGenBuffers(1, (GLuint*) & (exampleIndexData));
-	glBindBuffer(GL_ARRAY_BUFFER, exampleIndexData);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_index_buffer_data), g_vertex_index_buffer_data, GL_STATIC_DRAW);
+	//index cube
+	
+	glGenBuffers(1, (GLuint*) & (vertexBind));
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
 
 
-	static const GLuint g_index_buffer[] = {
-	 0, 1, 2, 3, 7, 1, 5, 4, 7, 6, 2, 4, 0, 1
-	};
+	glGenBuffers(1, (GLuint*) & (indexBind));
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexArray), indexArray, GL_STATIC_DRAW);
 
-	nIndex = sizeof(g_index_buffer) / sizeof(GLuint);
-	glGenBuffers(1, (GLuint*) & (exampleIndexBind));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, exampleIndexBind);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * nIndex, g_vertex_index_buffer_data, GL_STATIC_DRAW);
+	indexSize = sizeof(indexArray) / sizeof(unsigned int);
 
 }
 
@@ -346,7 +372,7 @@ void ModuleRenderer3D::Draw3D()
 	p.axis = true;
 	p.Render();
 
-	SAux.Render();
+	//SAux.Render();
 	//Testing ground
 	TestingRender();
 

@@ -7,6 +7,7 @@
 
 
 #define MAX_LIGHTS 8
+#define INDEX_CUBE 36
 
 class ModuleRenderer3D : public Module
 {
@@ -27,10 +28,10 @@ public:
 
 private:
 	uint exampleMeshIdentifier = 0;
-	uint exampleIndexBind = 0;
-	uint exampleIndexData = 0;
+	uint indexBind = 0;
+	uint vertexBind = 0;
 	int nVertex = 0;
-	int nIndex = 0;
+	int indexSize = 0;
 
 
 
