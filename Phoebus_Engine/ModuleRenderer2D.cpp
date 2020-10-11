@@ -228,6 +228,15 @@ void ModuleRenderer2D::OnResize(int width, int height)
 	//ImVec2 windowSize = ImVec2(width, height);
 
 	imgSize = ImVec2(width, height); //Not that window but the one we are printing in
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	App->renderer3D->ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(App->camera->GetRawViewMatrix());
+
 	//App->renderer3D->OnResize(width, height);
 
 }
