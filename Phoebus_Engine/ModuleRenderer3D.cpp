@@ -220,15 +220,16 @@ bool ModuleRenderer3D::CleanUp()
 void ModuleRenderer3D::OnResize(int width, int height)
 {
 	glViewport(0, 0, width, height);
+
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
 	glLoadMatrixf(&ProjectionMatrix);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glLoadMatrixf(App->camera->GetRawViewMatrix());
 
-	GenerateBuffers();
+	GenerateBuffers(width,height);
 }
 
 void ModuleRenderer3D::TestingRender()
@@ -319,7 +320,7 @@ void ModuleRenderer3D::TestingRenderAtStart()
 
 }
 
-void ModuleRenderer3D::GenerateBuffers()
+void ModuleRenderer3D::GenerateBuffers(int width, int height)
 {
 	//Delete buffers
 	glDeleteRenderbuffers(1, &depthBuffer);
@@ -334,7 +335,7 @@ void ModuleRenderer3D::GenerateBuffers()
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, App->window->Width(), App->window->Height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -343,7 +344,7 @@ void ModuleRenderer3D::GenerateBuffers()
 	//Generate the depth buffer
 	glGenRenderbuffers(1, &depthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, App->window->Width(), App->window->Height());
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer

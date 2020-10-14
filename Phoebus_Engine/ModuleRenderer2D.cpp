@@ -391,14 +391,16 @@ bool ModuleRenderer2D::showConfigFunc()
 		{
 			if (resizable) {
 				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
-				OpenGLOnResize(App->window->w, App->window->h);
+				//OpenGLOnResize(App->window->w, App->window->h);
+				App->renderer3D->OnResize(App->window->w, App->window->h);
 			}
 		};
 		if (ImGui::SliderInt("Height", &(App->window->h), 1, 2800))
 		{
 			if (resizable) {
 				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
-				OpenGLOnResize(App->window->w, App->window->h);
+				//OpenGLOnResize(App->window->w, App->window->h);
+				App->renderer3D->OnResize(App->window->w, App->window->h);
 			}
 		};
 		if (ImGui::Checkbox("Resizable", &resizable))
@@ -501,6 +503,7 @@ bool ModuleRenderer2D::showConfigFunc()
 	return true;
 }
 
+//Deprecated function
 void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 {
 	glViewport(0, 0, w, h);

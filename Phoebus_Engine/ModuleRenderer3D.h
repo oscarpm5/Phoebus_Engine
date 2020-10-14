@@ -23,7 +23,7 @@ public:
 	void OnResize(int width, int height);
 	void TestingRender();
 	void TestingRenderAtStart();
-	void GenerateBuffers();
+	void GenerateBuffers(int width, int height);
 	void Draw3D();
 
 private:
