@@ -2,7 +2,6 @@
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleEditor3D.h"
-
 #include "Glew/include/glew.h"
 #pragma comment(lib,"Glew/libx86/glew32.lib")
 
@@ -369,13 +368,23 @@ void ModuleRenderer3D::Draw3D()
 	
 	//In the future render all objects here (iterate all objects and call its draw function?)
 	PPlane p(vec3(0, 1, 0));
-	p.axis = true;
-	p.Render();
 
+			//Testing goodness
+	//p.axis = true;
+	//p.Render();
 	//SAux.Render();
 	//Testing ground
-	TestingRender();
+	//TestingRender();
+
+	PCube auxCube;
+	auxCube.Draw();
+
+
+
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);
+
+
+
 }
