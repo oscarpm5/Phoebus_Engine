@@ -368,7 +368,7 @@ void ModuleRenderer3D::Draw3D()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	//In the future render all objects here (iterate all objects and call its draw function?)
-	PPlane p(vec3(0, 1, 0));
+	//PPlane p(vec3(0, 1, 0));
 
 			//Testing goodness
 	//p.axis = true;
@@ -378,9 +378,14 @@ void ModuleRenderer3D::Draw3D()
 	//TestingRender();
 
 	PCube auxCube;
+	auxCube.SetPos(2, 0, 0);
+	auxCube.SetRotation(45, { 1,0,0 });
 	auxCube.Draw();
 
-
+	PCube auxCube2;
+	auxCube2.SetPos(0, 1, 0);
+	auxCube2.SetRotation(-45, { 0,1,0 });
+	auxCube2.Draw();
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

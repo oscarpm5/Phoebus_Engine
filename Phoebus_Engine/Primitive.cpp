@@ -12,6 +12,18 @@
 Primitive::Primitive() : transform(IdentityMatrix), wire(false), type(PrimitiveTypes::Primitive_Point)
 {}
 
+Primitive::~Primitive()
+{
+	//reset all values & delete buffers
+	glDeleteBuffers(1, &this->vertexBind);
+	glDeleteBuffers(1, &this->indexBind);
+	transform = IdentityMatrix;
+	wire = false;
+	type = PrimitiveTypes::Primitive_Unknown;
+	indexSize = 0;
+
+}
+
 // ------------------------------------------------------------
 PrimitiveTypes Primitive::GetType() const
 {
@@ -30,7 +42,7 @@ void Primitive::SetTransform(mat4x4 newTrans)
 
 void Primitive::SetTransform(float x, float y, float z, float angle, const vec3& u)
 {
-	this->SetPos(x,y,z);
+	this->SetPos(x, y, z);
 	this->SetRotation(angle, u);
 }
 
@@ -43,18 +55,26 @@ vec3 Primitive::GetBuffers()
 bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[], uint VAsize, uint IAsize)
 {
 	bool ret = true;
-	
-	glGenBuffers(1, (GLuint*)&(this->vertexBind));
+
+	//delete buffers in case they were already assigned
+	glDeleteBuffers(1, &this->vertexBind);
+	glDeleteBuffers(1, &this->indexBind);
+
+	//gen buffers
+	glGenBuffers(1, (GLuint*) & (this->vertexBind));
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexBind);
 	glBufferData(GL_ARRAY_BUFFER, VAsize, vertexArray, GL_STATIC_DRAW);
 
 
-	glGenBuffers(1, (GLuint*)&(this->indexBind));
+	glGenBuffers(1, (GLuint*) & (this->indexBind));
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBind);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, IAsize, indexArray, GL_STATIC_DRAW);
 
 	this->indexSize = IAsize / sizeof(unsigned int);
-							
+
+	//clear buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return ret;
 }
@@ -63,6 +83,14 @@ bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[],
 // ------------------------------------------------------------
 void Primitive::Draw() const
 {
+	glPushMatrix();
+	
+	glMultMatrixf(transform.M);
+
+	if (wire)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	else
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on startt of render postupdate
 
@@ -73,6 +101,12 @@ void Primitive::Draw() const
 
 	glDisableClientState(GL_VERTEX_ARRAY); // ... TODO (2) Put this on end of render postupdate
 
+
+	//clear buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	glPopMatrix();
 }
 
 // ------------------------------------------------------------
@@ -81,14 +115,14 @@ void Primitive::Draw() const
 void Primitive::SetPos(float x, float y, float z)
 {
 	transform.translate(x, y, z);
-	
+
 }
 
 // ------------------------------------------------------------
-void Primitive::SetRotation(float angle, const vec3 &u)
+void Primitive::SetRotation(float angle, const vec3& u)
 {
 	transform.rotate(angle, u);
-	
+
 }
 
 // ------------------------------------------------------------
@@ -137,8 +171,9 @@ PCube::PCube(mat4x4 transform, const vec3& size) : Primitive()
 		2, 1, 0
 	};
 
-	PrimitiveGenerateBuffers(vertexArrayCube, indexArrayCube, sizeof(vertexArrayCube),sizeof(indexArrayCube));
+	PrimitiveGenerateBuffers(vertexArrayCube, indexArrayCube, sizeof(vertexArrayCube), sizeof(indexArrayCube));
 
+	
 	//TODO: Add this to some array of shit on scene
 
 	//TODO: SIZE!!!

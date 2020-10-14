@@ -11,13 +11,15 @@ enum PrimitiveTypes
 	Primitive_Plane,
 	Primitive_Cube,
 	Primitive_Sphere,
-	Primitive_Cylinder
+	Primitive_Cylinder,
+	Primitive_Unknown
 };
 
 class Primitive
 {
 public:
 	Primitive();
+	virtual ~Primitive();
 
     void			Draw() const;
 	void			SetPos(float x, float y, float z);
