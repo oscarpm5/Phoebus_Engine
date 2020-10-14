@@ -19,35 +19,37 @@ class Primitive
 public:
 	Primitive();
 
-	void Update();
-	virtual void	Render() const;
+    void			Draw() const;
 	void			SetPos(float x, float y, float z);
 	void			SetRotation(float angle, const vec3 &u);
-	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
-
-
-	Color color;
-	mat4x4 transform;
-	bool axis,wire;
-	//PhysBody3D body;
+	mat4x4			GetTransform() const;
+	void			SetTransform(mat4x4 newTrans);
+	void			SetTransform(float x, float y, float z, float angle, const vec3& u);
+	vec3			GetBuffers();
+public:
+	
+	bool wire;
 
 protected:
-	virtual void InnerRender() const;
 	PrimitiveTypes type;
+	mat4x4 transform;
+
+	uint indexBind;  //bind that stores the index (that codify for (x,y,z) vertices)
+	uint vertexBind; //bind that stores the vertex (3 floats for each one)
+	uint indexSize;  //number of vertex that make up the primitive. Automatically setted inside each primitive.
+
+protected:
+	bool PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[], uint vertexArraySize, uint indexArraySize);
+
 };
 
 // ============================================
 class PCube : public Primitive
 {
 public :
-	PCube(const vec3& size = vec3(1.f,1.f,1.f), float mass = 1.f);
+	PCube(mat4x4 transform = IdentityMatrix, const vec3& size = vec3(1.f,1.f,1.f));
 
-	vec3 GetSize() const;
-protected:
-	void InnerRender() const;
-private:
-	vec3 size;
 };
 
 // ============================================
@@ -57,8 +59,7 @@ public:
 	PSphere(float radius = 1.f, float mass = 1.f);
 
 	float GetRadius() const;
-protected:
-	void InnerRender() const;
+
 private:
 	float radius;
 };
@@ -71,8 +72,7 @@ public:
 
 	float GetRadius() const;
 	float GetHeight() const;
-protected:
-	void InnerRender() const;
+
 private:
 	float radius;
 	float height;
@@ -88,8 +88,6 @@ public:
 	vec3 GetOrigin() const;
 	vec3 GetDestination() const;
 
-protected:
-	void InnerRender() const;
 public:
 	vec3 origin;
 	vec3 destination;
@@ -102,8 +100,8 @@ public:
 	PPlane(const vec3& normal = vec3(0,1,0));
 
 	vec3 GetNormal() const;
-protected:
-	void InnerRender() const;
+
 private:
 	vec3 normal;
 };
+
