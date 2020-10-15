@@ -141,14 +141,14 @@ PCube::PCube(mat4x4 transform, const vec3& size) : Primitive()
 
 	float vertexArrayCube[] = {
 	0.f, 0.f, 0.f,
-	1.f, 0.f, 0.f,
-	1.f, 0.f, -1.f,
-	0, 0, -1.f,
+	size.x, 0.f, 0.f,
+	size.x, 0.f, -size.z,
+	0, 0, -size.z,
 
-	0.f, 1.f, 0.f,
-	1.f, 1.f, 0.f,
-	1.f, 1.f, -1.f,
-	0.f, 1.f, -1.f
+	0.f, size.y, 0.f,
+	size.x, size.y, 0.f,
+	size.x, size.y, -size.z,
+	0.f, size.y, -size.z
 	};
 
 	uint indexArrayCube[] = {

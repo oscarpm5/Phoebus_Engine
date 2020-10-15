@@ -382,9 +382,10 @@ void ModuleRenderer3D::Draw3D()
 	auxCube.SetRotation(45, { 1,0,0 });
 	auxCube.Draw();
 
-	PCube auxCube2;
+	PCube auxCube2 = PCube(IdentityMatrix, {1.0f,1.0f,2.0f});
 	auxCube2.SetPos(0, 1, 0);
 	auxCube2.SetRotation(-45, { 0,1,0 });
+	auxCube2.wire = true;
 	auxCube2.Draw();
 
 
