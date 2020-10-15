@@ -2,6 +2,7 @@
 #pragma once
 #include "glmath.h"
 #include "Color.h"
+#include "Glew/include/glew.h"
 //#include "PhysBody3D.h"
 
 enum PrimitiveTypes
@@ -37,9 +38,9 @@ protected:
 	PrimitiveTypes type;
 	mat4x4 transform;
 
-	uint indexBind;  //bind that stores the index (that codify for (x,y,z) vertices)
-	uint vertexBind; //bind that stores the vertex (3 floats for each one)
-	uint indexSize;  //number of vertex that make up the primitive. Automatically setted inside each primitive.
+	GLuint indexBind;  //bind that stores the index (that codify for (x,y,z) vertices)
+	GLuint vertexBind; //bind that stores the vertex (3 floats for each one)
+	GLuint indexSize;  //number of vertex that make up the primitive. Automatically setted inside each primitive.
 
 protected:
 	bool PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[], uint vertexArraySize, uint indexArraySize);
@@ -58,7 +59,8 @@ public :
 class PSphere : public Primitive
 {
 public:
-	PSphere(float radius = 1.f, float mass = 1.f);
+	//sectors refer to polygon rows & stacks refer to polygon columns
+	PSphere(mat4x4 transform= IdentityMatrix, float radius = 1.f, uint sectors=36,uint stacks=18);
 
 	float GetRadius() const;
 

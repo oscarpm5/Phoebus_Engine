@@ -162,8 +162,8 @@ bool ModuleRenderer3D::Init()
 	TestingRenderAtStart();
 
 
-	SAux = PSphere(0.5, 1);
-	SAux.SetPos(0, 1, 1);
+	//SAux = PSphere(0.5, 1);
+	//SAux.SetPos(0, 1, 1);
 
 	return ret;
 }
@@ -388,6 +388,10 @@ void ModuleRenderer3D::Draw3D()
 	auxCube2.wire = true;
 	auxCube2.Draw();
 
+	PSphere sph;
+	sph.SetPos(2, -2, 2);
+	sph.wire = true;
+	sph.Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);

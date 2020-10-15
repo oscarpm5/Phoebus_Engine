@@ -10,7 +10,11 @@
 
 // ------------------------------------------------------------
 Primitive::Primitive() : transform(IdentityMatrix), wire(false), type(PrimitiveTypes::Primitive_Point)
-{}
+{
+	indexBind = 0;
+	vertexBind = 0;
+	indexSize = 0;
+}
 
 Primitive::~Primitive()
 {
@@ -57,17 +61,18 @@ bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[],
 	bool ret = true;
 
 	//delete buffers in case they were already assigned
-	glDeleteBuffers(1, &this->vertexBind);
-	glDeleteBuffers(1, &this->indexBind);
+	
+	glDeleteBuffers(1, &vertexBind);
+	glDeleteBuffers(1, &indexBind);
 
 	//gen buffers
-	glGenBuffers(1, (GLuint*) & (this->vertexBind));
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexBind);
+	glGenBuffers(1, &vertexBind);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);
 	glBufferData(GL_ARRAY_BUFFER, VAsize, vertexArray, GL_STATIC_DRAW);
 
 
-	glGenBuffers(1, (GLuint*) & (this->indexBind));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->indexBind);
+	glGenBuffers(1, &indexBind);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBind);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, IAsize, indexArray, GL_STATIC_DRAW);
 
 	this->indexSize = IAsize / sizeof(unsigned int);
@@ -182,10 +187,80 @@ PCube::PCube(mat4x4 transform, const vec3& size) : Primitive()
 
 // SPHERE ============================================
 
-PSphere::PSphere(float _radius, float mass) : Primitive(), radius(_radius)
+PSphere::PSphere(mat4x4 transform,float _radius, uint sectors, uint stacks) : Primitive()
 {
+	radius = _radius;
 	type = PrimitiveTypes::Primitive_Sphere;
-	//body.SetBody(this, mass);
+	SetTransform(transform);
+
+
+	std::vector<float> vertices;
+	std::vector<uint> indices;
+	float x, y, z, xy;   
+	int k1, k2;                          
+	
+	// vertex position
+
+	float sectorStep = 2 * pi / sectors;
+	float stackStep = pi / stacks;
+	float sectorAngle, stackAngle;
+
+	for (int i = 0; i <= stacks; ++i)
+	{
+		stackAngle = pi / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+		xy = radius * cosf(stackAngle);             // r * cos(u)
+		z = radius * sinf(stackAngle);              // r * sin(u)
+
+		// add (sectorCount+1) vertices per stack
+		// the first and last vertices have same position and normal, but different tex coords
+		for (int j = 0; j <= sectors; ++j)
+		{
+			sectorAngle = j * sectorStep;           // starting from 0 to 2pi
+
+			// vertex position (x, y, z)
+			x = xy * cosf(sectorAngle);             // r * cos(u) * cos(v)
+			y = xy * sinf(sectorAngle);             // r * cos(u) * sin(v)
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(z);
+		}
+	}
+
+
+	// generate CCW index list of sphere triangles
+	for (int i = 0; i < stacks; ++i)
+	{
+		k1 = i * (sectors + 1);     // beginning of current stack
+		k2 = k1 + sectors + 1;      // beginning of next stack
+
+		for (int j = 0; j < sectors; ++j, ++k1, ++k2)
+		{
+			// 2 triangles per sector excluding first and last stacks
+			// k1 => k2 => k1+1
+			if (i != 0)
+			{
+				indices.push_back(k1);
+				indices.push_back(k2);
+				indices.push_back(k1 + 1);
+			}
+
+			// k1+1 => k2 => k2+1
+			if (i != (stacks - 1))
+			{
+				indices.push_back(k1 + 1);
+				indices.push_back(k2);
+				indices.push_back(k2 + 1);
+			}
+		}
+	}
+
+	
+
+	
+	PrimitiveGenerateBuffers(vertices.data(), indices.data(), vertices.size()*sizeof(float), indices.size()*sizeof(unsigned int));
+
+	vertices.clear();
+	indices.clear();
 }
 
 float PSphere::GetRadius() const

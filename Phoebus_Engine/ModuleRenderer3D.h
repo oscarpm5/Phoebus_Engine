@@ -37,7 +37,6 @@ private:
 
 
 public:
-	PSphere SAux;
 	Light lights[MAX_LIGHTS];
 
 	SDL_GLContext context;
