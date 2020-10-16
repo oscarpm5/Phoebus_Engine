@@ -377,21 +377,25 @@ void ModuleRenderer3D::Draw3D()
 	//Testing ground
 	//TestingRender();
 
-	PCube auxCube;
-	auxCube.SetPos(2, 0, 0);
-	auxCube.SetRotation(45, { 1,0,0 });
-	auxCube.Draw();
+	//PCube auxCube;
+	//auxCube.SetPos(2, 0, 0);
+	//auxCube.SetRotation(45, { 1,0,0 });
+	//auxCube.Draw();
 
-	PCube auxCube2 = PCube(IdentityMatrix, {1.0f,1.0f,2.0f});
-	auxCube2.SetPos(0, 1, 0);
-	auxCube2.SetRotation(-45, { 0,1,0 });
-	auxCube2.wire = true;
-	auxCube2.Draw();
+	//PCube auxCube2 = PCube(IdentityMatrix, {1.0f,1.0f,2.0f});
+	//auxCube2.SetPos(0, 1, 0);
+	//auxCube2.SetRotation(-45, { 0,1,0 });
+	//auxCube2.wire = true;
+	//auxCube2.Draw();
 
 	PSphere sph;
 	sph.SetPos(2, -2, 2);
 	sph.wire = true;
 	sph.Draw();
+
+	PCylinder cyl1aux(1, 2, 18, 36, true);
+	cyl1aux.SetPos(0,0,0);
+	cyl1aux.Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);

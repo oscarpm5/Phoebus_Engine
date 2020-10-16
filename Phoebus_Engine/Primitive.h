@@ -3,6 +3,8 @@
 #include "glmath.h"
 #include "Color.h"
 #include "Glew/include/glew.h"
+#include <vector>
+
 //#include "PhysBody3D.h"
 
 enum PrimitiveTypes
@@ -72,13 +74,15 @@ private:
 class PCylinder : public Primitive
 {
 public:
-	PCylinder(float radius = 1.f, float height = 2.f, float mass = 1.f);
+	PCylinder(float r = 1, float height = 2, uint sectors = 36,uint stacks = 8,bool smooth = true);
 
-	float GetRadius() const;
+	float GetTopRadius() const;
 	float GetHeight() const;
+	float GetBaseRadius() const;
 
+	std::vector<float> getUnitCircleVertices(uint sectorcount);
 private:
-	float radius;
+	float r;
 	float height;
 };
 

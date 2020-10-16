@@ -4,7 +4,6 @@
 #include <gl/GL.h>
 #include <gl/GLU.h>
 #include "Primitive.h"
-#include "Globals.h"
 #include "Application.h"
 
 
@@ -61,7 +60,7 @@ bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[],
 	bool ret = true;
 
 	//delete buffers in case they were already assigned
-	
+
 	glDeleteBuffers(1, &vertexBind);
 	glDeleteBuffers(1, &indexBind);
 
@@ -72,7 +71,7 @@ bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[],
 
 
 	glGenBuffers(1, &indexBind);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,indexBind);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, IAsize, indexArray, GL_STATIC_DRAW);
 
 	this->indexSize = IAsize / sizeof(unsigned int);
@@ -89,7 +88,7 @@ bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[],
 void Primitive::Draw() const
 {
 	glPushMatrix();
-	
+
 	glMultMatrixf(transform.M);
 
 	if (wire)
@@ -178,7 +177,7 @@ PCube::PCube(mat4x4 transform, const vec3& size) : Primitive()
 
 	PrimitiveGenerateBuffers(vertexArrayCube, indexArrayCube, sizeof(vertexArrayCube), sizeof(indexArrayCube));
 
-	
+
 	//TODO: Add this to some array of shit on scene
 
 	//TODO: SIZE!!!
@@ -187,7 +186,7 @@ PCube::PCube(mat4x4 transform, const vec3& size) : Primitive()
 
 // SPHERE ============================================
 
-PSphere::PSphere(mat4x4 transform,float _radius, uint sectors, uint stacks) : Primitive()
+PSphere::PSphere(mat4x4 transform, float _radius, uint sectors, uint stacks) : Primitive()
 {
 	radius = _radius;
 	type = PrimitiveTypes::Primitive_Sphere;
@@ -196,9 +195,9 @@ PSphere::PSphere(mat4x4 transform,float _radius, uint sectors, uint stacks) : Pr
 
 	std::vector<float> vertices;
 	std::vector<uint> indices;
-	float x, y, z, xy;   
-	int k1, k2;                          
-	
+	float x, y, z, xy;
+	int k1, k2;
+
 	// vertex position
 
 	float sectorStep = 2 * pi / sectors;
@@ -254,10 +253,10 @@ PSphere::PSphere(mat4x4 transform,float _radius, uint sectors, uint stacks) : Pr
 		}
 	}
 
-	
 
-	
-	PrimitiveGenerateBuffers(vertices.data(), indices.data(), vertices.size()*sizeof(float), indices.size()*sizeof(unsigned int));
+
+
+	PrimitiveGenerateBuffers(vertices.data(), indices.data(), vertices.size() * sizeof(float), indices.size() * sizeof(unsigned int));
 
 	vertices.clear();
 	indices.clear();
@@ -272,14 +271,161 @@ float PSphere::GetRadius() const
 
 
 // CYLINDER ============================================
-PCylinder::PCylinder(float radius, float height, float mass) : Primitive(), radius(radius), height(height)
+PCylinder::PCylinder(float r, float height, uint sectorCount, uint stacks, bool smooth) : Primitive(), height(height), r(r)
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
+
+	std::vector<float> vertices;
+	std::vector<uint> indices;
+	std::vector<float> unitCircleVertices; // this will be used in filling the vertices for the base and top
+
+	float sectorStep = 2 * pi / sectorCount;
+	float stackStep = pi / stacks;
+	float sectorAngle, stackAngle;
+
+
+	// generate vertices for a cylinder
+
+
+
+	for (int i = 0; i <= sectorCount; ++i)
+	{
+		sectorAngle = i * sectorStep;
+		unitCircleVertices.push_back(cos(sectorAngle)); // x
+		unitCircleVertices.push_back(sin(sectorAngle)); // y
+		unitCircleVertices.push_back(0);                // z
+	}
+
+	// put side vertices to arrays
+	for (int i = 0; i < 2; ++i)
+	{
+		float h = -height / 2.0f + i * height;           // z value; -h/2 to h/2
+
+		for (int j = 0, k = 0; j <= sectorCount; ++j, k += 3)
+		{
+			float ux = unitCircleVertices[k];
+			float uy = unitCircleVertices[k + 1];
+			float uz = unitCircleVertices[k + 2];
+			// position vector
+			vertices.push_back(ux * r);             // vx
+			vertices.push_back(uy * r);             // vy
+			vertices.push_back(h);                  // vz
+		}
+	}
+
+	int baseCenterIndex = (int)vertices.size() / 3;
+	int topCenterIndex = baseCenterIndex + sectorCount + 1; // include center vertex
+
+	// put base and top vertices to arrays
+	for (int i = 0; i < 2; ++i)
+	{
+		float h = -height / 2.0f + i * height;           // z value; -h/2 to h/2
+		//float nz = -1 + i * 2;                           // z value of normal; -1 to 1
+
+		// center point
+		vertices.push_back(0);     vertices.push_back(0);     vertices.push_back(h);
+
+
+		for (int j = 0, k = 0; j < sectorCount; ++j, k += 3)
+		{
+			float ux = unitCircleVertices[k];
+			float uy = unitCircleVertices[k + 1];
+			// position vector
+			vertices.push_back(ux * r);             // vx
+			vertices.push_back(uy * r);             // vy
+			vertices.push_back(h);                  // vz
+		}
+	}
+
+
+	// generate CCW index list of cylinder triangles
+	int ka1 = 0;                         // 1st vertex index at base
+	int ka2 = sectorCount + 1;           // 1st vertex index at top
+
+
+	// indices for the side surface
+	for (int i = 0; i < sectorCount; ++i, ++ka1, ++ka2)
+	{
+		// 2 triangles per sector
+		// k1 => k1+1 => k2
+		indices.push_back(ka1);
+		indices.push_back(ka1 + 1);
+		indices.push_back(ka2);
+
+		// k2 => k1+1 => k2+1
+		indices.push_back(ka2);
+		indices.push_back(ka1 + 1);
+		indices.push_back(ka2 + 1);
+	}
+
+	// indices for the base surface
+
+
+
+
+		// indices for the top & base surface
+
+	for (int i = 0, k = baseCenterIndex + 1; i < sectorCount; ++i, ++k)
+	{
+		if (i < sectorCount - 1)
+		{
+			indices.push_back(baseCenterIndex);
+			indices.push_back(k + 1);
+			indices.push_back(k);
+		}
+		else // last triangle
+		{
+			indices.push_back(baseCenterIndex);
+			indices.push_back(baseCenterIndex + 1);
+			indices.push_back(k);
+		}
+	}
+	for (int i = 0, k = topCenterIndex + 1; i < sectorCount; ++i, ++k)
+	{
+		if (i < sectorCount - 1)
+		{
+			indices.push_back(topCenterIndex);
+			indices.push_back(k);
+			indices.push_back(k + 1);
+		}
+		else // last triangle
+		{
+			indices.push_back(topCenterIndex);
+			indices.push_back(k);
+			indices.push_back(topCenterIndex + 1);
+		}
+	}
+	PrimitiveGenerateBuffers(vertices.data(), indices.data(), vertices.size() * sizeof(float), indices.size() * sizeof(unsigned int));
+
+	vertices.clear();
+	indices.clear();
 }
 
-float PCylinder::GetRadius() const
+float PCylinder::GetTopRadius() const
 {
-	return radius;
+	return r;
+}
+
+float PCylinder::GetBaseRadius() const
+{
+	return r;
+}
+
+std::vector<float> PCylinder::getUnitCircleVertices(uint sectorcount)
+{
+	const float PI = 3.1415926f;
+	float sectorStep = 2 * PI / sectorcount;
+	float sectorAngle;  // radian
+
+	std::vector<float> unitCircleVertices;
+	for (int i = 0; i <= sectorcount; ++i)
+	{
+		sectorAngle = i * sectorStep;
+		unitCircleVertices.push_back(cos(sectorAngle)); // x
+		unitCircleVertices.push_back(sin(sectorAngle)); // y
+		unitCircleVertices.push_back(0);                // z
+	}
+	return unitCircleVertices;
 }
 
 float PCylinder::GetHeight() const
