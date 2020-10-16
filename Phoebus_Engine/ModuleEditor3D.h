@@ -1,8 +1,8 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
-#include "Primitive.h"
 
+#include "Mesh.h"
 
 #define PRIMITIVES_IN_SCENE 10
 
@@ -19,4 +19,8 @@ public:
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
+	Mesh& NewMesh();
+
+public:
+	std::vector<Mesh> meshes;
 };

@@ -25,6 +25,8 @@ public:
 	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
+private:
+	void RenderMeshes();
 
 private:
 	uint exampleMeshIdentifier = 0;

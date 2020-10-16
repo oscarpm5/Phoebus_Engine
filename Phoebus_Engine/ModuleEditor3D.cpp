@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "ModuleEditor3D.h"
+#include "Importer.h"
 
 
 ModuleEditor3D::ModuleEditor3D(bool start_enabled):Module(start_enabled)
@@ -23,6 +24,7 @@ bool ModuleEditor3D::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 	 
+	Importer::LoadFBX("./Assets/warrior.FBX");
 
 	return ret;
 }
@@ -47,5 +49,12 @@ update_status ModuleEditor3D::PostUpdate(float dt)
 bool ModuleEditor3D::CleanUp()
 {
 	bool ret = true;
+	meshes.clear();
 	return ret;
+}
+
+Mesh& ModuleEditor3D::NewMesh()
+{
+	meshes.push_back(Mesh());
+	return meshes.back();
 }

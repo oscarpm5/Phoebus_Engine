@@ -388,18 +388,20 @@ void ModuleRenderer3D::Draw3D()
 	//auxCube2.wire = true;
 	//auxCube2.Draw();
 
-	PSphere sph;
-	sph.SetPos(2, -2, 2);
-	sph.wire = true;
-	sph.Draw();
 
-	PCylinder cyl1aux(1, 2, 18, 36, true);
-	cyl1aux.SetPos(0,0,0);
-	cyl1aux.Draw();
+	RenderMeshes();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);
 
 
 
+}
+
+void ModuleRenderer3D::RenderMeshes()
+{
+	for (int i = 0; i < App->editor3d->meshes.size(); i++)
+	{
+		App->editor3d->meshes[i].Draw();
+	}
 }

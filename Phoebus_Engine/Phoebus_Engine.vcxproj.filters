@@ -303,6 +303,12 @@
     <ClInclude Include="MathChecks.h">
       <Filter>Sources\UI Elements</Filter>
     </ClInclude>
+    <ClInclude Include="Importer.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -463,6 +469,12 @@
     </ClCompile>
     <ClCompile Include="Json\parson.c">
       <Filter>Sources\Tools\Json</Filter>
+    </ClCompile>
+    <ClCompile Include="Importer.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
