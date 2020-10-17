@@ -8,12 +8,20 @@
 
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices) :
 drawMode(MeshDrawMode::DRAW_MODE_BOTH),
-idVertex(0), numVertex(0),idIndex(0)
+idVertex(0),idIndex(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 
-	
+	GenerateBuffers();
+}
+
+Mesh::Mesh(const Mesh& other)
+{
+	this->vertices = other.vertices;
+	this->indices = other.indices;
+	this->drawMode = other.drawMode;
+	GenerateBuffers();
 }
 
 Mesh::~Mesh()
@@ -22,9 +30,6 @@ Mesh::~Mesh()
 
 	indices.clear();
 	vertices.clear();
-
-	numVertex = 0;
-
 
 	drawMode = MeshDrawMode::DRAW_MODE_FILL;
 }
@@ -76,9 +81,7 @@ void Mesh::Draw()
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 
 
-
 	glDisableClientState(GL_VERTEX_ARRAY); // ... TODO (2) Put this on end of render postupdate
-
 
 	//clear buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
