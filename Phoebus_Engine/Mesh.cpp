@@ -4,15 +4,16 @@
 
 #include "Glew/include/glew.h" //order matters
 
+//TODO normal structure done, still haven't found a way to implement them into the buffers
 
 
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices) :
+Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals) :
 drawMode(MeshDrawMode::DRAW_MODE_BOTH),
 idVertex(0),idIndex(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
-
+	this->normals = normals;
 	GenerateBuffers();
 }
 
@@ -20,6 +21,7 @@ Mesh::Mesh(const Mesh& other)
 {
 	this->vertices = other.vertices;
 	this->indices = other.indices;
+	this->normals = other.normals;
 	this->drawMode = other.drawMode;
 	GenerateBuffers();
 }
@@ -30,6 +32,7 @@ Mesh::~Mesh()
 
 	indices.clear();
 	vertices.clear();
+	normals.clear();
 
 	drawMode = MeshDrawMode::DRAW_MODE_FILL;
 }

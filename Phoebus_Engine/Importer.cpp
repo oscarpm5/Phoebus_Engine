@@ -20,6 +20,7 @@ void Importer::LoadFBX(const char* path)
 		{
 			std::vector<float> vertices;
 			std::vector<unsigned int> indices;
+			std::vector<float> normals;
 			//creates a new mesh at scene editor
 
 			aiMesh* mesh = scene->mMeshes[i];
@@ -62,9 +63,25 @@ void Importer::LoadFBX(const char* path)
 				}
 			}
 
-			App->editor3d->meshes.push_back(Mesh(vertices, indices));
+			//copy normals
+			if (mesh->HasNormals())
+			{
+				normals.reserve(mesh->mNumVertices * 3);
+				for (int i = 0; i < mesh->mNumVertices; i++)
+				{
+
+						normals.push_back(mesh->mNormals[i].x);
+						normals.push_back(mesh->mNormals[i].y);
+						normals.push_back(mesh->mNormals[i].z);					
+				}
+			}
+
+
+			App->editor3d->meshes.push_back(Mesh(vertices, indices,normals));
 			vertices.clear();
 			indices.clear();
+			normals.clear();
+
 			mesh = nullptr;
 		}
 		aiReleaseImport(scene);
