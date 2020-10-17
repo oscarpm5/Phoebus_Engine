@@ -18,23 +18,33 @@ void Importer::LoadFBX(const char* path)
 
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
-			Mesh &newMesh = App->editor3d->NewMesh(); //creates a new mesh at scene editor
-			newMesh.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
+			std::vector<float> vertices;
+			std::vector<unsigned int> indices;
+			//creates a new mesh at scene editor
+
 			aiMesh* mesh = scene->mMeshes[i];
 
 
 			// copy vertices
-			newMesh.numVertex = mesh->mNumVertices;
-			newMesh.vertex = new float[newMesh.numVertex * 3];
-			memcpy(newMesh.vertex, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
-			LOG("New mesh with %d vertices", newMesh.numVertex);
+			//newMesh.numVertex = mesh->mNumVertices;
+			vertices.reserve(mesh->mNumVertices * 3);
+			
+			for (int i = 0; i < mesh->mNumVertices; i++)
+			{
+				vertices.push_back(mesh->mVertices[i].x);
+				vertices.push_back(mesh->mVertices[i].y);
+				vertices.push_back(mesh->mVertices[i].z);
+			}
+			//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
+			LOG("New mesh with %i vertices", (vertices.size()/3));
 
 			// copy faces
 			if (mesh->HasFaces())
 			{
-				newMesh.numIndex = mesh->mNumFaces * 3;
-				newMesh.index = new uint[newMesh.numIndex]; // assume each face is a triangle
-				for (uint i = 0; i < mesh->mNumFaces; ++i)
+				//newMesh.numIndex = mesh->mNumFaces * 3;
+				//newMesh.index = new uint[newMesh.numIndex]; // assume each face is a triangle
+				indices.reserve(mesh->mNumFaces * 3);
+				for (int i = 0; i < mesh->mNumFaces; i++)
 				{
 
 					if (mesh->mFaces[i].mNumIndices != 3)
@@ -43,13 +53,19 @@ void Importer::LoadFBX(const char* path)
 					}
 					else
 					{
-						memcpy(&newMesh.index[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
+						indices.push_back(mesh->mFaces[i].mIndices[0]);
+						indices.push_back(mesh->mFaces[i].mIndices[1]);
+						indices.push_back(mesh->mFaces[i].mIndices[2]);
+
+						//memcpy(&newMesh.index[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
 					}
 				}
 			}
 
-			newMesh.GenerateBuffers();
-
+			App->editor3d->meshes.push_back(Mesh(vertices, indices));
+			vertices.clear();
+			indices.clear();
+			mesh = nullptr;
 		}
 		aiReleaseImport(scene);
 	}

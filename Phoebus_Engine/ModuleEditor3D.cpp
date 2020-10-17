@@ -24,8 +24,9 @@ bool ModuleEditor3D::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 	 
+	Importer::LoadFBX("./Assets/warrior.FBX");
+	Importer::LoadFBX("./Assets/cube.FBX");
 	//Importer::LoadFBX("./Assets/warrior.FBX");
-	//Importer::LoadFBX("./Assets/suzzane.FBX");
 	//Importer::LoadFBX("./Assets/warrior.FBX");
 
 
@@ -54,10 +55,4 @@ bool ModuleEditor3D::CleanUp()
 	bool ret = true;
 	meshes.clear();
 	return ret;
-}
-
-Mesh& ModuleEditor3D::NewMesh()
-{
-	meshes.push_back(Mesh());
-	return meshes.back();
 }

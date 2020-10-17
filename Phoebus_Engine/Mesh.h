@@ -1,6 +1,5 @@
 #pragma once
-
-#include "Globals.h"
+#include<vector>
 enum class MeshDrawMode
 {
 	DRAW_MODE_FILL,
@@ -12,10 +11,10 @@ class Mesh
 {
 public:
 
-	Mesh();
+	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices);
 	~Mesh();
 
-	void Draw() const;
+	void Draw();
 	void GenerateBuffers();
 	void FreeBuffers();
 
@@ -25,11 +24,10 @@ public:
 
 	MeshDrawMode drawMode;
 
-	uint idIndex; // index in VRAM
-	uint numIndex;//number of indices
-	uint* index;//index array
+	unsigned int idIndex; // index in VRAM
+	std::vector<unsigned int> indices;//index array
 
-	uint idVertex; // unique vertex in VRAM
-	uint numVertex;//number of vertex
-	float* vertex;//vertex array
+	unsigned int idVertex; // unique vertex in VRAM
+	unsigned int numVertex;//number of vertex
+	std::vector<float> vertices;//vertex array (note that vertex are just 3 of the elements stored in this vector)
 };

@@ -19,7 +19,6 @@ public:
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
-	Mesh& NewMesh();
 
 public:
 	std::vector<Mesh> meshes;

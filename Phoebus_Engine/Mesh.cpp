@@ -6,43 +6,39 @@
 
 
 
-Mesh::Mesh() :drawMode(MeshDrawMode::DRAW_MODE_FILL),
-idVertex(0), numVertex(0), vertex(nullptr),
-idIndex(0), numIndex(0), index(nullptr)
+Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices) :
+drawMode(MeshDrawMode::DRAW_MODE_BOTH),
+idVertex(0), numVertex(0),idIndex(0)
 {
+	this->vertices = vertices;
+	this->indices = indices;
+
+	
 }
 
 Mesh::~Mesh()
 {
 	FreeBuffers();
 
+	indices.clear();
+	vertices.clear();
 
-	if (vertex != nullptr)
-	{
-		delete[]vertex;
-		vertex = nullptr;
-	}
+	numVertex = 0;
 
-	if (index != nullptr)
-	{
-		delete[]index;
-		index = nullptr;
-	}
-
-
-	numIndex = -1;
-	numVertex = -1;
 
 	drawMode = MeshDrawMode::DRAW_MODE_FILL;
 }
 
 
 //TODO for oscar : this could be structured better, FIX IT
-void Mesh::Draw() const
+void Mesh::Draw()
 {
 
+	if(idVertex==0||idIndex==0)
+		GenerateBuffers();
+
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
-	
+
 	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
 
 	if (drawMode == MeshDrawMode::DRAW_MODE_WIRE)
@@ -65,7 +61,7 @@ void Mesh::Draw() const
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
 
 
-		glDrawElements(GL_TRIANGLES, numIndex, GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
+		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 		glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -77,7 +73,7 @@ void Mesh::Draw() const
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
 
 
-	glDrawElements(GL_TRIANGLES, numIndex, GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 
 
 
@@ -91,40 +87,22 @@ void Mesh::Draw() const
 
 void Mesh::GenerateBuffers()
 {
-	bool ret = true;
-	if (vertex == nullptr)
-	{
-		LOG("ERROR, cannot generate buffers: no vertex has been assigned to the mesh");
-		ret = false;
-	}
 
-	if (index == nullptr)
-	{
-		LOG("ERROR, cannot generate buffers: no index has been assigned to the mesh");
-		ret = false;
-	}
-
-	if (ret)
-	{
-		//delete buffers in case they were already assigned
-
-		FreeBuffers();
-
-		//gen buffers
-		glGenBuffers(1, (GLuint*)&this->idVertex);
-		glBindBuffer(GL_ARRAY_BUFFER, idVertex);
-		glBufferData(GL_ARRAY_BUFFER, numVertex * sizeof(float) * 3, vertex, GL_STATIC_DRAW);
+	//gen buffers
+	glGenBuffers(1, &idVertex);
+	glBindBuffer(GL_ARRAY_BUFFER, idVertex);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
 
-		glGenBuffers(1, (GLuint*)& this->idIndex);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndex * sizeof(unsigned int), index, GL_STATIC_DRAW);
+	glGenBuffers(1, &idIndex);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-		//clear buffers
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//clear buffers
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-	}
+
 
 }
 
@@ -132,12 +110,12 @@ void Mesh::FreeBuffers()
 {
 	if (idVertex != 0)
 	{
-		glDeleteBuffers(1, &this->idVertex);
+		glDeleteBuffers(1, &idVertex);
 		idVertex = 0;
 	}
 	if (idIndex != 0)
 	{
-		glDeleteBuffers(1, &this->idIndex);
+		glDeleteBuffers(1, &idIndex);
 		idIndex = 0;
 	}
 }
