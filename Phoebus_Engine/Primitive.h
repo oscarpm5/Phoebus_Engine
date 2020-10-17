@@ -74,7 +74,7 @@ private:
 class PCylinder : public Primitive
 {
 public:
-	PCylinder(float r = 1, float height = 2, uint sectors = 36,uint stacks = 8,bool smooth = true);
+	PCylinder(float rBase = 1, float rTop = 1, float height = 2, uint sectors = 36,uint stacks = 8,bool smooth = true);
 
 	float GetTopRadius() const;
 	float GetHeight() const;
@@ -82,7 +82,8 @@ public:
 
 	std::vector<float> getUnitCircleVertices(uint sectorcount);
 private:
-	float r;
+	float rBase;
+	float rTop;
 	float height;
 };
 

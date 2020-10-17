@@ -271,7 +271,7 @@ float PSphere::GetRadius() const
 
 
 // CYLINDER ============================================
-PCylinder::PCylinder(float r, float height, uint sectorCount, uint stacks, bool smooth) : Primitive(), height(height), r(r)
+PCylinder::PCylinder(float rBase, float rTop, float height, uint sectorCount, uint stacks, bool smooth) : Primitive(), height(height), rBase(rBase), rTop(rTop)
 {
 	type = PrimitiveTypes::Primitive_Cylinder;
 
@@ -282,8 +282,8 @@ PCylinder::PCylinder(float r, float height, uint sectorCount, uint stacks, bool 
 	float sectorStep = 2 * pi / sectorCount;
 	float stackStep = pi / stacks;
 	float sectorAngle, stackAngle;
-
-
+	float radius;                     // radius for each stack
+	float x, y, z;                     // vertex position
 	// generate vertices for a cylinder
 
 
@@ -297,77 +297,88 @@ PCylinder::PCylinder(float r, float height, uint sectorCount, uint stacks, bool 
 	}
 
 	// put side vertices to arrays
-	for (int i = 0; i < 2; ++i)
+	for (int i = 0; i <= stacks; ++i)
 	{
-		float h = -height / 2.0f + i * height;           // z value; -h/2 to h/2
+		z = -(height * 0.5f) + (float)i / stacks * height;      // vertex position z
+		radius = rBase + (float)i / stacks * (rTop - rBase);     // lerp
+		float t = 1.0f - (float)i / stacks;   // top-to-bottom
 
 		for (int j = 0, k = 0; j <= sectorCount; ++j, k += 3)
 		{
-			float ux = unitCircleVertices[k];
-			float uy = unitCircleVertices[k + 1];
-			float uz = unitCircleVertices[k + 2];
-			// position vector
-			vertices.push_back(ux * r);             // vx
-			vertices.push_back(uy * r);             // vy
-			vertices.push_back(h);                  // vz
+			x = unitCircleVertices[k];
+			y = unitCircleVertices[k + 1];
+			vertices.push_back(x * radius);
+			vertices.push_back(y * radius);
+			vertices.push_back(z);
 		}
 	}
+	// remember where the base.top vertices start
+	unsigned int baseCenterIndex = (unsigned int)vertices.size() / 3;
 
-	int baseCenterIndex = (int)vertices.size() / 3;
-	int topCenterIndex = baseCenterIndex + sectorCount + 1; // include center vertex
-
-	// put base and top vertices to arrays
-	for (int i = 0; i < 2; ++i)
+	// put vertices of base of cylinder
+	z = -height * 0.5f;
+	vertices.push_back(0);
+	vertices.push_back(0);
+	vertices.push_back(z);
+	
+	for (int i = 0, j = 0; i < sectorCount; ++i, j += 3)
 	{
-		float h = -height / 2.0f + i * height;           // z value; -h/2 to h/2
-		//float nz = -1 + i * 2;                           // z value of normal; -1 to 1
-
-		// center point
-		vertices.push_back(0);     vertices.push_back(0);     vertices.push_back(h);
-
-
-		for (int j = 0, k = 0; j < sectorCount; ++j, k += 3)
-		{
-			float ux = unitCircleVertices[k];
-			float uy = unitCircleVertices[k + 1];
-			// position vector
-			vertices.push_back(ux * r);             // vx
-			vertices.push_back(uy * r);             // vy
-			vertices.push_back(h);                  // vz
-		}
+		x = unitCircleVertices[j];
+		y = unitCircleVertices[j + 1];
+		vertices.push_back(x * rBase);
+		vertices.push_back(y * rBase);
+		vertices.push_back(z);
 	}
 
+	// remember where the base vertices start
+	unsigned int topCenterIndex = (unsigned int)vertices.size() / 3;
+
+	// put vertices of top of cylinder
+	z = height * 0.5f;
+	vertices.push_back(0);
+	vertices.push_back(0);
+	vertices.push_back(z);
+	
+	for (int i = 0, j = 0; i < sectorCount; ++i, j += 3)
+	{
+		x = unitCircleVertices[j];
+		y = unitCircleVertices[j + 1];
+		vertices.push_back(x * rTop);
+		vertices.push_back(y * rTop);
+		vertices.push_back(z);
+	}
 
 	// generate CCW index list of cylinder triangles
-	int ka1 = 0;                         // 1st vertex index at base
-	int ka2 = sectorCount + 1;           // 1st vertex index at top
+	uint k1, k2;
 
-
-	// indices for the side surface
-	for (int i = 0; i < sectorCount; ++i, ++ka1, ++ka2)
+	for (int i = 0; i < stacks; ++i)
 	{
-		// 2 triangles per sector
-		// k1 => k1+1 => k2
-		indices.push_back(ka1);
-		indices.push_back(ka1 + 1);
-		indices.push_back(ka2);
+		k1 = i * (sectorCount + 1);     // bebinning of current stack
+		k2 = k1 + sectorCount + 1;      // beginning of next stack
 
-		// k2 => k1+1 => k2+1
-		indices.push_back(ka2);
-		indices.push_back(ka1 + 1);
-		indices.push_back(ka2 + 1);
+		for (int j = 0; j < sectorCount; ++j, ++k1, ++k2)
+		{
+			// 2 trianles per sector
+			
+			indices.push_back(k1);
+			indices.push_back(k1 + 1);
+			indices.push_back(k2);
+			
+			indices.push_back(k2);
+			indices.push_back(k1 + 1);
+			indices.push_back(k2 + 1);
+			
+		}
 	}
 
-	// indices for the base surface
 
+	// remember where the base indices start
+	//uint baseIndex = (unsigned int)indices.size();
 
-
-
-		// indices for the top & base surface
-
+	// put indices for base
 	for (int i = 0, k = baseCenterIndex + 1; i < sectorCount; ++i, ++k)
 	{
-		if (i < sectorCount - 1)
+		if (i < (sectorCount - 1))
 		{
 			indices.push_back(baseCenterIndex);
 			indices.push_back(k + 1);
@@ -380,21 +391,25 @@ PCylinder::PCylinder(float r, float height, uint sectorCount, uint stacks, bool 
 			indices.push_back(k);
 		}
 	}
+
+	// remember where the base indices start
+	//uint topIndex = (unsigned int)indices.size();
+
 	for (int i = 0, k = topCenterIndex + 1; i < sectorCount; ++i, ++k)
 	{
-		if (i < sectorCount - 1)
-		{
+		if (i < (sectorCount - 1)) {
 			indices.push_back(topCenterIndex);
 			indices.push_back(k);
-			indices.push_back(k + 1);
+			indices.push_back(k+1);
 		}
-		else // last triangle
-		{
+			
+		else {
 			indices.push_back(topCenterIndex);
 			indices.push_back(k);
 			indices.push_back(topCenterIndex + 1);
 		}
 	}
+
 	PrimitiveGenerateBuffers(vertices.data(), indices.data(), vertices.size() * sizeof(float), indices.size() * sizeof(unsigned int));
 
 	vertices.clear();
@@ -403,12 +418,12 @@ PCylinder::PCylinder(float r, float height, uint sectorCount, uint stacks, bool 
 
 float PCylinder::GetTopRadius() const
 {
-	return r;
+	return rTop;
 }
 
 float PCylinder::GetBaseRadius() const
 {
-	return r;
+	return rBase;
 }
 
 std::vector<float> PCylinder::getUnitCircleVertices(uint sectorcount)
