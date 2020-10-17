@@ -30,8 +30,8 @@ Mesh::~Mesh()
 	}
 
 
-	numIndex = 0;
-	numVertex = 0;
+	numIndex = -1;
+	numVertex = -1;
 
 	drawMode = MeshDrawMode::DRAW_MODE_FILL;
 }
@@ -111,12 +111,12 @@ void Mesh::GenerateBuffers()
 		FreeBuffers();
 
 		//gen buffers
-		glGenBuffers(1, &idVertex);
+		glGenBuffers(1, (GLuint*)&this->idVertex);
 		glBindBuffer(GL_ARRAY_BUFFER, idVertex);
 		glBufferData(GL_ARRAY_BUFFER, numVertex * sizeof(float) * 3, vertex, GL_STATIC_DRAW);
 
 
-		glGenBuffers(1, &idIndex);
+		glGenBuffers(1, (GLuint*)& this->idIndex);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndex * sizeof(unsigned int), index, GL_STATIC_DRAW);
 
@@ -130,9 +130,14 @@ void Mesh::GenerateBuffers()
 
 void Mesh::FreeBuffers()
 {
-	glDeleteBuffers(1, &idVertex);
-	glDeleteBuffers(1, &idIndex);
-
-	idVertex = 0;
-	idIndex = 0;
+	if (idVertex != 0)
+	{
+		glDeleteBuffers(1, &this->idVertex);
+		idVertex = 0;
+	}
+	if (idIndex != 0)
+	{
+		glDeleteBuffers(1, &this->idIndex);
+		idIndex = 0;
+	}
 }
