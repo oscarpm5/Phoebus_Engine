@@ -388,7 +388,7 @@ void ModuleRenderer3D::Draw3D()
 	//auxCube2.wire = true;
 	//auxCube2.Draw();
 
-	PCylinder auxCyl(0, 2, 3);
+	PCylinder auxCyl(0, 2, 3,4,4);
 	auxCyl.SetPos(0, 0, 0);
 	auxCyl.Draw();
 

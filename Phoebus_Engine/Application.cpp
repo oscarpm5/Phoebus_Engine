@@ -8,6 +8,7 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	renderer2D = new ModuleRenderer2D();
 	camera = new ModuleCamera3D();
 	editor3d = new ModuleEditor3D();
+	//fileSystem = new ModuleFileSystem();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -16,7 +17,7 @@ Application::Application() : debug(false), renderPrimitives(true), dt(0.16f)
 	// Main Modules
 	AddModule(window);
 	AddModule(camera);
-
+	//AddModule(fileSystem);
 	AddModule(input);
 	AddModule(editor3d);
 	// Renderer last!

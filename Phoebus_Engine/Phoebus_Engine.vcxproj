@@ -155,11 +155,13 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleEditor3D.h" />
+    <ClInclude Include="ModuleFileSystem.h" />
     <ClInclude Include="ModuleRenderer2D.h" />
     <ClInclude Include="ModuleRenderer3D.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleWindow.h" />
+    <ClInclude Include="PhysFS\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -213,6 +215,7 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleEditor3D.cpp" />
+    <ClCompile Include="ModuleFileSystem.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
     <ClCompile Include="ModuleRenderer2D.cpp" />
     <ClCompile Include="ModuleRenderer3D.cpp" />
@@ -222,6 +225,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />
+    <Text Include="PhysFS\CHANGELOG.txt" />
+    <Text Include="PhysFS\CREDITS.txt" />
+    <Text Include="PhysFS\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Json\Example.json" />

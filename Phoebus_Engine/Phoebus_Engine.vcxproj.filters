@@ -43,6 +43,9 @@
     <Filter Include="Sources\Tools\Json">
       <UniqueIdentifier>{4b9b13e4-b456-4aa2-9887-b0a4fefe6cb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Tools\PhysFS">
+      <UniqueIdentifier>{df8c125a-6c66-49c9-96d3-2fed89e55823}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -309,6 +312,12 @@
     <ClInclude Include="Mesh.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="PhysFS\include\physfs.h">
+      <Filter>Sources\Tools\PhysFS</Filter>
+    </ClInclude>
+    <ClInclude Include="ModuleFileSystem.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -476,10 +485,22 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleFileSystem.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt">
       <Filter>Sources\Tools\imgui</Filter>
+    </Text>
+    <Text Include="PhysFS\CHANGELOG.txt">
+      <Filter>Sources\Tools\PhysFS</Filter>
+    </Text>
+    <Text Include="PhysFS\CREDITS.txt">
+      <Filter>Sources\Tools\PhysFS</Filter>
+    </Text>
+    <Text Include="PhysFS\LICENSE.txt">
+      <Filter>Sources\Tools\PhysFS</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

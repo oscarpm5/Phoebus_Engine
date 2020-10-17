@@ -37,10 +37,10 @@ enum update_status
 #define WIN_FULLSCREEN_DESKTOP false
 #define VSYNC true
 #define TITLE "Phoebus Engine"
+#define ORGANIZATION "CITM - UPC"
 
 
 #define MAXFPSDISPLAY 100 //TODO make this a configurable variable
-
 
 class Application;
 
