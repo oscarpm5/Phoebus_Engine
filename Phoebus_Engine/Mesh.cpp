@@ -8,8 +8,8 @@
 
 
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals) :
-drawMode(MeshDrawMode::DRAW_MODE_BOTH),
-idVertex(0),idIndex(0)
+	drawMode(MeshDrawMode::DRAW_MODE_BOTH), normalMode(NormalDrawMode::NORMAL_MODE_NONE),
+	idVertex(0), idIndex(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -23,6 +23,7 @@ Mesh::Mesh(const Mesh& other)
 	this->indices = other.indices;
 	this->normals = other.normals;
 	this->drawMode = other.drawMode;
+	this->normalMode = other.normalMode;
 	GenerateBuffers();
 }
 
@@ -35,6 +36,7 @@ Mesh::~Mesh()
 	normals.clear();
 
 	drawMode = MeshDrawMode::DRAW_MODE_FILL;
+	normalMode = NormalDrawMode::NORMAL_MODE_NONE;
 }
 
 
@@ -42,8 +44,15 @@ Mesh::~Mesh()
 void Mesh::Draw()
 {
 
-	if(idVertex==0||idIndex==0)
+	if (idVertex == 0 || idIndex == 0)
 		GenerateBuffers();
+
+	if (normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH)
+		DrawVertexNormals();
+
+	if (normalMode == NormalDrawMode::NORMAL_MODE_FACES || normalMode == NormalDrawMode::NORMAL_MODE_BOTH)
+		DrawFacesNormals();
+
 
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 
@@ -124,4 +133,31 @@ void Mesh::FreeBuffers()
 		glDeleteBuffers(1, &idIndex);
 		idIndex = 0;
 	}
+}
+
+void Mesh::DrawVertexNormals()
+{
+	glLineWidth(4.0f);
+	glColor3f(1.0f, 0.25f, 0.0f);
+	glBegin(GL_LINES);
+
+	float magnitude = 10.0f;
+
+	for (int i = 0; i < normals.size() / 3; i++)
+	{
+		glVertex3f(vertices[i * 3], vertices[(i * 3) + 1], vertices[(i * 3) + 2]);
+		glVertex3f(vertices[i * 3] + normals[i * 3], vertices[(i * 3) + 1] + normals[(i * 3) + 1], vertices[(i * 3) + 2] + normals[(i * 3) + 2]);
+	}
+
+
+
+	glEnd();
+
+	glLineWidth(2.0f);
+
+}
+
+void Mesh::DrawFacesNormals()
+{
+
 }
