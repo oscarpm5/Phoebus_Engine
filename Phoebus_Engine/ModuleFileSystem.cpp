@@ -60,6 +60,11 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	FileFormats format;
 
 	const char * ext = strrchr(path, '.'); //look for the last instance of a point. Format should be next
+
+
+	//TODO: convert ext into a lowercase const char *
+
+
 	if (!ext) 
 	{
 		// somehow no extension 
@@ -67,17 +72,17 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	}
 	else 
 	{
-		format = FileFormats::UNDEFINED;
+		format = FileFormats::UNDEFINED; //delete the uppercase scenarios once the prior TODO is done
 
-		if (!strcmp(ext,".fbx"))
+		if (!strcmp(ext,".fbx") || !strcmp(ext, ".FBX"))
 		{
 			format = FileFormats::FBX;
 		}
-		if (!strcmp(ext, ".obj"))
+		if (!strcmp(ext, ".obj") || !strcmp(ext, ".OBJ"))
 		{
 			format = FileFormats::OBJ;
 		}
-		if (!strcmp(ext, ".json"))
+		if (!strcmp(ext, ".json") || !strcmp(ext, ".JSON"))
 		{
 			format = FileFormats::JSON;
 		}
