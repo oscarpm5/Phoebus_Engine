@@ -3,12 +3,13 @@
 #include "Mesh.h"
 
 #include "Glew/include/glew.h" //order matters
+#include "glmath.h"
 
 //TODO normal structure done, still haven't found a way to implement them into the buffers
 
 
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals) :
-	drawMode(MeshDrawMode::DRAW_MODE_BOTH), normalMode(NormalDrawMode::NORMAL_MODE_NONE),
+	drawMode(MeshDrawMode::DRAW_MODE_BOTH), normalMode(NormalDrawMode::NORMAL_MODE_BOTH),
 	idVertex(0), idIndex(0)
 {
 	this->vertices = vertices;
@@ -43,6 +44,7 @@ Mesh::~Mesh()
 //TODO for oscar : this could be structured better, FIX IT
 void Mesh::Draw()
 {
+	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 
 	if (idVertex == 0 || idIndex == 0)
 		GenerateBuffers();
@@ -54,7 +56,6 @@ void Mesh::Draw()
 		DrawFacesNormals();
 
 
-	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 
 	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
 
@@ -137,16 +138,25 @@ void Mesh::FreeBuffers()
 
 void Mesh::DrawVertexNormals()
 {
+	float magnitude = 2.0f;
+	glColor3f(1.0f, 0.5f, 0.0f);
 	glLineWidth(4.0f);
-	glColor3f(1.0f, 0.25f, 0.0f);
 	glBegin(GL_LINES);
 
-	float magnitude = 10.0f;
 
 	for (int i = 0; i < normals.size() / 3; i++)
 	{
-		glVertex3f(vertices[i * 3], vertices[(i * 3) + 1], vertices[(i * 3) + 2]);
-		glVertex3f(vertices[i * 3] + normals[i * 3], vertices[(i * 3) + 1] + normals[(i * 3) + 1], vertices[(i * 3) + 2] + normals[(i * 3) + 2]);
+		vec3 vertex0 = { vertices[i * 3], vertices[(i * 3) + 1], vertices[(i * 3) + 2] };
+		vec3 vertex1 =
+		{
+			vertices[i * 3] + (normals[i * 3] * magnitude),
+			vertices[(i * 3) + 1] + (normals[(i * 3) + 1] * magnitude),
+			vertices[(i * 3) + 2] + (normals[(i * 3) + 2] * magnitude)
+		};
+
+
+		glVertex3f(vertex0.x, vertex0.y, vertex0.z);
+		glVertex3f(vertex1.x, vertex1.y, vertex1.z);
 	}
 
 
@@ -160,4 +170,39 @@ void Mesh::DrawVertexNormals()
 void Mesh::DrawFacesNormals()
 {
 
+
+	float magnitude = 6.0f;
+	glColor3f(0.0f, 0.25f, 1.0f);
+	glLineWidth(4.0f);
+
+
+	glBegin(GL_LINES);
+
+	for (int i = 0; i < indices.size() ; i+=3)
+	{
+		unsigned int vertex0id = indices[i];
+		unsigned int vertex1id = indices[i + 1];
+		unsigned int vertex2id = indices[i + 2];
+
+
+		vec3 vertex0 = { vertices[vertex0id * 3], vertices[(vertex0id * 3) + 1], vertices[(vertex0id * 3) + 2] };
+		vec3 vertex1 = { vertices[vertex1id * 3], vertices[(vertex1id * 3) + 1], vertices[(vertex1id * 3) + 2] };
+		vec3 vertex2 = { vertices[vertex2id * 3], vertices[(vertex2id * 3) + 1], vertices[(vertex2id * 3) + 2] };
+
+		vec3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
+		vec3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
+		vec3 normal = normalize(cross(vector01, vector02));
+		normal *= magnitude;
+
+
+		vec3 center = (vertex0 + vertex1 + vertex2) / 3;
+		//Provisional placement (it displays the normal in the first vertex)
+		glVertex3f(center.x, center.y, center.z);
+		glVertex3f((center.x + normal.x), (center.y + normal.y), (center.z + normal.z));
+
+	}
+
+	glEnd();
+
+	glLineWidth(2.0f);
 }
