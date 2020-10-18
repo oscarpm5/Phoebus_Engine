@@ -8,9 +8,12 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
-void Importer::LoadFBX(const char* path)
+bool Importer::LoadFBX(const char* path)
 {
-	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality);
+	bool ret = false;
+
+	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality); //assimp has a function to import from binary buffer
+											//aiImportFileFromMemory										
 	
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -38,7 +41,6 @@ void Importer::LoadFBX(const char* path)
 			}
 			//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
 			LOG("New mesh with %i vertices", (vertices.size()/3));
-
 			// copy faces
 			if (mesh->HasFaces())
 			{
@@ -81,11 +83,15 @@ void Importer::LoadFBX(const char* path)
 			vertices.clear();
 			indices.clear();
 			normals.clear();
-
+			ret = true;
 			mesh = nullptr;
 		}
 		aiReleaseImport(scene);
 	}
-	else
+	else 
+	{
 		LOG("Error loading scene % s", path);
+		ret = false;
+	}
+	return ret;
 }

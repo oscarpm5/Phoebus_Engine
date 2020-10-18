@@ -2,7 +2,7 @@
 
 namespace Importer
 {
-	void LoadFBX(const char* path);
+	bool LoadFBX(const char* path);
 
 }
 

@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "Importer.h"
 #include "imgui/imgui_impl_sdl.h"
+#include "ModuleFileSystem.h"
 
 #define MAX_KEYS 300
 
@@ -99,7 +100,11 @@ update_status ModuleInput::PreUpdate(float dt)
 			char* dropped_filedir = e.drop.file;
 			// Shows directory of dropped file
 
-			Importer::LoadFBX(dropped_filedir);
+			bool droppedFile = App->fileSystem->LoadFile(dropped_filedir);
+			if (droppedFile == false) 
+			{
+				LOG("ERROR on loading dropped FBX");
+			}
 
 			SDL_free(dropped_filedir);    // Free dropped_filedir memory
 			break;

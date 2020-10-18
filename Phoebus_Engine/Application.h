@@ -21,7 +21,7 @@ public:
 	ModuleRenderer2D* renderer2D;
 	ModuleCamera3D* camera;
 	ModuleEditor3D* editor3d;
-	//ModuleFileSystem* fileSystem;	linea 102 module input Importer:: load fbx -> llamaar el filesysatem y pasarle el path (dropfiledyr) para probarlo rapido
+	ModuleFileSystem* fileSystem;	
 
 	bool debug;
 	bool renderPrimitives;
