@@ -18,7 +18,7 @@ class Mesh
 {
 public:
 
-	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals);
+	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords);
 	Mesh(const Mesh& other);
 	~Mesh();
 
@@ -29,6 +29,9 @@ private:
 	void FreeBuffers();
 	void DrawVertexNormals();
 	void DrawFacesNormals();
+
+	//temporal function 
+	void GenerateTexture();
 
 public:
 
@@ -44,4 +47,9 @@ public:
 
 	unsigned int idNormals;// normals in VRAM
 	std::vector<float> normals;//normals array(note that normals are just 3 of the elements stored in this vector)
+
+	unsigned int idTexCoords; //texture coordinates in VRAM
+	std::vector<float> texCoords;//texture coordinates array(note that texCoords are just 2 of the elements stored in this vector)
+
+	unsigned int idTexture;//texture in VRAM
 };

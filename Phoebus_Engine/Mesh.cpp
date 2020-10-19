@@ -8,13 +8,14 @@
 //TODO normal structure done, still haven't found a way to implement them into the buffers
 
 
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals) :
+Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords) :
 	drawMode(MeshDrawMode::DRAW_MODE_FILL), normalMode(NormalDrawMode::NORMAL_MODE_NONE),
-	idVertex(0), idIndex(0),idNormals(0),shadingFlat(true)
+	idVertex(0), idIndex(0), idNormals(0), idTexCoords(0), idTexture(0), shadingFlat(true)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->normals = normals;
+	this->texCoords = texCoords;
 	GenerateBuffers();
 }
 
@@ -23,6 +24,7 @@ Mesh::Mesh(const Mesh& other)
 	this->vertices = other.vertices;
 	this->indices = other.indices;
 	this->normals = other.normals;
+	this->texCoords = other.texCoords;
 	this->drawMode = other.drawMode;
 	this->normalMode = other.normalMode;
 	this->shadingFlat = other.shadingFlat;
@@ -36,6 +38,7 @@ Mesh::~Mesh()
 	indices.clear();
 	vertices.clear();
 	normals.clear();
+	texCoords.clear();
 
 	drawMode = MeshDrawMode::DRAW_MODE_FILL;
 	normalMode = NormalDrawMode::NORMAL_MODE_NONE;
@@ -46,8 +49,11 @@ Mesh::~Mesh()
 void Mesh::Draw()
 {
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
-	if(shadingFlat)glEnableClientState(GL_NORMAL_ARRAY);
-	if (idVertex == 0 || idIndex == 0)
+	if (shadingFlat)glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+
+	if (idVertex == 0 || idIndex == 0 ||idNormals==0|idTexCoords==0||idTexture==0)
 		GenerateBuffers();
 
 	if (normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH)
@@ -55,7 +61,6 @@ void Mesh::Draw()
 
 	if (normalMode == NormalDrawMode::NORMAL_MODE_FACES || normalMode == NormalDrawMode::NORMAL_MODE_BOTH)
 		DrawFacesNormals();
-
 
 
 	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
@@ -82,10 +87,17 @@ void Mesh::Draw()
 			glBindBuffer(GL_ARRAY_BUFFER, idNormals);
 			glNormalPointer(GL_FLOAT, 0, NULL);
 		}
+
+		glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
 
-
+		glBindTexture(GL_TEXTURE_2D, idTexture);
 		glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		
 		glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -98,37 +110,61 @@ void Mesh::Draw()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, idNormals);
 		glNormalPointer(GL_FLOAT, 0, NULL);
-	}
+	}
+	glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
+	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
-	
 
+
+	glBindTexture(GL_TEXTURE_2D, idTexture);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
+	glBindTexture(GL_TEXTURE_2D, 0);
 
+	
+	
 	glDisableClientState(GL_VERTEX_ARRAY); // ... TODO (2) Put this on end of render postupdate
 	if (shadingFlat)glDisableClientState(GL_NORMAL_ARRAY); // ... TODO (2) Put this on end of render postupdate
-
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	//
+	
 	//clear buffers
+
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
 }
 
 void Mesh::GenerateBuffers()
 {
 
-	//gen buffers
+	//gen buffers=========================================
+
+	//vertex buffer
 	glGenBuffers(1, &idVertex);
 	glBindBuffer(GL_ARRAY_BUFFER, idVertex);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
 
-
+	//index buffer
 	glGenBuffers(1, &idIndex);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-
+	//normal buffer
 	glGenBuffers(1, &idNormals);
 	glBindBuffer(GL_ARRAY_BUFFER, idNormals);
 	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
+
+	//texture coordinate buffer
+	glGenBuffers(1, &idTexCoords);
+	glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
+	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &texCoords[0], GL_STATIC_DRAW);
+
+	//texture buffer TODO this won't be loaded from here in the future, a single instance of the texture will be loaded not one for every mesh
+	GenerateTexture();
+
 
 	//clear buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -155,6 +191,16 @@ void Mesh::FreeBuffers()
 		glDeleteBuffers(1, &idNormals);
 		idNormals = 0;
 	}
+	if (idTexCoords != 0)
+	{
+		glDeleteBuffers(1, &idTexCoords);
+		idTexCoords = 0;
+	}
+	if (idTexture != 0)
+	{
+		glDeleteTextures(1, &idTexture);
+	}
+
 }
 
 void Mesh::DrawVertexNormals()
@@ -199,7 +245,7 @@ void Mesh::DrawFacesNormals()
 
 	glBegin(GL_LINES);
 
-	for (int i = 0; i < indices.size() ; i+=3)
+	for (int i = 0; i < indices.size(); i += 3)
 	{
 		unsigned int vertex0id = indices[i];
 		unsigned int vertex1id = indices[i + 1];
@@ -226,4 +272,33 @@ void Mesh::DrawFacesNormals()
 	glEnd();
 
 	glLineWidth(2.0f);
+}
+
+void Mesh::GenerateTexture()
+{
+	const int checkersHeight = 300;
+	const int checkersWidth = 300;
+
+	GLubyte checkerImage[checkersHeight][checkersWidth][4];
+	for (int i = 0; i < checkersWidth; i++) {
+		for (int j = 0; j < checkersWidth; j++) {
+			int c = ((((i & 0x8) == 0) ^ (((j & 0x8)) == 0))) * 255;
+			checkerImage[i][j][0] = (GLubyte)c;
+			checkerImage[i][j][1] = (GLubyte)c;
+			checkerImage[i][j][2] = (GLubyte)c;
+			checkerImage[i][j][3] = (GLubyte)255;
+		}
+	}
+
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &idTexture);
+	glBindTexture(GL_TEXTURE_2D, idTexture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, checkersWidth, checkersHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, checkerImage);
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
