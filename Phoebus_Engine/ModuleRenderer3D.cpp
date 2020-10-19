@@ -144,11 +144,11 @@ bool ModuleRenderer3D::Init()
 		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		SetGLRenderingOptions();
 		lights[0].Active(true);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
+		
+
+
 	}
 	LOG("-------------- OpenGL Info --------------")
 		LOG("Vendor: %s", glGetString(GL_VENDOR));
@@ -159,7 +159,7 @@ bool ModuleRenderer3D::Init()
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	TestingRenderAtStart();
+	//TestingRenderAtStart();
 
 
 	//SAux = PSphere(0.5, 1);
@@ -419,4 +419,20 @@ void ModuleRenderer3D::RenderMeshes()
 	{
 		App->editor3d->meshes[i].Draw();
 	}
+}
+
+void ModuleRenderer3D::SetGLRenderingOptions()
+{
+	if (depthTesting)glEnable(GL_DEPTH_TEST);
+	else glDisable(GL_DEPTH_TEST);
+	if (cullFace)glEnable(GL_CULL_FACE);
+	else glDisable(GL_CULL_FACE);
+	if (lighting)glEnable(GL_LIGHTING);
+	else glDisable(GL_LIGHTING);
+	if (colorMaterial)glEnable(GL_COLOR_MATERIAL);
+	else glDisable(GL_COLOR_MATERIAL);
+	if (texture2D)glEnable(GL_TEXTURE_2D);
+	else glDisable(GL_TEXTURE_2D);
+
+	//wireframe here too?
 }
