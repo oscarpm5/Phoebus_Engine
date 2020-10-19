@@ -9,8 +9,8 @@
 
 
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals) :
-	drawMode(MeshDrawMode::DRAW_MODE_BOTH), normalMode(NormalDrawMode::NORMAL_MODE_BOTH),
-	idVertex(0), idIndex(0)
+	drawMode(MeshDrawMode::DRAW_MODE_FILL), normalMode(NormalDrawMode::NORMAL_MODE_NONE),
+	idVertex(0), idIndex(0),idNormals(0),shadingFlat(true)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -25,6 +25,7 @@ Mesh::Mesh(const Mesh& other)
 	this->normals = other.normals;
 	this->drawMode = other.drawMode;
 	this->normalMode = other.normalMode;
+	this->shadingFlat = other.shadingFlat;
 	GenerateBuffers();
 }
 
@@ -45,7 +46,7 @@ Mesh::~Mesh()
 void Mesh::Draw()
 {
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
-
+	if(shadingFlat)glEnableClientState(GL_NORMAL_ARRAY);
 	if (idVertex == 0 || idIndex == 0)
 		GenerateBuffers();
 
@@ -76,6 +77,11 @@ void Mesh::Draw()
 
 		glBindBuffer(GL_ARRAY_BUFFER, idVertex);			//this is for printing the index
 		glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
+		if (shadingFlat)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, idNormals);
+			glNormalPointer(GL_FLOAT, 0, NULL);
+		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
 
 
@@ -88,13 +94,18 @@ void Mesh::Draw()
 
 	glBindBuffer(GL_ARRAY_BUFFER, idVertex);			//this is for printing the index
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
+	if (shadingFlat)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, idNormals);
+		glNormalPointer(GL_FLOAT, 0, NULL);
+	}
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
-
+	
 
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 
-
 	glDisableClientState(GL_VERTEX_ARRAY); // ... TODO (2) Put this on end of render postupdate
+	if (shadingFlat)glDisableClientState(GL_NORMAL_ARRAY); // ... TODO (2) Put this on end of render postupdate
 
 	//clear buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -113,6 +124,11 @@ void Mesh::GenerateBuffers()
 	glGenBuffers(1, &idIndex);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+
+	glGenBuffers(1, &idNormals);
+	glBindBuffer(GL_ARRAY_BUFFER, idNormals);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
 
 	//clear buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -133,6 +149,11 @@ void Mesh::FreeBuffers()
 	{
 		glDeleteBuffers(1, &idIndex);
 		idIndex = 0;
+	}
+	if (idNormals != 0)
+	{
+		glDeleteBuffers(1, &idNormals);
+		idNormals = 0;
 	}
 }
 

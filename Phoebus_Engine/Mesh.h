@@ -32,6 +32,7 @@ private:
 
 public:
 
+	bool shadingFlat;
 	MeshDrawMode drawMode;
 	NormalDrawMode normalMode;
 
