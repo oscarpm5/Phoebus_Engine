@@ -13,7 +13,8 @@ bool Importer::LoadFBX(const char* path)
 	bool ret = false;
 
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality); //assimp has a function to import from binary buffer
-											//aiImportFileFromMemory										
+	LOG("");										//aiImportFileFromMemory										
+	LOG("Importing 3D asset from: %s", path);
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -21,6 +22,7 @@ bool Importer::LoadFBX(const char* path)
 
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
+
 			std::vector<float> vertices;
 			std::vector<unsigned int> indices;
 			std::vector<float> normals;
@@ -28,11 +30,13 @@ bool Importer::LoadFBX(const char* path)
 			//creates a new mesh at scene editor
 
 			aiMesh* mesh = scene->mMeshes[i];
+			LOG("----------Importing mesh %i----------", i);
 
 
 			// copy vertices
 			//newMesh.numVertex = mesh->mNumVertices;
 			vertices.reserve(mesh->mNumVertices * 3);
+
 
 			for (int j = 0; j < mesh->mNumVertices; j++)
 			{
@@ -68,10 +72,12 @@ bool Importer::LoadFBX(const char* path)
 					}
 
 				}
+				LOG("New mesh with %i indices", (indices.size()));
 			}
 
 
 			texCoords.reserve(indices.size() * 2); //there are 2 floats for every index
+			LOG("Importing mesh texture coordinates");
 			for (int j = 0; j < indices.size(); j++)
 			{
 				//copy TextureCoords
@@ -82,14 +88,17 @@ bool Importer::LoadFBX(const char* path)
 				}
 				else
 				{
+					LOG("No texture coordinates found");
 					texCoords.push_back(0.0f);
 					texCoords.push_back(0.0f);
 				}
 			}
+			LOG("%i texture coordinates have been loaded", texCoords.size() / 2);
 
 			//copy normals
 			if (mesh->HasNormals())
 			{
+				LOG("Importing normals");
 				normals.reserve(mesh->mNumVertices * 3);
 				for (int j = 0; j < mesh->mNumVertices; j++)
 				{
@@ -98,13 +107,16 @@ bool Importer::LoadFBX(const char* path)
 					normals.push_back(mesh->mNormals[j].y);
 					normals.push_back(mesh->mNormals[j].z);
 				}
+				LOG("%i normals have been loaded", normals.size() / 3);
 			}
+			else
+				LOG("Mesh has no normals!");
 
 
 
 
-
-			App->editor3d->meshes.push_back(Mesh(vertices, indices, normals,texCoords));
+			App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
+			LOG("----------Mesh %i has been loaded----------",i);
 			vertices.clear();
 			indices.clear();
 			normals.clear();

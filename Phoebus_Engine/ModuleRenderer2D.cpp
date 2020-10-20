@@ -80,6 +80,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 {
 	update_status status = UPDATE_CONTINUE;
 
+
 	// Start the Dear ImGui frame
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
@@ -89,6 +90,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	CreateDockingSpace();
+
 
 	//Main Menu bar test
 	if (ImGui::BeginMainMenuBar())
@@ -108,7 +110,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			//}
 			////End of sample
 
-			if (ImGui::MenuItem("Exit", "Esc")) { status = UPDATE_STOP; }
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
 				showAboutWindowbool = true;
@@ -118,6 +119,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				showConfig = true;
 			}
 
+			if (ImGui::MenuItem("Exit", "Esc"))
+			{
+				showQuit = true;
+			}
 
 			ImGui::EndMenu();
 		}
@@ -201,13 +206,22 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		Show3DWindow();
 	}
 
+
+
+	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP)
+		showQuit = true;
+
+	if (showQuitPopup())
+		status = UPDATE_STOP;
+
+
 	return status;
 }
 
 update_status ModuleRenderer2D::PostUpdate(float dt)
 {
 	update_status status = UPDATE_CONTINUE;
-	
+
 	return status;
 }
 
@@ -503,6 +517,45 @@ bool ModuleRenderer2D::showConfigFunc()
 	return true;
 }
 
+bool ModuleRenderer2D::showQuitPopup()
+{
+	bool ret = false;
+	bool popupNew = false;
+
+	if (showQuit&&!quitAlreadyOpened)
+	{
+		ImGui::OpenPopup("Quit?");
+		showQuit = false;
+		quitAlreadyOpened = true;
+		popupNew = true;
+	}
+
+	// Always center this window when appearing
+	ImVec2 center = ImGui::GetMainViewport()->GetCenter();
+
+	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+	int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove|ImGuiWindowFlags_AlwaysUseWindowPadding;
+
+	if (ImGui::BeginPopupModal("Quit?", NULL, flags))
+	{
+		ImGui::Text("All your progress will be lost!\nAre you sure you want to quit?\n\n");
+		ImGui::Separator();
+
+		if (ImGui::Button("OK", ImVec2(120, 0))) { ret = true; ImGui::CloseCurrentPopup(); quitAlreadyOpened = false;showQuit = false;}
+		ImGui::SetItemDefaultFocus();
+		ImGui::SameLine();
+		if (ImGui::Button("Cancel", ImVec2(120, 0))||(!popupNew &&App->input->GetKey(SDL_SCANCODE_ESCAPE)==KEY_UP))
+		{
+			ImGui::CloseCurrentPopup();
+			quitAlreadyOpened = false;
+			showQuit = false;
+		}
+		ImGui::EndPopup();
+	}
+	return ret;
+}
+
 //Deprecated function
 void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 {
@@ -602,7 +655,7 @@ bool ModuleRenderer2D::Show3DWindow()
 	ImGuiStyle& style = ImGui::GetStyle();
 	static ImGuiStyle ref_saved_style;
 	//style.WindowBorderSize = 0.0f;
-	style.WindowPadding = ImVec2(0.0f,0.0f);
+	style.WindowPadding = ImVec2(0.0f, 0.0f);
 
 	if (!ImGui::Begin("3D Viewport", &show3DWindow, flags))
 	{
@@ -614,8 +667,8 @@ bool ModuleRenderer2D::Show3DWindow()
 	winSize.y -= 19;//taking into account the menu bar
 	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
 		OnResize(winSize.x, winSize.y);
-		
-	
+
+
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
 

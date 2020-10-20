@@ -42,7 +42,9 @@ public:
 	bool showLibsFunc();
 	bool showConfig = false;
 	bool showConfigFunc();
-
+	bool showQuitPopup();
+	bool showQuit = false;
+	bool quitAlreadyOpened = false;
 	
 private:
 
