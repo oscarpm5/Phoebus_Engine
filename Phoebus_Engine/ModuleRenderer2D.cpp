@@ -521,8 +521,11 @@ bool ModuleRenderer2D::showQuitPopup()
 {
 	bool ret = false;
 	bool popupNew = false;
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(7.0f, 7.0f));
+	ImGui::PushStyleColor(ImGuiCol_ModalWindowDarkening, { 0.05f,0.05f,0.1f,0.75f });
+	ImGui::PushStyleColor(ImGuiCol_TitleBgActive, ImVec4(1.0f, 0.6f, 0.0f, 0.8f));
 
-	if (showQuit&&!quitAlreadyOpened)
+	if (showQuit && !quitAlreadyOpened)
 	{
 		ImGui::OpenPopup("Quit?");
 		showQuit = false;
@@ -535,17 +538,17 @@ bool ModuleRenderer2D::showQuitPopup()
 
 	ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 
-	int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove|ImGuiWindowFlags_AlwaysUseWindowPadding;
+	int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
 
 	if (ImGui::BeginPopupModal("Quit?", NULL, flags))
 	{
 		ImGui::Text("All your progress will be lost!\nAre you sure you want to quit?\n\n");
 		ImGui::Separator();
 
-		if (ImGui::Button("OK", ImVec2(120, 0))) { ret = true; ImGui::CloseCurrentPopup(); quitAlreadyOpened = false;showQuit = false;}
+		if (ImGui::Button("OK", ImVec2(120, 0))) { ret = true; ImGui::CloseCurrentPopup(); quitAlreadyOpened = false; showQuit = false; }
 		ImGui::SetItemDefaultFocus();
 		ImGui::SameLine();
-		if (ImGui::Button("Cancel", ImVec2(120, 0))||(!popupNew &&App->input->GetKey(SDL_SCANCODE_ESCAPE)==KEY_UP))
+		if (ImGui::Button("Cancel", ImVec2(120, 0)) || (!popupNew && App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP))
 		{
 			ImGui::CloseCurrentPopup();
 			quitAlreadyOpened = false;
@@ -553,6 +556,8 @@ bool ModuleRenderer2D::showQuitPopup()
 		}
 		ImGui::EndPopup();
 	}
+	ImGui::PopStyleColor(2);
+	ImGui::PopStyleVar();
 	return ret;
 }
 
