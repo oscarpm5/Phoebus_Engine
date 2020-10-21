@@ -144,11 +144,11 @@ bool ModuleRenderer3D::Init()
 		GLfloat MaterialDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 		glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, MaterialDiffuse);
 
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_CULL_FACE);
+		SetGLRenderingOptions();
 		lights[0].Active(true);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_COLOR_MATERIAL);
+		
+
+
 	}
 	LOG("-------------- OpenGL Info --------------")
 		LOG("Vendor: %s", glGetString(GL_VENDOR));
@@ -159,7 +159,7 @@ bool ModuleRenderer3D::Init()
 	// Projection matrix for
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	TestingRenderAtStart();
+	//TestingRenderAtStart();
 
 
 	//SAux = PSphere(0.5, 1);
@@ -257,6 +257,7 @@ void ModuleRenderer3D::TestingRender()
 
 }
 
+//For now it uses Inmediate mode (testing purposes)
 void ModuleRenderer3D::TestingRenderAtStart()
 {
 	// no index cube
@@ -304,19 +305,27 @@ void ModuleRenderer3D::TestingRenderAtStart()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer), g_vertex_buffer, GL_STATIC_DRAW);
 
 
-	//index cube
-	
-	glGenBuffers(1, (GLuint*) & (vertexBind));
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
+	////index cube
+	//
+	//glGenBuffers(1, (GLuint*) & (vertexBind));
+	//glBindBuffer(GL_ARRAY_BUFFER, vertexBind);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
 
 
-	glGenBuffers(1, (GLuint*) & (indexBind));
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexArray), indexArray, GL_STATIC_DRAW);
+	//glGenBuffers(1, (GLuint*) & (indexBind));
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);
+	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexArray), indexArray, GL_STATIC_DRAW);
 
-	indexSize = sizeof(indexArray) / sizeof(unsigned int);
+	//indexSize = sizeof(indexArray) / sizeof(unsigned int);
+	glEnableClientState(GL_VERTEX_ARRAY);
 
+	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
+	glVertexPointer(3, GL_FLOAT, 0, NULL);			//this is for printing the vertices
+	// … bind and use other buffers
+	glDrawArrays(GL_TRIANGLES, 0, nVertex);
+	glDisableClientState(GL_VERTEX_ARRAY);		//... or here
+
+	glDeleteBuffers(1, &exampleMeshIdentifier);
 }
 
 void ModuleRenderer3D::GenerateBuffers(int width, int height)
@@ -391,6 +400,9 @@ void ModuleRenderer3D::Draw3D()
 	//PCylinder auxCyl(0, 2, 3,4,4);
 	//auxCyl.SetPos(0, 0, 0);
 	//auxCyl.Draw();
+	
+	
+	//TestingRenderAtStart();
 
 	RenderMeshes();
 
@@ -407,4 +419,20 @@ void ModuleRenderer3D::RenderMeshes()
 	{
 		App->editor3d->meshes[i].Draw();
 	}
+}
+
+void ModuleRenderer3D::SetGLRenderingOptions()
+{
+	if (depthTesting)glEnable(GL_DEPTH_TEST);
+	else glDisable(GL_DEPTH_TEST);
+	if (cullFace)glEnable(GL_CULL_FACE);
+	else glDisable(GL_CULL_FACE);
+	if (lighting)glEnable(GL_LIGHTING);
+	else glDisable(GL_LIGHTING);
+	if (colorMaterial)glEnable(GL_COLOR_MATERIAL);
+	else glDisable(GL_COLOR_MATERIAL);
+	if (texture2D)glEnable(GL_TEXTURE_2D);
+	else glDisable(GL_TEXTURE_2D);
+
+	//wireframe here too?
 }

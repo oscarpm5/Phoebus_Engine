@@ -28,6 +28,9 @@ public:
 private:
 	void RenderMeshes();
 
+	//sets all the config options(depth testing, cull faces,etc...) to their bool values
+	void SetGLRenderingOptions();
+
 private:
 	uint exampleMeshIdentifier = 0;
 	uint indexBind = 0;

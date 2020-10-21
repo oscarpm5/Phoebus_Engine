@@ -3,6 +3,13 @@
 #include "Globals.h"
 #include "glmath.h"
 
+enum class CamObjective
+{
+	REFERENCE,
+	CAMERA
+};
+
+
 class ModuleCamera3D : public Module
 {
 public:
@@ -16,6 +23,8 @@ public:
 	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
 	void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
+	void MoveTo(const vec3& Destination,CamObjective toMove);
+	void CamZoom(int addZoomAmount);
 	float* GetRawViewMatrix();
 	mat4x4 GetViewMatrix();
 
@@ -29,6 +38,6 @@ public:
 	bool debugcamera;
 
 private:
-
+	float zoomLevel;
 	mat4x4 ViewMatrix, ViewMatrixInverse;
 };
