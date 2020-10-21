@@ -48,13 +48,13 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\DevIL\include\IL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\DevIL\include\IL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\DevIL\lib\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\DevIL\lib\x86\Release;M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\DevIL\lib\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -67,7 +67,7 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\DevIL\include\IL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\DevIL\include\IL;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -75,7 +75,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalLibraryDirectories>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\DevIL\lib\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\DevIL\lib\x86\Release;M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\DevIL\lib\x86\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>DevIL.lib;ILU.lib;ILUT.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -231,9 +231,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />
-    <Text Include="PhysFS\CHANGELOG.txt" />
-    <Text Include="PhysFS\CREDITS.txt" />
-    <Text Include="PhysFS\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Json\Example.json" />

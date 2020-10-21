@@ -227,3 +227,5 @@ void Mesh::DrawFacesNormals()
 
 	glLineWidth(2.0f);
 }
+
+

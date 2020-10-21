@@ -100,7 +100,8 @@ update_status ModuleInput::PreUpdate(float dt)
 			char* dropped_filedir = e.drop.file;
 			// Shows directory of dropped file
 
-			bool droppedFile = App->fileSystem->LoadFile(dropped_filedir);
+			//bool droppedFile = App->fileSystem->LoadFile(dropped_filedir);
+			bool droppedFile = App->fileSystem->Load(dropped_filedir);
 			if (droppedFile == false) 
 			{
 				LOG("ERROR on loading dropped FBX");

@@ -7,6 +7,7 @@
 #include "Assimp/include/cfileio.h"
 #include "Assimp/include/types.h"
 #include "Importer.h"
+#include "PhysFS/include/physfs.h"
 #include <string.h> //used in checking file type
 
 #pragma comment( lib, "PhysFS/libx86/physfs.lib" )
@@ -16,10 +17,20 @@
 
 ModuleFileSystem::ModuleFileSystem(bool start_enabled)
 {
+	// Initialize the PhysicsFS library
+	// This must be called before any other PhysicsFS function
+	// This should be called prior to any attempts to change your process's current working directory
+	PHYSFS_init(nullptr);
+
+	// We only need this when compiling in debug. In Release we don't need it.
+	PHYSFS_mount(".", nullptr, 1);
+	LOG("Init PHYSFS");
 }
 
 ModuleFileSystem::~ModuleFileSystem()
 {
+	PHYSFS_deinit();
+	LOG("De-init PHYSFS");
 }
 
 bool ModuleFileSystem::Init()
@@ -31,6 +42,20 @@ bool ModuleFileSystem::Init()
 bool ModuleFileSystem::Start()
 {
 	bool ret = true;
+	// Determine if the PhysicsFS library is initialized, we can check it for avoid errors.
+	if (PHYSFS_isInit()) 
+	{
+		LOG("Asset Manager is succefully loaded");
+	}
+	else
+	{
+		LOG("Failed loading Asset Manager");
+	}
+	// Add an archive or directory to the search path.
+	// If this is a duplicate, the entry is not added again, even though the function succeeds.
+	// When you mount an archive, it is added to a virtual file system...
+	// all files in all of the archives are interpolated into a single hierachical file tree.
+	PHYSFS_mount("Assets.zip", nullptr, 1);
 	return ret;
 }
 
@@ -120,8 +145,66 @@ bool ModuleFileSystem::LoadFile(const char* path)
 	return ret;
 }
 
+//LoadFIleFromPath -> ???  -> ID
+
 bool ModuleFileSystem::LoadFbx(const char* path)
 {
-	bool ret = Importer::LoadFBX(path);
+	//bool ret = Importer::LoadFBX(path);
+	bool ret;
+	return ret;
+}
+
+uint ModuleFileSystem::Load(const char* path, char** buffer) const
+{
+	uint ret = 0;
+
+
+	// The reading offset is set to the first byte of the file.
+	// Returns a filehandle on success that we will need for the PHYSFS_fileLength
+	PHYSFS_file* file = PHYSFS_openRead(path);
+
+	// Check for end-of-file state on a PhysicsFS filehandle.
+	if (!PHYSFS_eof(file))
+	{
+		// Get total length of a file in bytes
+		uint lenght = PHYSFS_fileLength(file);
+		*buffer = new char[lenght];
+
+		// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
+		uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
+	
+		
+		if (bytes != lenght)
+		{
+			LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
+			if (buffer != NULL)              
+			{                            
+				delete[] buffer;                
+				buffer = NULL;
+			}                            	
+		}
+		
+		else
+			ret = bytes;
+	}
+	else
+		LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
+
+
+	// Close a PhysicsFS firehandle
+	PHYSFS_close(file);
+
+	return ret;
+}
+
+SDL_RWops* ModuleFileSystem::Load(const char* path) const
+{
+	char* buffer;
+	uint bytes = Load(path, &buffer);
+
+
+	// Read-only memory buffer for use with RWops, retruns a pointer to a new SDL_RWops structure
+	SDL_RWops* ret = SDL_RWFromConstMem(buffer, bytes);
+
 	return ret;
 }

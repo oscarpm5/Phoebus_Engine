@@ -493,15 +493,6 @@
     <Text Include="imgui\LICENSE.txt">
       <Filter>Sources\Tools\imgui</Filter>
     </Text>
-    <Text Include="PhysFS\CHANGELOG.txt">
-      <Filter>Sources\Tools\PhysFS</Filter>
-    </Text>
-    <Text Include="PhysFS\CREDITS.txt">
-      <Filter>Sources\Tools\PhysFS</Filter>
-    </Text>
-    <Text Include="PhysFS\LICENSE.txt">
-      <Filter>Sources\Tools\PhysFS</Filter>
-    </Text>
   </ItemGroup>
   <ItemGroup>
     <None Include="MathGeoLib\include\Geometry\KDTree.inl">

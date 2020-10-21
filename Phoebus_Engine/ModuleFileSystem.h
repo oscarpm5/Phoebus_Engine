@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "Module.h"
+#include "SDL/include/SDL_rwops.h"
 #include <vector>
 
 enum class FileFormats
@@ -33,6 +34,14 @@ public:
 
 	bool LoadFbx(const char* path);
 	//bool LoadJson(const char* path);
+
+
+
+	// Return the bytes of a PhysFS filehandle
+	uint Load(const char* path, char** buffer) const;
+
+	// Allows you to use pointers to memory instead of files or things such as images or samples
+	SDL_RWops* Load(const char* path) const;
 };
 
 #endif // __MODULEFILESYSTEModuleH__
