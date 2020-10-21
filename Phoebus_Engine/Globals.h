@@ -42,6 +42,18 @@ enum update_status
 
 #define MAXFPSDISPLAY 100 //TODO make this a configurable variable
 
+
+// Deletes an array of buffers
+#define RELEASE_ARRAY( x ) \
+    {                              \
+    if( x != NULL )              \
+	    {                            \
+      delete[] x;                \
+	  x = NULL;                    \
+	    }                            \
+                              \
+    }
+
 class Application;
 
 extern Application* App;

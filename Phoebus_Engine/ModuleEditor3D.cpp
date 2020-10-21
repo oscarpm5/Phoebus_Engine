@@ -25,7 +25,6 @@ bool ModuleEditor3D::Start()
 	App->camera->LookAt(vec3(0, 0, 0));
 	 
 	//Importer::LoadFBX("./Assets/warrior.FBX");
-	//Importer::LoadFBX("./Assets/cube.FBX");
 	//Importer::LoadFBX("./Assets/warrior.FBX");
 	//Importer::LoadFBX("./Assets/warrior.FBX");
 
@@ -35,6 +34,11 @@ bool ModuleEditor3D::Start()
 
 update_status ModuleEditor3D::PreUpdate(float dt)
 {
+
+	if(App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN) 
+	{
+		App->fileSystem->LoadAsset("Assets/Models/cube.FBX"); 
+	}
 	return UPDATE_CONTINUE;
 }
 

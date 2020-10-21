@@ -29,19 +29,16 @@ public:
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
 
-	FileFormats CheckFileFormat(const char* path);
-	bool LoadFile(const char* path);
-
-	bool LoadFbx(const char* path);
-	//bool LoadJson(const char* path);
-
-
-
 	// Return the bytes of a PhysFS filehandle
 	uint Load(const char* path, char** buffer) const;
 
 	// Allows you to use pointers to memory instead of files or things such as images or samples
 	SDL_RWops* Load(const char* path) const;
+
+
+	void LoadAsset(char * path);
+
+	FileFormats CheckFileFormat(const char* path);
 };
 
 #endif // __MODULEFILESYSTEModuleH__
