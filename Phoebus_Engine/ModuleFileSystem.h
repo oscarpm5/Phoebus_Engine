@@ -12,7 +12,8 @@ enum class FileFormats
 
 	FBX,
 	JSON,
-	OBJ
+	OBJ,
+	PNG
 };
 
 

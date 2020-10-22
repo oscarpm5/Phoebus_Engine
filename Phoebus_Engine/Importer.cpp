@@ -158,6 +158,49 @@ bool Importer::InitializeDevIL()
 	return true;
 }
 
+bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
+{
+	ILuint newImage = 0;
+	ilGenImages(1, &newImage);
+	ilBindImage(newImage);
+
+	//TODO this will need to accept more formats in the future
+	bool ret = ilLoadL(IL_PNG,Buffer, Length);
+
+
+	if (!ret)
+	{
+		ILenum error;
+		error = ilGetError();
+		LOG("\nCould not load an miage from buffer: %s", Buffer);
+		LOG("Error %d :\n %s", error, iluErrorString(error));
+		ilDeleteImages(1, &newImage);
+	}
+	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+	{
+		ILinfo ImageInfo; 
+		iluGetImageInfo(&ImageInfo); 
+		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT) 
+		{ 
+			iluFlipImage(); 
+		}
+
+		//temporal code that puts the image in every mesh avaliable
+		for (int i = 0; i < App->editor3d->meshes.size(); i++)
+		{
+			App->editor3d->meshes[i].GenerateTexturefromILUT();
+		}
+
+
+
+
+
+		ilDeleteImages(1, &newImage);
+	}
+	return ret;
+}
+
+/*
 bool Importer::LoadNewImage(const char* path)
 {
 	ILuint newImage = 0;
@@ -192,7 +235,7 @@ bool Importer::LoadNewImage(const char* path)
 	}
 	return ret;
 }
-
+*/
 
 bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 {

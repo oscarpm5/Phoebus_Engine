@@ -122,7 +122,7 @@ void ModuleFileSystem::LoadAsset(char* path)
 {
 	char* buffer;
 	uint size = App->fileSystem->Load(path, &buffer);
-	
+
 	FileFormats thisFormat = CheckFileFormat(path);
 
 	switch (thisFormat)
@@ -137,6 +137,10 @@ void ModuleFileSystem::LoadAsset(char* path)
 
 	case FileFormats::JSON:
 		//to be
+		break;
+
+	case FileFormats::PNG:
+		Importer::LoadNewImageFromBuffer(buffer, size);
 		break;
 
 	case FileFormats::UNDEFINED:
@@ -174,6 +178,10 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 		if (!strcmp(ext, ".obj") || !strcmp(ext, ".OBJ"))
 		{
 			format = FileFormats::OBJ;
+		}
+		if (!strcmp(ext, ".png") || !strcmp(ext, ".PNG"))
+		{
+			format = FileFormats::PNG;
 		}
 		if (!strcmp(ext, ".json") || !strcmp(ext, ".JSON"))
 		{
