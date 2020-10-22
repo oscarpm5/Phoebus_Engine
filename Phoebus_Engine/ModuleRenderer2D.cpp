@@ -19,6 +19,13 @@
 #include "MathChecks.h"
 
 
+//We're using pretty much all of it for cheks, so we're just including the whole thing
+#include "DevIL/include/IL/il.h"
+#include "DevIL/include/IL/ilu.h"
+#include "DevIL/include/IL/ilut.h"
+
+
+
 ModuleRenderer2D::ModuleRenderer2D(bool start_enabled)
 {
 	console = new Cnsl();
@@ -360,13 +367,13 @@ bool ModuleRenderer2D::showLibsFunc()
 	ImGui::Text("%i.", int(aux2));
 	ImGui::Spacing();
 
-	/*
+	
 	ImGui::Text("Devil v.");
-	int devilVer = ilutGetInteger(ILUT_VERSION_NUM)  
+	int devilVer = ilutGetInteger(ILUT_VERSION_NUM);
 	ImGui::SameLine();
 	ImGui::Text("%i.", int(devilVer));
 	ImGui::Spacing();
-	*/
+	
 
 	ImGui::End();
 	return true;
