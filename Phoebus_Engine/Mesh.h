@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include "texture.h"
 
 enum class MeshDrawMode
 {
@@ -19,21 +20,18 @@ class Mesh
 {
 public:
 
-	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords);
+	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords, NewTexture* texture=nullptr);
 	Mesh(const Mesh& other);
 	~Mesh();
 
 	void Draw();
-
-	void GenerateTexture();
-	void GenerateTexturefromILUT();
-	void FreeTexture();
 
 private:
 	void GenerateBuffers();
 	void FreeBuffers();
 	void DrawVertexNormals();
 	void DrawFacesNormals();
+	void DrawBuffers();
 
 public:
 
@@ -53,5 +51,5 @@ public:
 	unsigned int idTexCoords; //texture coordinates in VRAM
 	std::vector<float> texCoords;//texture coordinates array(note that texCoords are just 2 of the elements stored in this vector)
 
-	unsigned int idTexture;//texture in VRAM
+	NewTexture* texture;
 };

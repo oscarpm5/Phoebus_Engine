@@ -46,10 +46,16 @@ bool ModuleEditor3D::Start()
 update_status ModuleEditor3D::PreUpdate(float dt)
 {
 
-	if(App->input->GetKey(SDL_SCANCODE_K) == KEY_DOWN) 
+	if(App->input->GetKey(SDL_SCANCODE_K) == KEY_UP) 
 	{
 		App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx"); 
 		App->fileSystem->LoadAsset("Assets/bakerHouse/Baker_house.png");
+	}
+	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_UP)
+	{
+		App->fileSystem->LoadAsset("Assets/Models/cube.FBX");
+		App->fileSystem->LoadAsset("Assets/Models/Flamethrower.png");
+
 	}
 	return UPDATE_CONTINUE;
 }

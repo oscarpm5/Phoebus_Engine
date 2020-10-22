@@ -145,6 +145,9 @@ bool Importer::LoadFBX(const char* path)
 }
 */
 
+#include "texture.h"
+
+
 bool Importer::InitializeDevIL()
 {
 	//initialize IL
@@ -178,19 +181,34 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 	{
+		NewTexture* t=new NewTexture;
+		App->editor3d->textures.push_back(t);
+		
+
 		ILinfo ImageInfo; 
 		iluGetImageInfo(&ImageInfo); 
 		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT) 
 		{ 
 			iluFlipImage(); 
 		}
+		App->editor3d->textures.back()->width = ilGetInteger(IL_IMAGE_WIDTH);
+		App->editor3d->textures.back()->height = ilGetInteger(IL_IMAGE_HEIGHT);
+		App->editor3d->textures.back()->GenTextureFromName(newImage);
 
 		//temporal code that puts the image in every mesh avaliable
-		for (int i = 0; i < App->editor3d->meshes.size(); i++)
+		/*for (int i = 0; i < App->editor3d->meshes.size(); i++)
 		{
 			App->editor3d->meshes[i].GenerateTexturefromILUT();
-		}
+		}*/
 
+		//testing code
+		if (App->editor3d->meshes.size() > 0)
+		{
+			if (App->editor3d->meshes.back().texture == nullptr)
+			{
+				App->editor3d->meshes.back().texture = App->editor3d->textures.back();
+			}
+		}
 
 
 

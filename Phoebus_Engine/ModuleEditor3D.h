@@ -3,6 +3,7 @@
 #include "Globals.h"
 
 #include "Mesh.h"
+#include "texture.h"
 
 #define PRIMITIVES_IN_SCENE 10
 
@@ -22,4 +23,5 @@ public:
 
 public:
 	std::vector<Mesh> meshes;
+	std::vector<NewTexture*> textures;
 };
