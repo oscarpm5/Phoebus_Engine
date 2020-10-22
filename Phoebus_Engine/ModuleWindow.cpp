@@ -108,6 +108,13 @@ int ModuleWindow::Height() const
 	return h;
 }
 
+void ModuleWindow::ResizeWindow(int w, int h)
+{
+	this->w = w;
+	this->h = h;
+	SDL_SetWindowSize(window, w, h);
+}
+
 void ModuleWindow::SetTitle(const char* title)
 {
 	SDL_SetWindowTitle(window, title);

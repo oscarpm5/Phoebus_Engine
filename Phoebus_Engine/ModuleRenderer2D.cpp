@@ -252,7 +252,7 @@ void ModuleRenderer2D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	App->renderer3D->ProjectionMatrix = perspective(60.0f, (float)width / (float)height, 0.125f, 512.0f);
+	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
 	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
 
 	glMatrixMode(GL_MODELVIEW);
@@ -416,10 +416,12 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		}
 
-		if (ImGui::SliderInt("Width", &(App->window->w), 1, 2800))
+
+		if (ImGui::SliderInt("Width", &(App->window->w), 100, 2800))
 		{
 			if (resizable) {
-				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
+				App->window->ResizeWindow(App->window->w, App->window->h);
+				//SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
 				//OpenGLOnResize(App->window->w, App->window->h);
 				App->renderer3D->OnResize(App->window->w, App->window->h);
 			}
@@ -427,7 +429,8 @@ bool ModuleRenderer2D::showConfigFunc()
 		if (ImGui::SliderInt("Height", &(App->window->h), 1, 2800))
 		{
 			if (resizable) {
-				SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
+				App->window->ResizeWindow(App->window->w, App->window->h);
+				//SDL_SetWindowSize(App->window->window, App->window->w, App->window->h);
 				//OpenGLOnResize(App->window->w, App->window->h);
 				App->renderer3D->OnResize(App->window->w, App->window->h);
 			}
@@ -444,6 +447,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		if (ImGui::Checkbox("Borderless", &borderless))
 		{
 			//SDL_SetWindowFullscreen(App->window->window, );
+			//SDL_SetWindowBordered(App->window->window, (SDL_bool)borderless);
 			LOG("TODO: this button is still not fully operational");
 		}
 		if (ImGui::Checkbox("Fullscreen", &fullscreen))
@@ -527,6 +531,33 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::PopStyleColor();
 	}
 
+	if (ImGui::CollapsingHeader("camera"))
+	{
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
+
+		if (ImGui::SliderFloat("FoV", &App->camera->foV, 1.0f, 90.0f))
+		{
+			OnResize(App->window->w, App->window->h);
+		};
+
+		ImGuiSliderFlags flags = ImGuiSliderFlags_None;
+		int sensitivity = 100;
+		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)sensitivity = 1000000; //use Lshift to be more precise
+		
+		if (ImGui::DragFloat("Near Plane", &App->camera->nearPlaneDist, App->camera->farPlaneDist/sensitivity, 0.01f, App->camera->farPlaneDist, "%.3f", flags))
+		{
+			OnResize(App->window->w, App->window->h);
+		}
+
+		if (ImGui::DragFloat("Far Plane", &App->camera->farPlaneDist, (abs(App->camera->farPlaneDist-App->camera->nearPlaneDist))/sensitivity, App->camera->nearPlaneDist,2000.0f, "%.3f", flags))
+		{
+			OnResize(App->window->w, App->window->h);
+		}
+
+
+		ImGui::PopStyleColor();
+	}
+
 	ImGui::PopStyleColor();
 	ImGui::End();
 	return true;
@@ -592,7 +623,7 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	App->renderer3D->ProjectionMatrix = perspective(60.0f, (width / 2) / height, 0.225f, 512.0f);
+	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist,App->camera->farPlaneDist);
 	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
 
 	glMatrixMode(GL_MODELVIEW);

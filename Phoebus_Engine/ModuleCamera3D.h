@@ -35,6 +35,9 @@ private:
 public:
 	
 	vec3 X, Y, Z, Position, Reference;
+	float foV;
+	float nearPlaneDist;
+	float farPlaneDist;
 	bool debugcamera;
 
 private:
