@@ -14,6 +14,7 @@ ModuleEditor3D::~ModuleEditor3D()
 bool ModuleEditor3D::Init()
 {
 	bool ret = true;
+	Importer::InitializeDevIL();
 	return ret;
 }
 
@@ -23,12 +24,21 @@ bool ModuleEditor3D::Start()
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
+	
+	
 	 
 	//Importer::LoadFBX("./Assets/warrior.FBX");
-	//Importer::LoadFBX("./Assets/cube.FBX");
 	//Importer::LoadFBX("./Assets/warrior.FBX");
-	//Importer::LoadFBX("./Assets/warrior.FBX");
+	
+	/*
+	Importer::LoadFBX("./Assets/suzzane.FBX");
+	Importer::LoadNewImage("./Assets/flamethrower.png");
 
+	Importer::LoadFBX("./Assets/cube.fbx");
+	Importer::LoadNewImage("./Assets/flamethrower.png");
+
+	Importer::LoadFBX("./Assets/warrior.fbx");
+	Importer::LoadNewImage("./Assets/lenna.png");*/
 
 	return ret;
 }

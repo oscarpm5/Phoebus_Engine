@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+
 enum class MeshDrawMode
 {
 	DRAW_MODE_FILL,
@@ -24,14 +25,15 @@ public:
 
 	void Draw();
 
+	void GenerateTexture();
+	void GenerateTexturefromILUT();
+	void FreeTexture();
+
 private:
 	void GenerateBuffers();
 	void FreeBuffers();
 	void DrawVertexNormals();
 	void DrawFacesNormals();
-
-	//temporal function 
-	void GenerateTexture();
 
 public:
 
