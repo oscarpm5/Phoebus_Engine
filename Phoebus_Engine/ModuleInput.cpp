@@ -134,8 +134,10 @@ update_status ModuleInput::PreUpdate(float dt)
 				App->window->h = e.window.data2;
 				App->renderer3D->OnResize(e.window.data1, e.window.data2);
 			}
-
+			break;
 		}
+		
+			
 		}
 	}
 

@@ -179,24 +179,13 @@ bool Importer::LoadNewImage(const char* path)
 	{
 
 		//temporal code that puts the image in every mesh avaliable
-		/*for (int i = 0; i < App->editor3d->meshes.size(); i++)
+		for (int i = 0; i < App->editor3d->meshes.size(); i++)
 		{
-			App->editor3d->meshes[i].GenerateTexturefromILUT(newImage);
-		}*/
+			App->editor3d->meshes[i].GenerateTexturefromILUT();
+		}
 
 
-		if (App->editor3d->meshes.size() == 1)
-		{
-			App->editor3d->meshes[0].GenerateTexturefromILUT();
-		}
-		if (App->editor3d->meshes.size() == 2)
-		{
-			App->editor3d->meshes[1].GenerateTexturefromILUT();
-		}
-		if (App->editor3d->meshes.size() == 3)
-		{
-			App->editor3d->meshes[2].GenerateTexturefromILUT();
-		}
+		
 
 
 		ilDeleteImages(1, &newImage);
@@ -210,8 +199,9 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 	bool ret = false;
 
 	const aiScene* scene = aiImportFileFromMemory(Buffer, Length, aiProcessPreset_TargetRealtime_MaxQuality, nullptr); //nullptr as we need no external libs to hepl import
-	LOG("");																			
-	LOG("Importing 3D asset from buffer with length %i", Length);
+
+										//aiImportFileFromMemory										
+	LOG("Importing 3D asset from buffer: %s", Buffer);
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
@@ -324,7 +314,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 	}
 	else
 	{
-		LOG("Error loading scene from buffer");
+		LOG("Error loading scene % s", Buffer);
 		ret = false;
 	}
 	return ret;

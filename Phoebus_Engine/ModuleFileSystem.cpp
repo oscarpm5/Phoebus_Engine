@@ -15,17 +15,7 @@
 
 //linea 102 module input Importer:: load fbx -> llamaar el filesysatem y pasarle el path (dropfiledyr) para probarlo rapido
 
-ModuleFileSystem::ModuleFileSystem(bool start_enabled)
-{
-	// Initialize the PhysicsFS library
-	// This must be called before any other PhysicsFS function
-	// This should be called prior to any attempts to change your process's current working directory
-	PHYSFS_init(nullptr);
 
-	// We only need this when compiling in debug. In Release we don't need it.
-	PHYSFS_mount(".", nullptr, 1);
-	LOG("Init PHYSFS");
-}
 
 ModuleFileSystem::~ModuleFileSystem()
 {
@@ -43,14 +33,13 @@ bool ModuleFileSystem::Start()
 {
 	bool ret = true;
 	// Determine if the PhysicsFS library is initialized, we can check it for avoid errors.
-	if (PHYSFS_isInit()) 
-	{
+	if (PHYSFS_isInit()) {
 		LOG("Asset Manager is succefully loaded");
 	}
 	else
-	{
 		LOG("Failed loading Asset Manager");
-	}
+
+
 	// Add an archive or directory to the search path.
 	// If this is a duplicate, the entry is not added again, even though the function succeeds.
 	// When you mount an archive, it is added to a virtual file system...
@@ -80,80 +69,6 @@ bool ModuleFileSystem::CleanUp()
 	return ret;
 }
 
-FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
-{
-	FileFormats format;
-
-	const char * ext = strrchr(path, '.'); //look for the last instance of a point. Format should be next
-
-
-	//TODO: convert ext into a lowercase const char *
-
-
-	if (!ext) 
-	{
-		// somehow no extension 
-		format = FileFormats::UNDEFINED;
-	}
-	else 
-	{
-		format = FileFormats::UNDEFINED; //delete the uppercase scenarios once the prior TODO is done
-
-		if (!strcmp(ext,".fbx") || !strcmp(ext, ".FBX"))
-		{
-			format = FileFormats::FBX;
-		}
-		if (!strcmp(ext, ".obj") || !strcmp(ext, ".OBJ"))
-		{
-			format = FileFormats::OBJ;
-		}
-		if (!strcmp(ext, ".json") || !strcmp(ext, ".JSON"))
-		{
-			format = FileFormats::JSON;
-		}
-	}
-	return format;
-}
-
-bool ModuleFileSystem::LoadFile(const char* path)
-{
-	bool ret = false;
-
-	FileFormats format = CheckFileFormat(path);
-
-	switch (format)
-	{
-	case FileFormats::UNDEFINED:
-		break;
-
-	case FileFormats::FBX:
-		ret = LoadFbx(path);
-		break;
-
-	case FileFormats::OBJ:
-		ret = LoadFbx(path); //yeah, this works. Deal with it.
-		break;
-
-	case FileFormats::JSON:
-		//ret = LoadJson(path);
-		break;
-
-	default:
-		break;
-	}
-
-	return ret;
-}
-
-//LoadFIleFromPath -> ???  -> ID
-
-bool ModuleFileSystem::LoadFbx(const char* path)
-{
-	//bool ret = Importer::LoadFBX(path);
-	bool ret;
-	return ret;
-}
-
 uint ModuleFileSystem::Load(const char* path, char** buffer) const
 {
 	uint ret = 0;
@@ -172,18 +87,12 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 
 		// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
 		uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
-	
-		
+
 		if (bytes != lenght)
 		{
 			LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
-			if (buffer != NULL)              
-			{                            
-				delete[] buffer;                
-				buffer = NULL;
-			}                            	
+			RELEASE_ARRAY(buffer);
 		}
-		
 		else
 			ret = bytes;
 	}
@@ -208,3 +117,81 @@ SDL_RWops* ModuleFileSystem::Load(const char* path) const
 
 	return ret;
 }
+
+void ModuleFileSystem::LoadAsset(char* path)
+{
+	char* buffer;
+	uint size = App->fileSystem->Load(path, &buffer);
+	
+	FileFormats thisFormat = CheckFileFormat(path);
+
+	switch (thisFormat)
+	{
+	case FileFormats::FBX:
+		Importer::LoadFBXfromBuffer(buffer, size);
+		break;
+
+	case FileFormats::OBJ:
+		Importer::LoadFBXfromBuffer(buffer, size); //this workas, deal with it
+		break;
+
+	case FileFormats::JSON:
+		//to be
+		break;
+
+	case FileFormats::UNDEFINED:
+		LOG("asset from %s has no recognizable format", path);
+		break;
+	default:
+		break;
+	}
+	RELEASE_ARRAY(buffer);
+}
+
+FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
+{
+	FileFormats format;
+
+	const char* ext = strrchr(path, '.'); //look for the last instance of a point. Format should be next
+
+
+	//TODO: convert ext into a lowercase const char *
+
+
+	if (!ext)
+	{
+		// somehow no extension 
+		format = FileFormats::UNDEFINED;
+	}
+	else
+	{
+		format = FileFormats::UNDEFINED; //delete the uppercase scenarios once the prior TODO is done
+
+		if (!strcmp(ext, ".fbx") || !strcmp(ext, ".FBX"))
+		{
+			format = FileFormats::FBX;
+		}
+		if (!strcmp(ext, ".obj") || !strcmp(ext, ".OBJ"))
+		{
+			format = FileFormats::OBJ;
+		}
+		if (!strcmp(ext, ".json") || !strcmp(ext, ".JSON"))
+		{
+			format = FileFormats::JSON;
+		}
+	}
+	return format;
+}
+
+ModuleFileSystem::ModuleFileSystem(bool start_enabled)
+{
+	// Initialize the PhysicsFS library
+	// This must be called before any other PhysicsFS function
+	// This should be called prior to any attempts to change your process's current working directory
+	PHYSFS_init(nullptr);
+
+	// We only need this when compiling in debug. In Release we don't need it.
+	PHYSFS_mount(".", nullptr, 1);
+
+}
+

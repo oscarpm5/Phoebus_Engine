@@ -360,6 +360,14 @@ bool ModuleRenderer2D::showLibsFunc()
 	ImGui::Text("%i.", int(aux2));
 	ImGui::Spacing();
 
+	/*
+	ImGui::Text("Devil v.");
+	int devilVer = ilutGetInteger(ILUT_VERSION_NUM)  
+	ImGui::SameLine();
+	ImGui::Text("%i.", int(devilVer));
+	ImGui::Spacing();
+	*/
+
 	ImGui::End();
 	return true;
 }
