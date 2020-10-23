@@ -52,6 +52,12 @@ protected:
 
 };
 
+//Related functions to primitives, but we don't want them to be part of the class
+//=============================================
+
+void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<unsigned int> &index, float radius = 1.f, uint sectors = 36, uint stacks = 18);
+void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& index, float rBase = 1, float rTop = 1, float height = 2, uint sectors = 36, uint stacks = 8);
+void ConeFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase = 1, float height = 2, uint sectors = 36, uint stacks = 8);
 // ============================================
 class PCube : public Primitive
 {

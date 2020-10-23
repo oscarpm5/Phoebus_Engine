@@ -49,8 +49,8 @@ public:
 private:
 
 		
-	bool CreateBasicForm(PrimitiveTypes type, float ar1 = 0, float ar2 = 0, float ar3 = 0, float ar4 = 0); //arX meaning depends on type. This saves massive amounts of code. Deal with it.
-	float ar1 = 0; float ar2 = 0; float ar3 = 0; float ar4 = 0;
+	bool CreateBasicForm(PrimitiveTypes type, float ar1 = 0, float ar2 = 0, float ar3 = 0, float ar4 = 0, float ar = 5); //arX meaning depends on type. This saves massive amounts of code. Deal with it.
+	float ar1 = 0; float ar2 = 0; float ar3 = 0; float ar4 = 0; float ar5 = 0;
 	void CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices);
 
 	//fps related business

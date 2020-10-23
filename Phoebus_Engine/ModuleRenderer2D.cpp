@@ -11,6 +11,7 @@
 #include "Application.h"
 #include "ModuleRenderer2D.h"
 #include "ModuleRenderer3D.h" //we need the projection matrix
+#include "ModuleCamera3D.h"
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "MathGeoLib/include/MathGeoLib.h"
@@ -18,6 +19,7 @@
 #include "Console.h"
 #include "MathChecks.h"
 #include "Mesh.h"
+#include "ModuleWindow.h"
 
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -142,13 +144,26 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			//Spheres
 			if (ImGui::BeginMenu("Spheres")) {
 				ImGui::Text("Sphere param:");
-				CreateBasicForm(PrimitiveTypes::Primitive_Sphere);
+				ImGui::SliderFloat("Radius", &ar1, 0, 10);
+				ImGui::SliderFloat("Sectors", &ar2, 0, 72);
+				ImGui::SliderFloat("Stacks", &ar3, 0, 36);
+				if (ImGui::MenuItem("Create!"))
+				{
+					CreateBasicForm(PrimitiveTypes::Primitive_Sphere, ar1, ar2, ar3);
+				}
 				ImGui::EndMenu();
 			}
 			//Cylinders
 			if (ImGui::BeginMenu("Cylinders")) {
-				ImGui::Text("Cylinders param:");
-				CreateBasicForm(PrimitiveTypes::Primitive_Cylinder);
+				ImGui::SliderFloat("Base Radius", &ar1, 0, 10);
+				ImGui::SliderFloat("Top Radius", &ar2, 0, 10);
+				ImGui::SliderFloat("Height", &ar3, 0, 10);
+				ImGui::SliderFloat("Sectors", &ar4, 0, 72);
+				ImGui::SliderFloat("Stacks", &ar5, 0, 36);
+				if (ImGui::MenuItem("Create!")) 
+				{
+					CreateBasicForm(PrimitiveTypes::Primitive_Cylinder, ar1, ar2, ar3, ar4, ar5);
+				}
 				ImGui::EndMenu();
 			}
 			//Box
@@ -161,7 +176,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				{
 					CreateBasicForm(PrimitiveTypes::Primitive_Box, ar1, ar2, ar3);
 				}
-				//PCylinder(float rBase = 1, float rTop = 1, float height = 2, uint sectors = 36, uint stacks = 8, bool smooth = true);
 				ImGui::EndMenu();
 			}
 			//Cube
@@ -174,16 +188,25 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				}
 				ImGui::EndMenu();
 			}
-			//Pyramid
-			if (ImGui::BeginMenu("Pyramid")) {
-				ImGui::Text("Pyramid param:");
-				CreateBasicForm(PrimitiveTypes::Primitive_Cone);
-				ImGui::EndMenu();
-			}
+		
+			////Pyramid
+			//if (ImGui::BeginMenu("Pyramid")) {
+			//	ImGui::Text("Pyramid param:");
+			//	CreateBasicForm(PrimitiveTypes::Primitive_Cone);
+			//	ImGui::EndMenu();
+			//}
+		
 			//Cone
 			if (ImGui::BeginMenu("Cone")) {
 				ImGui::Text("Cone param:");
-				CreateBasicForm(PrimitiveTypes::Primitive_Cone);
+				ImGui::SliderFloat("Base Radius", &ar1, 0, 10);
+				ImGui::SliderFloat("Height", &ar2, 0, 10);
+				ImGui::SliderFloat("Sectors", &ar3, 0, 72);
+				ImGui::SliderFloat("Stacks", &ar4, 0, 36);
+				if (ImGui::MenuItem("Create!"))
+				{
+					CreateBasicForm(PrimitiveTypes::Primitive_Cone, ar1, ar2, ar3, ar4);
+				}
 				ImGui::EndMenu();
 			}
 
@@ -613,7 +636,7 @@ bool ModuleRenderer2D::showQuitPopup()
 	return ret;
 }
 
-bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2, float ar3, float ar4)
+bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2, float ar3, float ar4, float ar5)
 {
 	//We would love to make a switch, but we cant. Happyness huh
 	bool ret = false;
@@ -657,15 +680,27 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 	}
 	if (type == PrimitiveTypes::Primitive_Sphere)
 	{
-
+		std::vector<float> vertexArray;
+		std::vector<unsigned int> indexArray;
+		SphereFillVectorsVertexAndIndex(vertexArray, indexArray,ar1,(int)ar2,(int)ar3);
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
+		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Cylinder)
 	{
-
+		std::vector<float> vertexArray;
+		std::vector<unsigned int> indexArray;
+		CylinderFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, ar2, ar3, (int)ar4, (int)ar5);
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
+		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Cone)
 	{
-
+		std::vector<float> vertexArray;
+		std::vector<unsigned int> indexArray;
+		ConeFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, ar2, (int)ar3, (int)ar4);
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
+		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Box)
 	{
