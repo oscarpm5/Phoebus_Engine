@@ -12,6 +12,9 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 
 	Position = vec3(2.0f, 2.0f, 2.0f);
 	Reference = vec3(0.0f, 0.0f, 0.0f);
+	foV = 60.0f;
+	nearPlaneDist = 0.125f;
+	farPlaneDist = 512.0f;
 }
 
 ModuleCamera3D::~ModuleCamera3D()

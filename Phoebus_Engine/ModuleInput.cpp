@@ -123,7 +123,8 @@ update_status ModuleInput::PreUpdate(float dt)
 			break;
 
 		case SDL_QUIT:
-			quit = true;
+			App->renderer2D->showQuit=true;
+			//quit = true;
 			break;
 
 		case SDL_WINDOWEVENT:

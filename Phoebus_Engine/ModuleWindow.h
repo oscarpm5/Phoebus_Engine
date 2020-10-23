@@ -20,6 +20,7 @@ public:
 	int Width() const;
 	int Height() const;
 
+	void ResizeWindow(int w, int h);
 	void SetTitle(const char* title);
 
 public:
