@@ -5,7 +5,7 @@
 #include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #include "Console.h"
 #include "imgui/imgui.h"
-
+#include "Primitive.h"
 #include <iostream> 
 #include <vector> 
 
@@ -48,18 +48,10 @@ public:
 	
 private:
 
-	//math checks
-
-		//rand
-	LCG seed; int randomRad1; int randomRad2;
-		//spheres
-	bool showSphereWindow = false;		bool sphereCol = false;
-		//cylinders
-	bool showCylWindow = false;			bool cylCol = false;
-		//triangles
-	bool showTriWindow = false;			bool triCol = false;
-		//AABB
-	bool showAABBWindow = false;		bool AABBCol = false;
+		
+	bool CreateBasicForm(PrimitiveTypes type, float ar1 = 0, float ar2 = 0, float ar3 = 0, float ar4 = 0); //arX meaning depends on type. This saves massive amounts of code. Deal with it.
+	float ar1 = 0; float ar2 = 0; float ar3 = 0; float ar4 = 0;
+	void CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices);
 
 	//fps related business
 

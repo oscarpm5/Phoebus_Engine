@@ -179,8 +179,6 @@ PCube::PCube(mat4x4 transform, const vec3& size) : Primitive()
 
 
 	//TODO: Add this to some array of shit on scene
-
-	//TODO: SIZE!!!
 }
 
 
@@ -273,6 +271,8 @@ float PSphere::GetRadius() const
 // CYLINDER ============================================
 PCylinder::PCylinder(float rBase, float rTop, float height, uint sectorCount, uint stacks, bool smooth) : Primitive(), height(height), rBase(rBase), rTop(rTop)
 {
+	//Disclaimer: this "cylinder" is also a cube, a box, a cone, a pyramid, a frustrum, and whatever you want it to be honestly (except spheres)
+	
 	type = PrimitiveTypes::Primitive_Cylinder;
 
 	std::vector<float> vertices;
@@ -288,7 +288,7 @@ PCylinder::PCylinder(float rBase, float rTop, float height, uint sectorCount, ui
 
 
 
-	for (int i = 0; i <= sectorCount; ++i)
+	for (int i = 0; i <= sectorCount; ++i) //filling spaces in a unit cirlce
 	{
 		sectorAngle = i * sectorStep;
 		unitCircleVertices.push_back(cos(sectorAngle)); // x
@@ -393,7 +393,6 @@ PCylinder::PCylinder(float rBase, float rTop, float height, uint sectorCount, ui
 	}
 
 	// remember where the base indices start
-	//uint topIndex = (unsigned int)indices.size();
 
 	for (int i = 0, k = topCenterIndex + 1; i < sectorCount; ++i, ++k)
 	{

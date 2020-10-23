@@ -64,10 +64,10 @@ void Mesh::Draw()
 	/*if (idVertex == 0 || idIndex == 0 ||idNormals==0|idTexCoords==0)
 		GenerateBuffers();*/
 
-	if (normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH)
+	if ((normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !normals.empty())
 		DrawVertexNormals();
 
-	if (normalMode == NormalDrawMode::NORMAL_MODE_FACES || normalMode == NormalDrawMode::NORMAL_MODE_BOTH)
+	if ((normalMode == NormalDrawMode::NORMAL_MODE_FACES || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !normals.empty())
 		DrawFacesNormals();
 
 
@@ -130,19 +130,21 @@ void Mesh::GenerateBuffers()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 	
 
-	
-	//normal buffer
-	glGenBuffers(1, &idNormals);
-	glBindBuffer(GL_ARRAY_BUFFER, idNormals);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
-	
+	if (!this->normals.empty())
+	{
+		//normal buffer
+		glGenBuffers(1, &idNormals);
+		glBindBuffer(GL_ARRAY_BUFFER, idNormals);
+		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
+	}
 
-	
-	//texture coordinate buffer
-	glGenBuffers(1, &idTexCoords);
-	glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
-	glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &texCoords[0], GL_STATIC_DRAW);
-	
+	if (!this->texCoords.empty())
+	{
+		//texture coordinate buffer
+		glGenBuffers(1, &idTexCoords);
+		glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
+		glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &texCoords[0], GL_STATIC_DRAW);
+	}
 
 	//clear buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -255,15 +257,18 @@ void Mesh::DrawBuffers()
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
 	
 	
-	if (shadingFlat)
+	if (shadingFlat && !normals.empty())
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, idNormals);
 		glNormalPointer(GL_FLOAT, 0, NULL);
 	}
+	else idNormals = 0;
 
-	
-	glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
-	glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+	if (!texCoords.empty()) {
+		glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
+		glTexCoordPointer(2, GL_FLOAT, 0, NULL);
+	}
+	else idTexCoords = 0;
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
 

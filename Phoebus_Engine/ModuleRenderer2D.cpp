@@ -17,6 +17,7 @@
 
 #include "Console.h"
 #include "MathChecks.h"
+#include "Mesh.h"
 
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -75,7 +76,7 @@ bool ModuleRenderer2D::Init()
 	ImGui_ImplOpenGL3_Init("#version 140"); //TODO: this is hardcoded. Deal with it.
 
 	//Start number generator seed
-	seed = LCG::LCG();
+	//seed = LCG::LCG();
 
 	//fps goodness
 	fps_log.resize(maxFPShown);
@@ -134,36 +135,56 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
-		//Math checks window
-		if (ImGui::BeginMenu("Math checks", true))
+		//Basic forms menu
+		if (ImGui::BeginMenu("Basic Forms Generator", true))
 		{
-			//showing some random number to prove LGC works
-			int randomNum = seed.Int(10, 99);
-			ImGui::Text("Random Num : %i", randomNum);
-
-
-			//Intersections between
 
 			//Spheres
-			if (ImGui::MenuItem("Sphere collision")) {
-				sphereCol = TestColSphere(seed);
-				showSphereWindow = true;
+			if (ImGui::BeginMenu("Spheres")) {
+				ImGui::Text("Sphere param:");
+				CreateBasicForm(PrimitiveTypes::Primitive_Sphere);
+				ImGui::EndMenu();
 			}
 			//Cylinders
-			if (ImGui::MenuItem("Cylinders collision")) {
-				cylCol = TestColCyl(seed);
-				showCylWindow = true;
+			if (ImGui::BeginMenu("Cylinders")) {
+				ImGui::Text("Cylinders param:");
+				CreateBasicForm(PrimitiveTypes::Primitive_Cylinder);
+				ImGui::EndMenu();
 			}
-			//Triangles
-			if (ImGui::MenuItem("Triangles collision")) {
-				triCol = TestColTri(seed);
-				showTriWindow = true;
+			//Box
+			if (ImGui::BeginMenu("Box")) {
+				ImGui::Text("Box param:");
+				ImGui::SliderFloat("Base Width", &ar1, 0, 10);
+				ImGui::SliderFloat("Base Height", &ar2, 0, 10);
+				ImGui::SliderFloat("Box Height", &ar3, 0, 10);
+				if (ImGui::MenuItem("Create!"))
+				{
+					CreateBasicForm(PrimitiveTypes::Primitive_Box, ar1, ar2, ar3);
+				}
+				//PCylinder(float rBase = 1, float rTop = 1, float height = 2, uint sectors = 36, uint stacks = 8, bool smooth = true);
+				ImGui::EndMenu();
 			}
-
-			//AABB
-			if (ImGui::MenuItem("AABB collision")) {
-				AABBCol = TestColAABB(seed);
-				showAABBWindow = true;
+			//Cube
+			if (ImGui::BeginMenu("Cube")) {
+				ImGui::Text("Cube param:");
+				ImGui::SliderFloat("Size", &ar1, 0, 10);
+				if (ImGui::MenuItem("Create!"))
+				{
+					CreateBasicForm(PrimitiveTypes::Primitive_Cube, ar1);
+				}
+				ImGui::EndMenu();
+			}
+			//Pyramid
+			if (ImGui::BeginMenu("Pyramid")) {
+				ImGui::Text("Pyramid param:");
+				CreateBasicForm(PrimitiveTypes::Primitive_Cone);
+				ImGui::EndMenu();
+			}
+			//Cone
+			if (ImGui::BeginMenu("Cone")) {
+				ImGui::Text("Cone param:");
+				CreateBasicForm(PrimitiveTypes::Primitive_Cone);
+				ImGui::EndMenu();
 			}
 
 			ImGui::EndMenu();
@@ -193,22 +214,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ShowExampleAppConsole(&showConsoleWindow);
 	}
-	if (showSphereWindow) {
-
-		ShowSphereWindow(showSphereWindow, seed, sphereCol);
-	}
-	if (showCylWindow) {
-
-		ShowCylWindow(showCylWindow, seed, cylCol);
-	}
-	if (showTriWindow) {
-
-		ShowTriWindow(showTriWindow, seed, triCol);
-	}
-	if (showAABBWindow) {
-
-		ShowAAABBWindow(showAABBWindow, seed, AABBCol);
-	}
+	
 	if (show3DWindow) {
 		Show3DWindow();
 	}
@@ -574,6 +580,115 @@ bool ModuleRenderer2D::showQuitPopup()
 	ImGui::PopStyleColor(2);
 	ImGui::PopStyleVar();
 	return ret;
+}
+
+bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2, float ar3, float ar4)
+{
+	//We would love to make a switch, but we cant. Happyness huh
+	bool ret = false;
+
+
+	if (type == PrimitiveTypes::Primitive_Cube)
+		//ar1 = size;
+	{
+		std::vector<float> vertexArrayCube = {
+	0.f, 0.f, 0.f,
+	ar1, 0.f, 0.f,
+	ar1, 0.f, -ar1,
+	0, 0, -ar1,
+
+	0.f, ar1, 0.f,
+	ar1, ar1, 0.f,
+	ar1, ar1, -ar1,
+	0.f, ar1, -ar1
+		};
+		std::vector<unsigned int> indexArrayCube = {
+			4, 0, 1,
+			1, 5, 4,
+
+			4, 7, 3,
+			3, 0, 4,
+
+			2, 3, 7,
+			7, 6, 2,
+
+			7, 4, 5,
+			5, 6, 7,
+
+			5, 1, 2,
+			2, 6, 5,
+
+			0, 3, 2,
+			2, 1, 0
+		};
+		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube);
+		ret = true;
+	}
+	if (type == PrimitiveTypes::Primitive_Sphere)
+	{
+
+	}
+	if (type == PrimitiveTypes::Primitive_Cylinder)
+	{
+
+	}
+	if (type == PrimitiveTypes::Primitive_Cone)
+	{
+
+	}
+	if (type == PrimitiveTypes::Primitive_Box)
+	{
+		std::vector<float> vertexArrayCube = {
+			0.f, 0.f, 0.f,
+			ar1, 0.f, 0.f,
+			ar1, 0.f, -ar3,
+			0, 0, -ar3,
+
+			0.f, ar2, 0.f,
+			ar1, ar2, 0.f,
+			ar1, ar2, -ar3,
+			0.f, ar2, -ar3
+		};
+		std::vector<unsigned int> indexArrayCube = {
+			4, 0, 1,
+			1, 5, 4,
+
+			4, 7, 3,
+			3, 0, 4,
+
+			2, 3, 7,
+			7, 6, 2,
+
+			7, 4, 5,
+			5, 6, 7,
+
+			5, 1, 2,
+			2, 6, 5,
+
+			0, 3, 2,
+			2, 1, 0
+		};
+		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube);
+		ret = true;
+	}
+
+	return ret;
+}
+
+void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices)
+{
+	std::vector<float> fakeNormals;
+	for (int i = 0; i < vertices.size(); i++) { //openGL works in misterous ways
+		fakeNormals.push_back(0);
+	}
+	std::vector<float> fakeTex;
+	for (int i = 0; i < indices.size(); i++ ) {
+		fakeTex.push_back(0);
+		fakeTex.push_back(0);
+	}
+	Mesh AuxM = Mesh(vertices, indices, fakeNormals, fakeTex);
+	AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
+	App->editor3d->meshes.push_back(AuxM);
 }
 
 //Deprecated function

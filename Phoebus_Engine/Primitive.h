@@ -7,14 +7,17 @@
 
 //#include "PhysBody3D.h"
 
-enum PrimitiveTypes
+enum class PrimitiveTypes
 {
 	Primitive_Point,
 	Primitive_Line,
 	Primitive_Plane,
+
 	Primitive_Cube,
 	Primitive_Sphere,
 	Primitive_Cylinder,
+	Primitive_Cone, //cyl
+	Primitive_Box,	//cyl
 	Primitive_Unknown
 };
 
