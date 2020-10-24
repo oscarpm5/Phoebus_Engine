@@ -46,6 +46,12 @@
     <Filter Include="Sources\Tools\PhysFS">
       <UniqueIdentifier>{df8c125a-6c66-49c9-96d3-2fed89e55823}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Game Object">
+      <UniqueIdentifier>{42a87321-1f6f-402c-bab5-bdb32c69ee87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Game Object\Components">
+      <UniqueIdentifier>{a661a412-5c45-46c4-b255-b9d18e9a5c4e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -321,6 +327,12 @@
     <ClInclude Include="texture.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Sources\Game Object</Filter>
+    </ClInclude>
+    <ClInclude Include="Component.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -493,6 +505,12 @@
     </ClCompile>
     <ClCompile Include="texture.cpp">
       <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Sources\Game Object</Filter>
+    </ClCompile>
+    <ClCompile Include="Component.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

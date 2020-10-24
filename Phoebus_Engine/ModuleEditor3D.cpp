@@ -1,14 +1,18 @@
 #include "Application.h"
 #include "ModuleEditor3D.h"
 #include "Importer.h"
+#include "GameObject.h"
 
 
 ModuleEditor3D::ModuleEditor3D(bool start_enabled):Module(start_enabled)
 {
+	root = new GameObject(nullptr, "SceneRoot");
 }
 
 ModuleEditor3D::~ModuleEditor3D()
 {
+	delete root;
+	root = nullptr;
 }
 
 bool ModuleEditor3D::Init()

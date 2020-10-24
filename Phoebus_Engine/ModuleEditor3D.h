@@ -7,6 +7,8 @@
 
 #define PRIMITIVES_IN_SCENE 10
 
+class GameObject;
+
 class ModuleEditor3D : public Module
 {
 public:
@@ -24,4 +26,5 @@ public:
 public:
 	std::vector<Mesh> meshes;
 	std::vector<NewTexture*> textures;
+	GameObject* root;
 };
