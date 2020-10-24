@@ -149,7 +149,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::SliderFloat("Stacks", &ar3, 0, 36);
 				if (ImGui::MenuItem("Create!"))
 				{
-					CreateBasicForm(PrimitiveTypes::Primitive_Sphere, ar1, ar2, ar3);
+					if (ar1 * ar2 * ar3 != 0)
+						CreateBasicForm(PrimitiveTypes::Primitive_Sphere, ar1, ar2, ar3);
+					else
+						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -162,7 +165,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::SliderFloat("Stacks", &ar5, 0, 36);
 				if (ImGui::MenuItem("Create!")) 
 				{
-					CreateBasicForm(PrimitiveTypes::Primitive_Cylinder, ar1, ar2, ar3, ar4, ar5);
+					if (ar1 * ar2 * ar3 * ar4 * ar5 != 0)
+						CreateBasicForm(PrimitiveTypes::Primitive_Cylinder, ar1, ar2, ar3, ar4, ar5);
+					else
+						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -174,7 +180,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::SliderFloat("Box Height", &ar3, 0, 10);
 				if (ImGui::MenuItem("Create!"))
 				{
-					CreateBasicForm(PrimitiveTypes::Primitive_Box, ar1, ar2, ar3);
+					if (ar1 * ar2 * ar3 != 0)
+						CreateBasicForm(PrimitiveTypes::Primitive_Box, ar1, ar2, ar3);
+					else
+						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -184,7 +193,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::SliderFloat("Size", &ar1, 0, 10);
 				if (ImGui::MenuItem("Create!"))
 				{
-					CreateBasicForm(PrimitiveTypes::Primitive_Cube, ar1);
+					if (ar1 != 0)
+						CreateBasicForm(PrimitiveTypes::Primitive_Cube, ar1);
+					else
+						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -205,7 +217,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::SliderFloat("Stacks", &ar4, 0, 36);
 				if (ImGui::MenuItem("Create!"))
 				{
-					CreateBasicForm(PrimitiveTypes::Primitive_Cone, ar1, ar2, ar3, ar4);
+					if (ar1 * ar2 * ar3 * ar4 != 0)
+						CreateBasicForm(PrimitiveTypes::Primitive_Cone, ar1, ar2, ar3, ar4);
+					else
+						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
