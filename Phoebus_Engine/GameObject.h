@@ -39,7 +39,8 @@ public:
 		for (int i=0; i < components.size();i++) { Comp* c = dynamic_cast<Comp*>(components[i]);    if (c != nullptr)    return    c; }
 		return nullptr;
 	}
-
+private:
+	void DrawGameObject();
 private:
 	std::vector<Component*> components;
 	C_Transform* transform;

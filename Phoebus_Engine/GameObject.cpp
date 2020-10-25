@@ -1,8 +1,10 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "C_Transform.h"
+#include "C_Mesh.h"
+#include "Application.h"
 
-GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name),transform(nullptr)
+GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr)
 {
 	this->parent = parent;
 	isActive = true;
@@ -20,20 +22,27 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 
 void GameObject::Update(float dt)
 {
-	for (int i = 0; i < components.size(); i++)
+	if (isActive)
 	{
-		if (components[i]->IsActive())
+		for (int i = 0; i < components.size(); i++)
 		{
-			components[i]->Update(dt);
+			if (components[i]->IsActive())
+			{
+				components[i]->Update(dt);
+			}
 		}
-	}
 
-	for (int i = 0; i < children.size(); i++)
-	{
-		if (children[i]->isActive)
+
+
+		for (int i = 0; i < children.size(); i++)
 		{
-			children[i]->Update(dt);
+			if (children[i]->isActive)
+			{
+				children[i]->Update(dt);
+			}
 		}
+
+		DrawGameObject();
 	}
 }
 
@@ -49,7 +58,7 @@ GameObject::~GameObject()
 		delete transform;
 
 	transform = nullptr;
-	
+
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
 	if (parent)
 	{
@@ -83,7 +92,7 @@ Component* GameObject::CreateComponent(ComponentType type)
 	switch (type)
 	{
 	case ComponentType::MESH:
-
+		ret = new C_Mesh(this);
 		break;
 	case ComponentType::MATERIAL:
 
@@ -111,4 +120,12 @@ bool GameObject::IsParentActive()
 	}
 
 	return isActive;
+}
+
+void GameObject::DrawGameObject()
+{
+	if (C_Mesh * m = GetComponent<C_Mesh>())
+	{
+		App->editor3d->AddMeshToDraw(m, mat4x4(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+	}
 }

@@ -24,20 +24,20 @@ public:
 	Mesh(const Mesh& other);
 	~Mesh();
 
-	void Draw();
+	//void Draw();
 
-private:
 	void GenerateBuffers();
 	void FreeBuffers();
-	void DrawVertexNormals();
-	void DrawFacesNormals();
-	void DrawBuffers();
+private:
+	//void DrawVertexNormals();
+	//void DrawFacesNormals();
+	//void DrawBuffers();
 
 public:
 
-	bool shadingFlat;
-	MeshDrawMode drawMode;
-	NormalDrawMode normalMode;
+	//bool shadingFlat;
+	//MeshDrawMode drawMode;
+	//NormalDrawMode normalMode;
 
 	unsigned int idIndex; // index in VRAM
 	std::vector<unsigned int> indices;//index array
@@ -51,5 +51,5 @@ public:
 	unsigned int idTexCoords; //texture coordinates in VRAM
 	std::vector<float> texCoords;//texture coordinates array(note that texCoords are just 2 of the elements stored in this vector)
 
-	NewTexture* texture;
+	//NewTexture* texture;
 };

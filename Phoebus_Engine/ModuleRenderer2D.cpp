@@ -767,9 +767,9 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 		fakeTex.push_back(0);
 		fakeTex.push_back(0);
 	}
-	Mesh AuxM = Mesh(vertices, indices, fakeNormals, fakeTex);
-	AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
-	App->editor3d->meshes.push_back(AuxM);
+	//Mesh AuxM = Mesh(vertices, indices, fakeNormals, fakeTex);
+	//AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
+	//App->editor3d->meshes.push_back(AuxM);
 }
 
 //Deprecated function

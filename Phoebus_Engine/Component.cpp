@@ -17,6 +17,10 @@ bool Component::Update(float dt)
 	return true;
 }
 
+void Component::OnEditor()
+{
+}
+
 ComponentType Component::GetType() const
 {
 	return type;

@@ -18,7 +18,7 @@ public:
 	virtual ~Component();
 	virtual bool Update(float dt);
 
-	
+	virtual void OnEditor();//component drawing itself on the window
 	
 	ComponentType GetType()const;
 

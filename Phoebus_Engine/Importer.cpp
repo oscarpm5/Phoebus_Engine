@@ -146,7 +146,9 @@ bool Importer::LoadFBX(const char* path)
 */
 
 #include "texture.h"
-
+#include "GameObject.h"
+#include "Component.h"
+#include "C_Mesh.h"
 
 bool Importer::InitializeDevIL()
 {
@@ -202,13 +204,13 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 		}*/
 
 		//testing code
-		if (App->editor3d->meshes.size() > 0)
+		/*if (App->editor3d->meshes.size() > 0)
 		{
 			if (App->editor3d->meshes.back().texture == nullptr)
 			{
 				App->editor3d->meshes.back().texture = App->editor3d->textures.back();
 			}
-		}
+		}*/
 
 
 
@@ -270,7 +272,6 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 
 		for (int i = 0; i < scene->mNumMeshes; i++)
 		{
-
 			std::vector<float> vertices;
 			std::vector<unsigned int> indices;
 			std::vector<float> normals;
@@ -278,6 +279,8 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 			//creates a new mesh at scene editor
 
 			aiMesh* mesh = scene->mMeshes[i];
+			GameObject* newObj = new GameObject(App->editor3d->root, mesh->mName.C_Str(), mat4x4());
+			//TODO update hierarchy here
 			LOG("----------Importing mesh %i----------", i);
 
 
@@ -362,14 +365,17 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 
 
 
-
-			App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
+			newObj->CreateComponent(ComponentType::MESH);
+			newObj->GetComponent<C_Mesh>()->SetMesh(Mesh(vertices, indices, normals, texCoords));
+			
+			//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
 			LOG("----------Mesh %i has been loaded----------", i);
 			vertices.clear();
 			indices.clear();
 			normals.clear();
 			ret = true;
 			mesh = nullptr;
+			newObj = nullptr;
 		}
 		aiReleaseImport(scene);
 	}

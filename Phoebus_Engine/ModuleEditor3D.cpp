@@ -5,10 +5,10 @@
 #include "MathGeoLib/include/MathGeoLib.h"
 
 
-ModuleEditor3D::ModuleEditor3D(bool start_enabled):Module(start_enabled)
+ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 {
 	mat4x4 transform;
-	root = new GameObject(nullptr, "SceneRoot",transform);
+	root = new GameObject(nullptr, "SceneRoot", transform);
 }
 
 ModuleEditor3D::~ModuleEditor3D()
@@ -30,12 +30,12 @@ bool ModuleEditor3D::Start()
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
-	
-	
-	 
+
+
+
 	//Importer::LoadFBX("./Assets/warrior.FBX");
 	//Importer::LoadFBX("./Assets/warrior.FBX");
-	
+
 	/*
 	Importer::LoadFBX("./Assets/suzzane.FBX");
 	Importer::LoadNewImage("./Assets/flamethrower.png");
@@ -46,15 +46,19 @@ bool ModuleEditor3D::Start()
 	Importer::LoadFBX("./Assets/warrior.fbx");
 	Importer::LoadNewImage("./Assets/lenna.png");*/
 
+
+	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
+
+
 	return ret;
 }
 
 update_status ModuleEditor3D::PreUpdate(float dt)
 {
 
-	if(App->input->GetKey(SDL_SCANCODE_K) == KEY_UP) 
+	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_UP)
 	{
-		App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx"); 
+		App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
 		App->fileSystem->LoadAsset("Assets/bakerHouse/Baker_house.png");
 	}
 	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_UP)
@@ -68,7 +72,9 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 update_status ModuleEditor3D::Update(float dt)
 {
-	
+	if (root)
+		root->Update(dt);
+
 	return UPDATE_CONTINUE;
 }
 
@@ -82,7 +88,7 @@ bool ModuleEditor3D::CleanUp()
 {
 	bool ret = true;
 	meshes.clear();
-	for (int i = textures.size()-1; i >=0; i--)
+	for (int i = textures.size() - 1; i >= 0; i--)
 	{
 		delete textures[i];
 		textures[i] = nullptr;
@@ -90,3 +96,20 @@ bool ModuleEditor3D::CleanUp()
 	textures.clear();
 	return ret;
 }
+
+void ModuleEditor3D::DrawAllMeshes()
+{
+	for (int i = 0; i < drawMeshes.size(); i++)
+	{
+		drawMeshes[i].Draw();
+	}
+
+	drawMeshes.clear();
+}
+
+void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)
+{
+	drawMeshes.push_back(RenderMesh(mesh, gTransform, drawMode, normalMode));
+}
+
+

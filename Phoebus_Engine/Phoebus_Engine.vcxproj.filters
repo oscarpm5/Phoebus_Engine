@@ -336,6 +336,12 @@
     <ClInclude Include="C_Transform.h">
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="C_Mesh.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderMesh.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -517,6 +523,12 @@
     </ClCompile>
     <ClCompile Include="C_Transform.cpp">
       <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Mesh.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderMesh.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
