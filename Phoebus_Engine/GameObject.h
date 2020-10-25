@@ -22,19 +22,20 @@ public:
 
 	Component* CreateComponent(ComponentType type);
 
+	std::string GetName();
+
 	bool IsParentActive(); //will need this when the hierarchy is implemented TODO
 
 
 private:
 
 	GameObject* parent;
-	std::vector<GameObject*> children;
-	std::vector<Component*> components;
+	std::vector<Component*> components; 
 	std::string name;
 
 public:
 	bool isActive;
-
+	std::vector<GameObject*> children; //we need them public for hierarchy
 
 
 };

@@ -93,6 +93,11 @@ Component* GameObject::CreateComponent(ComponentType type)
 	return ret;
 }
 
+std::string GameObject::GetName()
+{
+	return this->name;
+}
+
 //recursive function that returns false if some game object from which this inherits is not active 
 bool GameObject::IsParentActive()
 {

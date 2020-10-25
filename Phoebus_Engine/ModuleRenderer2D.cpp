@@ -20,6 +20,7 @@
 #include "MathChecks.h"
 #include "Mesh.h"
 #include "ModuleWindow.h"
+#include "Hierarchy.h"
 
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -163,7 +164,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::SliderFloat("Height", &ar3, 0, 10);
 				ImGui::SliderFloat("Sectors", &ar4, 0, 72);
 				ImGui::SliderFloat("Stacks", &ar5, 0, 36);
-				if (ImGui::MenuItem("Create!")) 
+				if (ImGui::MenuItem("Create!"))
 				{
 					if (ar1 * ar2 * ar3 * ar4 * ar5 != 0)
 						CreateBasicForm(PrimitiveTypes::Primitive_Cylinder, ar1, ar2, ar3, ar4, ar5);
@@ -200,14 +201,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				}
 				ImGui::EndMenu();
 			}
-		
+
 			////Pyramid
 			//if (ImGui::BeginMenu("Pyramid")) {
 			//	ImGui::Text("Pyramid param:");
 			//	CreateBasicForm(PrimitiveTypes::Primitive_Cone);
 			//	ImGui::EndMenu();
 			//}
-		
+
 			//Cone
 			if (ImGui::BeginMenu("Cone")) {
 				ImGui::Text("Cone param:");
@@ -231,10 +232,20 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::MenuItem("Example Window")) { showDemoWindow = true; }
 		if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
 		if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
-
+		if (ImGui::MenuItem("Hierarchy")) { showHierarchy = true; }
+		
 
 		ImGui::EndMainMenuBar();
 
+	}
+	if (showHierarchy)
+	{
+		if (!ImGui::Begin("Hierarchy", &showHierarchy))		//this is how you add the cross button to a window
+		{
+			
+		}
+		ShowHierarchyTab();
+		ImGui::End();
 	}
 	if (showDemoWindow)
 	{
@@ -252,7 +263,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ShowExampleAppConsole(&showConsoleWindow);
 	}
-	
+
 	if (show3DWindow) {
 		Show3DWindow();
 	}
@@ -411,13 +422,13 @@ bool ModuleRenderer2D::showLibsFunc()
 	ImGui::Text("%i.", int(aux2));
 	ImGui::Spacing();
 
-	
+
 	ImGui::Text("Devil v.");
 	int devilVer = ilutGetInteger(ILUT_VERSION_NUM);
 	ImGui::SameLine();
 	ImGui::Text("%i.", int(devilVer));
 	ImGui::Spacing();
-	
+
 
 	ImGui::End();
 	return true;
@@ -587,13 +598,13 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGuiSliderFlags flags = ImGuiSliderFlags_None;
 		int sensitivity = 100;
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)sensitivity = 1000000; //use Lshift to be more precise
-		
-		if (ImGui::DragFloat("Near Plane", &App->camera->nearPlaneDist, App->camera->farPlaneDist/sensitivity, 0.01f, App->camera->farPlaneDist, "%.3f", flags))
+
+		if (ImGui::DragFloat("Near Plane", &App->camera->nearPlaneDist, App->camera->farPlaneDist / sensitivity, 0.01f, App->camera->farPlaneDist, "%.3f", flags))
 		{
 			OnResize(App->window->w, App->window->h);
 		}
 
-		if (ImGui::DragFloat("Far Plane", &App->camera->farPlaneDist, (abs(App->camera->farPlaneDist-App->camera->nearPlaneDist))/sensitivity, App->camera->nearPlaneDist,2000.0f, "%.3f", flags))
+		if (ImGui::DragFloat("Far Plane", &App->camera->farPlaneDist, (abs(App->camera->farPlaneDist - App->camera->nearPlaneDist)) / sensitivity, App->camera->nearPlaneDist, 2000.0f, "%.3f", flags))
 		{
 			OnResize(App->window->w, App->window->h);
 		}
@@ -697,7 +708,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 	{
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
-		SphereFillVectorsVertexAndIndex(vertexArray, indexArray,ar1,(int)ar2,(int)ar3);
+		SphereFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, (int)ar2, (int)ar3);
 		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
 		ret = true;
 	}
@@ -763,7 +774,7 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 		fakeNormals.push_back(0);
 	}
 	std::vector<float> fakeTex;
-	for (int i = 0; i < indices.size(); i++ ) {
+	for (int i = 0; i < indices.size(); i++) {
 		fakeTex.push_back(0);
 		fakeTex.push_back(0);
 	}
@@ -788,7 +799,7 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist,App->camera->farPlaneDist);
+	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
 	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
 
 	glMatrixMode(GL_MODELVIEW);
