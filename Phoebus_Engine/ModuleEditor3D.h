@@ -33,5 +33,5 @@ public:
 
 	std::vector<RenderMesh> drawMeshes;
 	GameObject* test1; GameObject* test2; GameObject* test3; GameObject* test4; GameObject* test5; GameObject* test6; GameObject* test7;
-	std::vector<GameObject*> testingrounds;
+	
 };

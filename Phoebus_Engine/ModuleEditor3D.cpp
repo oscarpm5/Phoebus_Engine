@@ -11,13 +11,13 @@ ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 	root = new GameObject(nullptr, "SceneRoot", transform);
 
 	
-	test1 = new GameObject(root, "Test1", transform); testingrounds.push_back(test1);
-	test2 = new GameObject(root, "Test2", transform); testingrounds.push_back(test2);
-	test3 = new GameObject(root, "Test3", transform); testingrounds.push_back(test3);
-	test4 = new GameObject(test3, "Test4", transform); testingrounds.push_back(test4);
-	test5 = new GameObject(test3, "Test5", transform); testingrounds.push_back(test5);
-	test6 = new GameObject(test4, "Test6", transform); testingrounds.push_back(test6);
-	test7 = new GameObject(test6, "Test7", transform); testingrounds.push_back(test7);
+	test1 = new GameObject(root, "Test1", transform);
+	test2 = new GameObject(root, "Test2", transform);
+	test3 = new GameObject(root, "Test3", transform); 
+	test4 = new GameObject(test3, "Test4", transform); 
+	test5 = new GameObject(test3, "Test5", transform); 
+	test6 = new GameObject(test4, "Test6", transform); 
+	test7 = new GameObject(test6, "Test7", transform);
 	
 	
 	
@@ -25,13 +25,9 @@ ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 
 ModuleEditor3D::~ModuleEditor3D()
 {
-	delete root;
-	root = nullptr;
-	for (int i = 0; i < testingrounds.size(); i++) 
-	{
-		delete testingrounds[i];
-		testingrounds[i] = nullptr;
-	}
+	delete root;	
+	root = nullptr;	
+
 }
 
 bool ModuleEditor3D::Init()

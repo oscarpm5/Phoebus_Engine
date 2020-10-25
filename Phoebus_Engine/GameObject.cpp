@@ -52,6 +52,7 @@ GameObject::~GameObject()
 	{
 		delete children[i];
 	}
+	
 	children.clear();
 
 	if (transform != nullptr)//This wont be needed as transform is deleted from the component vector
@@ -64,7 +65,6 @@ GameObject::~GameObject()
 	{
 		parent->RemoveChildren(this);
 	}
-
 }
 
 void GameObject::RemoveChildren(GameObject* toRemove)
