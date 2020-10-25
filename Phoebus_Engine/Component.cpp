@@ -17,14 +17,6 @@ bool Component::Update(float dt)
 	return true;
 }
 
-void Component::Enable()
-{
-}
-
-void Component::Disable()
-{
-}
-
 ComponentType Component::GetType() const
 {
 	return type;

@@ -333,6 +333,9 @@
     <ClInclude Include="Component.h">
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="C_Transform.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -510,6 +513,9 @@
       <Filter>Sources\Game Object</Filter>
     </ClCompile>
     <ClCompile Include="Component.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Transform.cpp">
       <Filter>Sources\Game Object\Components</Filter>
     </ClCompile>
   </ItemGroup>

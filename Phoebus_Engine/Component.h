@@ -17,8 +17,7 @@ public:
 	Component(ComponentType type,GameObject* owner);
 	virtual ~Component();
 	virtual bool Update(float dt);
-	virtual void Enable();
-	virtual void Disable();
+
 	
 	
 	ComponentType GetType()const;
@@ -28,6 +27,7 @@ public:
 
 public:
 	GameObject* owner;
+
 private:
 	ComponentType type;
 	bool active;

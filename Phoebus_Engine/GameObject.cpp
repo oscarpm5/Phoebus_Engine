@@ -1,7 +1,8 @@
 #include "GameObject.h"
 #include "Component.h"
+#include "C_Transform.h"
 
-GameObject::GameObject(GameObject* parent, std::string name):name(name)
+GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name),transform(nullptr)
 {
 	this->parent = parent;
 	isActive = true;
@@ -12,6 +13,9 @@ GameObject::GameObject(GameObject* parent, std::string name):name(name)
 	}
 
 	//TODO add transform component here
+	this->transform = new C_Transform(this, transform);
+	components.push_back(this->transform);
+
 }
 
 void GameObject::Update(float dt)
@@ -42,24 +46,30 @@ GameObject::~GameObject()
 	}
 	children.clear();
 
+	if (transform != nullptr)//This wont be needed as transform is deleted from the component vector
+		delete transform;
+
+	transform = nullptr;
+	
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
-	if (parent)
+	/*if (parent)
 	{
 		parent->RemoveChildren(this);
-	}
+	}*/
+
 }
 
 void GameObject::RemoveChildren(GameObject* toRemove)
 {
 	std::vector<GameObject*>::iterator iterator = children.begin();
 
-	for(iterator; iterator!= children.end(); iterator++)
+	for (iterator; iterator != children.end(); iterator++)
 	{
 		if (*iterator == toRemove)
 		{
-			
+
 			children.erase(iterator);
-			
+
 			break;
 		}
 
@@ -73,9 +83,6 @@ Component* GameObject::CreateComponent(ComponentType type)
 	//TODO add diferent components here
 	switch (type)
 	{
-	case ComponentType::TRANSFORM:
-		//if it hasn't got any component of type T, create a new one and assign it to ret
-		break;
 	case ComponentType::MESH:
 
 		break;
