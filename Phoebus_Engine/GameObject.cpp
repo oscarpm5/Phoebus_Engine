@@ -42,7 +42,6 @@ GameObject::~GameObject()
 	for (int i = 0; i < children.size(); i++)
 	{
 		delete children[i];
-		children[i] = nullptr;
 	}
 	children.clear();
 
@@ -52,10 +51,10 @@ GameObject::~GameObject()
 	transform = nullptr;
 	
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
-	/*if (parent)
+	if (parent)
 	{
 		parent->RemoveChildren(this);
-	}*/
+	}
 
 }
 
