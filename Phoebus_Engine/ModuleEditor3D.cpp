@@ -11,13 +11,13 @@ ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 	root = new GameObject(nullptr, "SceneRoot", transform);
 
 	
-	test1 = new GameObject(root, "Test1"); testingrounds.push_back(test1);
-	test2 = new GameObject(root, "Test2"); testingrounds.push_back(test2);
-	test3 = new GameObject(root, "Test3"); testingrounds.push_back(test3);
-	test4 = new GameObject(test3, "Test4"); testingrounds.push_back(test4);
-	test5 = new GameObject(test3, "Test5"); testingrounds.push_back(test5);
-	test6 = new GameObject(test4, "Test6"); testingrounds.push_back(test6);
-	test7 = new GameObject(test6, "Test7"); testingrounds.push_back(test7);
+	test1 = new GameObject(root, "Test1", transform); testingrounds.push_back(test1);
+	test2 = new GameObject(root, "Test2", transform); testingrounds.push_back(test2);
+	test3 = new GameObject(root, "Test3", transform); testingrounds.push_back(test3);
+	test4 = new GameObject(test3, "Test4", transform); testingrounds.push_back(test4);
+	test5 = new GameObject(test3, "Test5", transform); testingrounds.push_back(test5);
+	test6 = new GameObject(test4, "Test6", transform); testingrounds.push_back(test6);
+	test7 = new GameObject(test6, "Test7", transform); testingrounds.push_back(test7);
 	
 	
 	

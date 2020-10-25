@@ -31,7 +31,6 @@ public:
 
 	GameObject* parent;
 
-
 	template<typename Comp>
 	Comp* GetComponent()
 	{
@@ -44,7 +43,7 @@ private:
 	std::vector<Component*> components;
 	C_Transform* transform;
 
-	GameObject* parent;
+
 
 	std::string name;
 
