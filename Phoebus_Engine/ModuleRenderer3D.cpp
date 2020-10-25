@@ -415,9 +415,9 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::RenderMeshes()
 {
-	for (int i = 0; i < App->editor3d->meshes.size(); i++)
+	for (int i = 0; i < App->editor3d->drawMeshes.size(); i++)
 	{
-		App->editor3d->meshes[i].Draw();
+		App->editor3d->DrawAllMeshes();
 	}
 }
 

@@ -333,6 +333,15 @@
     <ClInclude Include="Component.h">
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="C_Transform.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="C_Mesh.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderMesh.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
     <ClInclude Include="Hierarchy.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
@@ -514,6 +523,15 @@
     </ClCompile>
     <ClCompile Include="Component.cpp">
       <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Transform.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Mesh.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderMesh.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="Hierarchy.cpp">
       <Filter>Sources\Helpers</Filter>

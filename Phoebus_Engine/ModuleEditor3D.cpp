@@ -2,11 +2,13 @@
 #include "ModuleEditor3D.h"
 #include "Importer.h"
 #include "GameObject.h"
+#include "MathGeoLib/include/MathGeoLib.h"
 
 
 ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 {
-	root = new GameObject(nullptr, "SceneRoot");
+	mat4x4 transform;
+	root = new GameObject(nullptr, "SceneRoot", transform);
 
 	
 	test1 = new GameObject(root, "Test1"); testingrounds.push_back(test1);
@@ -16,6 +18,8 @@ ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 	test5 = new GameObject(test3, "Test5"); testingrounds.push_back(test5);
 	test6 = new GameObject(test4, "Test6"); testingrounds.push_back(test6);
 	test7 = new GameObject(test6, "Test7"); testingrounds.push_back(test7);
+	
+	
 	
 }
 
@@ -59,6 +63,10 @@ bool ModuleEditor3D::Start()
 	Importer::LoadFBX("./Assets/warrior.fbx");
 	Importer::LoadNewImage("./Assets/lenna.png");*/
 
+
+	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
+
+
 	return ret;
 }
 
@@ -81,6 +89,8 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 update_status ModuleEditor3D::Update(float dt)
 {
+	if (root)
+		root->Update(dt);
 
 	return UPDATE_CONTINUE;
 }
@@ -103,3 +113,20 @@ bool ModuleEditor3D::CleanUp()
 	textures.clear();
 	return ret;
 }
+
+void ModuleEditor3D::DrawAllMeshes()
+{
+	for (int i = 0; i < drawMeshes.size(); i++)
+	{
+		drawMeshes[i].Draw();
+	}
+
+	drawMeshes.clear();
+}
+
+void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)
+{
+	drawMeshes.push_back(RenderMesh(mesh, gTransform, drawMode, normalMode));
+}
+
+

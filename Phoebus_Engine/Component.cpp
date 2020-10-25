@@ -17,11 +17,7 @@ bool Component::Update(float dt)
 	return true;
 }
 
-void Component::Enable()
-{
-}
-
-void Component::Disable()
+void Component::OnEditor()
 {
 }
 
