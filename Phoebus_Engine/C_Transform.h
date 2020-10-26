@@ -14,6 +14,8 @@ public:
 
 	mat4x4 GetGlobalTransform()const;
 	mat4x4 GetLocalTransform()const;
+	void OnEditor();
+
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 
@@ -21,7 +23,6 @@ private:
 
 	mat4x4 lTransformMat;//local transform mat
 	mat4x4 gTransformMat;//global transform mat
-
 };
 
 
