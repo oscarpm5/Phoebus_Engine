@@ -12,10 +12,11 @@ public:
 	C_Transform(GameObject* owner, mat4x4 lTransform);
 	~C_Transform();
 
+	mat4x4 GetGlobalTransform()const;
+	mat4x4 GetLocalTransform()const;
 	void OnEditor();
 
 
-private:
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 
 private:

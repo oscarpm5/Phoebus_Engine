@@ -12,10 +12,16 @@ RenderMesh::~RenderMesh()
 
 void RenderMesh::Draw()
 {
+
+
 	Mesh* m = mesh->GetMesh();
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glPushMatrix();
+	glMultMatrixf(transform.M);
+	
 
 	if ((normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
 		DrawVertexNormals();
@@ -50,7 +56,9 @@ void RenderMesh::Draw()
 	}
 
 	DrawBuffers();
+	
 
+	glPopMatrix();
 
 	glDisableClientState(GL_VERTEX_ARRAY); // ... TODO (2) Put this on end of render postupdate
 	glDisableClientState(GL_NORMAL_ARRAY); // ... TODO (2) Put this on end of render postupdate
@@ -60,7 +68,6 @@ void RenderMesh::Draw()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
 
 }
 
