@@ -154,6 +154,7 @@ bool Importer::LoadFBX(const char* path)
 #include "GameObject.h"
 #include "Component.h"
 #include "C_Mesh.h"
+#include "C_Material.h"
 
 bool Importer::InitializeDevIL()
 {
@@ -232,8 +233,59 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 		}*/
 
 
+		if (App->editor3d->selectedGameObj != nullptr && App->editor3d->selectedGameObj != App->editor3d->root)
+		{
+
+			C_Material* mat = App->editor3d->selectedGameObj->GetComponent<C_Material>();
+
+			if (mat == nullptr)
+			{
+				App->editor3d->selectedGameObj->CreateComponent(ComponentType::MATERIAL);
+				mat = App->editor3d->selectedGameObj->GetComponent<C_Material>();
+			}
+
+			mat->GenTextureFromName(newImage);
+
+		}
+		ilDeleteImages(1, &newImage);
+	}
+	return ret;
+}
+
+bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, GameObject* target)
+{
+	ILuint newImage = 0;
+	ilGenImages(1, &newImage);
+	ilBindImage(newImage);
+
+	//TODO this will need to accept more formats in the future
+	bool ret = ilLoadL(IL_PNG, Buffer, Length);
 
 
+	if (!ret)
+	{
+		ILenum error;
+		error = ilGetError();
+		LOG("\nCould not load an miage from buffer: %s", Buffer);
+		LOG("Error %d :\n %s", error, iluErrorString(error));
+		ilDeleteImages(1, &newImage);
+	}
+	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+	{
+		if (target != nullptr)
+		{
+
+			C_Material* mat = target->GetComponent<C_Material>();
+
+			if (mat == nullptr)
+			{
+				target->CreateComponent(ComponentType::MATERIAL);
+				mat = target->GetComponent<C_Material>();
+			}
+
+			mat->GenTextureFromName(newImage);
+
+		}
 		ilDeleteImages(1, &newImage);
 	}
 	return ret;
@@ -320,7 +372,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 					if (parents.back()->mNumMeshes > 0)
 						newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 						//create game object and save it into gameObjParents (its parent is currObjParent)
-					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh,scene, parents.back(), currObjParent));
+					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent));
 
 				}
 			}
@@ -446,7 +498,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 	return ret;
 }
 
-GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,const aiScene* scene,aiNode*currNode, GameObject* parent)
+GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent)
 {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
@@ -474,25 +526,25 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,const aiScene* scene,a
 	aiVector3D translation, scaling;
 	aiQuaternion rotation;
 	currNode->mTransformation.Decompose(scaling, rotation, translation);
-	
-	mat4x4 transformMat=IdentityMatrix;
+
+	mat4x4 transformMat = IdentityMatrix;
 	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
 	float3 vec;
 	float angle;
 
 	rot.ToAxisAngle(vec, angle);
-	angle=RadToDeg(angle);
-	
+	angle = RadToDeg(angle);
+
 	transformMat.scale(scaling.x, scaling.y, scaling.z);
 	mat4x4 auxTransform = transformMat;
 
-	transformMat= auxTransform.rotate(angle, { vec.x,vec.y,vec.z })*transformMat;
+	transformMat = auxTransform.rotate(angle, { vec.x,vec.y,vec.z }) * transformMat;
 	transformMat.translate(translation.x, translation.y, translation.z);
-	
+
 
 	//creates new game object
 	GameObject* newObj = new GameObject(newParent, name, transformMat);
-	
+
 	LOG("----------Importing mesh %s----------", name);
 
 
@@ -591,7 +643,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,const aiScene* scene,a
 
 			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
-			
+
 			if (numTextures > 0)
 			{
 				aiString path;
@@ -599,6 +651,8 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,const aiScene* scene,a
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
 				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
+				//use also the LoadNewImageFromObj() function when the file system only returns buffers
+			
 			}
 		}
 		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));

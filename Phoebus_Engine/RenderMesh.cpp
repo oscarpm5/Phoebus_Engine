@@ -1,13 +1,14 @@
 #include "RenderMesh.h"
 #include "Glew/include/glew.h"
 
-RenderMesh::RenderMesh(C_Mesh* mesh, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode) :
-	mesh(mesh), transform(gTransform), drawMode(drawMode), normalMode(normalMode)
+RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode) :
+	mesh(mesh), material(material),transform(gTransform), drawMode(drawMode), normalMode(normalMode)
 {}
 
 RenderMesh::~RenderMesh()
 {
 	mesh = nullptr;
+	material = nullptr;
 }
 
 void RenderMesh::Draw()
@@ -15,6 +16,7 @@ void RenderMesh::Draw()
 
 
 	Mesh* m = mesh->GetMesh();
+
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -145,6 +147,7 @@ void RenderMesh::DrawFacesNormals()
 void RenderMesh::DrawBuffers()
 {
 	Mesh* m = mesh->GetMesh();
+	unsigned int texIDtoBind = 0;
 	glBindBuffer(GL_ARRAY_BUFFER, m->idVertex);			//this is for printing the index
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
 
@@ -162,8 +165,23 @@ void RenderMesh::DrawBuffers()
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m->idIndex);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
 
-	/*if (texture != nullptr && texture->HasTexture())
-		glBindTexture(GL_TEXTURE_2D, texture->GetTextureID());*/
+	if (material != nullptr)
+	{
+		if (material->usingCkeckers)
+		{
+			texIDtoBind = material->GetCheckersID();
+		}
+		else if (material->HasTexture())
+		{
+			texIDtoBind = material->GetTextureID();
+		}
+		else
+		{
+			texIDtoBind = material->GetCheckersID();//when texture is not existing we draw checkers for the moment TODO make this better
+		}
+	}
+
+	glBindTexture(GL_TEXTURE_2D, texIDtoBind);
 
 	glDrawElements(GL_TRIANGLES, m->indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 

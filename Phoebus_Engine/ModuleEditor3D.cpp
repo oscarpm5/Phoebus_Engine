@@ -62,8 +62,11 @@ bool ModuleEditor3D::Start()
 	Importer::LoadNewImage("./Assets/lenna.png");*/
 
 
-	//App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
-	App->fileSystem->LoadAsset("Assets/Models/hierarchyv2.fbx");
+	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
+	selectedGameObj = root->children[4]; //todo select gameobjbyname this is harcoded atm
+	App->fileSystem->LoadAsset("Assets/bakerHouse/Baker_house.png");
+
+	//App->fileSystem->LoadAsset("Assets/Models/hierarchyv2.fbx");
 
 	return ret;
 }
@@ -122,9 +125,9 @@ void ModuleEditor3D::DrawAllMeshes()
 	drawMeshes.clear();
 }
 
-void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)
+void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh,C_Material* material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)
 {
-	drawMeshes.push_back(RenderMesh(mesh, gTransform, drawMode, normalMode));
+	drawMeshes.push_back(RenderMesh(mesh,material, gTransform, drawMode, normalMode));
 }
 
 bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected)

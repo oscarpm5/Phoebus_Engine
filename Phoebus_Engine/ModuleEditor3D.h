@@ -24,11 +24,12 @@ public:
 	bool CleanUp();
 
 	void DrawAllMeshes();
-	void AddMeshToDraw(C_Mesh* mesh,mat4x4 gTransform,MeshDrawMode drawMode,NormalDrawMode normalMode);
+	void AddMeshToDraw(C_Mesh* mesh, C_Material* material,mat4x4 gTransform,MeshDrawMode drawMode,NormalDrawMode normalMode);
 
 	bool SetSelectedGameObject(GameObject* selected);
 	GameObject* GetSelectedGameObject();
 	bool UpdateInfoOnSelectedGameObject();
+
 
 public:
 	std::vector<Mesh> meshes;
@@ -38,6 +39,6 @@ public:
 	std::vector<RenderMesh> drawMeshes;
 	GameObject* test1; GameObject* test2; GameObject* test3; GameObject* test4; GameObject* test5; GameObject* test6; GameObject* test7;
 	
-private:
+
 	GameObject* selectedGameObj;
 };
