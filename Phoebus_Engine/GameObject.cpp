@@ -61,10 +61,7 @@ GameObject::~GameObject()
 	transform = nullptr;
 
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
-	if (parent)
-	{
-		parent->RemoveChildren(this);
-	}
+	RemoveMyselfFromParent();
 }
 
 void GameObject::RemoveChildren(GameObject* toRemove)
@@ -83,6 +80,14 @@ void GameObject::RemoveChildren(GameObject* toRemove)
 
 	}
 
+}
+
+void GameObject::RemoveMyselfFromParent()
+{
+	if (parent)
+	{
+		parent->RemoveChildren(this);
+	}
 }
 
 Component* GameObject::CreateComponent(ComponentType type)
@@ -125,6 +130,14 @@ bool GameObject::IsParentActive()
 	}
 
 	return isActive;
+}
+
+void GameObject::DrawOnEditorAllComponents()
+{
+	for (int i = 0; i < this->components.size(); i++) 
+	{
+		components[i]->OnEditor();
+	}
 }
 
 void GameObject::DrawGameObject()

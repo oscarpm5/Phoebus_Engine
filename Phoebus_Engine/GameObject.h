@@ -23,6 +23,8 @@ public:
 
 	void RemoveChildren(GameObject* toRemove);
 
+	void RemoveMyselfFromParent();
+
 	Component* CreateComponent(ComponentType type);
 
 	std::string GetName();
@@ -37,6 +39,8 @@ public:
 		for (int i=0; i < components.size();i++) { Comp* c = dynamic_cast<Comp*>(components[i]);    if (c != nullptr)    return    c; }
 		return nullptr;
 	}
+
+	void DrawOnEditorAllComponents();
 private:
 	void DrawGameObject();
 private:

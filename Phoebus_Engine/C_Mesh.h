@@ -13,6 +13,8 @@ public:
 	void SetMesh(Mesh mesh);
 	Mesh* GetMesh()const;
 
+	void OnEditor();
+
 private:
 	Mesh* m;
 

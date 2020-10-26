@@ -4,6 +4,7 @@
 
 #define ACTIVE_COLOR (1.0f, 1.0f, 1.0f, 1.0f)
 #define PASIVE_COLOR (0.7f, 0.7f, 0.7f, 0.7f)
+#define FOCUSED_COLOR (0.0f, 0.4f, 0.4f, 1.0f)
  
 
 class GameObject;

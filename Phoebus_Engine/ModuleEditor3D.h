@@ -26,6 +26,10 @@ public:
 	void DrawAllMeshes();
 	void AddMeshToDraw(C_Mesh* mesh,mat4x4 gTransform,MeshDrawMode drawMode,NormalDrawMode normalMode);
 
+	bool SetSelectedGameObject(GameObject* selected);
+	GameObject* GetSelectedGameObject();
+	bool UpdateInfoOnSelectedGameObject();
+
 public:
 	std::vector<Mesh> meshes;
 	std::vector<NewTexture*> textures;
@@ -34,4 +38,6 @@ public:
 	std::vector<RenderMesh> drawMeshes;
 	GameObject* test1; GameObject* test2; GameObject* test3; GameObject* test4; GameObject* test5; GameObject* test6; GameObject* test7;
 	
+private:
+	GameObject* selectedGameObj;
 };

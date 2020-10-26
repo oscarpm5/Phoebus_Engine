@@ -12,6 +12,8 @@ public:
 	C_Transform(GameObject* owner, mat4x4 lTransform);
 	~C_Transform();
 
+	void OnEditor();
+
 
 private:
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
@@ -20,7 +22,6 @@ private:
 
 	mat4x4 lTransformMat;//local transform mat
 	mat4x4 gTransformMat;//global transform mat
-
 };
 
 

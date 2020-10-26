@@ -9,7 +9,7 @@ ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 {
 	mat4x4 transform;
 	root = new GameObject(nullptr, "SceneRoot", transform);
-
+	selectedGameObj = root;
 	
 	test1 = new GameObject(root, "Test1", transform);
 	test2 = new GameObject(root, "Test2", transform);
@@ -125,6 +125,33 @@ void ModuleEditor3D::DrawAllMeshes()
 void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)
 {
 	drawMeshes.push_back(RenderMesh(mesh, gTransform, drawMode, normalMode));
+}
+
+bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected)
+{
+	bool ret = false;
+	if (selected != nullptr) 
+	{ 
+		selectedGameObj = selected;
+		ret = true;
+	}	
+	return ret;
+}
+
+GameObject* ModuleEditor3D::GetSelectedGameObject()
+{
+	return selectedGameObj;
+}
+
+bool ModuleEditor3D::UpdateInfoOnSelectedGameObject()
+{
+	bool ret = true;
+	if (selectedGameObj != nullptr) 
+	{ 
+		ImGui::Text("My name is %s", selectedGameObj->GetName().c_str());
+		selectedGameObj->DrawOnEditorAllComponents();
+	}
+	return ret;
 }
 
 

@@ -233,7 +233,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
 		if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
 		if (ImGui::MenuItem("Hierarchy")) { showHierarchy = true; }
-		
+		if (ImGui::MenuItem("Display Selected")) { showSelected = true; }
 
 		ImGui::EndMainMenuBar();
 
@@ -250,6 +250,15 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	if (showDemoWindow)
 	{
 		ImGui::ShowDemoWindow(&showDemoWindow);
+	}
+	if (showSelected)
+	{
+		if (!ImGui::Begin("Info Display", &showSelected))		//this is how you add the cross button to a window
+		{
+
+		}
+		App->editor3d->UpdateInfoOnSelectedGameObject();
+		ImGui::End();
 	}
 	if (showAboutWindowbool)
 	{
