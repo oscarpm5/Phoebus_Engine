@@ -345,6 +345,9 @@
     <ClInclude Include="Hierarchy.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="C_Material.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -535,6 +538,9 @@
     </ClCompile>
     <ClCompile Include="Hierarchy.cpp">
       <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Material.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -188,19 +188,33 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 	{
-		NewTexture* t = new NewTexture;
-		App->editor3d->textures.push_back(t);
+		//NewTexture* t = new NewTexture;
+		//App->editor3d->textures.push_back(t);
 
 
-		ILinfo ImageInfo;
-		iluGetImageInfo(&ImageInfo);
-		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
-		{
-			iluFlipImage();
-		}
-		App->editor3d->textures.back()->width = ilGetInteger(IL_IMAGE_WIDTH);
-		App->editor3d->textures.back()->height = ilGetInteger(IL_IMAGE_HEIGHT);
-		App->editor3d->textures.back()->GenTextureFromName(newImage);
+		//ILinfo ImageInfo;
+		//iluGetImageInfo(&ImageInfo);
+		//if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+		//{
+		//	iluFlipImage();
+		//}
+		////TODO load this
+		//ImageInfo.Format; 
+		//int i=ilGetInteger(IL_IMAGE_FORMAT);
+		///*IL_COLOUR_INDEX
+		//	IL_RGB
+		//	IL_RGBA
+		//	IL_BGR
+		//	IL_BGRA
+		//	IL_LUMINANCE*/
+		//
+		//ImageInfo.Depth;
+		//ImageInfo.Bpp;//bytes per pixel
+		//ImageInfo.SizeOfData;//bytes
+		////End of TODO
+		//App->editor3d->textures.back()->width = ilGetInteger(IL_IMAGE_WIDTH);
+		//App->editor3d->textures.back()->height = ilGetInteger(IL_IMAGE_HEIGHT);
+		//App->editor3d->textures.back()->GenTextureFromName(newImage);
 
 		//temporal code that puts the image in every mesh avaliable
 		/*for (int i = 0; i < App->editor3d->meshes.size(); i++)
@@ -306,7 +320,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 					if (parents.back()->mNumMeshes > 0)
 						newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 						//create game object and save it into gameObjParents (its parent is currObjParent)
-					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, parents.back(), currObjParent));
+					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh,scene, parents.back(), currObjParent));
 
 				}
 			}
@@ -432,7 +446,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 	return ret;
 }
 
-GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameObject* parent)
+GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,const aiScene* scene,aiNode*currNode, GameObject* parent)
 {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
@@ -471,6 +485,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 	
 	transformMat.scale(scaling.x, scaling.y, scaling.z);
 	mat4x4 auxTransform = transformMat;
+
 	transformMat= auxTransform.rotate(angle, { vec.x,vec.y,vec.z })*transformMat;
 	transformMat.translate(translation.x, translation.y, translation.z);
 	
@@ -570,6 +585,22 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 		newObj->CreateComponent(ComponentType::MESH);
 		newObj->GetComponent<C_Mesh>()->SetMesh(Mesh(vertices, indices, normals, texCoords));
 
+
+		if (scene->HasMaterials())
+		{
+
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
+			
+			if (numTextures > 0)
+			{
+				aiString path;
+				char* c = (char*)path.C_Str();
+				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+
+				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
+			}
+		}
 		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
 		LOG("----------Mesh %s has been loaded----------", name);
 		vertices.clear();

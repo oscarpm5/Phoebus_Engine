@@ -37,6 +37,16 @@ public:
 		for (int i=0; i < components.size();i++) { Comp* c = dynamic_cast<Comp*>(components[i]);    if (c != nullptr)    return    c; }
 		return nullptr;
 	}
+
+	template<typename Comp>
+	std::vector<Comp*> GetComponents()
+	{
+		std::vector<Comp*> compVec;
+		for (int i = 0; i < components.size(); i++) { Comp* c = dynamic_cast<Comp*>(components[i]);    if (c != nullptr)   compVec.push_back(c); }
+		return compVec;
+	}
+
+
 private:
 	void DrawGameObject();
 private:

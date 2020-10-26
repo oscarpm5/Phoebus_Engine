@@ -130,8 +130,16 @@ bool GameObject::IsParentActive()
 
 void GameObject::DrawGameObject()
 {
-	if (C_Mesh * m = GetComponent<C_Mesh>())
+	/*if (C_Mesh * m = GetComponent<C_Mesh>())
 	{
 		App->editor3d->AddMeshToDraw(m, transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+	}*/
+	std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
+
+	for (int i = 0; i < meshes.size(); i++)
+	{
+		App->editor3d->AddMeshToDraw(meshes[i], transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+
 	}
+
 }
