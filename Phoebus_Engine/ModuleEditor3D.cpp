@@ -60,8 +60,8 @@ bool ModuleEditor3D::Start()
 	Importer::LoadNewImage("./Assets/lenna.png");*/
 
 
-	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
-
+	//App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
+	App->fileSystem->LoadAsset("Assets/Models/hierarchy.fbx");
 
 	return ret;
 }
