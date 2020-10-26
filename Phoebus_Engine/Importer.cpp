@@ -278,12 +278,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 		std::deque<GameObject*>gameObjParents;
 
 		parents.push_back(node);
-		aiMesh* newMesh = nullptr;
-
-		if (node->mNumMeshes > 0)
-			newMesh = scene->mMeshes[node->mMeshes[0]];
-
-		gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, App->editor3d->root));
+		gameObjParents.push_back(nullptr);//first node is root and doesn't have mesh nor game object
 
 		//create obj for root and pushes it to gameObjParents TODO
 
@@ -308,7 +303,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 					if (parents.back()->mNumMeshes > 0)
 						newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 						//create game object and save it into gameObjParents (its parent is currObjParent)
-					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, currObjParent,parents.back()->mName.C_Str()));
+					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, parents.back(), currObjParent));
 
 				}
 			}
@@ -434,7 +429,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 	return ret;
 }
 
-GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, GameObject* parent, std::string optName)
+GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameObject* parent)
 {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
@@ -443,17 +438,20 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, GameObject* parent, s
 	//creates a new mesh at scene editor
 
 	aiMesh* mesh = _mesh;
-
 	std::string name = "Untitled";
 
-	if (optName != "")
+	if (currNode->mName.C_Str() != "")
 	{
-		name = optName;
+		name = currNode->mName.C_Str();
 	}
 	else if (mesh != nullptr)
 		name = mesh->mName.C_Str();
 
-	GameObject* newObj = new GameObject(parent, name, mat4x4());
+	GameObject* newParent = parent;
+	if (parent == nullptr)
+		newParent = App->editor3d->root;
+
+	GameObject* newObj = new GameObject(newParent, name, mat4x4());
 	//TODO update hierarchy here
 	LOG("----------Importing mesh %s----------", name);
 

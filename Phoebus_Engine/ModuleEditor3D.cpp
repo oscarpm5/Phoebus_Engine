@@ -61,7 +61,7 @@ bool ModuleEditor3D::Start()
 
 
 	//App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
-	App->fileSystem->LoadAsset("Assets/Models/hierarchy.fbx");
+	App->fileSystem->LoadAsset("Assets/Models/hierarchyv2.fbx");
 
 	return ret;
 }
