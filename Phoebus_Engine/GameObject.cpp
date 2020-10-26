@@ -24,6 +24,7 @@ void GameObject::Update(float dt)
 {
 	if (isActive)
 	{
+
 		for (int i = 0; i < components.size(); i++)
 		{
 			if (components[i]->IsActive())
@@ -131,6 +132,6 @@ void GameObject::DrawGameObject()
 {
 	if (C_Mesh * m = GetComponent<C_Mesh>())
 	{
-		App->editor3d->AddMeshToDraw(m, mat4x4(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+		App->editor3d->AddMeshToDraw(m, transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
 	}
 }

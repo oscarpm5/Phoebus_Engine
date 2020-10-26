@@ -20,6 +20,9 @@
 #pragma comment(lib,"DevIL/lib/x86/Release/ILUT.lib")
 
 #include<deque>
+#include"glmath.h"
+#include"MathGeoLib/include/MathGeoLib.h"
+
 /*
 bool Importer::LoadFBX(const char* path)
 {
@@ -435,9 +438,10 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 	std::vector<unsigned int> indices;
 	std::vector<float> normals;
 	std::vector<float>texCoords;
-	//creates a new mesh at scene editor
 
+	//creates a new mesh
 	aiMesh* mesh = _mesh;
+	//assigns game object name
 	std::string name = "Untitled";
 
 	if (currNode->mName.C_Str() != "")
@@ -447,12 +451,33 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 	else if (mesh != nullptr)
 		name = mesh->mName.C_Str();
 
+	//assigns game object parent
 	GameObject* newParent = parent;
 	if (parent == nullptr)
 		newParent = App->editor3d->root;
 
-	GameObject* newObj = new GameObject(newParent, name, mat4x4());
-	//TODO update hierarchy here
+	//Transform importing TODO can be optimized
+	aiVector3D translation, scaling;
+	aiQuaternion rotation;
+	currNode->mTransformation.Decompose(scaling, rotation, translation);
+	
+	mat4x4 transformMat=IdentityMatrix;
+	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
+	float3 vec;
+	float angle;
+
+	rot.ToAxisAngle(vec, angle);
+	angle=RadToDeg(angle);
+	
+	transformMat.scale(scaling.x, scaling.y, scaling.z);
+	mat4x4 auxTransform = transformMat;
+	transformMat= auxTransform.rotate(angle, { vec.x,vec.y,vec.z })*transformMat;
+	transformMat.translate(translation.x, translation.y, translation.z);
+	
+
+	//creates new game object
+	GameObject* newObj = new GameObject(newParent, name, transformMat);
+	
 	LOG("----------Importing mesh %s----------", name);
 
 
@@ -478,6 +503,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 			//newMesh.numIndex = mesh->mNumFaces * 3;
 			//newMesh.index = new uint[newMesh.numIndex]; // assume each face is a triangle
 			indices.reserve(mesh->mNumFaces * 3);
+			indices.resize(mesh->mNumFaces * 3);
 
 			for (int j = 0; j < mesh->mNumFaces; j++)
 			{
@@ -488,11 +514,11 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 				}
 				else
 				{
-					indices.push_back(mesh->mFaces[j].mIndices[0]);
-					indices.push_back(mesh->mFaces[j].mIndices[1]);
-					indices.push_back(mesh->mFaces[j].mIndices[2]);
+					//indices.push_back(mesh->mFaces[j].mIndices[0]);
+					//indices.push_back(mesh->mFaces[j].mIndices[1]);
+					//indices.push_back(mesh->mFaces[j].mIndices[2]);
 
-					//memcpy(&newMesh.index[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
+					memcpy(&indices[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(unsigned int));
 
 
 				}
@@ -502,9 +528,9 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh,aiNode*currNode, GameO
 		}
 
 
-		texCoords.reserve(indices.size() * 2); //there are 2 floats for every index
+		texCoords.reserve(mesh->mNumVertices * 2); //there are 2 floats for every index
 		LOG("Importing mesh texture coordinates");
-		for (int j = 0; j < indices.size(); j++)
+		for (int j = 0; j < mesh->mNumVertices; j++)
 		{
 			//copy TextureCoords
 			if (mesh->mTextureCoords[0])
