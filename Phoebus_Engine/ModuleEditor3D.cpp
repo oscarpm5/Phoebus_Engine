@@ -13,8 +13,10 @@ ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 	
 	test1 = new GameObject(root, "Test1", transform);
 	test2 = new GameObject(root, "Test2", transform);
+	test2->isActive = false;
 	test3 = new GameObject(root, "Test3", transform); 
 	test4 = new GameObject(test3, "Test4", transform); 
+	test4->isActive = false;
 	test5 = new GameObject(test3, "Test5", transform); 
 	test6 = new GameObject(test4, "Test6", transform); 
 	test7 = new GameObject(test6, "Test7", transform);
