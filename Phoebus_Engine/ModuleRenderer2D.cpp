@@ -154,7 +154,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					if (ar1 * ar2 * ar3 != 0)
 						CreateBasicForm(PrimitiveTypes::Primitive_Sphere, ar1, ar2, ar3);
 					else
-						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
+						LOG("[error]Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -170,7 +170,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					if (ar1 * ar2 * ar3 * ar4 * ar5 != 0)
 						CreateBasicForm(PrimitiveTypes::Primitive_Cylinder, ar1, ar2, ar3, ar4, ar5);
 					else
-						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
+						LOG("[error]Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -185,7 +185,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					if (ar1 * ar2 * ar3 != 0)
 						CreateBasicForm(PrimitiveTypes::Primitive_Box, ar1, ar2, ar3);
 					else
-						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
+						LOG("[error]Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -198,7 +198,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					if (ar1 != 0)
 						CreateBasicForm(PrimitiveTypes::Primitive_Cube, ar1);
 					else
-						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
+						LOG("[error]Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -222,7 +222,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					if (ar1 * ar2 * ar3 * ar4 != 0)
 						CreateBasicForm(PrimitiveTypes::Primitive_Cone, ar1, ar2, ar3, ar4);
 					else
-						LOG("Tried to create prtimitive mesh, but some invalid argument was zero!");
+						LOG("[error]Tried to create prtimitive mesh, but some invalid argument was zero!");
 				}
 				ImGui::EndMenu();
 			}
@@ -513,15 +513,15 @@ bool ModuleRenderer2D::showConfigFunc()
 		{
 			//SDL_SetWindowFullscreen(App->window->window, );
 			//SDL_SetWindowBordered(App->window->window, (SDL_bool)borderless);
-			LOG("TODO: this button is still not fully operational");
+			LOG("[warning]TODO: this button is still not fully operational");
 		}
 		if (ImGui::Checkbox("Fullscreen", &fullscreen))
 		{
-			LOG("TODO: this button is still not fully operational");
+			LOG("[warning]TODO: this button is still not fully operational");
 		}
 		if (ImGui::Checkbox("Full desktop", &fullDesktop))
 		{
-			LOG("TODO: this button is still not fully operational");
+			LOG("[warning]TODO: this button is still not fully operational");
 		}
 		ImGui::PopStyleColor();
 

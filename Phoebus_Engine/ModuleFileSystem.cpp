@@ -37,7 +37,7 @@ bool ModuleFileSystem::Start()
 		LOG("Asset Manager is succefully loaded");
 	}
 	else
-		LOG("Failed loading Asset Manager");
+		LOG("[error]Failed loading Asset Manager");
 
 
 	// Add an archive or directory to the search path.
@@ -77,29 +77,33 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 	// The reading offset is set to the first byte of the file.
 	// Returns a filehandle on success that we will need for the PHYSFS_fileLength
 	PHYSFS_file* file = PHYSFS_openRead(path);
-
-	// Check for end-of-file state on a PhysicsFS filehandle.
-	if (!PHYSFS_eof(file))
+	if (file != nullptr)
 	{
-		// Get total length of a file in bytes
-		uint lenght = PHYSFS_fileLength(file);
-		*buffer = new char[lenght];
-
-		// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
-		uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
-
-		if (bytes != lenght)
+		// Check for end-of-file state on a PhysicsFS filehandle.
+		if (!PHYSFS_eof(file))
 		{
-			LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
-			RELEASE_ARRAY(buffer);
+			// Get total length of a file in bytes
+			uint lenght = PHYSFS_fileLength(file);
+			*buffer = new char[lenght];
+			LOG("Loading buffer from path: %s", path);
+			// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
+			uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
+
+			if (bytes != lenght)
+			{
+				LOG("[error]%s", path, "ERROR: %s", PHYSFS_getLastError());
+				RELEASE_ARRAY(buffer);
+			}
+			else
+				ret = bytes;
 		}
 		else
-			ret = bytes;
+			LOG("[error]%s", path, "ERROR: %s", PHYSFS_getLastError());
 	}
 	else
-		LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
-
-
+	{
+		LOG("[error]: File '%s' doesn't exist", path);
+	}
 	// Close a PhysicsFS firehandle
 	PHYSFS_close(file);
 
@@ -121,6 +125,7 @@ SDL_RWops* ModuleFileSystem::Load(const char* path) const
 void ModuleFileSystem::LoadAsset(char* path)
 {
 	char* buffer;
+	LOG("Loading Asset from path: %s", path);
 	uint size = App->fileSystem->Load(path, &buffer);
 
 	FileFormats thisFormat = CheckFileFormat(path);
@@ -144,7 +149,7 @@ void ModuleFileSystem::LoadAsset(char* path)
 		break;
 
 	case FileFormats::UNDEFINED:
-		LOG("asset from %s has no recognizable format", path);
+		LOG("[error]asset from %s has no recognizable format", path);
 		break;
 	default:
 		break;

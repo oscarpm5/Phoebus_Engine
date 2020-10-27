@@ -183,8 +183,8 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\nCould not load an miage from buffer: %s", Buffer);
-		LOG("Error %d :\n %s", error, iluErrorString(error));
+		LOG("\n[error]Could not load an miage from buffer: %s", Buffer);
+		LOG("[error] %d :\n %s", error, iluErrorString(error));
 		ilDeleteImages(1, &newImage);
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
@@ -266,8 +266,8 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\nCould not load an miage from buffer: %s", Buffer);
-		LOG("Error %d :\n %s", error, iluErrorString(error));
+		LOG("\n[error]Could not load an miage from buffer: %s", Buffer);
+		LOG("[error]Error %d :\n %s", error, iluErrorString(error));
 		ilDeleteImages(1, &newImage);
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
@@ -492,7 +492,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
 	}
 	else
 	{
-		LOG("Error loading scene % s", Buffer);
+		LOG("[error]Error loading scene % s", Buffer);
 		ret = false;
 	}
 	return ret;
@@ -545,7 +545,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	//creates new game object
 	GameObject* newObj = new GameObject(newParent, name, transformMat);
 
-	LOG("----------Importing mesh %s----------", name);
+	LOG("----------Importing mesh '%s'----------", (char*)name.c_str());
 
 
 	// copy vertices
@@ -577,7 +577,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 
 				if (mesh->mFaces[j].mNumIndices != 3)
 				{
-					LOG("WARNING, geometry face with != 3 indices!");
+					LOG("[waring] geometry face with != 3 indices!");
 				}
 				else
 				{
@@ -608,7 +608,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 			}
 			else
 			{
-				LOG("No texture coordinates found");
+				LOG("[warning]No texture coordinates found");
 				texCoords.push_back(0.0f);
 				texCoords.push_back(0.0f);
 			}
@@ -630,7 +630,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 			LOG("%i normals have been loaded", normals.size() / 3);
 		}
 		else
-			LOG("Mesh has no normals!");
+			LOG("[warning]Mesh has no normals!");
 
 
 
@@ -656,7 +656,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 			}
 		}
 		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
-		LOG("----------Mesh %s has been loaded----------", name);
+		LOG("----------Mesh '%s' has been loaded----------", (char*)name.c_str());
 		vertices.clear();
 		indices.clear();
 		normals.clear();
