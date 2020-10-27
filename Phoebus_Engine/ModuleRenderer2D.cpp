@@ -21,6 +21,7 @@
 #include "Mesh.h"
 #include "ModuleWindow.h"
 #include "Hierarchy.h"
+#include "GameObject.h"
 
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -242,7 +243,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		if (!ImGui::Begin("Hierarchy", &showHierarchy))		//this is how you add the cross button to a window
 		{
-			
+
 		}
 		ShowHierarchyTab();
 		ImGui::End();
@@ -710,7 +711,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 			0, 3, 2,
 			2, 1, 0
 		};
-		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube);
+		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube,"Cube");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Sphere)
@@ -718,7 +719,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
 		SphereFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, (int)ar2, (int)ar3);
-		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray,"Sphere");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Cylinder)
@@ -726,7 +727,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
 		CylinderFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, ar2, ar3, (int)ar4, (int)ar5);
-		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray,"Cylinder");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Cone)
@@ -734,7 +735,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
 		ConeFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, ar2, (int)ar3, (int)ar4);
-		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray);
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray,"Cone");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Box)
@@ -769,14 +770,14 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 			0, 3, 2,
 			2, 1, 0
 		};
-		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube);
+		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube,"Box");
 		ret = true;
 	}
 
 	return ret;
 }
 
-void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices)
+void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices, std::string name)
 {
 	std::vector<float> fakeNormals;
 	for (int i = 0; i < vertices.size(); i++) { //openGL works in misterous ways
@@ -787,9 +788,16 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 		fakeTex.push_back(0);
 		fakeTex.push_back(0);
 	}
-	//Mesh AuxM = Mesh(vertices, indices, fakeNormals, fakeTex);
+	Mesh newMesh = Mesh(vertices, indices, fakeNormals, fakeTex);
 	//AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
 	//App->editor3d->meshes.push_back(AuxM);
+	std::string newName = "Primitive";
+	if (name != "")
+		newName = name;
+
+	GameObject* newObj = new GameObject(App->editor3d->root, newName, IdentityMatrix);
+	newObj->CreateComponent(ComponentType::MESH);
+	newObj->GetComponent<C_Mesh>()->SetMesh(newMesh);
 }
 
 //Deprecated function
