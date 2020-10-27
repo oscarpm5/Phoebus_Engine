@@ -146,7 +146,7 @@ bool ModuleRenderer3D::Init()
 
 		SetGLRenderingOptions();
 		lights[0].Active(true);
-		
+
 
 
 	}
@@ -180,7 +180,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
-	
+
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
@@ -191,7 +191,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 update_status ModuleRenderer3D::PostUpdate(float dt)
 {
 	//Render here
-	
+
 
 	Draw3D();
 	App->renderer2D->Draw();
@@ -222,13 +222,13 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height,App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
 	glLoadMatrixf(&ProjectionMatrix);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->GetRawViewMatrix());
 
-	GenerateBuffers(width,height);
+	GenerateBuffers(width, height);
 }
 
 void ModuleRenderer3D::TestingRender()
@@ -246,7 +246,7 @@ void ModuleRenderer3D::TestingRender()
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);			//this is for printing the index
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
-	
+
 	glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
 
 
@@ -375,7 +375,7 @@ void ModuleRenderer3D::Draw3D()
 	glClearColor(c.r, c.g, c.b, c.a);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	//In the future render all objects here (iterate all objects and call its draw function?)
 	//PPlane p(vec3(0, 1, 0));
 
@@ -400,10 +400,13 @@ void ModuleRenderer3D::Draw3D()
 	//PCylinder auxCyl(0, 2, 3,4,4);
 	//auxCyl.SetPos(0, 0, 0);
 	//auxCyl.Draw();
-	
-	
-	//TestingRenderAtStart();
 
+
+	//TestingRenderAtStart();
+	if (drawGrid)
+	{
+		DrawGrid();
+	}
 	RenderMeshes();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -419,6 +422,48 @@ void ModuleRenderer3D::RenderMeshes()
 	{
 		App->editor3d->DrawAllMeshes();
 	}
+}
+
+void ModuleRenderer3D::DrawGrid()
+{
+	glLineWidth(1.0f);
+
+	glBegin(GL_LINES);
+	glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
+
+	float gridLength = 500.0f;
+	float separation = 20.0f;
+
+	for (float i = -gridLength; i <= gridLength; i += separation)
+	{
+		float centerLine = false;
+		if (i >= -separation * 0.5f && i <= separation * 0.5f)
+		{
+			centerLine = true;
+		}
+
+		if (centerLine)
+		{
+			glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+		}
+		glVertex3f(i, 0.0f, -gridLength);
+		glVertex3f(i, 0.0f, gridLength);
+		
+		if (centerLine)
+		{
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+		}
+		glVertex3f(-gridLength, 0.0f, i);
+		glVertex3f(gridLength, 0.0f, i);
+
+		if (centerLine)
+		{
+			glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
+		}
+	}
+
+	glEnd();
+
 }
 
 void ModuleRenderer3D::SetGLRenderingOptions()

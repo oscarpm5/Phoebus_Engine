@@ -328,7 +328,7 @@ bool Importer::LoadNewImage(const char* path)
 }
 */
 
-bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length)
+bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const char* relativePath)
 {
 	bool ret = false;
 
@@ -652,7 +652,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 
 				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
 				//use also the LoadNewImageFromObj() function when the file system only returns buffers
-			
+
 			}
 		}
 		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));

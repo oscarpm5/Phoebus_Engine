@@ -593,6 +593,8 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
 
+		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
+
 		ImGui::PopStyleColor();
 	}
 

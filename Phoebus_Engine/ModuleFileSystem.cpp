@@ -161,11 +161,11 @@ void ModuleFileSystem::LoadAsset(char* path)
 	switch (thisFormat)
 	{
 	case FileFormats::FBX:
-		Importer::LoadFBXfromBuffer(buffer, size);
+		Importer::LoadFBXfromBuffer(buffer, size,newPath.c_str());
 		break;
 
 	case FileFormats::OBJ:
-		Importer::LoadFBXfromBuffer(buffer, size); //this workas, deal with it
+		Importer::LoadFBXfromBuffer(buffer, size,newPath.c_str()); //this workas, deal with it
 		break;
 
 	case FileFormats::JSON:
