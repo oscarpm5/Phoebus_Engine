@@ -101,11 +101,7 @@ update_status ModuleInput::PreUpdate(float dt)
 			// Shows directory of dropped file
 
 			//bool droppedFile = App->fileSystem->LoadFile(dropped_filedir);
-			bool droppedFile = App->fileSystem->Load(dropped_filedir);
-			if (droppedFile == false) 
-			{
-				LOG("[error] on loading dropped FBX");
-			}
+			App->fileSystem->LoadAsset(dropped_filedir);
 
 			SDL_free(dropped_filedir);    // Free dropped_filedir memory
 			break;

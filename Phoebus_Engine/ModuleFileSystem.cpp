@@ -44,7 +44,7 @@ bool ModuleFileSystem::Start()
 	// If this is a duplicate, the entry is not added again, even though the function succeeds.
 	// When you mount an archive, it is added to a virtual file system...
 	// all files in all of the archives are interpolated into a single hierachical file tree.
-	PHYSFS_mount("Assets.zip", nullptr, 1);
+	PHYSFS_mount("Assets", nullptr, 1);
 	return ret;
 }
 
@@ -110,10 +110,15 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 	return ret;
 }
 
-SDL_RWops* ModuleFileSystem::Load(const char* path) const
+SDL_RWops* ModuleFileSystem::Load(const char* path)
 {
 	char* buffer;
-	uint bytes = Load(path, &buffer);
+	std::string newPath=NormalizePath(path);
+	//std::string newPath=path;
+
+	TransformToRelPath(newPath);
+
+	uint bytes = Load(newPath.c_str(), &buffer);
 
 
 	// Read-only memory buffer for use with RWops, retruns a pointer to a new SDL_RWops structure
@@ -122,13 +127,36 @@ SDL_RWops* ModuleFileSystem::Load(const char* path) const
 	return ret;
 }
 
+//TODO provisional solution until we copy files into the directory
+void ModuleFileSystem::TransformToRelPath(std::string& path)
+{
+	unsigned int splitPos= path.find("Assets"); //file must be inside Assets directory
+	path = path.substr(splitPos, path.length());
+}
+
+//normalizes '//' paths
+std::string ModuleFileSystem::NormalizePath(const char* path)
+{
+	std::string newPath(path);
+	for (int i = 0; i < newPath.size(); ++i)
+	{
+		if (newPath[i] == '\\')
+			newPath[i] = '/';
+	}
+	return newPath;
+}
+
 void ModuleFileSystem::LoadAsset(char* path)
 {
 	char* buffer;
-	LOG("Loading Asset from path: %s", path);
-	uint size = App->fileSystem->Load(path, &buffer);
+	std::string newPath = NormalizePath(path);
+	//std::string newPath=path;
 
-	FileFormats thisFormat = CheckFileFormat(path);
+	TransformToRelPath(newPath);
+	//LOG("Loading Asset from path: %s", newPath.c_str());
+	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
+
+	FileFormats thisFormat = CheckFileFormat(newPath.c_str());
 
 	switch (thisFormat)
 	{
