@@ -176,7 +176,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 	ilBindImage(newImage);
 
 	//TODO this will need to accept more formats in the future
-	bool ret = ilLoadL(IL_PNG, Buffer, Length);
+	bool ret = ilLoadL(IL_TYPE_UNKNOWN, Buffer, Length);
 
 
 	if (!ret)
