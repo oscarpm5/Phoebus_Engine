@@ -1,6 +1,8 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleCamera3D.h"
+#include "GameObject.h"
+#include "C_Transform.h"
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
@@ -46,9 +48,17 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->editor3d->mouseActive)
 	{
 
-
+		vec3 targetpos = { 0,0,0 };
 		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
-			MoveTo({ 0,0,0 }, CamObjective::REFERENCE);
+		{
+			GameObject* target = nullptr; 
+			if (!App->editor3d->selectedGameObjs.empty())
+			{
+				target = App->editor3d->selectedGameObjs.back();
+				//targetpos= target->GetComponent<C_Transform>().getG //get global pos
+			}
+			MoveTo(targetpos, CamObjective::REFERENCE);
+		}
 
 
 
