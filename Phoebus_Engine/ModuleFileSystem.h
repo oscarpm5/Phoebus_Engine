@@ -14,7 +14,10 @@ enum class FileFormats
 	FBX,
 	JSON,
 	OBJ,
-	PNG
+	PNG,
+	JPG,
+	JPEG,
+	DDS
 };
 
 
@@ -38,6 +41,8 @@ public:
 	SDL_RWops* Load(const char* path);
 
 	void TransformToRelPath(std::string& path);
+	void TransformToLowerCase(std::string& lowerCase);
+
 	void SeparatePath(std::string path, std::string* newPath, std::string* file);
 	std::string NormalizePath(const char* path);
 	void LoadAsset(char * path);

@@ -2,7 +2,7 @@
 #include "Glew/include/glew.h"
 
 RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode) :
-	mesh(mesh), material(material),transform(gTransform), drawMode(drawMode), normalMode(normalMode)
+	mesh(mesh), material(material),transform(gTransform)
 {}
 
 RenderMesh::~RenderMesh()
@@ -25,21 +25,21 @@ void RenderMesh::Draw()
 	glMultMatrixf(transform.M);
 	
 
-	if ((normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
+	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_VERTEX || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
 		DrawVertexNormals();
 
-	if ((normalMode == NormalDrawMode::NORMAL_MODE_FACES || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
+	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_FACES || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
 		DrawFacesNormals();
 
 
 	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
 
-	if (drawMode == MeshDrawMode::DRAW_MODE_WIRE)
+	if (mesh->meshDrawMode == (int)MeshDrawMode::DRAW_MODE_WIRE)
 	{
 		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
-	else if (drawMode == MeshDrawMode::DRAW_MODE_FILL)
+	else if (mesh->meshDrawMode == (int)MeshDrawMode::DRAW_MODE_FILL)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
@@ -75,7 +75,7 @@ void RenderMesh::Draw()
 
 void RenderMesh::DrawVertexNormals()
 {
-	float magnitude = 2.0f;
+	float magnitude = mesh->normalVertexSize;
 	glColor3f(1.0f, 0.5f, 0.0f);
 	glLineWidth(4.0f);
 	glBegin(GL_LINES);
@@ -108,7 +108,7 @@ void RenderMesh::DrawFacesNormals()
 {
 	Mesh* m = mesh->GetMesh();
 
-	float magnitude = 6.0f;
+	float magnitude = mesh->normalFaceSize;
 	glColor3f(0.0f, 0.25f, 1.0f);
 	glLineWidth(4.0f);
 

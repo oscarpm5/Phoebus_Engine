@@ -134,18 +134,28 @@ void ModuleFileSystem::TransformToRelPath(std::string& path)
 	path = path.substr(splitPos, path.length());
 }
 
+void ModuleFileSystem::TransformToLowerCase(std::string& lowerCase)
+{
+	std::string newString;
+	for (int i = 0; i < lowerCase.size(); i++)
+	{
+		newString += tolower(lowerCase[i]);
+	}
+	lowerCase = newString;
+}
+
 void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std::string* file)
 {
 	size_t filePos = path.find_last_of("\\/");
 
 	if (filePos < path.size())
 	{
-		if(newPath)	*newPath = path.substr(0, filePos + 1);
-		if(file)*file = path.substr(filePos + 1);
+		if (newPath)* newPath = path.substr(0, filePos + 1);
+		if (file)* file = path.substr(filePos + 1);
 	}
 	else if (path.size() > 0)
 	{
-		if(file)*file = path;
+		if (file)* file = path;
 	}
 }
 
@@ -188,8 +198,12 @@ void ModuleFileSystem::LoadAsset(char* path)
 		break;
 
 	case FileFormats::PNG:
+	case FileFormats::JPG:
+	case FileFormats::JPEG:
+	case FileFormats::DDS:
 		Importer::LoadNewImageFromBuffer(buffer, size);
 		break;
+
 
 	case FileFormats::UNDEFINED:
 		LOG("[error]asset from %s has no recognizable format", path);
@@ -203,14 +217,21 @@ void ModuleFileSystem::LoadAsset(char* path)
 FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 {
 	FileFormats format;
+	std::string newPath = path;
+	std::string strFormat;
+	unsigned int index = newPath.find_last_of(".");
 
-	const char* ext = strrchr(path, '.'); //look for the last instance of a point. Format should be next
+	if (index < newPath.size())
+	{
+		strFormat = newPath.substr(index); //look for the last instance of a point. Format should be next
+		TransformToLowerCase(strFormat);
+	}
 
 
 	//TODO: convert ext into a lowercase const char *
 
 
-	if (!ext)
+	if (strFormat.size() == 0)
 	{
 		// somehow no extension 
 		format = FileFormats::UNDEFINED;
@@ -219,19 +240,31 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	{
 		format = FileFormats::UNDEFINED; //delete the uppercase scenarios once the prior TODO is done
 
-		if (!strcmp(ext, ".fbx") || !strcmp(ext, ".FBX"))
+		if (!strcmp(strFormat.c_str(), ".fbx"))
 		{
 			format = FileFormats::FBX;
 		}
-		if (!strcmp(ext, ".obj") || !strcmp(ext, ".OBJ"))
+		else if (!strcmp(strFormat.c_str(), ".obj"))
 		{
 			format = FileFormats::OBJ;
 		}
-		if (!strcmp(ext, ".png") || !strcmp(ext, ".PNG"))
+		else if (!strcmp(strFormat.c_str(), ".png"))
 		{
 			format = FileFormats::PNG;
 		}
-		if (!strcmp(ext, ".json") || !strcmp(ext, ".JSON"))
+		else if (!strcmp(strFormat.c_str(), ".dds"))
+		{
+			format = FileFormats::DDS;
+		}
+		else if (!strcmp(strFormat.c_str(), ".jpg"))
+		{
+			format = FileFormats::JPG;
+		}
+		else if (!strcmp(strFormat.c_str(), ".jpeg"))
+		{
+			format = FileFormats::JPEG;
+		}
+		else if (!strcmp(strFormat.c_str(), ".json"))
 		{
 			format = FileFormats::JSON;
 		}
