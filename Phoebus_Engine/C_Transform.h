@@ -19,6 +19,9 @@ public:
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 
+	vec3 GetLocalPosition();
+	vec3 GetLocalScale();
+	vec3 GetLocalRotation();
 private:
 
 	mat4x4 lTransformMat;//local transform mat
