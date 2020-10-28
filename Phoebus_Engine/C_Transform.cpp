@@ -123,6 +123,7 @@ aiMatrix4x4 C_Transform::lTraansIntoAssimpMatrix()
 		lTransformMat.M[8], lTransformMat.M[9], lTransformMat.M[10], lTransformMat.M[11],
 		lTransformMat.M[12], lTransformMat.M[13], lTransformMat.M[14], lTransformMat.M[15]);
 
+	ret.Transpose();
 	return ret;
 }
 
