@@ -55,7 +55,7 @@ update_status ModuleCamera3D::Update(float dt)
 			if (!App->editor3d->selectedGameObjs.empty())
 			{
 				target = App->editor3d->selectedGameObjs.back();
-				//targetpos= target->GetComponent<C_Transform>().getG //get global pos
+				targetpos = target->GetComponent<C_Transform>()->GetGlobalPosition(); //get global pos
 			}
 			MoveTo(targetpos, CamObjective::REFERENCE);
 		}

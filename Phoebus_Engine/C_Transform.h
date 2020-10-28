@@ -15,6 +15,9 @@ public:
 	mat4x4 GetLocalTransform()const;
 	void OnEditor();
 
+	vec3 GetLocalPosition();
+	vec3 GetGlobalPosition();
+
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 private:

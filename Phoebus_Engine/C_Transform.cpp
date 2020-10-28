@@ -96,6 +96,16 @@ void C_Transform::OnEditor()
 	}
 }
 
+vec3 C_Transform::GetLocalPosition()
+{
+	return vec3(lTransformMat.M[3], lTransformMat.M[7], lTransformMat.M[11]);
+}
+
+vec3 C_Transform::GetGlobalPosition()
+{
+	return vec3(gTransformMat.M[3], gTransformMat.M[7], gTransformMat.M[11]);
+}
+
 void C_Transform::UpdateGlobalMat()
 {
 	if (owner->parent != nullptr)
