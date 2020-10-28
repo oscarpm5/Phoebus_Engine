@@ -2,8 +2,7 @@
 #define __C_TRANSFORM__
 #include "Component.h"
 #include "glmath.h"
-
-
+#include "Assimp/include/matrix4x4.h" //we cant do forward declaration. Thanks, assimp
 
 class C_Transform : public Component
 {
@@ -18,14 +17,13 @@ public:
 
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
-
-	vec3 GetLocalPosition();
-	vec3 GetLocalScale();
-	vec3 GetLocalRotation();
 private:
 
 	mat4x4 lTransformMat;//local transform mat
 	mat4x4 gTransformMat;//global transform mat
+
+	aiMatrix4x4 lTraansIntoAssimpMatrix();
+	vec3 GetEulerFromQuat(aiQuaterniont<float> rotation);
 };
 
 

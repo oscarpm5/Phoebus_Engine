@@ -2,11 +2,15 @@
 #include "GameObject.h"
 #include "glmath.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
+#include "Assimp/include/matrix4x4.inl"
+#include "Assimp/include/vector3.h"
 
-C_Transform::C_Transform(GameObject* owner, mat4x4 lTransform):Component(ComponentType::TRANSFORM,owner),
-lTransformMat(lTransform),gTransformMat(IdentityMatrix)
+
+
+C_Transform::C_Transform(GameObject* owner, mat4x4 lTransform) :Component(ComponentType::TRANSFORM, owner),
+lTransformMat(lTransform), gTransformMat(IdentityMatrix)
 {
-	
+
 	UpdateGlobalMat();
 }
 
@@ -31,82 +35,108 @@ void C_Transform::OnEditor()
 		ImGui::Indent();
 		ImGui::Separator();
 
-		ImGui::Text("Local Matrix");
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
 
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				float auxF = float(lTransformMat.M[i*j + j]);
-				//ImGui::Text("%f", auxF);
-				static char buf1[64] = "%f"; 
-				ImGui::InputText(" ", buf1, 64);
-				if (j < 3) ImGui::SameLine();
-			}
-		}
-
-		vec3 auxP = GetLocalPosition();	vec3 auxR = GetLocalRotation();	vec3 auxS = GetLocalScale();
-
-		static float vec4a[4] = { auxP.x,  auxP.y,  auxP.z,  auxP.t };
-		ImGui::InputFloat3("Position", vec4a);
-		static float vec4b[4] = { auxR.x,  auxR.y,  auxR.z,  auxR.t };
-		ImGui::InputFloat3("Rotation", vec4b);
-		static float vec4c[4] = { auxS.x,  auxS.y,  auxS.z,  auxS.t };
-		ImGui::InputFloat3("Scale", vec4c);
-
-		
-		ImGui::PopStyleColor();
+		//Calculate all the stuff
+		aiVector3t<float> scaling; aiQuaterniont<float> rotation; aiVector3t<float> position;
+		lTraansIntoAssimpMatrix().Decompose(scaling, rotation, position);
+		vec3 auxvec3 = GetEulerFromQuat(rotation);
+		float v[3];
+		//Show me the things
+		v[0] = position.x; v[1] = position.y; v[2] = position.z;
+		ImGui::InputFloat3("Position", v);
 		ImGui::Separator();
 
-		ImGui::Text("Global Matrix");
-		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
-
-		for (int i = 0; i < 4; ++i)
-		{
-			for (int j = 0; j < 4; j++)
-			{
-				float auxF = float(gTransformMat.M[j * i + j]);
-				ImGui::Text("%f", auxF);
-				if (j < 3) ImGui::SameLine();
-			}
-		}
-		ImGui::PopStyleColor();
+		v[0] = auxvec3.x; v[1] = auxvec3.y; v[2] = auxvec3.z;
+		ImGui::InputFloat3("Rotation", v);
 		ImGui::Separator();
 
+		v[0] = scaling.x; v[1] = scaling.y; v[2] = scaling.z;
+		ImGui::InputFloat3("Scale", v);
+		ImGui::Separator();
+
+		//Additional info
+
+		if (ImGui::TreeNode("Local Matrix")) {
+
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					float auxF = float(lTransformMat.M[j * i + j]);
+					ImGui::Text("%f", auxF);
+					if (j < 3) ImGui::SameLine();
+				}
+			}
+			ImGui::PopStyleColor();
+			ImGui::TreePop();
+		}
+
+
+		ImGui::Separator();
+		if (ImGui::TreeNode("Global Matrix")) {
+			ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 0.0f, 1.0f));
+
+			for (int i = 0; i < 4; ++i)
+			{
+				for (int j = 0; j < 4; j++)
+				{
+					float auxF = float(gTransformMat.M[j * i + j]);
+					ImGui::Text("%f", auxF);
+					if (j < 3) ImGui::SameLine();
+				}
+			}
+			ImGui::PopStyleColor();
+			ImGui::TreePop();
+		}
+
+		ImGui::Separator();
 		ImGui::Unindent();
 	}
-
-
 }
 
 void C_Transform::UpdateGlobalMat()
 {
-	if (owner->parent!=nullptr)
+	if (owner->parent != nullptr)
 	{
-		gTransformMat = owner->parent->GetComponent<C_Transform>()->GetGlobalTransform()*lTransformMat;
+		gTransformMat = owner->parent->GetComponent<C_Transform>()->GetGlobalTransform() * lTransformMat;
 	}
 	else
 		gTransformMat = lTransformMat;
 }
 
-vec3 C_Transform::GetLocalPosition()
+aiMatrix4x4 C_Transform::lTraansIntoAssimpMatrix()
 {
-	return vec3(gTransformMat.M[3], gTransformMat.M[7], gTransformMat.M[11]);
+	aiMatrix4x4 ret(lTransformMat.M[0], lTransformMat.M[1], lTransformMat.M[2], lTransformMat.M[3],
+		lTransformMat.M[4], lTransformMat.M[5], lTransformMat.M[6], lTransformMat.M[7],
+		lTransformMat.M[8], lTransformMat.M[9], lTransformMat.M[10], lTransformMat.M[11],
+		lTransformMat.M[12], lTransformMat.M[13], lTransformMat.M[14], lTransformMat.M[15]);
+
+	return ret;
 }
 
-vec3 C_Transform::GetLocalScale()
+vec3 C_Transform::GetEulerFromQuat(aiQuaterniont<float> rotation)
 {
-	float a = std::vector<float>{ gTransformMat.M[0], gTransformMat.M[4], gTransformMat.M[8]}.size();
-	float b = std::vector<float>{ gTransformMat.M[1], gTransformMat.M[5], gTransformMat.M[9]}.size();
-	float c = std::vector<float>{ gTransformMat.M[2], gTransformMat.M[6], gTransformMat.M[10]}.size();
-	return vec3(a,b,c);
+	float qx = rotation.x; float qy = rotation.y; float qz = rotation.z; float qw = rotation.w; float heading; float attitude; float bank;
+
+	attitude = asin(2 * qx * qy + 2 * qz * qw);
+	heading = atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy * qy - 2 * qz * qz);
+	bank = atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx * qx - 2 * qz * qz);
+
+	if (qx * qy + qz * qw == 0.5)
+	{
+		heading = 2 * atan2(qx, qw);
+		bank = 0;
+	}
+	if (qx * qy + qz * qw == -0.5)
+	{
+		heading = -2 * atan2(qx, qw);
+		bank = 0;
+	}
+
+	return vec3(heading, attitude, bank);
 }
 
-vec3 C_Transform::GetLocalRotation()
-{
-//https://math.stackexchange.com/questions/237369/given-this-transformation-matrix-how-do-i-decompose-it-into-translation-rotati	
-	return vec3();
-}
 
 
