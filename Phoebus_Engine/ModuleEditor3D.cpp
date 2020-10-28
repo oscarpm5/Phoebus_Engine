@@ -53,6 +53,7 @@ bool ModuleEditor3D::Start()
 
 update_status ModuleEditor3D::PreUpdate(float dt)
 {
+
 	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 	{
 		if (selectedGameObjs.size() > 0)

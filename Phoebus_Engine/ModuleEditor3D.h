@@ -43,4 +43,6 @@ public:
 	
 
 	std::vector<GameObject*> selectedGameObjs;
+
+	bool mouseActive;//checks whether the 3d scene can be interacted with the mouse (when hovering or mantaining click after hover)
 };

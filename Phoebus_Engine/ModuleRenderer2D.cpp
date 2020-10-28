@@ -909,6 +909,8 @@ bool ModuleRenderer2D::Show3DWindow()
 		return false;
 	}
 
+
+
 	ImVec2 winSize = ImGui::GetWindowSize();
 	winSize.y -= 19;//taking into account the menu bar
 	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
@@ -918,6 +920,22 @@ bool ModuleRenderer2D::Show3DWindow()
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
 
+	ImVec2 winPos = ImGui::GetWindowPos();
+	winSize = ImGui::GetWindowSize();
+	ImVec2 mousePos= ImGui::GetMousePos();
+
+	if (ImGui::IsWindowHovered() && 
+		mousePos.x>=winPos.x&&mousePos.x<=winPos.x+winSize.x &&mousePos.y>=winPos.y&&mousePos.y<=winPos.y+winSize.y)//inside window
+	{
+		App->editor3d->mouseActive = true;//TODO change variable to be in this module
+	}
+	else if (App->editor3d->mouseActive &&
+		!(App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT) &&
+		!(App->input->GetMouseButton(SDL_BUTTON_MIDDLE) == KEY_REPEAT) &&
+		!(App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT))
+	{
+		App->editor3d->mouseActive = false;
+	}
 
 
 	ImGui::End();
