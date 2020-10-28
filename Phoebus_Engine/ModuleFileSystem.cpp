@@ -113,7 +113,7 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 SDL_RWops* ModuleFileSystem::Load(const char* path)
 {
 	char* buffer;
-	std::string newPath=NormalizePath(path);
+	std::string newPath = NormalizePath(path);
 	//std::string newPath=path;
 
 	TransformToRelPath(newPath);
@@ -130,8 +130,23 @@ SDL_RWops* ModuleFileSystem::Load(const char* path)
 //TODO provisional solution until we copy files into the directory
 void ModuleFileSystem::TransformToRelPath(std::string& path)
 {
-	unsigned int splitPos= path.find("Assets"); //file must be inside Assets directory
+	unsigned int splitPos = path.find("Assets"); //file must be inside Assets directory
 	path = path.substr(splitPos, path.length());
+}
+
+void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std::string* file)
+{
+	size_t filePos = path.find_last_of("\\/");
+
+	if (filePos < path.size())
+	{
+		if(newPath)	*newPath = path.substr(0, filePos + 1);
+		if(file)*file = path.substr(filePos + 1);
+	}
+	else if (path.size() > 0)
+	{
+		if(file)*file = path;
+	}
 }
 
 //normalizes '//' paths
@@ -161,11 +176,11 @@ void ModuleFileSystem::LoadAsset(char* path)
 	switch (thisFormat)
 	{
 	case FileFormats::FBX:
-		Importer::LoadFBXfromBuffer(buffer, size,newPath.c_str());
+		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str());
 		break;
 
 	case FileFormats::OBJ:
-		Importer::LoadFBXfromBuffer(buffer, size,newPath.c_str()); //this workas, deal with it
+		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str()); //this workas, deal with it
 		break;
 
 	case FileFormats::JSON:

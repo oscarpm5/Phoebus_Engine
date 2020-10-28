@@ -46,27 +46,8 @@ bool ModuleEditor3D::Start()
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
-
-
-	//Importer::LoadFBX("./Assets/warrior.FBX");
-	//Importer::LoadFBX("./Assets/warrior.FBX");
-
-	/*
-	Importer::LoadFBX("./Assets/suzzane.FBX");
-	Importer::LoadNewImage("./Assets/flamethrower.png");
-
-	Importer::LoadFBX("./Assets/cube.fbx");
-	Importer::LoadNewImage("./Assets/flamethrower.png");
-
-	Importer::LoadFBX("./Assets/warrior.fbx");
-	Importer::LoadNewImage("./Assets/lenna.png");*/
-
-
 	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
-	selectedGameObj = root->children[4]; //todo select gameobjbyname this is harcoded atm
-	App->fileSystem->LoadAsset("Assets/bakerHouse/Baker_house.png");
-
-	//App->fileSystem->LoadAsset("Assets/Models/hierarchyv2.fbx");
+	
 
 	return ret;
 }
@@ -74,17 +55,6 @@ bool ModuleEditor3D::Start()
 update_status ModuleEditor3D::PreUpdate(float dt)
 {
 
-	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_UP)
-	{
-		App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
-		App->fileSystem->LoadAsset("Assets/bakerHouse/Baker_house.png");
-	}
-	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_UP)
-	{
-		App->fileSystem->LoadAsset("Assets/Models/cube.FBX");
-		App->fileSystem->LoadAsset("Assets/Models/Flamethrower.png");
-
-	}
 	return UPDATE_CONTINUE;
 }
 

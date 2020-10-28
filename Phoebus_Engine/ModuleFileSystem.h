@@ -38,6 +38,7 @@ public:
 	SDL_RWops* Load(const char* path);
 
 	void TransformToRelPath(std::string& path);
+	void SeparatePath(std::string path, std::string* newPath, std::string* file);
 	std::string NormalizePath(const char* path);
 	void LoadAsset(char * path);
 

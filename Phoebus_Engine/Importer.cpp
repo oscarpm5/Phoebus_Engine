@@ -266,7 +266,7 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\n[error]Could not load an miage from buffer: %s", Buffer);
+		LOG("\n[error]Could not load an miage from buffer");
 		LOG("[error]Error %d :\n %s", error, iluErrorString(error));
 		ilDeleteImages(1, &newImage);
 	}
@@ -287,8 +287,11 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 
 		}
 		ilDeleteImages(1, &newImage);
+		RELEASE_ARRAY(Buffer);
 	}
+
 	return ret;
+
 }
 
 /*
@@ -339,6 +342,8 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 
 	if (scene != nullptr && scene->HasMeshes())
 	{
+		std::string pathWithoutFile;
+		App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
 		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 
 		aiNode* node = scene->mRootNode;
@@ -372,7 +377,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 					if (parents.back()->mNumMeshes > 0)
 						newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 						//create game object and save it into gameObjParents (its parent is currObjParent)
-					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent));
+					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
 
 				}
 			}
@@ -498,7 +503,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 	return ret;
 }
 
-GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent)
+GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
 {
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
@@ -650,6 +655,10 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 				char* c = (char*)path.C_Str();
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
+				path = relPath + path.C_Str();
+				char* buffer;
+				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
+				LoadNewImageFromObj(buffer, buffLength, newObj);
 				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
 				//use also the LoadNewImageFromObj() function when the file system only returns buffers
 
