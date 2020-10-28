@@ -35,6 +35,8 @@ bool ModuleEditor3D::Start()
 	test2 = new GameObject(root, "Test2", transform);
 	test2->isActive = false;
 	test3 = new GameObject(root, "Test3", transform);
+	transform.scale(5, 15, 25);
+	transform.translate(10, 20, 30);
 	test4 = new GameObject(test3, "Test4", transform);
 	test4->isActive = false;
 	test5 = new GameObject(test3, "Test5", transform);

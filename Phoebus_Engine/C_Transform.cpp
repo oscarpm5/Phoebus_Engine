@@ -98,12 +98,12 @@ void C_Transform::OnEditor()
 
 vec3 C_Transform::GetLocalPosition()
 {
-	return vec3(lTransformMat.M[3], lTransformMat.M[7], lTransformMat.M[11]);
+	return vec3(lTransformMat.M[12], lTransformMat.M[13], lTransformMat.M[14]);
 }
 
 vec3 C_Transform::GetGlobalPosition()
 {
-	return vec3(gTransformMat.M[3], gTransformMat.M[7], gTransformMat.M[11]);
+	return vec3(gTransformMat.M[12], gTransformMat.M[13], gTransformMat.M[14]);
 }
 
 void C_Transform::UpdateGlobalMat()
