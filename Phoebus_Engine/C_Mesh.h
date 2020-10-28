@@ -15,6 +15,11 @@ public:
 
 	void OnEditor();
 
+public:
+	float normalVertexSize;
+	float normalFaceSize;
+	int normalDrawMode;
+	int meshDrawMode;
 private:
 	Mesh* m;
 

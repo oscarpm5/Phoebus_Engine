@@ -21,9 +21,6 @@ private:
 	C_Mesh* mesh;
 	C_Material* material;
 
-
-	MeshDrawMode drawMode;
-	NormalDrawMode normalMode;
 	mat4x4 transform;
 
 

@@ -10,10 +10,10 @@ enum class MeshDrawMode
 };
 enum class NormalDrawMode
 {
+	NORMAL_MODE_NONE,
 	NORMAL_MODE_VERTEX,
 	NORMAL_MODE_FACES,
-	NORMAL_MODE_BOTH,
-	NORMAL_MODE_NONE
+	NORMAL_MODE_BOTH
 };
 
 class Mesh
