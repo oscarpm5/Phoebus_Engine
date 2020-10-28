@@ -50,17 +50,27 @@ void GameObject::Update(float dt)
 
 GameObject::~GameObject()
 {
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (components[i] != transform)
+		{
+			delete components[i];
+			components[i] = nullptr;
+		}
+	}
+	components.clear();
+	
+	if (transform != nullptr)//This wont be needed as transform is deleted from the component vector
+		delete transform;
+
+	transform = nullptr;
+
 	for (int i = 0; i < children.size(); i++)
 	{
 		delete children[i];
 	}
 
 	children.clear();
-
-	if (transform != nullptr)//This wont be needed as transform is deleted from the component vector
-		delete transform;
-
-	transform = nullptr;
 
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
 	RemoveMyselfFromParent();
