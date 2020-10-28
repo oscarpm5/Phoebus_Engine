@@ -5,6 +5,7 @@
 #include "Module.h"
 #include "SDL/include/SDL_rwops.h"
 #include <vector>
+#include <string>
 
 enum class FileFormats
 {
@@ -34,9 +35,11 @@ public:
 	uint Load(const char* path, char** buffer) const;
 
 	// Allows you to use pointers to memory instead of files or things such as images or samples
-	SDL_RWops* Load(const char* path) const;
+	SDL_RWops* Load(const char* path);
 
-
+	void TransformToRelPath(std::string& path);
+	void SeparatePath(std::string path, std::string* newPath, std::string* file);
+	std::string NormalizePath(const char* path);
 	void LoadAsset(char * path);
 
 	FileFormats CheckFileFormat(const char* path);

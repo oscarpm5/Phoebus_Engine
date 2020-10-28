@@ -27,6 +27,7 @@ public:
 	void Draw3D();
 private:
 	void RenderMeshes();
+	void DrawGrid();
 
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
@@ -61,4 +62,5 @@ public:
 	bool colorMaterial = true;
 	bool texture2D = true;
 	bool wireframe = false;
+	bool drawGrid = true;
 };

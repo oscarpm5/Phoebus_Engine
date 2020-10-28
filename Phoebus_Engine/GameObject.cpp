@@ -2,6 +2,7 @@
 #include "Component.h"
 #include "C_Transform.h"
 #include "C_Mesh.h"
+#include "C_Material.h"
 #include "Application.h"
 
 GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr)
@@ -49,20 +50,33 @@ void GameObject::Update(float dt)
 
 GameObject::~GameObject()
 {
-	for (int i = 0; i < children.size(); i++)
+	for (int i = 0; i < components.size(); i++)
 	{
-		delete children[i];
+		if (components[i] != transform)
+		{
+			delete components[i];
+			components[i] = nullptr;
+		}
 	}
+	components.clear();
 	
-	children.clear();
-
 	if (transform != nullptr)//This wont be needed as transform is deleted from the component vector
 		delete transform;
 
 	transform = nullptr;
 
+	for (int i = 0; i < children.size(); i++)
+	{
+		delete children[i];
+	}
+
+	children.clear();
+
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
 	RemoveMyselfFromParent();
+
+	if (App)
+		App->editor3d->RemoveGameObjFromSelected(this);
 }
 
 void GameObject::RemoveChildren(GameObject* toRemove)
@@ -101,6 +115,9 @@ Component* GameObject::CreateComponent(ComponentType type)
 		ret = new C_Mesh(this);
 		break;
 	case ComponentType::MATERIAL:
+		//only one instance of material for a certain gameObj
+		if (GetComponent<C_Material>() == nullptr)
+			ret = new C_Material(this);
 
 		break;
 	}
@@ -135,7 +152,7 @@ bool GameObject::IsParentActive()
 
 void GameObject::DrawOnEditorAllComponents()
 {
-	for (int i = 0; i < this->components.size(); i++) 
+	for (int i = 0; i < this->components.size(); i++)
 	{
 		components[i]->OnEditor();
 	}
@@ -151,7 +168,7 @@ void GameObject::DrawGameObject()
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		App->editor3d->AddMeshToDraw(meshes[i], transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+		App->editor3d->AddMeshToDraw(meshes[i], GetComponent<C_Material>(), transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
 
 	}
 

@@ -19,9 +19,9 @@ public:
 
 	void OnEditor();
 
+	void GenTextureFromName(unsigned int ilImageName);
 private:
 
-	void GenTextureFromName(unsigned int ilImageName);
 	void DestroyTexture();
 	void DestroyCheckers();
 

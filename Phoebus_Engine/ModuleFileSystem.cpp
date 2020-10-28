@@ -37,14 +37,14 @@ bool ModuleFileSystem::Start()
 		LOG("Asset Manager is succefully loaded");
 	}
 	else
-		LOG("Failed loading Asset Manager");
+		LOG("[error]Failed loading Asset Manager");
 
 
 	// Add an archive or directory to the search path.
 	// If this is a duplicate, the entry is not added again, even though the function succeeds.
 	// When you mount an archive, it is added to a virtual file system...
 	// all files in all of the archives are interpolated into a single hierachical file tree.
-	PHYSFS_mount("Assets.zip", nullptr, 1);
+	PHYSFS_mount("Assets", nullptr, 1);
 	return ret;
 }
 
@@ -77,39 +77,48 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 	// The reading offset is set to the first byte of the file.
 	// Returns a filehandle on success that we will need for the PHYSFS_fileLength
 	PHYSFS_file* file = PHYSFS_openRead(path);
-
-	// Check for end-of-file state on a PhysicsFS filehandle.
-	if (!PHYSFS_eof(file))
+	if (file != nullptr)
 	{
-		// Get total length of a file in bytes
-		uint lenght = PHYSFS_fileLength(file);
-		*buffer = new char[lenght];
-
-		// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
-		uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
-
-		if (bytes != lenght)
+		// Check for end-of-file state on a PhysicsFS filehandle.
+		if (!PHYSFS_eof(file))
 		{
-			LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
-			RELEASE_ARRAY(buffer);
+			// Get total length of a file in bytes
+			uint lenght = PHYSFS_fileLength(file);
+			*buffer = new char[lenght];
+			LOG("Loading buffer from path: %s", path);
+			// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
+			uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
+
+			if (bytes != lenght)
+			{
+				LOG("[error]%s", path, "ERROR: %s", PHYSFS_getLastError());
+				RELEASE_ARRAY(buffer);
+			}
+			else
+				ret = bytes;
 		}
 		else
-			ret = bytes;
+			LOG("[error]%s", path, "ERROR: %s", PHYSFS_getLastError());
 	}
 	else
-		LOG("%s", path, "ERROR: %s", PHYSFS_getLastError());
-
-
+	{
+		LOG("[error]: File '%s' doesn't exist", path);
+	}
 	// Close a PhysicsFS firehandle
 	PHYSFS_close(file);
 
 	return ret;
 }
 
-SDL_RWops* ModuleFileSystem::Load(const char* path) const
+SDL_RWops* ModuleFileSystem::Load(const char* path)
 {
 	char* buffer;
-	uint bytes = Load(path, &buffer);
+	std::string newPath = NormalizePath(path);
+	//std::string newPath=path;
+
+	TransformToRelPath(newPath);
+
+	uint bytes = Load(newPath.c_str(), &buffer);
 
 
 	// Read-only memory buffer for use with RWops, retruns a pointer to a new SDL_RWops structure
@@ -118,21 +127,60 @@ SDL_RWops* ModuleFileSystem::Load(const char* path) const
 	return ret;
 }
 
+//TODO provisional solution until we copy files into the directory
+void ModuleFileSystem::TransformToRelPath(std::string& path)
+{
+	unsigned int splitPos = path.find("Assets"); //file must be inside Assets directory
+	path = path.substr(splitPos, path.length());
+}
+
+void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std::string* file)
+{
+	size_t filePos = path.find_last_of("\\/");
+
+	if (filePos < path.size())
+	{
+		if(newPath)	*newPath = path.substr(0, filePos + 1);
+		if(file)*file = path.substr(filePos + 1);
+	}
+	else if (path.size() > 0)
+	{
+		if(file)*file = path;
+	}
+}
+
+//normalizes '//' paths
+std::string ModuleFileSystem::NormalizePath(const char* path)
+{
+	std::string newPath(path);
+	for (int i = 0; i < newPath.size(); ++i)
+	{
+		if (newPath[i] == '\\')
+			newPath[i] = '/';
+	}
+	return newPath;
+}
+
 void ModuleFileSystem::LoadAsset(char* path)
 {
 	char* buffer;
-	uint size = App->fileSystem->Load(path, &buffer);
+	std::string newPath = NormalizePath(path);
+	//std::string newPath=path;
 
-	FileFormats thisFormat = CheckFileFormat(path);
+	TransformToRelPath(newPath);
+	//LOG("Loading Asset from path: %s", newPath.c_str());
+	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
+
+	FileFormats thisFormat = CheckFileFormat(newPath.c_str());
 
 	switch (thisFormat)
 	{
 	case FileFormats::FBX:
-		Importer::LoadFBXfromBuffer(buffer, size);
+		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str());
 		break;
 
 	case FileFormats::OBJ:
-		Importer::LoadFBXfromBuffer(buffer, size); //this workas, deal with it
+		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str()); //this workas, deal with it
 		break;
 
 	case FileFormats::JSON:
@@ -144,7 +192,7 @@ void ModuleFileSystem::LoadAsset(char* path)
 		break;
 
 	case FileFormats::UNDEFINED:
-		LOG("asset from %s has no recognizable format", path);
+		LOG("[error]asset from %s has no recognizable format", path);
 		break;
 	default:
 		break;
