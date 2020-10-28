@@ -233,15 +233,15 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 		}*/
 
 
-		if (App->editor3d->selectedGameObj != nullptr && App->editor3d->selectedGameObj != App->editor3d->root)
+		if (App->editor3d->selectedGameObjs.size()>0 && App->editor3d->selectedGameObjs.back() != App->editor3d->root)
 		{
 
-			C_Material* mat = App->editor3d->selectedGameObj->GetComponent<C_Material>();
+			C_Material* mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
 
 			if (mat == nullptr)
 			{
-				App->editor3d->selectedGameObj->CreateComponent(ComponentType::MATERIAL);
-				mat = App->editor3d->selectedGameObj->GetComponent<C_Material>();
+				App->editor3d->selectedGameObjs.back()->CreateComponent(ComponentType::MATERIAL);
+				mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
 			}
 
 			mat->GenTextureFromName(newImage);
@@ -259,8 +259,7 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 	ilBindImage(newImage);
 
 	//TODO this will need to accept more formats in the future
-	bool ret = ilLoadL(IL_PNG, Buffer, Length);
-
+	bool ret = ilLoadL(IL_TYPE_UNKNOWN, Buffer, Length);
 
 	if (!ret)
 	{
@@ -655,9 +654,11 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 				char* c = (char*)path.C_Str();
 				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
+				path = App->fileSystem->NormalizePath(path.C_Str());
 				path = relPath + path.C_Str();
 				char* buffer;
 				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
+				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
 				LoadNewImageFromObj(buffer, buffLength, newObj);
 				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
 				//use also the LoadNewImageFromObj() function when the file system only returns buffers

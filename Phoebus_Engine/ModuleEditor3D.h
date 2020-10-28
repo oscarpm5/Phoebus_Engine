@@ -26,8 +26,10 @@ public:
 	void DrawAllMeshes();
 	void AddMeshToDraw(C_Mesh* mesh, C_Material* material,mat4x4 gTransform,MeshDrawMode drawMode,NormalDrawMode normalMode);
 
-	bool SetSelectedGameObject(GameObject* selected);
-	GameObject* GetSelectedGameObject();
+	bool SetSelectedGameObject(GameObject* selected, bool addMode = false);
+	bool RemoveGameObjFromSelected(GameObject* toRemove);
+
+	std::vector<GameObject*> GetSelectedGameObject();
 	bool UpdateInfoOnSelectedGameObject();
 
 
@@ -40,5 +42,5 @@ public:
 	GameObject* test1; GameObject* test2; GameObject* test3; GameObject* test4; GameObject* test5; GameObject* test6; GameObject* test7;
 	
 
-	GameObject* selectedGameObj;
+	std::vector<GameObject*> selectedGameObjs;
 };

@@ -64,6 +64,9 @@ GameObject::~GameObject()
 
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
 	RemoveMyselfFromParent();
+
+	if (App)
+		App->editor3d->RemoveGameObjFromSelected(this);
 }
 
 void GameObject::RemoveChildren(GameObject* toRemove)
@@ -155,7 +158,7 @@ void GameObject::DrawGameObject()
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		App->editor3d->AddMeshToDraw(meshes[i],GetComponent<C_Material>(), transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+		App->editor3d->AddMeshToDraw(meshes[i], GetComponent<C_Material>(), transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
 
 	}
 
