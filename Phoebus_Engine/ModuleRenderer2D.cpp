@@ -230,11 +230,21 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
-		if (ImGui::MenuItem("Example Window")) { showDemoWindow = true; }
-		if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
-		if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
-		if (ImGui::MenuItem("Hierarchy")) { showHierarchy = true; }
-		if (ImGui::MenuItem("Display Selected")) { showSelected = true; }
+		if (ImGui::BeginMenu("Windows", true))
+		{
+			ImGui::MenuItem("3D Viewport", NULL, &show3DWindow);
+			ImGui::MenuItem("Console", NULL, &showConsoleWindow);
+			ImGui::MenuItem("Hierarchy", NULL, &showHierarchy);
+			ImGui::MenuItem("Inspector", NULL, &showInspector);
+			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
+			ImGui::EndMenu();
+		}
+
+		//if (ImGui::MenuItem("Example Window")) { showDemoWindow = true; }
+		//if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
+		//if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
+		//if (ImGui::MenuItem("Hierarchy")) { showHierarchy = true; }
+		//if (ImGui::MenuItem("Display Selected")) { showSelected = true; }
 
 		ImGui::EndMainMenuBar();
 
@@ -252,9 +262,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ImGui::ShowDemoWindow(&showDemoWindow);
 	}
-	if (showSelected)
+	if (showInspector)
 	{
-		if (!ImGui::Begin("Info Display", &showSelected))		//this is how you add the cross button to a window
+		if (!ImGui::Begin("Inspector", &showInspector))		//this is how you add the cross button to a window
 		{
 
 		}

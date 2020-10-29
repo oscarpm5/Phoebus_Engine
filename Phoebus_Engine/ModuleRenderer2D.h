@@ -31,7 +31,7 @@ public:
 	bool showDemoWindow = false;
 	bool showConsoleWindow = false;
 	bool showHierarchy = false;
-	bool showSelected = false;
+	bool showInspector = false;
 
 	bool Show3DWindow();
 	bool show3DWindow = false;
