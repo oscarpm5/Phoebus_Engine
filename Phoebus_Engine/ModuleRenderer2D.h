@@ -29,12 +29,12 @@ public:
 
 public:
 	bool showDemoWindow = false;
-	bool showConsoleWindow = false;
-	bool showHierarchy = false;
-	bool showInspector = false;
+	bool showConsoleWindow = true;
+	bool showHierarchy = true;
+	bool showInspector = true;
 
 	bool Show3DWindow();
-	bool show3DWindow = false;
+	bool show3DWindow = true;
 
 	Cnsl* console = nullptr;
 

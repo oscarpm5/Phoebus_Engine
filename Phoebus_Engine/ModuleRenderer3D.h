@@ -53,6 +53,8 @@ public:
 	uint renderTex = -1;
 	uint depthBuffer = -1;
 
+	float gridLength;
+	float separation;
 
 	//rendering config bools
 
