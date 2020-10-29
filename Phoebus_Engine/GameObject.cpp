@@ -11,6 +11,8 @@ int GameObject::numberOfObjects = 0;
 
 GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr)
 {
+	App->editor3d->AddObjName(this->name);
+
 	this->parent = parent;
 	isActive = true;
 
@@ -56,6 +58,8 @@ void GameObject::Update(float dt)
 
 GameObject::~GameObject()
 {
+	App->editor3d->RemoveName(name);
+
 	numberOfObjects--;
 
 	for (int i = 0; i < components.size(); i++)
@@ -179,6 +183,7 @@ void GameObject::DrawOnEditorAllComponents()
 		ImGui::SameLine();
 		ImGui::SetCursorPosX(ImGui::GetCursorPosX()-10);
 		char* auxName = (char*)name.c_str();
+		std::string oldName = name;
 		if (ImGui::InputText("Object Name", auxName, 100))
 		{
 			name = auxName;
@@ -187,6 +192,7 @@ void GameObject::DrawOnEditorAllComponents()
 			{
 				name = "Untitled";
 			}
+			App->editor3d->ChangeObjName(oldName, name);
 		}
 		ImGui::EndChild();
 	}

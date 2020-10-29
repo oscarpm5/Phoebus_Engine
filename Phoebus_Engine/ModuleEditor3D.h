@@ -32,7 +32,12 @@ public:
 	std::vector<GameObject*> GetSelectedGameObject();
 	bool UpdateInfoOnSelectedGameObject();
 
-
+	void AddObjName(std::string& name); //add a name to the name vector
+	void RemoveName(std::string name);//removes a name from the name vector
+	void ChangeObjName(std::string oldName, std::string& newName); //modifies a name from the vector
+private:
+	int DoesNameExist(std::string name); //returns an index of where the current name is, defaults in -1
+	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique
 public:
 	std::vector<Mesh> meshes;
 	std::vector<NewTexture*> textures;
@@ -44,7 +49,11 @@ public:
 
 	std::vector<GameObject*> selectedGameObjs;
 
+
 	MeshDrawMode maxSceneDrawMode;
 
 	bool mouseActive;//checks whether the 3d scene can be interacted with the mouse (when hovering or mantaining click after hover)
+
+private:
+	std::vector<std::string> objNames;
 };

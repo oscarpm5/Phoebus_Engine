@@ -27,7 +27,7 @@ bool ModuleEditor3D::Start()
 {
 	bool ret = true;
 	Importer::InitializeDevIL();
-	
+
 	mat4x4 transform;
 	root = new GameObject(nullptr, "SceneRoot", transform);
 
@@ -79,7 +79,6 @@ update_status ModuleEditor3D::Update(float dt)
 
 update_status ModuleEditor3D::PostUpdate(float dt)
 {
-
 	return UPDATE_CONTINUE;
 }
 
@@ -87,6 +86,7 @@ bool ModuleEditor3D::CleanUp()
 {
 	bool ret = true;
 	meshes.clear();
+	objNames.clear();
 	for (int i = textures.size() - 1; i >= 0; i--)
 	{
 		delete textures[i];
@@ -170,6 +170,129 @@ bool ModuleEditor3D::UpdateInfoOnSelectedGameObject()
 		selectedGameObjs.back()->DrawOnEditorAllComponents();
 	}
 	return ret;
+}
+
+void ModuleEditor3D::AddObjName(std::string& name)
+{
+
+	int index = DoesNameExist(name);
+	if (index == -1)
+	{
+		objNames.push_back(name);
+	}
+	else
+	{
+		MakeNameUnique(name);
+		objNames.push_back(name);
+	}
+}
+
+void ModuleEditor3D::RemoveName(std::string name)
+{
+	int index = DoesNameExist(name);
+	if (index != -1)
+	{
+		objNames.erase(objNames.begin() + index);
+	}
+}
+
+void ModuleEditor3D::ChangeObjName(std::string oldName, std::string& newName)
+{
+	int index = DoesNameExist(oldName);
+	if(index==-1)//if oldName doesn't exist push it to the vector
+	{
+		AddObjName(newName);
+	}
+	else
+	{
+		RemoveName(oldName);
+		AddObjName(newName);
+	}
+}
+
+int ModuleEditor3D::DoesNameExist(std::string name)
+{
+	int ret = -1;
+	for (int i = 0; i < objNames.size(); i++)
+	{
+		if (objNames[i] == name)
+		{
+			ret = i;
+			break;
+		}
+	}
+	return ret;
+}
+
+//makes a unique name for an object adding '.' + 3 digits when necessary
+void ModuleEditor3D::MakeNameUnique(std::string& name)
+{
+	std::string currSuffix;
+	std::string baseName;
+	std::string auxName = name;
+
+	int dotPos = auxName.find_last_of(".");
+
+	if (dotPos >= 0 && dotPos < auxName.size())//if dot exists
+	{
+		currSuffix = auxName.substr(dotPos + 1);
+
+		int letterPos = currSuffix.find_first_not_of("0123456789");
+
+		if (letterPos < currSuffix.size())//if there are letters after the dot default first .num
+		{
+			auxName += ".001";
+		}
+		else//if after the dot there are only numbers
+		{
+			baseName = auxName.substr(0, dotPos);
+
+			//1.find the current number
+			int suffixNum = atoi(currSuffix.c_str());
+
+			//2.take the number and add it one
+			suffixNum++;
+
+			if (suffixNum < 1000)
+			{
+
+				char newNums[16];
+				sprintf_s(newNums, 16, ".%03i", suffixNum);
+
+				auxName = baseName + newNums;
+			}
+			else
+			{
+				auxName += ".001";//default first .num
+			}
+
+
+
+			//3.find if it exists
+			//repeat from 2 until no num exists
+
+		}
+	}
+	else //default first .num
+	{
+		auxName += ".001";
+	}
+
+
+	int where = DoesNameExist(auxName);
+	if (where == -1) //if name isn't found in the lsit assign it
+	{
+		name = auxName;
+	}
+	else //else repeat the process
+	{
+		MakeNameUnique(auxName);
+	}
+
+	currSuffix.clear();
+	baseName.clear();
+	auxName.clear();
+
 }
 
 
