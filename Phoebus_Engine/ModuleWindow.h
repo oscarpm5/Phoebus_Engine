@@ -20,6 +20,7 @@ public:
 	int Width() const;
 	int Height() const;
 
+	void ResizeWindow(int w, int h);
 	void SetTitle(const char* title);
 
 public:
@@ -28,6 +29,10 @@ public:
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
+
+	//Window settings
+	float brightness = 1;
+	int w = 0; int h = 0; // we assign them on window creation
 };
 
 #endif // __ModuleWindow_H__

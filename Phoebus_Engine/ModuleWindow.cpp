@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 
+
 ModuleWindow::ModuleWindow(bool start_enabled) : Module(start_enabled)
 {
 	window = NULL;
@@ -21,19 +22,24 @@ bool ModuleWindow::Init()
 
 	if(SDL_Init(SDL_INIT_VIDEO) < 0)
 	{
-		LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
+		LOG("[error]SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
 	}
 	else
 	{
 		//Create window
-		int width = SCREEN_WIDTH * SCREEN_SIZE;
-		int height = SCREEN_HEIGHT * SCREEN_SIZE;
+		int width = w = SCREEN_WIDTH * SCREEN_SIZE;
+		int height = h = SCREEN_HEIGHT * SCREEN_SIZE;
 		Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN;
 
-		//Use OpenGL 2.1
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+
+		//Use OpenGL 3.1
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 
 		if(WIN_FULLSCREEN == true)
 		{
@@ -59,7 +65,7 @@ bool ModuleWindow::Init()
 
 		if(window == NULL)
 		{
-			LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+			LOG("[error]Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
 		}
 		else
@@ -102,7 +108,16 @@ int ModuleWindow::Height() const
 	return h;
 }
 
+void ModuleWindow::ResizeWindow(int w, int h)
+{
+	this->w = w;
+	this->h = h;
+	SDL_SetWindowSize(window, w, h);
+}
+
 void ModuleWindow::SetTitle(const char* title)
 {
 	SDL_SetWindowTitle(window, title);
 }
+
+

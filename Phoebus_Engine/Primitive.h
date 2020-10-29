@@ -2,107 +2,124 @@
 #pragma once
 #include "glmath.h"
 #include "Color.h"
-#include "PhysBody3D.h"
+#include "Glew/include/glew.h"
+#include <vector>
 
-enum PrimitiveTypes
+//#include "PhysBody3D.h"
+
+enum class PrimitiveTypes
 {
 	Primitive_Point,
 	Primitive_Line,
 	Primitive_Plane,
+
 	Primitive_Cube,
 	Primitive_Sphere,
-	Primitive_Cylinder
+	Primitive_Cylinder,
+	Primitive_Cone, //cyl
+	Primitive_Box,	//cyl
+	Primitive_Unknown
 };
 
 class Primitive
 {
 public:
 	Primitive();
+	virtual ~Primitive();
 
-	void Update();
-	virtual void	Render() const;
+    void			Draw() const;
 	void			SetPos(float x, float y, float z);
 	void			SetRotation(float angle, const vec3 &u);
-	void			Scale(float x, float y, float z);
 	PrimitiveTypes	GetType() const;
-
-
-	Color color;
-	mat4x4 transform;
-	bool axis,wire;
-	PhysBody3D body;
+	mat4x4			GetTransform() const;
+	void			SetTransform(mat4x4 newTrans);
+	void			SetTransform(float x, float y, float z, float angle, const vec3& u);
+	vec3			GetBuffers();
+public:
+	
+	bool wire;
 
 protected:
-	virtual void InnerRender() const;
 	PrimitiveTypes type;
+	mat4x4 transform;
+
+	GLuint indexBind;  //bind that stores the index (that codify for (x,y,z) vertices)
+	GLuint vertexBind; //bind that stores the vertex (3 floats for each one)
+	GLuint indexSize;  //number of vertex that make up the primitive. Automatically setted inside each primitive.
+
+protected:
+	bool PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[], uint vertexArraySize, uint indexArraySize);
+
 };
 
+//Related functions to primitives, but we don't want them to be part of the class
+//=============================================
+
+void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<unsigned int> &index, float radius = 1.f, uint sectors = 36, uint stacks = 18);
+void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& index, float rBase = 1, float rTop = 1, float height = 2, uint sectors = 36, uint stacks = 8);
+void ConeFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase = 1, float height = 2, uint sectors = 36, uint stacks = 8);
 // ============================================
-class Cube : public Primitive
+class PCube : public Primitive
 {
 public :
-	Cube(const vec3& size = vec3(1.f,1.f,1.f), float mass = 1.f);	
-	vec3 GetSize() const;
-protected:
-	void InnerRender() const;
-private:
-	vec3 size;
+	PCube(mat4x4 transform = IdentityMatrix, const vec3& size = vec3(1.f,1.f,1.f));
+
 };
 
 // ============================================
-class Sphere : public Primitive
+class PSphere : public Primitive
 {
 public:
-	Sphere(float radius = 1.f, float mass = 1.f);
+	//sectors refer to polygon rows & stacks refer to polygon columns
+	PSphere(mat4x4 transform= IdentityMatrix, float radius = 1.f, uint sectors=36,uint stacks=18);
 
 	float GetRadius() const;
-protected:
-	void InnerRender() const;
+
 private:
 	float radius;
 };
 
 // ============================================
-class Cylinder : public Primitive
+class PCylinder : public Primitive
 {
 public:
-	Cylinder(float radius = 1.f, float height = 2.f, float mass = 1.f);
+	PCylinder(float rBase = 1, float rTop = 1, float height = 2, uint sectors = 36,uint stacks = 8,bool smooth = true);
 
-	float GetRadius() const;
+	float GetTopRadius() const;
 	float GetHeight() const;
-protected:
-	void InnerRender() const;
+	float GetBaseRadius() const;
+
+	std::vector<float> getUnitCircleVertices(uint sectorcount);
 private:
-	float radius;
+	float rBase;
+	float rTop;
 	float height;
 };
 
 // ============================================
-class Line : public Primitive
+class PLine : public Primitive
 {
 public:
-	Line();
-	Line(const vec3& A, const vec3& B);
+	PLine();
+	PLine(const vec3& A, const vec3& B);
 
 	vec3 GetOrigin() const;
 	vec3 GetDestination() const;
 
-protected:
-	void InnerRender() const;
 public:
 	vec3 origin;
 	vec3 destination;
 };
 
 // ============================================
-class Plane : public Primitive
+class PPlane : public Primitive
 {
 public:
-	Plane(const vec3& normal = vec3(0,1,0));
+	PPlane(const vec3& normal = vec3(0,1,0));
 
 	vec3 GetNormal() const;
-protected:
-	void InnerRender() const;
+
 private:
 	vec3 normal;
 };
+
