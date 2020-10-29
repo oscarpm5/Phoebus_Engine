@@ -85,8 +85,9 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 ## Aditional comments for the teacher:
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
+* The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)
 
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
-* Licenses for 3rd party libraries can be found under the "Libraries" folder.
+* Licenses for 3rd party libraries and assets can be found under the "Libraries" folder.
