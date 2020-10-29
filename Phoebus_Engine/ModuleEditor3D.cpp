@@ -287,6 +287,7 @@ void ModuleEditor3D::MakeNameUnique(std::string& name)
 	else //else repeat the process
 	{
 		MakeNameUnique(auxName);
+		name = auxName;
 	}
 
 	currSuffix.clear();
