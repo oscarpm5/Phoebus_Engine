@@ -25,40 +25,40 @@ Github:		https://github.com/oscarpm5/Phoebus_Engine
 Note that the 3D viewport controls will only work when interacting with the 3D view and won't work in the menus
 
 
-*Right Mouse Click (hold)
-	-Enter FPS mode
+* Right Mouse Click (hold)
+	- Enter FPS mode
 	
-	**Right Mouse Click(drag)
-		-Rotate view
+		* Right Mouse Click(drag)
+			- Rotate view
 	
-	**WASD keys
-		-Control camera movement
+		* WASD keys
+			- Control camera movement
 	
-	**E/R Keys
-		-Move camera Up & Down respectively
+		* E/R Keys
+			- Move camera Up & Down respectively
 	
-	**Left Shift
-		-Multiply movement velocity
+		* Left Shift
+			- Multiply movement velocity
 
 
-*F Key
-	-Focus selected Object
+* F Key
+	- Focus selected Object
 
 
-*Middle Mouse Click (hold)
-	-Pan view
+* Middle Mouse Click (hold)
+	- Pan view
 
 
-*Middle Mouse Wheel (scroll)
-	-Change Zoom in/out distance from the target
+* Middle Mouse Wheel (scroll)
+	- Change Zoom in/out distance from the target
 
 
-*Left Alt + Left Mouse Click (drag)
-	-Orbit around target
+* Left Alt + Left Mouse Click (drag)
+	- Orbit around target
 
 
-*Delete Key (not backspace)
-	-Deletes the selected object and its children if any
+* Delete Key (not backspace)
+	- Deletes the selected object and its children if any
 
 
 * Esc: open/close the exit menu (this menu can be accessed also from the exit tab in the menu bar and by clicking the window cross)
