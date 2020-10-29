@@ -194,8 +194,8 @@ void GameObject::DrawOnEditorAllComponents()
 			}
 			App->editor3d->ChangeObjName(oldName, name);
 		}
-		ImGui::EndChild();
 	}
+		ImGui::EndChild();
 	//ImGui::Text("My name is %s", name.c_str());
 	ImGui::Separator();
 	ImGui::Spacing();
