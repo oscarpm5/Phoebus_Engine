@@ -110,6 +110,7 @@ void ModuleEditor3D::DrawAllMeshes()
 	}
 
 	drawMeshes.clear();
+	drawMeshes.shrink_to_fit();
 }
 
 void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)

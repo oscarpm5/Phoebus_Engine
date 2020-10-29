@@ -23,133 +23,6 @@
 #include"glmath.h"
 #include"MathGeoLib/include/MathGeoLib.h"
 
-/*
-bool Importer::LoadFBX(const char* path)
-{
-	bool ret = false;
-
-	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_MaxQuality); //assimp has a function to import from binary buffer
-	LOG("");										//aiImportFileFromMemory
-	LOG("Importing 3D asset from: %s", path);
-
-	if (scene != nullptr && scene->HasMeshes())
-	{
-		// Use scene->mNumMeshes to iterate on scene->mMeshes array
-
-		for (int i = 0; i < scene->mNumMeshes; i++)
-		{
-
-			std::vector<float> vertices;
-			std::vector<unsigned int> indices;
-			std::vector<float> normals;
-			std::vector<float>texCoords;
-			//creates a new mesh at scene editor
-
-			aiMesh* mesh = scene->mMeshes[i];
-			LOG("----------Importing mesh %i----------", i);
-
-
-			// copy vertices
-			//newMesh.numVertex = mesh->mNumVertices;
-			vertices.reserve(mesh->mNumVertices * 3);
-
-
-			for (int j = 0; j < mesh->mNumVertices; j++)
-			{
-				vertices.push_back(mesh->mVertices[j].x);
-				vertices.push_back(mesh->mVertices[j].y);
-				vertices.push_back(mesh->mVertices[j].z);
-			}
-			//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
-			LOG("New mesh with %i vertices", (vertices.size() / 3));
-			// copy faces
-			if (mesh->HasFaces())
-			{
-				//newMesh.numIndex = mesh->mNumFaces * 3;
-				//newMesh.index = new uint[newMesh.numIndex]; // assume each face is a triangle
-				indices.reserve(mesh->mNumFaces * 3);
-
-				for (int j = 0; j < mesh->mNumFaces; j++)
-				{
-
-					if (mesh->mFaces[j].mNumIndices != 3)
-					{
-						LOG("WARNING, geometry face with != 3 indices!");
-					}
-					else
-					{
-						indices.push_back(mesh->mFaces[j].mIndices[0]);
-						indices.push_back(mesh->mFaces[j].mIndices[1]);
-						indices.push_back(mesh->mFaces[j].mIndices[2]);
-
-						//memcpy(&newMesh.index[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
-
-
-					}
-
-				}
-				LOG("New mesh with %i indices", (indices.size()));
-			}
-
-
-			texCoords.reserve(indices.size() * 2); //there are 2 floats for every index
-			LOG("Importing mesh texture coordinates");
-			for (int j = 0; j < indices.size(); j++)
-			{
-				//copy TextureCoords
-				if (mesh->mTextureCoords[0])
-				{
-					texCoords.push_back(mesh->mTextureCoords[0][j].x);
-					texCoords.push_back(mesh->mTextureCoords[0][j].y);
-				}
-				else
-				{
-					LOG("No texture coordinates found");
-					texCoords.push_back(0.0f);
-					texCoords.push_back(0.0f);
-				}
-			}
-			LOG("%i texture coordinates have been loaded", texCoords.size() / 2);
-
-			//copy normals
-			if (mesh->HasNormals())
-			{
-				LOG("Importing normals");
-				normals.reserve(mesh->mNumVertices * 3);
-				for (int j = 0; j < mesh->mNumVertices; j++)
-				{
-
-					normals.push_back(mesh->mNormals[j].x);
-					normals.push_back(mesh->mNormals[j].y);
-					normals.push_back(mesh->mNormals[j].z);
-				}
-				LOG("%i normals have been loaded", normals.size() / 3);
-			}
-			else
-				LOG("Mesh has no normals!");
-
-
-
-
-			App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
-			LOG("----------Mesh %i has been loaded----------", i);
-			vertices.clear();
-			indices.clear();
-			normals.clear();
-			ret = true;
-			mesh = nullptr;
-		}
-		aiReleaseImport(scene);
-	}
-	else
-	{
-		LOG("Error loading scene % s", path);
-		ret = false;
-	}
-	return ret;
-}
-*/
-
 #include "texture.h"
 #include "GameObject.h"
 #include "Component.h"
@@ -233,7 +106,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 		}*/
 
 
-		if (App->editor3d->selectedGameObjs.size()>0 && App->editor3d->selectedGameObjs.back() != App->editor3d->root)
+		if (App->editor3d->selectedGameObjs.size() > 0 && App->editor3d->selectedGameObjs.back() != App->editor3d->root)
 		{
 
 			C_Material* mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
@@ -265,7 +138,7 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\n[error]Could not load an miage from buffer");
+		LOG("\n[error]Could not load an image from buffer");
 		LOG("[error]Error %d :\n %s", error, iluErrorString(error));
 		ilDeleteImages(1, &newImage);
 	}
@@ -286,218 +159,83 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 
 		}
 		ilDeleteImages(1, &newImage);
+	}
+
+	if (Length != 0)
 		RELEASE_ARRAY(Buffer);
-	}
 
 	return ret;
 
 }
 
-/*
-bool Importer::LoadNewImage(const char* path)
-{
-	ILuint newImage = 0;
-	ilGenImages(1, &newImage);
-	ilBindImage(newImage);
-
-	bool ret = ilLoadImage(path);//TODO this will be loaded from buffer in the near future -> ilLoadL()
-
-
-	if (!ret)
-	{
-		ILenum error;
-		error = ilGetError();
-		LOG("\nCould not load the file: %s", path);
-		LOG("Error %d :\n %s", error, iluErrorString(error));
-		ilDeleteImages(1, &newImage);
-	}
-	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-	{
-
-		//temporal code that puts the image in every mesh avaliable
-		for (int i = 0; i < App->editor3d->meshes.size(); i++)
-		{
-			App->editor3d->meshes[i].GenerateTexturefromILUT();
-		}
-
-
-
-
-
-		ilDeleteImages(1, &newImage);
-	}
-	return ret;
-}
-*/
 
 bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const char* relativePath)
 {
 	bool ret = false;
 
-	const aiScene* scene = aiImportFileFromMemory(Buffer, Length, aiProcessPreset_TargetRealtime_MaxQuality, nullptr); //nullptr as we need no external libs to hepl import
-
-										//aiImportFileFromMemory										
-	LOG("Importing 3D asset from buffer: %s", Buffer);
-
-	if (scene != nullptr && scene->HasMeshes())
+	if (Length > 0)
 	{
-		std::string pathWithoutFile;
-		App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
-		// Use scene->mNumMeshes to iterate on scene->mMeshes array
 
-		aiNode* node = scene->mRootNode;
+		const aiScene* scene = aiImportFileFromMemory(Buffer, Length, aiProcessPreset_TargetRealtime_MaxQuality, nullptr); //nullptr as we need no external libs to hepl import
 
-		std::deque<aiNode*>parents;
-		std::deque<GameObject*>gameObjParents;
+											//aiImportFileFromMemory										
+		LOG("Importing 3D asset from buffer: %s", Buffer);
 
-		parents.push_back(node);
-		gameObjParents.push_back(nullptr);//first node is root and doesn't have mesh nor game object
-
-		//create obj for root and pushes it to gameObjParents TODO
-
-		while (parents.size() > 0)
+		if (scene != nullptr && scene->HasMeshes())
 		{
-			std::deque<aiNode*> parentsCopy = parents;
+			std::string pathWithoutFile;
+			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
+			// Use scene->mNumMeshes to iterate on scene->mMeshes array
 
-			for (int i = 0; i < parentsCopy.size(); i++)
+			aiNode* node = scene->mRootNode;
+
+			std::deque<aiNode*>parents;
+			std::deque<GameObject*>gameObjParents;
+
+			parents.push_back(node);
+			gameObjParents.push_back(nullptr);//first node is root and doesn't have mesh nor game object
+
+			//create obj for root and pushes it to gameObjParents TODO
+
+			while (parents.size() > 0)
 			{
-				aiNode* currentParent = parents[0];
-				parents.pop_front();
+				std::deque<aiNode*> parentsCopy = parents;
 
-				GameObject* currObjParent = gameObjParents[0];
-				gameObjParents.pop_front();
-
-
-				for (int j = 0; j < currentParent->mNumChildren; j++)
+				for (int i = 0; i < parentsCopy.size(); i++)
 				{
-					parents.push_back(currentParent->mChildren[j]);
+					aiNode* currentParent = parents[0];
+					parents.pop_front();
 
-					aiMesh* newMesh = nullptr;
-					if (parents.back()->mNumMeshes > 0)
-						newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
-						//create game object and save it into gameObjParents (its parent is currObjParent)
-					gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
-
-				}
-			}
-
-		}
-
-		/*
-		for (int i = 0; i < scene->mNumMeshes; i++)
-		{
-			std::vector<float> vertices;
-			std::vector<unsigned int> indices;
-			std::vector<float> normals;
-			std::vector<float>texCoords;
-			//creates a new mesh at scene editor
-
-			aiMesh* mesh = scene->mMeshes[i];
-			GameObject* newObj = new GameObject(App->editor3d->root, mesh->mName.C_Str(), mat4x4());
-			//TODO update hierarchy here
-			LOG("----------Importing mesh %i----------", i);
+					GameObject* currObjParent = gameObjParents[0];
+					gameObjParents.pop_front();
 
 
-			// copy vertices
-			//newMesh.numVertex = mesh->mNumVertices;
-			vertices.reserve(mesh->mNumVertices * 3);
-
-
-			for (int j = 0; j < mesh->mNumVertices; j++)
-			{
-				vertices.push_back(mesh->mVertices[j].x);
-				vertices.push_back(mesh->mVertices[j].y);
-				vertices.push_back(mesh->mVertices[j].z);
-			}
-			//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
-			LOG("New mesh with %i vertices", (vertices.size() / 3));
-			// copy faces
-			if (mesh->HasFaces())
-			{
-				//newMesh.numIndex = mesh->mNumFaces * 3;
-				//newMesh.index = new uint[newMesh.numIndex]; // assume each face is a triangle
-				indices.reserve(mesh->mNumFaces * 3);
-
-				for (int j = 0; j < mesh->mNumFaces; j++)
-				{
-
-					if (mesh->mFaces[j].mNumIndices != 3)
+					for (int j = 0; j < currentParent->mNumChildren; j++)
 					{
-						LOG("WARNING, geometry face with != 3 indices!");
-					}
-					else
-					{
-						indices.push_back(mesh->mFaces[j].mIndices[0]);
-						indices.push_back(mesh->mFaces[j].mIndices[1]);
-						indices.push_back(mesh->mFaces[j].mIndices[2]);
+						parents.push_back(currentParent->mChildren[j]);
 
-						//memcpy(&newMesh.index[i * 3], mesh->mFaces[i].mIndices, 3 * sizeof(uint));
-
+						aiMesh* newMesh = nullptr;
+						if (parents.back()->mNumMeshes > 0)
+							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
+							//create game object and save it into gameObjParents (its parent is currObjParent)
+						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
 
 					}
-
 				}
-				LOG("New mesh with %i indices", (indices.size()));
+
 			}
 
-
-			texCoords.reserve(indices.size() * 2); //there are 2 floats for every index
-			LOG("Importing mesh texture coordinates");
-			for (int j = 0; j < indices.size(); j++)
-			{
-				//copy TextureCoords
-				if (mesh->mTextureCoords[0])
-				{
-					texCoords.push_back(mesh->mTextureCoords[0][j].x);
-					texCoords.push_back(mesh->mTextureCoords[0][j].y);
-				}
-				else
-				{
-					LOG("No texture coordinates found");
-					texCoords.push_back(0.0f);
-					texCoords.push_back(0.0f);
-				}
-			}
-			LOG("%i texture coordinates have been loaded", texCoords.size() / 2);
-
-			//copy normals
-			if (mesh->HasNormals())
-			{
-				LOG("Importing normals");
-				normals.reserve(mesh->mNumVertices * 3);
-				for (int j = 0; j < mesh->mNumVertices; j++)
-				{
-
-					normals.push_back(mesh->mNormals[j].x);
-					normals.push_back(mesh->mNormals[j].y);
-					normals.push_back(mesh->mNormals[j].z);
-				}
-				LOG("%i normals have been loaded", normals.size() / 3);
-			}
-			else
-				LOG("Mesh has no normals!");
-
-
-
-			newObj->CreateComponent(ComponentType::MESH);
-			newObj->GetComponent<C_Mesh>()->SetMesh(Mesh(vertices, indices, normals, texCoords));
-
-			//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
-			LOG("----------Mesh %i has been loaded----------", i);
-			vertices.clear();
-			indices.clear();
-			normals.clear();
-			ret = true;
-			mesh = nullptr;
-			newObj = nullptr;
+			aiReleaseImport(scene);
 		}
-		*/
-		aiReleaseImport(scene);
+		else
+		{
+			LOG("[error]Error loading scene % s", Buffer);
+			ret = false;
+		}
 	}
 	else
 	{
-		LOG("[error]Error loading scene % s", Buffer);
-		ret = false;
+	LOG("[error]Error scene with path '%s' doesnt exist", relativePath);
 	}
 	return ret;
 }

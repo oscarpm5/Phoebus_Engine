@@ -885,7 +885,7 @@ void ModuleRenderer2D::CreateDockingSpace()
 	else
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::Text("ERROR: Docking is not enabled! See Demo > Configuration.");
+		ImGui::Text("[error]: Docking is not enabled! See Demo > Configuration.");
 		ImGui::Text("Set io.ConfigFlags |= ImGuiConfigFlags_DockingEnable in your code, or ");
 		ImGui::SameLine(0.0f, 0.0f);
 		if (ImGui::SmallButton("click here"))
@@ -916,6 +916,7 @@ bool ModuleRenderer2D::Show3DWindow()
 	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
 		OnResize(winSize.x, winSize.y);
 
+	ImVec2 lastCursorPos =ImGui::GetCursorPos();
 
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
@@ -924,6 +925,10 @@ bool ModuleRenderer2D::Show3DWindow()
 	winSize = ImGui::GetWindowSize();
 	ImVec2 mousePos= ImGui::GetMousePos();
 
+	lastCursorPos.x += 5;//offset from the image border
+	lastCursorPos.y += 5;
+	ImGui::SetCursorPos(lastCursorPos);
+	ImGui::Text("Object count: %i",GameObject::numberOfObjects-1); //-1 for the scene root
 	if (ImGui::IsWindowHovered() && 
 		mousePos.x>=winPos.x&&mousePos.x<=winPos.x+winSize.x &&mousePos.y>=winPos.y&&mousePos.y<=winPos.y+winSize.y)//inside window
 	{
