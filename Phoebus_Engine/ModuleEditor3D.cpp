@@ -31,23 +31,12 @@ bool ModuleEditor3D::Start()
 	mat4x4 transform;
 	root = new GameObject(nullptr, "SceneRoot", transform);
 
-	test1 = new GameObject(root, "Test1", transform);
-	test2 = new GameObject(root, "Test2", transform);
-	test2->isActive = false;
-	test3 = new GameObject(root, "Test3", transform);
-	transform.scale(5, 15, 25);
-	transform.translate(10, 20, 30);
-	test4 = new GameObject(test3, "Test4", transform);
-	test4->isActive = false;
-	test5 = new GameObject(test3, "Test5", transform);
-	test6 = new GameObject(test4, "Test6", transform);
-	test7 = new GameObject(test6, "Test7", transform);
-
-
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
 
 	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
+
+
 
 	maxSceneDrawMode = MeshDrawMode::DRAW_MODE_FILL;
 

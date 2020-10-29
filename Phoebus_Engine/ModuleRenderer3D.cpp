@@ -165,6 +165,10 @@ bool ModuleRenderer3D::Init()
 	//TestingRenderAtStart();
 
 
+	//Just making sure this is initialized
+	gridLength = 500.f;
+	separation = 20.f;
+
 	//SAux = PSphere(0.5, 1);
 	//SAux.SetPos(0, 1, 1);
 
@@ -433,9 +437,6 @@ void ModuleRenderer3D::DrawGrid()
 
 	glBegin(GL_LINES);
 	glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
-
-	float gridLength = 500.0f;
-	float separation = 20.0f;
 
 	for (float i = -gridLength; i <= gridLength; i += separation)
 	{

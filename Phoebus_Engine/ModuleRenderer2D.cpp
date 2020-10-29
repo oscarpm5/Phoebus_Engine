@@ -585,6 +585,16 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
 		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
+		
+		if (ImGui::DragFloat("Grid Lenght", &App->renderer3D->gridLength, 0.1f, 1.0f, 1000.0f, "%.3f"))
+		{
+			//
+		}
+		if (ImGui::DragFloat("Grid Separation", &App->renderer3D->separation, 0.1f, 1.0f, App->renderer3D->gridLength/2, "%.3f"))
+		{
+			//
+		}
+		
 
 		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
 		{
