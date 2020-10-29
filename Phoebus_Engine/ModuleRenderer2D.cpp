@@ -950,11 +950,36 @@ bool ModuleRenderer2D::Show3DWindow()
 	ImVec2 winPos = ImGui::GetWindowPos();
 	winSize = ImGui::GetWindowSize();
 	ImVec2 mousePos= ImGui::GetMousePos();
-
-	lastCursorPos.x += 5;//offset from the image border
-	lastCursorPos.y += 5;
+	
+	ImVec2 viewportTextOffset = { 5.0f,5.0f };//offset from the image border
+	lastCursorPos.x += viewportTextOffset.x;
+	lastCursorPos.y += viewportTextOffset.y;
 	ImGui::SetCursorPos(lastCursorPos);
+	std::string drawModeString;
+	switch (App->editor3d->maxSceneDrawMode)
+	{
+	case MeshDrawMode::DRAW_MODE_BOTH:
+		drawModeString = "FILL + WIRE";
+		break;
+	case MeshDrawMode::DRAW_MODE_FILL:
+		drawModeString = "FILL";
+		break;
+	case MeshDrawMode::DRAW_MODE_WIRE:
+		drawModeString = "WIRE";
+		break;
+	}
+
+	ImGui::Text("Scene draw Mode: %s", drawModeString.c_str());
+	lastCursorPos = ImGui::GetCursorPos();
+	lastCursorPos.x += viewportTextOffset.x;
+	ImGui::SetCursorPos(lastCursorPos);
+
 	ImGui::Text("Object count: %i",GameObject::numberOfObjects-1); //-1 for the scene root
+	
+	
+	
+	
+	
 	if (ImGui::IsWindowHovered() && 
 		mousePos.x>=winPos.x&&mousePos.x<=winPos.x+winSize.x &&mousePos.y>=winPos.y&&mousePos.y<=winPos.y+winSize.y)//inside window
 	{
