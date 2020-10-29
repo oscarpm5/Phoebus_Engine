@@ -169,7 +169,7 @@ bool Importer::InitializeDevIL()
 	return true;
 }
 
-bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
+bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, std::string path)
 {
 	ILuint newImage = 0;
 	ilGenImages(1, &newImage);
@@ -244,7 +244,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 				mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
 			}
 
-			mat->GenTextureFromName(newImage);
+			mat->GenTextureFromName(newImage, path);
 
 		}
 		ilDeleteImages(1, &newImage);
@@ -252,7 +252,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length)
 	return ret;
 }
 
-bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, GameObject* target)
+bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, GameObject* target, std::string path)
 {
 	ILuint newImage = 0;
 	ilGenImages(1, &newImage);
@@ -282,7 +282,7 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 				mat = target->GetComponent<C_Material>();
 			}
 
-			mat->GenTextureFromName(newImage);
+			mat->GenTextureFromName(newImage, path);
 
 		}
 		ilDeleteImages(1, &newImage);
@@ -659,7 +659,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 				char* buffer;
 				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
 				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
-				LoadNewImageFromObj(buffer, buffLength, newObj);
+				LoadNewImageFromObj(buffer, buffLength, newObj, path.C_Str());
 				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
 				//use also the LoadNewImageFromObj() function when the file system only returns buffers
 

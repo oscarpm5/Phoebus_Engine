@@ -201,7 +201,7 @@ void ModuleFileSystem::LoadAsset(char* path)
 	case FileFormats::JPG:
 	case FileFormats::JPEG:
 	case FileFormats::DDS:
-		Importer::LoadNewImageFromBuffer(buffer, size);
+		Importer::LoadNewImageFromBuffer(buffer, size, newPath);
 		break;
 
 

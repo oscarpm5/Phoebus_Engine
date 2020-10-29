@@ -9,8 +9,8 @@ namespace Importer
 	//bool LoadFBX(const char* path);
 	bool InitializeDevIL();
 	//bool LoadNewImage(const char* path);
-	bool LoadNewImageFromBuffer(const char* Buffer,unsigned int Length);
-	bool LoadNewImageFromObj(const char* Buffer, unsigned int Length,GameObject*target);
+	bool LoadNewImageFromBuffer(const char* Buffer,unsigned int Length, std::string path = ""); //path for display
+	bool LoadNewImageFromObj(const char* Buffer, unsigned int Length,GameObject*target, std::string path = ""); //path for display
 
 	//Take a saved buffer in memory and load it
 	bool LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const char* relativePath); //lenght of the buffer, in bytes

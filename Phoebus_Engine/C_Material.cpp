@@ -1,4 +1,5 @@
 #include "C_Material.h"
+#include "imgui/imgui.h"
 #include "Glew/include/glew.h"
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
@@ -10,7 +11,7 @@ sizeInBytes(0), bpp(0), usingCkeckers(false)
 	GenDefaultTexture();
 }
 
-C_Material::C_Material(GameObject* owner, unsigned int ilImageName) :Component(ComponentType::MATERIAL, owner),
+C_Material::C_Material(GameObject* owner, unsigned int ilImageName, const char* path) :Component(ComponentType::MATERIAL, owner),
 idTexture(0), idCheckers(0), width(0), height(0), format(0), depth(0),
 sizeInBytes(0), bpp(0), usingCkeckers(false)
 {
@@ -29,6 +30,7 @@ C_Material::~C_Material()
 	sizeInBytes = 0;
 	bpp = 0;
 	usingCkeckers = 0;
+	path = "";
 }
 
 bool C_Material::HasTexture() const
@@ -57,11 +59,39 @@ unsigned int C_Material::GetCheckersID() const
 
 void C_Material::OnEditor()
 {
+	if (idTexture == 0) return;
+
+	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Indent();
+		ImGui::Separator();
+
+		ImGui::Text("ID: %i", this->GetTextureID()); 
+		ImGui::Text("Size in Bytes: %i ", this->sizeInBytes);
+		ImGui::Separator();
+		ImGui::Checkbox("Checkers", &usingCkeckers);
+		ImGui::Separator();
+		if (ImGui::TreeNode("Texture Preview")) 
+		{	
+			ImGui::SliderInt("Size", &size, 1, 400);
+			ImGui::Image((ImTextureID)this->GetTextureID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0));
+			ImGui::TreePop();
+		}
+		ImGui::Separator();
+
+		ImGui::Text("Path: %s", this->path.c_str());
+
+
+
+		ImGui::Separator();
+		ImGui::Unindent();
+	}
 }
 
-void C_Material::GenTextureFromName(unsigned int ilImageName)
+void C_Material::GenTextureFromName(unsigned int ilImageName, std::string path)
 {
 	DestroyTexture();
+
 
 	ilBindImage(ilImageName);
 
@@ -89,9 +119,8 @@ void C_Material::GenTextureFromName(unsigned int ilImageName)
 	width = ImageInfo.Width;
 	height = ImageInfo.Height;
 
-
-
-
+	//set name
+	this->path = path;
 
 	//gen texture
 
@@ -131,7 +160,7 @@ void C_Material::DestroyCheckers()
 void C_Material::GenDefaultTexture()
 {
 	DestroyCheckers();
-
+	this->path = "Default texture - no path";
 	const int checkersHeight = 100;
 	const int checkersWidth = 100;
 
