@@ -176,6 +176,7 @@
     <ClInclude Include="PhysFS\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RenderMesh.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="Timer.h" />
   </ItemGroup>
@@ -257,6 +258,12 @@
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\include\Math\Matrix.inl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Phoebus_Engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Apollo_icono.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

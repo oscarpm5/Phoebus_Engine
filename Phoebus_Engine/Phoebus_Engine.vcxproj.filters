@@ -348,6 +348,7 @@
     <ClInclude Include="C_Material.h">
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -573,5 +574,11 @@
     <None Include="Json\README.md">
       <Filter>Sources\Tools\Json</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Phoebus_Engine.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Apollo_icono.ico" />
   </ItemGroup>
 </Project>
