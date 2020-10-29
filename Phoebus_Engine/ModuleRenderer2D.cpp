@@ -264,12 +264,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 	if (showInspector)
 	{
-		if (!ImGui::Begin("Inspector", &showInspector))		//this is how you add the cross button to a window
+		if (ImGui::Begin("Inspector", &showInspector))		//this is how you add the cross button to a window
 		{
+			App->editor3d->UpdateInfoOnSelectedGameObject();
+			ImGui::End();
 
 		}
-		App->editor3d->UpdateInfoOnSelectedGameObject();
-		ImGui::End();
 	}
 	if (showAboutWindowbool)
 	{
@@ -603,7 +603,7 @@ bool ModuleRenderer2D::showConfigFunc()
 
 
 		//if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
-		
+
 		//TODO group combos into a function
 		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };
 		const char* drawLabel = drawModes[(int)App->editor3d->maxSceneDrawMode];  // Label to preview before opening the combo (technically it could be anything)
@@ -749,7 +749,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 			0, 3, 2,
 			2, 1, 0
 		};
-		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube,"Cube");
+		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube, "Cube");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Sphere)
@@ -757,7 +757,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
 		SphereFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, (int)ar2, (int)ar3);
-		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray,"Sphere");
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray, "Sphere");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Cylinder)
@@ -765,7 +765,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
 		CylinderFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, ar2, ar3, (int)ar4, (int)ar5);
-		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray,"Cylinder");
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray, "Cylinder");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Cone)
@@ -773,7 +773,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 		std::vector<float> vertexArray;
 		std::vector<unsigned int> indexArray;
 		ConeFillVectorsVertexAndIndex(vertexArray, indexArray, ar1, ar2, (int)ar3, (int)ar4);
-		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray,"Cone");
+		CreateMeshfromPrimAndSendToScene(vertexArray, indexArray, "Cone");
 		ret = true;
 	}
 	if (type == PrimitiveTypes::Primitive_Box)
@@ -808,7 +808,7 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 			0, 3, 2,
 			2, 1, 0
 		};
-		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube,"Box");
+		CreateMeshfromPrimAndSendToScene(vertexArrayCube, indexArrayCube, "Box");
 		ret = true;
 	}
 
@@ -935,7 +935,8 @@ bool ModuleRenderer2D::Show3DWindow()
 {
 	ImGuiWindowFlags flags = ImGuiWindowFlags_::ImGuiWindowFlags_NoCollapse;
 	ImGuiStyle& style = ImGui::GetStyle();
-	static ImGuiStyle ref_saved_style;
+
+	static ImGuiStyle ref_saved_style = style;
 	//style.WindowBorderSize = 0.0f;
 	style.WindowPadding = ImVec2(0.0f, 0.0f);
 
@@ -952,15 +953,15 @@ bool ModuleRenderer2D::Show3DWindow()
 	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
 		OnResize(winSize.x, winSize.y);
 
-	ImVec2 lastCursorPos =ImGui::GetCursorPos();
+	ImVec2 lastCursorPos = ImGui::GetCursorPos();
 
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	ImVec2 winPos = ImGui::GetWindowPos();
 	winSize = ImGui::GetWindowSize();
-	ImVec2 mousePos= ImGui::GetMousePos();
-	
+	ImVec2 mousePos = ImGui::GetMousePos();
+
 	ImVec2 viewportTextOffset = { 5.0f,5.0f };//offset from the image border
 	lastCursorPos.x += viewportTextOffset.x;
 	lastCursorPos.y += viewportTextOffset.y;
@@ -984,14 +985,14 @@ bool ModuleRenderer2D::Show3DWindow()
 	lastCursorPos.x += viewportTextOffset.x;
 	ImGui::SetCursorPos(lastCursorPos);
 
-	ImGui::Text("Object count: %i",GameObject::numberOfObjects-1); //-1 for the scene root
-	
-	
-	
-	
-	
-	if (ImGui::IsWindowHovered() && 
-		mousePos.x>=winPos.x&&mousePos.x<=winPos.x+winSize.x &&mousePos.y>=winPos.y&&mousePos.y<=winPos.y+winSize.y)//inside window
+	ImGui::Text("Object count: %i", GameObject::numberOfObjects - 1); //-1 for the scene root
+
+
+
+
+
+	if (ImGui::IsWindowHovered() &&
+		mousePos.x >= winPos.x && mousePos.x <= winPos.x + winSize.x && mousePos.y >= winPos.y && mousePos.y <= winPos.y + winSize.y)//inside window
 	{
 		App->editor3d->mouseActive = true;//TODO change variable to be in this module
 	}
@@ -1005,5 +1006,6 @@ bool ModuleRenderer2D::Show3DWindow()
 
 
 	ImGui::End();
+	style = ref_saved_style;
 	return true;
 }

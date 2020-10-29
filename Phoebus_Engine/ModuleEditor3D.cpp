@@ -167,9 +167,6 @@ bool ModuleEditor3D::UpdateInfoOnSelectedGameObject()
 	bool ret = true;
 	if (selectedGameObjs.size() > 0)
 	{
-		ImGui::Text("My name is %s", selectedGameObjs.back()->GetName().c_str());
-		ImGui::Separator();
-		ImGui::Spacing();
 		selectedGameObjs.back()->DrawOnEditorAllComponents();
 	}
 	return ret;

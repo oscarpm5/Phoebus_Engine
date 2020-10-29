@@ -23,7 +23,7 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 	this->transform = new C_Transform(this, transform);
 	components.push_back(this->transform);
 
-	numberOfObjects ++;
+	numberOfObjects++;
 
 }
 
@@ -57,7 +57,7 @@ void GameObject::Update(float dt)
 GameObject::~GameObject()
 {
 	numberOfObjects--;
-	
+
 	for (int i = 0; i < components.size(); i++)
 	{
 		if (components[i] != transform)
@@ -67,7 +67,7 @@ GameObject::~GameObject()
 		}
 	}
 	components.clear();
-	
+
 	if (transform != nullptr)//This wont be needed as transform is deleted from the component vector
 		delete transform;
 
@@ -162,6 +162,39 @@ bool GameObject::IsParentActive()
 
 void GameObject::DrawOnEditorAllComponents()
 {
+	if (ImGui::BeginChild("Object name window", ImVec2(0.0f, 30.0f)))
+	{
+		ImGui::Separator();
+		ImGui::Spacing();
+
+		ImGui::Checkbox(" ", &isActive);
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("Active");
+			ImGui::EndTooltip();
+		}
+
+
+		ImGui::SameLine();
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX()-10);
+		char* auxName = (char*)name.c_str();
+		if (ImGui::InputText("Object Name", auxName, 100))
+		{
+			name = auxName;
+			name.shrink_to_fit();
+			if (name.empty())
+			{
+				name = "Untitled";
+			}
+		}
+		ImGui::EndChild();
+	}
+	//ImGui::Text("My name is %s", name.c_str());
+	ImGui::Separator();
+	ImGui::Spacing();
+
+
 	for (int i = 0; i < this->components.size(); i++)
 	{
 		components[i]->OnEditor();
