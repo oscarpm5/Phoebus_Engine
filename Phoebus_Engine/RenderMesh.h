@@ -8,9 +8,9 @@
 class RenderMesh
 {
 public:
-	RenderMesh(C_Mesh* mesh,C_Material*material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode);
+	RenderMesh(C_Mesh* mesh,C_Material*material, mat4x4 gTransform);
 	~RenderMesh();
-	void Draw();
+	void Draw(MeshDrawMode sceneMaxDrawMode);
 
 private:
 	void DrawVertexNormals();

@@ -32,6 +32,9 @@ bool ModuleCamera3D::Start()
 	zoomLevel = 20;
 	CamZoom(0);//sets cam zoom to its level variable
 
+	camSpeed = 16.0f;
+	camSpeedMult = 2.0f;
+
 	return ret;
 }
 
@@ -90,9 +93,9 @@ update_status ModuleCamera3D::Update(float dt)
 		else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)//Camera Rotate TODO: Camera rotate & camera orbit have duplicated code
 		{
 			vec3 newPos(0, 0, 0);
-			float speed = 16.0f * dt;
+			float speed = camSpeed * dt;
 			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
-				speed = 32.0f * dt;
+				speed *= camSpeedMult;
 
 			if (App->input->GetKey(SDL_SCANCODE_E) == KEY_REPEAT) newPos.y += speed;
 			if (App->input->GetKey(SDL_SCANCODE_R) == KEY_REPEAT) newPos.y -= speed;

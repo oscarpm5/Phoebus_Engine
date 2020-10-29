@@ -24,7 +24,7 @@ public:
 	bool CleanUp();
 
 	void DrawAllMeshes();
-	void AddMeshToDraw(C_Mesh* mesh, C_Material* material,mat4x4 gTransform,MeshDrawMode drawMode,NormalDrawMode normalMode);
+	void AddMeshToDraw(C_Mesh* mesh, C_Material* material,mat4x4 gTransform);
 
 	bool SetSelectedGameObject(GameObject* selected, bool addMode = false);
 	bool RemoveGameObjFromSelected(GameObject* toRemove);
@@ -43,6 +43,8 @@ public:
 	
 
 	std::vector<GameObject*> selectedGameObjs;
+
+	MeshDrawMode maxSceneDrawMode;
 
 	bool mouseActive;//checks whether the 3d scene can be interacted with the mouse (when hovering or mantaining click after hover)
 };

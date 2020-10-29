@@ -555,6 +555,7 @@ bool ModuleRenderer2D::showConfigFunc()
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
+		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
 
 		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
 		{
@@ -591,9 +592,25 @@ bool ModuleRenderer2D::showConfigFunc()
 		}
 
 
-		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
+		//if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
+		
+		//TODO group combos into a function
+		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };
+		const char* drawLabel = drawModes[(int)App->editor3d->maxSceneDrawMode];  // Label to preview before opening the combo (technically it could be anything)
+		if (ImGui::BeginCombo("Scene draw Mode", drawLabel, ImGuiComboFlags_PopupAlignLeft))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(drawModes); n++)
+			{
+				const bool is_selected = ((int)App->editor3d->maxSceneDrawMode == n);
+				if (ImGui::Selectable(drawModes[n], is_selected))
+					App->editor3d->maxSceneDrawMode = (MeshDrawMode)n;
 
-		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 
 		ImGui::PopStyleColor();
 	}
@@ -601,6 +618,15 @@ bool ModuleRenderer2D::showConfigFunc()
 	if (ImGui::CollapsingHeader("camera"))
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		ImGui::DragFloat("Camera speed", &App->camera->camSpeed, 0.1f, 0.01f, FLT_MAX, "%.3f", 0);
+		ImGui::DragFloat("Camera speed multiplier", &App->camera->camSpeedMult, 1.0f, 0.01f, FLT_MAX, "%.3f", 0);
+
+		ImGui::Spacing();
+		ImGui::Spacing();
 
 		if (ImGui::SliderFloat("FoV", &App->camera->foV, 1.0f, 90.0f))
 		{

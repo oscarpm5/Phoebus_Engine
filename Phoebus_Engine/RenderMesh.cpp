@@ -1,7 +1,7 @@
 #include "RenderMesh.h"
 #include "Glew/include/glew.h"
 
-RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode) :
+RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform) :
 	mesh(mesh), material(material),transform(gTransform)
 {}
 
@@ -11,7 +11,7 @@ RenderMesh::~RenderMesh()
 	material = nullptr;
 }
 
-void RenderMesh::Draw()
+void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 {
 
 
@@ -34,12 +34,18 @@ void RenderMesh::Draw()
 
 	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
 
-	if (mesh->meshDrawMode == (int)MeshDrawMode::DRAW_MODE_WIRE)
+	int localDrawMode=(int)sceneMaxDrawMode;
+
+	if (mesh->meshDrawMode > localDrawMode)
+		localDrawMode = mesh->meshDrawMode;
+
+
+	if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_WIRE)
 	{
 		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
-	else if (mesh->meshDrawMode == (int)MeshDrawMode::DRAW_MODE_FILL)
+	else if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_FILL)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
