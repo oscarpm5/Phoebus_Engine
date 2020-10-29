@@ -391,9 +391,12 @@ bool ModuleRenderer2D::showAboutWindow()
 	if (ImGui::MenuItem("Oscar Perez martin")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5", NULL, NULL, SW_SHOWNORMAL); }
 	ImGui::Spacing();
 	ImGui::Spacing();
-
+	if (ImGui::MenuItem("Check out the GitHub Project!")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5/Phoebus_Engine", NULL, NULL, SW_SHOWNORMAL); }
+	ImGui::Spacing();
+	ImGui::Spacing();
 	//libraries version used with links
 	if (ImGui::MenuItem("Libraries used")) { showLibs = true; }
+
 	if (showLibs) { showLibsFunc(); }
 	ImGui::Spacing();
 	ImGui::Spacing();
