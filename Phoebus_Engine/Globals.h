@@ -16,6 +16,9 @@ void log(const char file[], int line, const char* format, ...);
 #define DEGTORAD 0.0174532925199432957f
 #define RADTODEG 57.295779513082320876f
 #define HAVE_M_PI
+#define BTOGB (1073741824.0f)
+#define KBTOMB 1024.0f //To GB: (1048576.0f)
+#define BTOMB (1048576.0f)
 
 
 typedef unsigned int uint;

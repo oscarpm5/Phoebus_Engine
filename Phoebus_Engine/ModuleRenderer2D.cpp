@@ -522,9 +522,9 @@ bool ModuleRenderer2D::showConfigFunc()
 				LOG("Resizable mode toggled to FALSE");
 			}
 		}
-		if (ImGui::Checkbox("Vsync", &Vsync)) 
-		{ 
-			SDL_GL_SetSwapInterval(Vsync); 
+		if (ImGui::Checkbox("Vsync", &Vsync))
+		{
+			SDL_GL_SetSwapInterval(Vsync);
 		}
 		/*
 		if (ImGui::Checkbox("Borderless", &borderless))
@@ -566,6 +566,16 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::SameLine(); if (SDL_HasSSE3()) { ImGui::Text("SSE3 "); }
 		ImGui::SameLine(); if (SDL_HasSSE41()) { ImGui::Text("SSE41 "); }
 		ImGui::SameLine(); if (SDL_HasSSE42()) { ImGui::Text("SSE42 "); }
+
+		GLint tmp_GPUTotalVRAM = 0;
+		glGetIntegerv(0x9048, &tmp_GPUTotalVRAM);
+		tmp_GPUTotalVRAM /= KBTOMB;
+		ImGui::Text("Total VRAM is %i", tmp_GPUTotalVRAM);
+
+		GLint tmp_GPUCurrentVRAM = 0;
+		glGetIntegerv(0x9049, &tmp_GPUCurrentVRAM);
+		tmp_GPUCurrentVRAM /= KBTOMB;
+		ImGui::Text("Current VRAM is %i", tmp_GPUCurrentVRAM);
 
 		ImGui::PopStyleColor();
 	}
