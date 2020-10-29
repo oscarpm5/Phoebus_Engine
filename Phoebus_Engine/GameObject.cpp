@@ -9,7 +9,7 @@
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr)
+GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr), focused(false)
 {
 	App->editor3d->AddObjName(this->name);
 

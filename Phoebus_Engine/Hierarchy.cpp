@@ -41,15 +41,20 @@ void SeekMyChildren(GameObject* myself)
 		if (ImGui::TreeNodeEx(myself->GetName().c_str(), TreeNodeEx_flags))
 		{
 			if (ImGui::IsItemClicked())
+			{
+				if (!App->editor3d->GetSelectedGameObject().empty()) 
+				{
+					App->editor3d->GetSelectedGameObject().back()->focused = false;
+				}
 				App->editor3d->SetSelectedGameObject(myself);
+				App->editor3d->GetSelectedGameObject().back()->focused = true;
+
+			}
 
 			for (int i = 0; i < myself->children.size(); i++)
 			{
 				SeekMyChildren(myself->children[i]);
 			}
-
-
-
 
 			//if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
 			//{
@@ -80,6 +85,6 @@ ImVec4 ChooseMyColor(GameObject* myself)
 	ImVec4 activeColor ACTIVE_COLOR;
 
 	if (!myself->isActive || !myself->IsParentActive()) activeColor = ImVec4 PASIVE_COLOR;
-
+	if (myself->focused) activeColor = ImVec4 FOCUSED_COLOR;
 	return activeColor;
 }

@@ -63,6 +63,7 @@ private:
 
 public:
 	bool isActive;
+	bool focused;
 	std::vector<GameObject*> children; //we need them public for hierarchy
 
 	static int numberOfObjects;
