@@ -78,7 +78,7 @@ void C_Mesh::OnEditor()
 			ImGui::SliderFloat("Face Normal Size", &normalFaceSize, 0.0f, 1.0f);
 
 		
-		const char* drawModes[] = { "FILL","WIREFRAME", "BOTH" };           
+		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };           
 		const char* drawLabel = drawModes[meshDrawMode];  // Label to preview before opening the combo (technically it could be anything)
 		if (ImGui::BeginCombo("Draw Mode", drawLabel, flags))
 		{

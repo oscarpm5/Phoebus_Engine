@@ -36,7 +36,7 @@ public:
 	template<typename Comp>
 	Comp* GetComponent()
 	{
-		for (int i=0; i < components.size();i++) { Comp* c = dynamic_cast<Comp*>(components[i]);    if (c != nullptr)    return    c; }
+		for (int i = 0; i < components.size(); i++) { Comp* c = dynamic_cast<Comp*>(components[i]);    if (c != nullptr)    return    c; }
 		return nullptr;
 	}
 
@@ -65,7 +65,7 @@ public:
 	bool isActive;
 	std::vector<GameObject*> children; //we need them public for hierarchy
 
-
+	static int numberOfObjects;
 };
 
 

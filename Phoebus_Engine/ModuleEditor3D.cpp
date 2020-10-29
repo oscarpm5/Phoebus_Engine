@@ -49,6 +49,7 @@ bool ModuleEditor3D::Start()
 
 	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
 
+	maxSceneDrawMode = MeshDrawMode::DRAW_MODE_FILL;
 
 	return ret;
 }
@@ -106,15 +107,16 @@ void ModuleEditor3D::DrawAllMeshes()
 {
 	for (int i = 0; i < drawMeshes.size(); i++)
 	{
-		drawMeshes[i].Draw();
+		drawMeshes[i].Draw(maxSceneDrawMode);
 	}
 
 	drawMeshes.clear();
+	drawMeshes.shrink_to_fit();
 }
 
-void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform, MeshDrawMode drawMode, NormalDrawMode normalMode)
+void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform)
 {
-	drawMeshes.push_back(RenderMesh(mesh, material, gTransform, drawMode, normalMode));
+	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }
 
 bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)

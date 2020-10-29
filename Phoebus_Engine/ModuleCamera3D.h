@@ -40,6 +40,9 @@ public:
 	float farPlaneDist;
 	bool debugcamera;
 
+	float camSpeed;
+	float camSpeedMult;
+
 private:
 	float zoomLevel;
 	mat4x4 ViewMatrix, ViewMatrixInverse;

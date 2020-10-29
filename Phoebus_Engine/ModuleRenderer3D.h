@@ -61,6 +61,6 @@ public:
 	bool lighting = true;
 	bool colorMaterial = true;
 	bool texture2D = true;
-	bool wireframe = false;
+	//bool wireframe = false;
 	bool drawGrid = true;
 };

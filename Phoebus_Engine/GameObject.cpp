@@ -5,6 +5,10 @@
 #include "C_Material.h"
 #include "Application.h"
 
+
+int GameObject::numberOfObjects = 0;
+
+
 GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr)
 {
 	this->parent = parent;
@@ -18,6 +22,8 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 	//TODO add transform component here
 	this->transform = new C_Transform(this, transform);
 	components.push_back(this->transform);
+
+	numberOfObjects ++;
 
 }
 
@@ -50,6 +56,8 @@ void GameObject::Update(float dt)
 
 GameObject::~GameObject()
 {
+	numberOfObjects--;
+	
 	for (int i = 0; i < components.size(); i++)
 	{
 		if (components[i] != transform)
@@ -65,11 +73,12 @@ GameObject::~GameObject()
 
 	transform = nullptr;
 
-	for (int i = 0; i < children.size(); i++)
+	while (!children.empty())
 	{
-		delete children[i];
+		GameObject* child = children.back();
+		children.pop_back();
+		delete child;
 	}
-
 	children.clear();
 
 	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
@@ -77,6 +86,7 @@ GameObject::~GameObject()
 
 	if (App)
 		App->editor3d->RemoveGameObjFromSelected(this);
+
 }
 
 void GameObject::RemoveChildren(GameObject* toRemove)
@@ -168,7 +178,7 @@ void GameObject::DrawGameObject()
 
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		App->editor3d->AddMeshToDraw(meshes[i], GetComponent<C_Material>(), transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
+		App->editor3d->AddMeshToDraw(meshes[i], GetComponent<C_Material>(), transform->GetGlobalTransform()); //TODO drawMode& normal Mode not needed anymore
 
 	}
 

@@ -4,9 +4,9 @@
 
 enum class MeshDrawMode
 {
+	DRAW_MODE_BOTH, //from more to less important
 	DRAW_MODE_FILL,
-	DRAW_MODE_WIRE,
-	DRAW_MODE_BOTH
+	DRAW_MODE_WIRE
 };
 enum class NormalDrawMode
 {

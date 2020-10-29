@@ -555,6 +555,7 @@ bool ModuleRenderer2D::showConfigFunc()
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
+		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
 
 		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
 		{
@@ -591,9 +592,25 @@ bool ModuleRenderer2D::showConfigFunc()
 		}
 
 
-		if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
+		//if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
+		
+		//TODO group combos into a function
+		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };
+		const char* drawLabel = drawModes[(int)App->editor3d->maxSceneDrawMode];  // Label to preview before opening the combo (technically it could be anything)
+		if (ImGui::BeginCombo("Scene draw Mode", drawLabel, ImGuiComboFlags_PopupAlignLeft))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(drawModes); n++)
+			{
+				const bool is_selected = ((int)App->editor3d->maxSceneDrawMode == n);
+				if (ImGui::Selectable(drawModes[n], is_selected))
+					App->editor3d->maxSceneDrawMode = (MeshDrawMode)n;
 
-		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
 
 		ImGui::PopStyleColor();
 	}
@@ -601,6 +618,15 @@ bool ModuleRenderer2D::showConfigFunc()
 	if (ImGui::CollapsingHeader("camera"))
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
+
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		ImGui::DragFloat("Camera speed", &App->camera->camSpeed, 0.1f, 0.01f, FLT_MAX, "%.3f", 0);
+		ImGui::DragFloat("Camera speed multiplier", &App->camera->camSpeedMult, 1.0f, 0.01f, FLT_MAX, "%.3f", 0);
+
+		ImGui::Spacing();
+		ImGui::Spacing();
 
 		if (ImGui::SliderFloat("FoV", &App->camera->foV, 1.0f, 90.0f))
 		{
@@ -885,7 +911,7 @@ void ModuleRenderer2D::CreateDockingSpace()
 	else
 	{
 		ImGuiIO& io = ImGui::GetIO();
-		ImGui::Text("ERROR: Docking is not enabled! See Demo > Configuration.");
+		ImGui::Text("[error]: Docking is not enabled! See Demo > Configuration.");
 		ImGui::Text("Set io.ConfigFlags |= ImGuiConfigFlags_DockingEnable in your code, or ");
 		ImGui::SameLine(0.0f, 0.0f);
 		if (ImGui::SmallButton("click here"))
@@ -916,6 +942,7 @@ bool ModuleRenderer2D::Show3DWindow()
 	if (winSize.x != imgSize.x || winSize.y != imgSize.y)
 		OnResize(winSize.x, winSize.y);
 
+	ImVec2 lastCursorPos =ImGui::GetCursorPos();
 
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
@@ -924,6 +951,10 @@ bool ModuleRenderer2D::Show3DWindow()
 	winSize = ImGui::GetWindowSize();
 	ImVec2 mousePos= ImGui::GetMousePos();
 
+	lastCursorPos.x += 5;//offset from the image border
+	lastCursorPos.y += 5;
+	ImGui::SetCursorPos(lastCursorPos);
+	ImGui::Text("Object count: %i",GameObject::numberOfObjects-1); //-1 for the scene root
 	if (ImGui::IsWindowHovered() && 
 		mousePos.x>=winPos.x&&mousePos.x<=winPos.x+winSize.x &&mousePos.y>=winPos.y&&mousePos.y<=winPos.y+winSize.y)//inside window
 	{
