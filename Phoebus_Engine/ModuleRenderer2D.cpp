@@ -519,6 +519,11 @@ bool ModuleRenderer2D::showConfigFunc()
 				LOG("Resizable mode toggled to FALSE");
 			}
 		}
+		if (ImGui::Checkbox("Vsync", &Vsync)) 
+		{ 
+			SDL_GL_SetSwapInterval(Vsync); 
+		}
+		/*
 		if (ImGui::Checkbox("Borderless", &borderless))
 		{
 			//SDL_SetWindowFullscreen(App->window->window, );
@@ -533,6 +538,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		{
 			LOG("[warning]TODO: this button is still not fully operational");
 		}
+		*/
 		ImGui::PopStyleColor();
 
 	}

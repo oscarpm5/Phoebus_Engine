@@ -67,6 +67,8 @@ private:
 	//flags
 	bool resizable = true; bool borderless = false; bool fullscreen = false; bool fullDesktop = false; //TODO: move to window?
 
+	bool Vsync = VSYNC;
+
 	ImVec2 imgSize;
 
 }; 
