@@ -42,7 +42,10 @@ void C_Transform::OnEditor()
 		vec3 auxvec3 = GetEulerFromQuat(rotation);
 		float v[3];
 		//Show me the things
-		v[0] = position.x; v[1] = position.y; v[2] = position.z;
+		v[0]= lTransformMat.translation().x;
+		v[1] = lTransformMat.translation().y;
+		v[2] = lTransformMat.translation().z;
+		
 		if (ImGui::InputFloat3("Position", v))
 		{
 			SetLocalPosition(vec3(v[0],v[1],v[2]));
@@ -53,8 +56,15 @@ void C_Transform::OnEditor()
 		ImGui::InputFloat3("Rotation", v);
 		ImGui::Separator();
 
-		v[0] = scaling.x; v[1] = scaling.y; v[2] = scaling.z;
-		ImGui::InputFloat3("Scale", v);
+		v[0] = lTransformMat[0];
+		v[1] = lTransformMat[5];
+		v[2] = lTransformMat[10];
+		if (ImGui::InputFloat3("Scale", v))
+		{
+
+			SetLocalScale(vec3(v[0], v[1], v[2]));
+		}
+
 		ImGui::Separator();
 
 		//Additional info
@@ -109,13 +119,27 @@ vec3 C_Transform::GetGlobalPosition()
 	return vec3(gTransformMat.M[12], gTransformMat.M[13], gTransformMat.M[14]);
 }
 
+vec3 C_Transform::GetLocalScale()
+{
+	return vec3(lTransformMat.M[0], lTransformMat.M[5], lTransformMat.M[10]);
+}
+
 void C_Transform::SetLocalPosition(vec3 newPos)
 {
-	lTransformMat.M[12] = newPos.x;
-	lTransformMat.M[13] = newPos.y;
-	lTransformMat.M[14] = newPos.z;
+	lTransformMat.translate(newPos.x, newPos.y, newPos.z);
 	UpdateGlobalMat();
 	owner->UpdateChildTransforms();
+}
+
+void C_Transform::SetLocalScale(vec3 newScale)
+{
+	lTransformMat.M[0] = newScale.x;
+	lTransformMat.M[5] = newScale.y;
+	lTransformMat.M[10] = newScale.z;
+
+	UpdateGlobalMat();
+	owner->UpdateChildTransforms();
+
 }
 
 void C_Transform::UpdateGlobalMat()

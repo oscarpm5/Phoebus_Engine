@@ -17,8 +17,10 @@ public:
 
 	vec3 GetLocalPosition();
 	vec3 GetGlobalPosition();
+	vec3 GetLocalScale();
 
 	void SetLocalPosition(vec3 newPos);
+	void SetLocalScale(vec3 newScale);
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 
