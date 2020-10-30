@@ -20,7 +20,7 @@
 
 #include"Color.h"
 
-
+#include <math.h>
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
@@ -83,7 +83,6 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 
 	//Just making sure this is initialized
 	gridLength = 500.f;
-	separation = 20.f;
 }
 
 // Destructor
@@ -115,7 +114,7 @@ bool ModuleRenderer3D::Init()
 
 	if (ret == true)
 	{
-		
+
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -175,7 +174,7 @@ bool ModuleRenderer3D::Init()
 
 
 		//Use Vsync
-		if (VSYNC && 
+		if (VSYNC &&
 			SDL_GL_SetSwapInterval(1) < 0)
 			LOG("[warning] Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
@@ -375,7 +374,7 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -405,36 +404,8 @@ void ModuleRenderer3D::Draw3D()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//In the future render all objects here (iterate all objects and call its draw function?)
-	//PPlane p(vec3(0, 1, 0));
-
-			//Testing goodness
-	//p.axis = true;
-	//p.Render();
-	//SAux.Render();
-	//Testing ground
-	//TestingRender();
-
-	//PCube auxCube;
-	//auxCube.SetPos(2, 0, 0);
-	//auxCube.SetRotation(45, { 1,0,0 });
-	//auxCube.Draw();
-
-	//PCube auxCube2 = PCube(IdentityMatrix, {1.0f,1.0f,2.0f});
-	//auxCube2.SetPos(0, 1, 0);
-	//auxCube2.SetRotation(-45, { 0,1,0 });
-	//auxCube2.wire = true;
-	//auxCube2.Draw();
-
-	//PCylinder auxCyl(0, 2, 3,4,4);
-	//auxCyl.SetPos(0, 0, 0);
-	//auxCyl.Draw();
-
-
-	//TestingRenderAtStart();
 	if (drawGrid)
 	{
 		DrawGrid();
@@ -458,39 +429,68 @@ void ModuleRenderer3D::RenderMeshes()
 
 void ModuleRenderer3D::DrawGrid()
 {
-	glLineWidth(1.0f);
+	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
+	
+	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
+
+	float sepLvl = logf(cameraHeight)/ logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
+	
+	float transparency = 1-fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
+
+	sepLvl = max(sepLvl, 0);
+
+
+	float newSep = pow(nQuadsInAQuad, (int)floor(sepLvl)); //what is the new separation compared to the original one (4 times bigger?,..)
+	//float realGridLength = gridLength- (fmod(gridLength, newSep));
+	//float lineCount = realGridLength / newSep;
+	
+
+	float realGridLength = gridLength / (newSep * nQuadsInAQuad);
+	realGridLength = ceil(realGridLength);
+	realGridLength *= (newSep * nQuadsInAQuad);
 
 	glBegin(GL_LINES);
-	glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
 
-	float realGridLength = gridLength - (fmod(gridLength,separation));
-
-	for (float i = -realGridLength; i <= realGridLength; i += separation)
+	for (float i = -realGridLength; i <= realGridLength; i += newSep)
 	{
-		float centerLine = false;
-		if (i >= -separation * 0.5f && i <= separation * 0.5f)
-		{
-			centerLine = true;
-		}
+		float greatLines = fmod(i+realGridLength,newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
 
-		if (centerLine)
+		bool isCenterLine = false;
+		bool isGreatLine = false;
+		if (i >= -newSep * 0.5f && i <= newSep * 0.5f)isCenterLine = true;
+		if (greatLines == 0)isGreatLine = true;
+		
+		vec4 color1=vec4(transparency, transparency, transparency, transparency);
+		vec4 color2=vec4(transparency, transparency, transparency, transparency);;
+
+		if (isGreatLine)
 		{
-			glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+			glLineWidth(3.0f);
+			color1 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			color2 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
+		if (isCenterLine)
+		{
+			glLineWidth(6.0f);
+			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		}
+		
+		glLineWidth(1.0f);
+
+		glColor4f(color1.x, color1.y, color1.z, color1.w);
+
 		glVertex3f(i, 0.0f, -gridLength);
 		glVertex3f(i, 0.0f, gridLength);
 		
-		if (centerLine)
-		{
-			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-		}
+		glColor4f(color2.x, color2.y, color2.z, color2.w);
+		
 		glVertex3f(-gridLength, 0.0f, i);
 		glVertex3f(gridLength, 0.0f, i);
+		
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-		if (centerLine)
-		{
-			glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
-		}
+
 	}
 
 	glEnd();

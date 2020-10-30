@@ -58,7 +58,6 @@ public:
 	unsigned int depthBuffer;
 
 	float gridLength;
-	float separation;
 
 	//rendering config bools
 	bool depthTesting;

@@ -591,10 +591,6 @@ bool ModuleRenderer2D::showConfigFunc()
 		{
 			//
 		}
-		if (ImGui::DragFloat("Grid Separation", &App->renderer3D->separation, 0.1f, 1.0f, App->renderer3D->gridLength / 2, "%.3f"))
-		{
-			//
-		}
 
 
 		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
