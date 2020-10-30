@@ -81,6 +81,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Smart 3D Viewport interaction: 3D Viewport knows when it is being interacted with and prevents interaction when on the menus.
 
 * Inspector window has aditional features: Mesh normals size can be configured, Transform matrices are displayed, a preview of the texture is displayed and its size can be changed.
+
+* From inspector, you can display normals of faces and vertex with resizable properties (+ draw modes)
  
 ## Aditional comments for the teacher:
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
