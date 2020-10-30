@@ -1,13 +1,17 @@
-#pragma once
+#ifndef __MODULE_RENDERER__
+#define __MODULE_RENDERER__
+
+
 #include "Module.h"
-#include "Globals.h"
-#include "glmath.h"
-#include "Light.h"
-#include "Primitive.h"
+//#include "Globals.h"
+#include "Light.h" //incuded due to an array declared here
 
 
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
+
+class mat3x3;
+class mat4x4;
 
 class ModuleRenderer3D : public Module
 {
@@ -33,11 +37,11 @@ private:
 	void SetGLRenderingOptions();
 
 private:
-	uint exampleMeshIdentifier = 0;
-	uint indexBind = 0;
-	uint vertexBind = 0;
-	int nVertex = 0;
-	int indexSize = 0;
+	unsigned int exampleMeshIdentifier;
+	unsigned int indexBind;
+	unsigned int vertexBind;
+	int nVertex;
+	int indexSize;
 
 
 
@@ -49,20 +53,19 @@ public:
 	mat3x3 NormalMatrix;
 	mat4x4 ProjectionMatrix;
 
-	uint frameBuffer = -1;
-	uint renderTex = -1;
-	uint depthBuffer = -1;
+	unsigned int frameBuffer;
+	unsigned int renderTex;
+	unsigned int depthBuffer;
 
 	float gridLength;
 	float separation;
 
 	//rendering config bools
-
-	bool depthTesting = true;
-	bool cullFace = true;
-	bool lighting = true;
-	bool colorMaterial = true;
-	bool texture2D = true;
-	//bool wireframe = false;
-	bool drawGrid = true;
+	bool depthTesting;
+	bool cullFace;
+	bool lighting;
+	bool colorMaterial;
+	bool texture2D;
+	bool drawGrid;
 };
+#endif // !__MODULE_RENDERER__
