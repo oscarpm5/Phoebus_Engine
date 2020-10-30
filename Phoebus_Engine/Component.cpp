@@ -6,6 +6,7 @@ Component::Component(ComponentType type, GameObject* owner) :type(type)
 {
 	this->owner = owner;
 	active = true;
+	toDelete = false;
 }
 
 Component::~Component()

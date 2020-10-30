@@ -33,6 +33,17 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 
 void GameObject::Update(float dt)
 {
+	for (int i = 0; i < components.size(); i++)
+	{
+		if (components[i]->toDelete)
+		{
+			delete components[i];
+			components[i] = nullptr;
+			components.erase(components.begin() + i);
+			i--;
+		}
+	}
+
 	if (isActive)
 	{
 
