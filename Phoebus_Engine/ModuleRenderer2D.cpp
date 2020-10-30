@@ -24,7 +24,7 @@
 #include "ModuleWindow.h"
 #include "Hierarchy.h"
 #include "GameObject.h"
-
+#include "Importer.h"
 #include "Component.h"
 #include "C_Mesh.h"
 
@@ -36,7 +36,7 @@
 
 
 
-ModuleRenderer2D::ModuleRenderer2D(bool start_enabled):console(nullptr)
+ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 {
 	showDemoWindow = false;
 	showConsoleWindow = true;
@@ -49,7 +49,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled):console(nullptr)
 	showQuit = false;
 	quitAlreadyOpened = false;
 
-	maxFPShown= 60;
+	maxFPShown = 60;
 
 	Vsync = VSYNC;
 
@@ -116,6 +116,11 @@ bool ModuleRenderer2D::Init()
 
 	//fps goodness
 	fps_log.resize(maxFPShown);
+
+		//portrait badness
+	AdriID = Importer::LoadPureImageGL("Assets/our_pics/ASL.png");
+	OscarID = Importer::LoadPureImageGL("Assets/our_pics/OPM.png");
+	if (AdriID == 0 || OscarID == 0) LOG("[error] Could not load portraits!!");
 
 	return ret;
 }
@@ -258,7 +263,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	ImGui::EndMainMenuBar();
 	if (showHierarchy)
 	{
-		if (ImGui::Begin("Hierarchy", &showHierarchy))	
+		if (ImGui::Begin("Hierarchy", &showHierarchy))
 		{
 			ShowHierarchyTab();
 		}
@@ -270,12 +275,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 	if (showInspector)
 	{
-		if (ImGui::Begin("Inspector", &showInspector))	
+		if (ImGui::Begin("Inspector", &showInspector))
 		{
 			App->editor3d->UpdateInfoOnSelectedGameObject();
 
 		}
-			ImGui::End();
+		ImGui::End();
 	}
 	if (showAboutWindowbool)
 	{
@@ -289,7 +294,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ShowExampleAppConsole(&showConsoleWindow);
 	}
-	if (show3DWindow) 
+	if (show3DWindow)
 	{
 		Show3DWindow();
 	}
@@ -316,6 +321,9 @@ update_status ModuleRenderer2D::PostUpdate(float dt)
 bool ModuleRenderer2D::CleanUp()
 {
 	bool ret = true;
+
+	if(OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
+	if (AdriID != 0) glDeleteTextures(1, &AdriID);	AdriID = 0;
 
 	//TODO: Void functions, no return, no check possible. FIX!
 	ImGui_ImplOpenGL3_Shutdown();
@@ -393,6 +401,9 @@ bool ModuleRenderer2D::showAboutWindow()
 	//autohors
 	ImGui::Text("This Engine was made by these two brave souls: ");
 	ImGui::Spacing();
+	ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::SameLine();
+	ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
 	if (ImGui::MenuItem("Adria Serrano Lopez")) { ShellExecuteA(NULL, NULL, "https://github.com/adriaserrano97", NULL, NULL, SW_SHOWNORMAL); }
 	if (ImGui::MenuItem("Oscar Perez martin")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5", NULL, NULL, SW_SHOWNORMAL); }
 	ImGui::Spacing();
@@ -575,16 +586,16 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
 		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
-		
+
 		if (ImGui::DragFloat("Grid Lenght", &App->renderer3D->gridLength, 0.1f, 1.0f, 1000.0f, "%.3f"))
 		{
 			//
 		}
-		if (ImGui::DragFloat("Grid Separation", &App->renderer3D->separation, 0.1f, 1.0f, App->renderer3D->gridLength/2, "%.3f"))
+		if (ImGui::DragFloat("Grid Separation", &App->renderer3D->separation, 0.1f, 1.0f, App->renderer3D->gridLength / 2, "%.3f"))
 		{
 			//
 		}
-		
+
 
 		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
 		{

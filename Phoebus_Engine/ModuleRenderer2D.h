@@ -82,6 +82,13 @@ private:
 	bool fullDesktop; //TODO: move to window?
 	ImVec2 imgSize;
 
+	//this is for displaying our portraits in the About
+private:
+	unsigned int AdriID;
+	unsigned int OscarID;
+	
+
+
 
 }; 
 #endif // !__MODULE_RENDER_2D__
