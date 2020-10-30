@@ -33,7 +33,6 @@ public:
 	void ShowExampleAppConsole(bool* p_open);
 	bool Show3DWindow();
 	bool showAboutWindow();
-	bool showLibsFunc();
 	bool showConfigFunc();
 	bool showQuitPopup();
 
@@ -54,7 +53,6 @@ public:
 	bool showInspector;
 	bool show3DWindow;
 	bool showAboutWindowbool;
-	bool showLibs;
 	bool showConfig;
 	bool showQuit;
 	bool quitAlreadyOpened;
@@ -86,6 +84,7 @@ private:
 private:
 	unsigned int AdriID;
 	unsigned int OscarID;
+	unsigned int PhoebusIcon;
 	
 
 

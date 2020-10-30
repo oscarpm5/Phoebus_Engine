@@ -44,7 +44,6 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	showInspector = true;
 	show3DWindow = true;
 	showAboutWindowbool = false;
-	showLibs = false;
 	showConfig = false;
 	showQuit = false;
 	quitAlreadyOpened = false;
@@ -120,7 +119,8 @@ bool ModuleRenderer2D::Init()
 		//portrait badness
 	AdriID = Importer::LoadPureImageGL("Assets/our_pics/ASL.png");
 	OscarID = Importer::LoadPureImageGL("Assets/our_pics/OPM.png");
-	if (AdriID == 0 || OscarID == 0) LOG("[error] Could not load portraits!!");
+	PhoebusIcon = Importer::LoadPureImageGL("Assets/our_pics/PhoebusIcon.png");
+	if (AdriID == 0 || OscarID == 0 || PhoebusIcon == 0) LOG("[error] Could not load portraits!!");
 
 	return ret;
 }
@@ -324,7 +324,7 @@ bool ModuleRenderer2D::CleanUp()
 
 	if(OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
 	if (AdriID != 0) glDeleteTextures(1, &AdriID);	AdriID = 0;
-
+	if (PhoebusIcon != 0) glDeleteTextures(1, &PhoebusIcon);	PhoebusIcon = 0;
 	//TODO: Void functions, no return, no check possible. FIX!
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -386,93 +386,112 @@ bool ModuleRenderer2D::showAboutWindow()
 
 
 	//name of engine
-	const char* aux = "PHOEBUS ENGINE";
-	ImGui::TextColored(ImVec4(0, 100, 130, 150), aux);
+	const char* aux = "PHOEBUS ENGINE"; 
+	ImGui::Spacing();
+	ImGui::Indent();
+	ImGui::TextColored(ImVec4(153, 153, 000, 250), aux); //(0, 100, 130, 150)
+	ImVec2 vecaux = ImGui::GetCursorPos();
+	ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y -20);
+	ImGui::Image((ImTextureID)PhoebusIcon, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0));
+	ImGui::Unindent();
 	ImGui::Spacing();
 	ImGui::Spacing();
 
-	//descrption
-	ImGui::Text("Welcome to Phoebus Engine! This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university");
-	ImGui::Text("The intent is to create a 3D functional engine with a focus on sound design, performance and capability (hence the engine name)");
-	ImGui::Text("We hope you'll enjoy using it as much as we enjoyed making it!");
-	ImGui::Spacing();
-	ImGui::Spacing();
-
-	//autohors
-	ImGui::Text("This Engine was made by these two brave souls: ");
-	ImGui::Spacing();
-	ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
-	ImGui::SameLine();
-	ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
-	if (ImGui::MenuItem("Adria Serrano Lopez")) { ShellExecuteA(NULL, NULL, "https://github.com/adriaserrano97", NULL, NULL, SW_SHOWNORMAL); }
-	if (ImGui::MenuItem("Oscar Perez martin")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5", NULL, NULL, SW_SHOWNORMAL); }
-	ImGui::Spacing();
-	ImGui::Spacing();
-	if (ImGui::MenuItem("Check out the GitHub Project!")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5/Phoebus_Engine", NULL, NULL, SW_SHOWNORMAL); }
-	ImGui::Spacing();
-	ImGui::Spacing();
-	//libraries version used with links
-	if (ImGui::MenuItem("Libraries used")) { showLibs = true; }
-
-	if (showLibs) { showLibsFunc(); }
-	ImGui::Spacing();
-	ImGui::Spacing();
-
-	//Project License
-	if (ImGui::MenuItem("Engine License")) { ShellExecuteA(NULL, NULL, "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL); }
-
-
-
-
-	ImGui::End();
-
-	return true;
-}
-
-bool ModuleRenderer2D::showLibsFunc()
-{
-	//this can't be externalized because of ShellExecuteA command + SDL references
-	if (!ImGui::Begin("Libraries used:", &showLibs))		//this is how you add the cross button to a window
+	if (ImGui::CollapsingHeader("Description"))
 	{
-		ImGui::End();
-		return false;
+		ImGui::Indent();
+		//descrption
+		ImGui::Text("Welcome to Phoebus Engine! This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university");
+		ImGui::Text("The intent is to create a 3D functional engine with a focus on sound design, performance and capability (hence the engine name)");
+		ImGui::Text("We hope you'll enjoy using it as much as we enjoyed making it!");
+		ImGui::Spacing();
+		(ImGui::Text("Check out the GitHub:")); ImGui::SameLine();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() -3);
+		if (ImGui::Button("Here!"))
+		{
+			ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5/Phoebus_Engine", NULL, NULL, SW_SHOWNORMAL);
+		}
+		ImGui::Unindent();
+	}
+	
+	ImGui::Separator();
+	
+	if (ImGui::CollapsingHeader("Authors"))
+	{
+		ImGui::Indent();
+		//autohors
+		ImGui::Text("This Engine was made by these two brave souls: Adria Serrano Lopez & Oscar Perez Martin");
+		ImGui::Spacing();
+		ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::SameLine();
+		ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Spacing();
+		ImGui::Text("Check us out in Github:"); ImGui::SameLine();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() -3);
+		if (ImGui::Button("Here!"))
+		{
+			ShellExecuteA(NULL, NULL, "https://github.com/adriaserrano97", NULL, NULL, SW_SHOWNORMAL);
+			ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5", NULL, NULL, SW_SHOWNORMAL);
+		}
+		ImGui::Unindent();
 	}
 
-	ImGui::Text("MathGeoLib v1.5"); //TODO: MathGeoLib has no get version lel, stuck on 1.5 since 2004 or something
-	ImGui::Spacing();
+	ImGui::Separator();
+	if (ImGui::CollapsingHeader("Licensing"))
+	{
+		ImGui::Indent();
+		if (ImGui::TreeNode("Libraries Used"))
+		{
+			ImGui::Indent();
 
-	ImGui::Text("ImGui");
-	ImGui::SameLine();
-	ImGui::Text(ImGui::GetVersion());
-	ImGui::Spacing();
+			ImGui::Text("MathGeoLib v1.5"); //TODO: MathGeoLib has no get version lel, stuck on 1.5 since 2004 or something
+			ImGui::Spacing();
 
-	ImGui::Text("SDL");
-	ImGui::SameLine();
-	SDL_version compiled;
-	SDL_VERSION(&compiled);
-	ImGui::Text("%d.%d.%d", compiled.major, compiled.minor, compiled.patch); //Because returning a string was too easy huh
-	ImGui::Spacing();
+			ImGui::Text("ImGui");
+			ImGui::SameLine();
+			ImGui::Text(ImGui::GetVersion());
+			ImGui::Spacing();
 
-	ImGui::Text("OpenGL v.");
-	GLint aux1; (glGetIntegerv(GL_MAJOR_VERSION, &aux1));
-	GLint aux2; (glGetIntegerv(GL_MINOR_VERSION, &aux2));
-	ImGui::SameLine();
-	ImGui::Text("%i.", int(aux1));
-	ImGui::SameLine();
-	ImGui::Text("%i.", int(aux2));
-	ImGui::Spacing();
+			ImGui::Text("SDL");
+			ImGui::SameLine();
+			SDL_version compiled;
+			SDL_VERSION(&compiled);
+			ImGui::Text("%d.%d.%d", compiled.major, compiled.minor, compiled.patch); //Because returning a string was too easy huh
+			ImGui::Spacing();
+
+			ImGui::Text("OpenGL v.");
+			GLint aux1; (glGetIntegerv(GL_MAJOR_VERSION, &aux1));
+			GLint aux2; (glGetIntegerv(GL_MINOR_VERSION, &aux2));
+			ImGui::SameLine();
+			ImGui::Text("%i.", int(aux1));
+			ImGui::SameLine();
+			ImGui::Text("%i.", int(aux2));
+			ImGui::Spacing();
 
 
-	ImGui::Text("Devil v.");
-	int devilVer = ilutGetInteger(ILUT_VERSION_NUM);
-	ImGui::SameLine();
-	ImGui::Text("%i.", int(devilVer));
-	ImGui::Spacing();
+			ImGui::Text("Devil v.");
+			int devilVer = ilutGetInteger(ILUT_VERSION_NUM);
+			ImGui::SameLine();
+			ImGui::Text("%i.", int(devilVer));
+			ImGui::Spacing();
 
+			ImGui::Unindent();
+			ImGui::TreePop();
+		}
+		ImGui::Text("Check the engine license:"); ImGui::SameLine();
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY()-3);
+		if (ImGui::Button("Here!"))
+		{
+			ShellExecuteA(NULL, NULL, "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL);
+		}
+		ImGui::Unindent();
+	}
 
 	ImGui::End();
+
 	return true;
 }
+
 
 bool ModuleRenderer2D::showConfigFunc()
 {
