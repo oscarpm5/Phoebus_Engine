@@ -50,6 +50,9 @@ public:
 	}
 
 
+	void UpdateChildTransforms();
+
+
 
 	void DrawOnEditorAllComponents();
 private:

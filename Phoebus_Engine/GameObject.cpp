@@ -177,6 +177,16 @@ bool GameObject::IsParentActive()
 	return isActive;
 }
 
+void GameObject::UpdateChildTransforms()
+{
+	GetComponent<C_Transform>()->UpdateGlobalMat();
+
+	for (int i = 0; i < children.size(); i++)
+	{
+		children[i]->UpdateChildTransforms();
+	}
+}
+
 void GameObject::DrawOnEditorAllComponents()
 {
 	if (ImGui::BeginChild("Object name window", ImVec2(0.0f, 30.0f)))

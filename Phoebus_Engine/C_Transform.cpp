@@ -43,7 +43,10 @@ void C_Transform::OnEditor()
 		float v[3];
 		//Show me the things
 		v[0] = position.x; v[1] = position.y; v[2] = position.z;
-		ImGui::InputFloat3("Position", v);
+		if (ImGui::InputFloat3("Position", v))
+		{
+			SetLocalPosition(vec3(v[0],v[1],v[2]));
+		}
 		ImGui::Separator();
 
 		v[0] = auxvec3.x; v[1] = auxvec3.y; v[2] = auxvec3.z;
@@ -104,6 +107,15 @@ vec3 C_Transform::GetLocalPosition()
 vec3 C_Transform::GetGlobalPosition()
 {
 	return vec3(gTransformMat.M[12], gTransformMat.M[13], gTransformMat.M[14]);
+}
+
+void C_Transform::SetLocalPosition(vec3 newPos)
+{
+	lTransformMat.M[12] = newPos.x;
+	lTransformMat.M[13] = newPos.y;
+	lTransformMat.M[14] = newPos.z;
+	UpdateGlobalMat();
+	owner->UpdateChildTransforms();
 }
 
 void C_Transform::UpdateGlobalMat()
