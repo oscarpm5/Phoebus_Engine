@@ -7,6 +7,7 @@
 
 #define PRIMITIVES_IN_SCENE 10
 
+class mat4x4;
 class GameObject;
 
 class ModuleEditor3D : public Module
@@ -34,19 +35,16 @@ public:
 	void AddObjName(std::string& name); //add a name to the name vector
 	void RemoveName(std::string name);//removes a name from the name vector
 	void ChangeObjName(std::string oldName, std::string& newName); //modifies a name from the vector
+
 private:
 	int DoesNameExist(std::string name); //returns an index of where the current name is, defaults in -1
 	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique
-public:
-	std::vector<Mesh> meshes;
-	GameObject* root;
 
+public:
+	GameObject* root;
 	std::vector<RenderMesh> drawMeshes;
-	GameObject* test1; GameObject* test2; GameObject* test3; GameObject* test4; GameObject* test5; GameObject* test6; GameObject* test7;
-	
 
 	std::vector<GameObject*> selectedGameObjs;
-
 
 	MeshDrawMode maxSceneDrawMode;
 

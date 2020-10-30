@@ -7,9 +7,9 @@
 
 ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
 {
-
-
-
+	maxSceneDrawMode = MeshDrawMode::DRAW_MODE_BOTH;
+	mouseActive = true;
+	root = nullptr;
 }
 
 ModuleEditor3D::~ModuleEditor3D()
@@ -36,9 +36,6 @@ bool ModuleEditor3D::Start()
 
 	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
 
-
-
-	maxSceneDrawMode = MeshDrawMode::DRAW_MODE_FILL;
 
 	return ret;
 }
@@ -74,7 +71,6 @@ update_status ModuleEditor3D::PostUpdate(float dt)
 bool ModuleEditor3D::CleanUp()
 {
 	bool ret = true;
-	meshes.clear();
 	objNames.clear();
 	
 	selectedGameObjs.clear();
