@@ -5,6 +5,7 @@
 #include "C_Material.h"
 #include "Application.h"
 #include "imgui/imgui.h"
+//#include "glmath.h"//new, we should include glMath here but C_Transform already has it and we cannot remove it from there
 
 
 int GameObject::numberOfObjects = 0;

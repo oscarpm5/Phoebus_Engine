@@ -1,4 +1,8 @@
 #include "RenderMesh.h"
+
+#include "C_Mesh.h"
+#include "Mesh.h"
+#include "C_Material.h"
 #include "Glew/include/glew.h"
 
 RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform) :

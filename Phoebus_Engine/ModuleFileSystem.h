@@ -1,8 +1,7 @@
 #ifndef __MODULEFILESYSTEModuleH__
 #define __MODULEFILESYSTEModuleH__
 #include "Module.h"
-#include "Globals.h"
-#include "Module.h"
+//#include "Globals.h"
 #include "SDL/include/SDL_rwops.h"
 #include <vector>
 #include <string>
@@ -35,7 +34,7 @@ public:
 	bool CleanUp();
 
 	// Return the bytes of a PhysFS filehandle
-	uint Load(const char* path, char** buffer) const;
+	unsigned int Load(const char* path, char** buffer) const;
 
 	// Allows you to use pointers to memory instead of files or things such as images or samples
 	SDL_RWops* Load(const char* path);

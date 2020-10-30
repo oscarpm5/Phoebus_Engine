@@ -1,9 +1,12 @@
 #ifndef __RENDER_MESH_H__
 #define __RENDER_MESH_H__
-#include "C_Mesh.h"
-#include "C_Material.h"
-#include "glmath.h"
 
+
+#include "glmath.h" // cannot forward declare mat4x4
+
+class C_Mesh;
+class C_Material;
+enum class MeshDrawMode;
 
 class RenderMesh
 {

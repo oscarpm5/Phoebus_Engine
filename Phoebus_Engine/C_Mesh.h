@@ -1,8 +1,10 @@
 #ifndef __C_MESH__
 #define __C_MESH__
+
 #include "Component.h"
 #include <vector>
-#include "Mesh.h"
+//#include "Mesh.h"
+class Mesh;
 
 class C_Mesh:public Component
 {

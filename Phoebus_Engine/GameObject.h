@@ -3,13 +3,14 @@
 
 #include <vector>
 #include <string>
-#include "glmath.h"
+//#include "glmath.h"
 
 
 class Component;
 class C_Transform;
 enum class ComponentType;
 
+class mat4x4;
 
 class GameObject
 {

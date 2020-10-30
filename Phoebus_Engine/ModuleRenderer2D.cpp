@@ -25,6 +25,9 @@
 #include "Hierarchy.h"
 #include "GameObject.h"
 
+#include "Component.h"
+#include "C_Mesh.h"
+
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "DevIL/include/IL/il.h"

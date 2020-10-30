@@ -1,5 +1,6 @@
 #include "C_Mesh.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
+#include "Mesh.h"
 
 C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
 normalVertexSize(0.0f),normalFaceSize(0.0f),normalDrawMode(0),meshDrawMode(0)
