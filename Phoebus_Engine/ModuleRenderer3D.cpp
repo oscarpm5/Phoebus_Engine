@@ -1,7 +1,12 @@
-#include "Globals.h"
+//#include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+//#include "Light.h"
+
 #include "ModuleEditor3D.h"
+
+//include & lib of glew
+
 #include "Glew/include/glew.h"
 #pragma comment(lib,"Glew/libx86/glew32.lib")
 
@@ -11,8 +16,8 @@
 #include <gl/GLU.h>
 
 
+//#include "glmath.h"
 
-#include "glmath.h"
 #include"Color.h"
 
 
@@ -56,6 +61,29 @@ uint indexArray[] = {
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
 {
+	frameBuffer = -1;
+	renderTex = -1;
+	depthBuffer = -1;
+
+
+	exampleMeshIdentifier = 0;
+	indexBind = 0;
+	vertexBind = 0;
+	nVertex = 0;
+	indexSize = 0;
+
+
+	//TODO load this from config in the future
+	depthTesting = true;
+	cullFace = true;
+	lighting = true;
+	colorMaterial = true;
+	texture2D = true;
+	drawGrid = true;
+
+	//Just making sure this is initialized
+	gridLength = 500.f;
+	separation = 20.f;
 }
 
 // Destructor
@@ -165,9 +193,6 @@ bool ModuleRenderer3D::Init()
 	//TestingRenderAtStart();
 
 
-	//Just making sure this is initialized
-	gridLength = 500.f;
-	separation = 20.f;
 
 	//SAux = PSphere(0.5, 1);
 	//SAux.SetPos(0, 1, 1);
@@ -188,7 +213,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
-	for (uint i = 0; i < MAX_LIGHTS; ++i)
+	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
 	return UPDATE_CONTINUE;

@@ -4,6 +4,8 @@
 #include "GameObject.h"
 #include "C_Transform.h"
 
+#include "MathGeoLib/include/MathGeoLib.h"
+
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
 	CalculateViewMatrix();

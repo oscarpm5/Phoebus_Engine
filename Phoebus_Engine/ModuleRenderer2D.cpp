@@ -10,15 +10,17 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer2D.h"
-#include "ModuleRenderer3D.h" //we need the projection matrix
-#include "ModuleCamera3D.h"
+//#include "ModuleRenderer3D.h" //we need the projection matrix
+//#include "ModuleCamera3D.h"
 
+
+#include "Primitive.h"
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "MathGeoLib/include/MathGeoLib.h"
 
 #include "Console.h"
 #include "MathChecks.h"
-#include "Mesh.h"
+//#include "Mesh.h"
 #include "ModuleWindow.h"
 #include "Hierarchy.h"
 #include "GameObject.h"
@@ -31,8 +33,35 @@
 
 
 
-ModuleRenderer2D::ModuleRenderer2D(bool start_enabled)
+ModuleRenderer2D::ModuleRenderer2D(bool start_enabled):console(nullptr)
 {
+	showDemoWindow = false;
+	showConsoleWindow = true;
+	showHierarchy = true;
+	showInspector = true;
+	show3DWindow = true;
+	showAboutWindowbool = false;
+	showLibs = false;
+	showConfig = false;
+	showQuit = false;
+	quitAlreadyOpened = false;
+
+	maxFPShown= 60;
+
+	Vsync = VSYNC;
+
+	resizable = true;
+	borderless = false;
+	fullscreen = false;
+	fullDesktop = false;
+
+
+	ar1 = 0;
+	ar2 = 0;
+	ar3 = 0;
+	ar4 = 0;
+	ar5 = 0;
+
 	console = new Cnsl();
 }
 
@@ -110,17 +139,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 		if (ImGui::BeginMenu("Menu", true))
 		{
-			////Sample Dropdown menu with options
-			//if (ImGui::BeginMenu("Export", true))
-			//{
-			//	if (ImGui::MenuItem("As PNG")) {}
-			//	if (ImGui::MenuItem("As JPG")) {}
-			//	if (ImGui::MenuItem("As JPEG")) {}
-
-
-			//	ImGui::EndMenu();
-			//}
-			////End of sample
 
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
@@ -203,13 +221,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::EndMenu();
 			}
 
-			////Pyramid
-			//if (ImGui::BeginMenu("Pyramid")) {
-			//	ImGui::Text("Pyramid param:");
-			//	CreateBasicForm(PrimitiveTypes::Primitive_Cone);
-			//	ImGui::EndMenu();
-			//}
-
 			//Cone
 			if (ImGui::BeginMenu("Cone")) {
 				ImGui::Text("Cone param:");
@@ -239,24 +250,16 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
 			ImGui::EndMenu();
 		}
-
-		//if (ImGui::MenuItem("Example Window")) { showDemoWindow = true; }
-		//if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
-		//if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
-		//if (ImGui::MenuItem("Hierarchy")) { showHierarchy = true; }
-		//if (ImGui::MenuItem("Display Selected")) { showSelected = true; }
-
 		ImGui::EndMainMenuBar();
 
 	}
 	if (showHierarchy)
 	{
-		if (!ImGui::Begin("Hierarchy", &showHierarchy))		//this is how you add the cross button to a window
+		if (ImGui::Begin("Hierarchy", &showHierarchy))	
 		{
-
+			ShowHierarchyTab();
+			ImGui::End();
 		}
-		ShowHierarchyTab();
-		ImGui::End();
 	}
 	if (showDemoWindow)
 	{
@@ -264,7 +267,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 	if (showInspector)
 	{
-		if (ImGui::Begin("Inspector", &showInspector))		//this is how you add the cross button to a window
+		if (ImGui::Begin("Inspector", &showInspector))	
 		{
 			App->editor3d->UpdateInfoOnSelectedGameObject();
 			ImGui::End();
@@ -283,8 +286,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ShowExampleAppConsole(&showConsoleWindow);
 	}
-
-	if (show3DWindow) {
+	if (show3DWindow) 
+	{
 		Show3DWindow();
 	}
 
@@ -526,22 +529,6 @@ bool ModuleRenderer2D::showConfigFunc()
 		{
 			SDL_GL_SetSwapInterval(Vsync);
 		}
-		/*
-		if (ImGui::Checkbox("Borderless", &borderless))
-		{
-			//SDL_SetWindowFullscreen(App->window->window, );
-			//SDL_SetWindowBordered(App->window->window, (SDL_bool)borderless);
-			LOG("[warning]TODO: this button is still not fully operational");
-		}
-		if (ImGui::Checkbox("Fullscreen", &fullscreen))
-		{
-			LOG("[warning]TODO: this button is still not fully operational");
-		}
-		if (ImGui::Checkbox("Full desktop", &fullDesktop))
-		{
-			LOG("[warning]TODO: this button is still not fully operational");
-		}
-		*/
 		ImGui::PopStyleColor();
 
 	}
@@ -629,9 +616,6 @@ bool ModuleRenderer2D::showConfigFunc()
 			if (App->renderer3D->texture2D)glEnable(GL_TEXTURE_2D);
 			else glDisable(GL_TEXTURE_2D);
 		}
-
-
-		//if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
 
 		//TODO group combos into a function
 		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };
