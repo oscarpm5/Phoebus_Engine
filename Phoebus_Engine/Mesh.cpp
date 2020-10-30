@@ -12,7 +12,7 @@
 //TODO normal structure done, still haven't found a way to implement them into the buffers
 
 
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords,NewTexture* texture) :
+Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords) :
 	/*drawMode(MeshDrawMode::DRAW_MODE_FILL), normalMode(NormalDrawMode::NORMAL_MODE_NONE),*/
 	idVertex(0), idIndex(0), idNormals(0), idTexCoords(0) /*,shadingFlat(true), texture(texture)*/
 {

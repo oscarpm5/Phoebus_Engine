@@ -3,7 +3,6 @@
 #include "Globals.h"
 
 #include "Mesh.h"
-#include "texture.h"
 #include "RenderMesh.h"
 
 #define PRIMITIVES_IN_SCENE 10
@@ -40,7 +39,6 @@ private:
 	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique
 public:
 	std::vector<Mesh> meshes;
-	std::vector<NewTexture*> textures;
 	GameObject* root;
 
 	std::vector<RenderMesh> drawMeshes;

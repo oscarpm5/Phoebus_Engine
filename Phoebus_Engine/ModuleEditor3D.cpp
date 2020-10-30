@@ -76,12 +76,7 @@ bool ModuleEditor3D::CleanUp()
 	bool ret = true;
 	meshes.clear();
 	objNames.clear();
-	for (int i = textures.size() - 1; i >= 0; i--)
-	{
-		delete textures[i];
-		textures[i] = nullptr;
-	}
-	textures.clear();
+	
 	selectedGameObjs.clear();
 
 	if (root)
