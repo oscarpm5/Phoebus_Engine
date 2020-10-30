@@ -84,7 +84,9 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * From inspector, you can display normals of faces and vertex with resizable properties (+ draw modes)
 
-* Dynamic grid that adjusts its size depending on the user distance.
+* Dynamic grid that adjusts its tile size depending on the user distance.
+
+* Components can be deleted from the inspector (if the component is able to do so).
  
 ## Aditional comments for the teacher:
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
