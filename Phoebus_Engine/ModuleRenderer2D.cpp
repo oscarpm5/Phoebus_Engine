@@ -253,16 +253,16 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
 			ImGui::EndMenu();
 		}
-		ImGui::EndMainMenuBar();
 
 	}
+	ImGui::EndMainMenuBar();
 	if (showHierarchy)
 	{
 		if (ImGui::Begin("Hierarchy", &showHierarchy))	
 		{
 			ShowHierarchyTab();
-			ImGui::End();
 		}
+		ImGui::End();
 	}
 	if (showDemoWindow)
 	{
@@ -273,9 +273,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::Begin("Inspector", &showInspector))	
 		{
 			App->editor3d->UpdateInfoOnSelectedGameObject();
-			ImGui::End();
 
 		}
+			ImGui::End();
 	}
 	if (showAboutWindowbool)
 	{

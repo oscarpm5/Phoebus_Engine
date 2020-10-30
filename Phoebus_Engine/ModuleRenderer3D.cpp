@@ -463,7 +463,9 @@ void ModuleRenderer3D::DrawGrid()
 	glBegin(GL_LINES);
 	glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
 
-	for (float i = -gridLength; i <= gridLength; i += separation)
+	float realGridLength = gridLength - (fmod(gridLength,separation));
+
+	for (float i = -realGridLength; i <= realGridLength; i += separation)
 	{
 		float centerLine = false;
 		if (i >= -separation * 0.5f && i <= separation * 0.5f)
