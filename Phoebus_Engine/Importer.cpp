@@ -192,9 +192,25 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 			std::deque<GameObject*>gameObjParents;
 
 			parents.push_back(node);
-			gameObjParents.push_back(nullptr);//first node is root and doesn't have mesh nor game object
 
-			//create obj for root and pushes it to gameObjParents TODO
+			std::string name = "Untitled";
+			std::string fbxName;
+
+			App->fileSystem->SeparatePath(relativePath, nullptr, &fbxName);
+			int dotIndex=fbxName.find_last_of(".");
+			if (dotIndex >=0 && dotIndex < fbxName.length())
+			{
+				name = fbxName.substr(0, dotIndex);
+				name += " File";
+			}
+			else if (node->mName.C_Str() != "")
+			{
+				name = "Default ";
+				name += node->mName.C_Str();
+			}
+
+			GameObject* pObj = new GameObject(App->editor3d->root, name, mat4x4());
+			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh
 
 			while (parents.size() > 0)
 			{
