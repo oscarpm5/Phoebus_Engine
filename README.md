@@ -89,6 +89,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Components can be deleted from the inspector (if the component is able to do so).
 
 * Game objects can be moved, scaled & rotated (simple implementation just to avoid all the objects getting crammed in the world origin).
+
+* Components & game objects can now be activated/ deactivated independently.
  
 ## Aditional comments for the teacher:
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
