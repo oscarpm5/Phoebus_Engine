@@ -60,9 +60,19 @@ unsigned int C_Material::GetCheckersID() const
 void C_Material::OnEditor()
 {
 	if (idTexture == 0) return;
+	bool activeAux = active;
+	
+	std::string headerName = "Texture";
+	if (!activeAux)headerName += " (not active)";
 
-	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
+	if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::CollapsingHeader(headerName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
+		ImGui::Checkbox("IS ACTIVE##MaterialCheckbox", &active); //##adds more to the label id without displaying so we can have 2 checkbox with the same text
+
+
 		ImGui::Indent();
 		ImGui::Separator();
 
@@ -114,14 +124,14 @@ void C_Material::OnEditor()
 		{
 			ImGui::OpenPopup("Delete Material");
 		}
+
+
+		if (!activeAux)ImGui::PopStyleColor();
 		ImGui::PopStyleColor(2);
-
-
-
-
-
-
 	}
+
+	if (!activeAux)ImGui::PopStyleColor();
+
 }
 
 void C_Material::GenTextureFromName(unsigned int ilImageName, std::string path)

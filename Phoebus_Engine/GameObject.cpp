@@ -204,7 +204,7 @@ void GameObject::DrawOnEditorAllComponents()
 
 
 		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX()-10);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 10);
 		char* auxName = (char*)name.c_str();
 		std::string oldName = name;
 		if (ImGui::InputText("Object Name", auxName, 100))
@@ -218,7 +218,7 @@ void GameObject::DrawOnEditorAllComponents()
 			App->editor3d->ChangeObjName(oldName, name);
 		}
 	}
-		ImGui::EndChild();
+	ImGui::EndChild();
 	//ImGui::Text("My name is %s", name.c_str());
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -238,9 +238,18 @@ void GameObject::DrawGameObject()
 	}*/
 	std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
+	C_Material* mat = GetComponent<C_Material>();
+	if (mat!=nullptr && !mat->IsActive())
+	{
+		mat = nullptr;
+	}
+
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		App->editor3d->AddMeshToDraw(meshes[i], GetComponent<C_Material>(), transform->GetGlobalTransform()); //TODO drawMode& normal Mode not needed anymore
+		if (meshes[i]->IsActive())
+		{
+			App->editor3d->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform()); //TODO drawMode& normal Mode not needed anymore
+		}
 
 	}
 

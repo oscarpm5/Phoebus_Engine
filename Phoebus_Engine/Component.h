@@ -31,6 +31,7 @@ public:
 	bool toDelete;
 private:
 	ComponentType type;
+protected:
 	bool active;
 };
 

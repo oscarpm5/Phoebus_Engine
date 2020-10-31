@@ -1,6 +1,7 @@
 #include "C_Mesh.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
 #include "Mesh.h"
+#include <string>
 
 C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
 normalVertexSize(0.5f),normalFaceSize(0.5f),normalDrawMode(0),meshDrawMode(0)
@@ -41,9 +42,24 @@ Mesh* C_Mesh::GetMesh() const
 void C_Mesh::OnEditor()
 {
 	if (m == nullptr) return;
+		bool activeAux = active;
 
-	if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
+	std::string headerName = "Mesh";
+	if (!activeAux)headerName += " (not active)";
+
+	/*ImGui::Checkbox(" ", &active);
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX()-12);*/
+	ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_DefaultOpen;
+
+	if(!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::CollapsingHeader(headerName.c_str(), headerFlags))
 	{
+		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
+		/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20);*/
+		ImGui::Checkbox("IS ACTIVE##MeshCheckbox", &active);
+
 		ImGui::Separator();
 		ImGui::Indent();
 
@@ -139,7 +155,11 @@ void C_Mesh::OnEditor()
 
 
 		}
+		
+		if (!activeAux)ImGui::PopStyleColor();
 		ImGui::PopStyleColor(2);
 
 	}
+
+	if (!activeAux)ImGui::PopStyleColor();
 }
