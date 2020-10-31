@@ -3,6 +3,7 @@
 #include "Component.h"
 #include "Assimp/include/matrix4x4.h" //we cant do forward declaration. Thanks, assimp
 #include "glmath.h"//we cant do forward declaration.
+#include "MathGeoLib/include/MathGeoLib.h"
 
 class C_Transform : public Component
 {
@@ -18,9 +19,11 @@ public:
 	vec3 GetLocalPosition();
 	vec3 GetGlobalPosition();
 	vec3 GetLocalScale();
+	float3x3 GetRotationMat();
 
 	void SetLocalPosition(vec3 newPos);
 	void SetLocalScale(vec3 newScale);
+	void SetLocalRot(float3x3 newRot);
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 
