@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 #pragma once
 #include "glmath.h"
@@ -6,6 +7,16 @@
 #include <vector>
 
 //#include "PhysBody3D.h"
+=======
+#ifndef __PRIMITIVES_H__
+#define __PRIMITIVES_H__
+
+//#include "glmath.h" //it has to be incuded here because of the Identity Matrix
+//#include "Color.h"
+//#include "Glew/include/glew.h"
+#include <vector>
+
+>>>>>>> Development
 
 enum class PrimitiveTypes
 {
@@ -21,6 +32,7 @@ enum class PrimitiveTypes
 	Primitive_Unknown
 };
 
+<<<<<<< HEAD
 class Primitive
 {
 public:
@@ -122,4 +134,15 @@ public:
 private:
 	vec3 normal;
 };
+=======
+//Related functions to primitives, but we don't want them to be part of the class
+//=============================================
+
+void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<unsigned int> &index, float radius = 1.f, unsigned int sectors = 36, unsigned int stacks = 18);
+void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& index, float rBase = 1, float rTop = 1, float height = 2, unsigned int sectors = 36, unsigned int stacks = 8);
+void ConeFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase = 1, float height = 2, unsigned int sectors = 36, unsigned int stacks = 8);
+// ============================================
+
+#endif // !__PRIMITIVES_H__
+>>>>>>> Development
 

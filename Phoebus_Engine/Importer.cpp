@@ -23,7 +23,10 @@
 #include"glmath.h"
 #include"MathGeoLib/include/MathGeoLib.h"
 
+<<<<<<< HEAD
 #include "texture.h"
+=======
+>>>>>>> Development
 #include "GameObject.h"
 #include "Component.h"
 #include "C_Mesh.h"
@@ -412,3 +415,63 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	}
 	return newObj;
 }
+<<<<<<< HEAD
+=======
+
+//returns 0 by default if something failed
+unsigned int Importer::LoadPureImageGL(const char* path)
+{
+	unsigned int ID = 0;
+	char* new_buffer;
+	unsigned int length = App->fileSystem->Load(path, &new_buffer);
+
+	ilGenImages(1, &ID);
+	ilBindImage(ID);
+
+	//TODO this will need to accept more formats in the future
+	bool ret = ilLoadL(IL_TYPE_UNKNOWN, new_buffer, length);
+
+	if (!ret)
+	{
+		ILenum error;
+		error = ilGetError();
+		LOG("\n[error]Could not load an miage from buffer: %s", new_buffer);
+		LOG("[error] %d :\n %s", error, iluErrorString(error));
+		RELEASE_ARRAY(new_buffer);
+		ilDeleteImages(1, &ID);
+	}
+	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+	{
+		ilBindImage(ID);
+
+		//get properties
+		ILinfo ImageInfo;
+		iluGetImageInfo(&ImageInfo);
+
+		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+		{
+			iluFlipImage();
+		}
+		//gen texture
+		unsigned int openGlId;
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glGenTextures(1, &openGlId);
+		glBindTexture(GL_TEXTURE_2D, openGlId);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, ilGetInteger(IL_IMAGE_BPP), ilGetInteger(IL_IMAGE_WIDTH), ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE, ilGetData());
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		ilBindImage(0);
+
+		ilDeleteImages(1, &ID);
+		RELEASE_ARRAY(new_buffer);
+		return openGlId;
+	}
+	return 0;
+}
+>>>>>>> Development

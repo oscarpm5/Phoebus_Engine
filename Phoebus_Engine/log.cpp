@@ -2,6 +2,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer2D.h"
+#include "Console.h"
 
 void log(const char file[], int line, const char* format, ...)
 {

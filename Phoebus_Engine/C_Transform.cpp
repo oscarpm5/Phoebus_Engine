@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "C_Transform.h"
 #include "GameObject.h"
 #include "glmath.h"
@@ -5,6 +6,15 @@
 #include "Assimp/include/matrix4x4.inl"
 #include "Assimp/include/vector3.h"
 
+=======
+#include "glmath.h"
+#include "GameObject.h"
+#include "C_Transform.h"
+#include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
+#include "Assimp/include/matrix4x4.inl"
+#include "Assimp/include/vector3.h"
+#include "MathGeoLib/include/MathGeoLib.h"
+>>>>>>> Development
 
 
 C_Transform::C_Transform(GameObject* owner, mat4x4 lTransform) :Component(ComponentType::TRANSFORM, owner),
@@ -36,6 +46,7 @@ void C_Transform::OnEditor()
 		ImGui::Separator();
 
 
+<<<<<<< HEAD
 		//Calculate all the stuff
 		aiVector3t<float> scaling; aiQuaterniont<float> rotation; aiVector3t<float> position;
 		lTraansIntoAssimpMatrix().Decompose(scaling, rotation, position);
@@ -52,6 +63,52 @@ void C_Transform::OnEditor()
 
 		v[0] = scaling.x; v[1] = scaling.y; v[2] = scaling.z;
 		ImGui::InputFloat3("Scale", v);
+=======
+		float v[3];
+		//Show me the things
+		v[0]= lTransformMat.translation().x;
+		v[1] = lTransformMat.translation().y;
+		v[2] = lTransformMat.translation().z;
+		
+		if (ImGui::DragFloat3("Position", v, 0.1f))
+		{
+			SetLocalPosition(vec3(v[0],v[1],v[2]));
+		}
+		ImGui::Separator();
+
+		//de matriz a euler
+		//display
+		//de euler a matriz
+		float3x3 rotMat = GetRotationMat();
+		float3 rotEuler=rotMat.ToEulerXYZ();
+		
+		v[0] = RadToDeg(rotEuler.x);
+		v[1] = RadToDeg(rotEuler.y);
+		v[2] = RadToDeg(rotEuler.z);
+
+		if (ImGui::DragFloat3("Rotation", v, 0.1f,-360.0f,360.0f))
+		{
+
+			rotEuler.x = DegToRad(v[0]);
+			rotEuler.y = DegToRad(v[1]);
+			rotEuler.z = DegToRad(v[2]);
+
+			rotMat = float3x3::FromEulerXYZ(rotEuler.x, rotEuler.y, rotEuler.z);
+			SetLocalRot(rotMat);
+
+		}
+		ImGui::Separator();
+
+		v[0] = lTransformMat[0];
+		v[1] = lTransformMat[5];
+		v[2] = lTransformMat[10];
+		if (ImGui::DragFloat3("Scale", v, 0.1f))
+		{
+
+			SetLocalScale(vec3(v[0], v[1], v[2]));
+		}
+
+>>>>>>> Development
 		ImGui::Separator();
 
 		//Additional info
@@ -106,6 +163,66 @@ vec3 C_Transform::GetGlobalPosition()
 	return vec3(gTransformMat.M[12], gTransformMat.M[13], gTransformMat.M[14]);
 }
 
+<<<<<<< HEAD
+=======
+vec3 C_Transform::GetLocalScale()
+{
+	return vec3(lTransformMat.M[0], lTransformMat.M[5], lTransformMat.M[10]);
+}
+
+float3x3 C_Transform::GetRotationMat()
+{
+	float3x3 rotMat;
+	rotMat.v[0][0] = lTransformMat[0];
+	rotMat.v[0][1] = lTransformMat[1];
+	rotMat.v[0][2] = lTransformMat[2];
+	rotMat.v[1][0] = lTransformMat[4];
+	rotMat.v[1][1] = lTransformMat[5];
+	rotMat.v[1][2] = lTransformMat[6];
+	rotMat.v[2][0] = lTransformMat[8];
+	rotMat.v[2][1] = lTransformMat[9];
+	rotMat.v[2][2] = lTransformMat[10];
+
+	//rotMat.Transpose();
+	//we suppose this matrix is normalized and affine
+
+	return rotMat;
+}
+
+void C_Transform::SetLocalPosition(vec3 newPos)
+{
+	lTransformMat.translate(newPos.x, newPos.y, newPos.z);
+	UpdateGlobalMat();
+	owner->UpdateChildTransforms();
+}
+
+void C_Transform::SetLocalScale(vec3 newScale)
+{
+	lTransformMat.M[0] = newScale.x;
+	lTransformMat.M[5] = newScale.y;
+	lTransformMat.M[10] = newScale.z;
+
+	UpdateGlobalMat();
+	owner->UpdateChildTransforms();
+
+}
+
+void C_Transform::SetLocalRot(float3x3 newRot)
+{
+	lTransformMat[0]= newRot.v[0][0];
+	lTransformMat[1]=newRot.v[0][1];
+	lTransformMat[2]=newRot.v[0][2];
+	lTransformMat[4]=newRot.v[1][0];
+	lTransformMat[5]=newRot.v[1][1];
+	lTransformMat[6]=newRot.v[1][2];
+	lTransformMat[8]=newRot.v[2][0];
+	lTransformMat[9]=newRot.v[2][1];
+	lTransformMat[10]=newRot.v[2][2];
+	UpdateGlobalMat();
+	owner->UpdateChildTransforms();
+}
+
+>>>>>>> Development
 void C_Transform::UpdateGlobalMat()
 {
 	if (owner->parent != nullptr)

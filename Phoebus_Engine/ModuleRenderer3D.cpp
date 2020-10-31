@@ -1,7 +1,19 @@
+<<<<<<< HEAD
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
 #include "ModuleEditor3D.h"
+=======
+//#include "Globals.h"
+#include "Application.h"
+#include "ModuleRenderer3D.h"
+//#include "Light.h"
+
+#include "ModuleEditor3D.h"
+
+//include & lib of glew
+
+>>>>>>> Development
 #include "Glew/include/glew.h"
 #pragma comment(lib,"Glew/libx86/glew32.lib")
 
@@ -11,11 +23,19 @@
 #include <gl/GLU.h>
 
 
+<<<<<<< HEAD
 
 #include "glmath.h"
 #include"Color.h"
 
 
+=======
+//#include "glmath.h"
+
+#include"Color.h"
+
+#include <math.h>
+>>>>>>> Development
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
@@ -56,6 +76,31 @@ uint indexArray[] = {
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
 {
+<<<<<<< HEAD
+=======
+	frameBuffer = -1;
+	renderTex = -1;
+	depthBuffer = -1;
+
+
+	exampleMeshIdentifier = 0;
+	indexBind = 0;
+	vertexBind = 0;
+	nVertex = 0;
+	indexSize = 0;
+
+
+	//TODO load this from config in the future
+	depthTesting = true;
+	cullFace = true;
+	lighting = true;
+	colorMaterial = true;
+	texture2D = true;
+	drawGrid = true;
+
+	//Just making sure this is initialized
+	gridLength = 500.f;
+>>>>>>> Development
 }
 
 // Destructor
@@ -87,7 +132,11 @@ bool ModuleRenderer3D::Init()
 
 	if (ret == true)
 	{
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> Development
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -147,7 +196,11 @@ bool ModuleRenderer3D::Init()
 
 
 		//Use Vsync
+<<<<<<< HEAD
 		if (VSYNC && 
+=======
+		if (VSYNC &&
+>>>>>>> Development
 			SDL_GL_SetSwapInterval(1) < 0)
 			LOG("[warning] Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
@@ -165,9 +218,12 @@ bool ModuleRenderer3D::Init()
 	//TestingRenderAtStart();
 
 
+<<<<<<< HEAD
 	//Just making sure this is initialized
 	gridLength = 500.f;
 	separation = 20.f;
+=======
+>>>>>>> Development
 
 	//SAux = PSphere(0.5, 1);
 	//SAux.SetPos(0, 1, 1);
@@ -188,7 +244,11 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
+<<<<<<< HEAD
 	for (uint i = 0; i < MAX_LIGHTS; ++i)
+=======
+	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
+>>>>>>> Development
 		lights[i].Render();
 
 	return UPDATE_CONTINUE;
@@ -350,7 +410,11 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
+<<<<<<< HEAD
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+=======
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+>>>>>>> Development
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -380,6 +444,7 @@ void ModuleRenderer3D::Draw3D()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
+<<<<<<< HEAD
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -410,6 +475,10 @@ void ModuleRenderer3D::Draw3D()
 
 
 	//TestingRenderAtStart();
+=======
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+>>>>>>> Development
 	if (drawGrid)
 	{
 		DrawGrid();
@@ -433,6 +502,7 @@ void ModuleRenderer3D::RenderMeshes()
 
 void ModuleRenderer3D::DrawGrid()
 {
+<<<<<<< HEAD
 	glLineWidth(1.0f);
 
 	glBegin(GL_LINES);
@@ -464,6 +534,70 @@ void ModuleRenderer3D::DrawGrid()
 		{
 			glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
 		}
+=======
+	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
+	
+	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
+
+	float sepLvl = logf(cameraHeight)/ logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
+	
+	float transparency = 1-fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
+
+	sepLvl = max(sepLvl, 0);
+
+
+	float newSep = pow(nQuadsInAQuad, (int)floor(sepLvl)); //what is the new separation compared to the original one (4 times bigger?,..)
+	//float realGridLength = gridLength- (fmod(gridLength, newSep));
+	//float lineCount = realGridLength / newSep;
+	
+
+	float realGridLength = gridLength / (newSep * nQuadsInAQuad);
+	realGridLength = ceil(realGridLength);
+	realGridLength *= (newSep * nQuadsInAQuad);
+
+	glBegin(GL_LINES);
+
+	for (float i = -realGridLength; i <= realGridLength; i += newSep)
+	{
+		float greatLines = fmod(i+realGridLength,newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
+
+		bool isCenterLine = false;
+		bool isGreatLine = false;
+		if (i >= -newSep * 0.5f && i <= newSep * 0.5f)isCenterLine = true;
+		if (greatLines == 0)isGreatLine = true;
+		
+		vec4 color1=vec4(transparency, transparency, transparency, transparency);
+		vec4 color2=vec4(transparency, transparency, transparency, transparency);;
+
+		if (isGreatLine)
+		{
+			glLineWidth(3.0f);
+			color1 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			color2 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+		}
+		if (isCenterLine)
+		{
+			glLineWidth(6.0f);
+			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		}
+		
+		glLineWidth(1.0f);
+
+		glColor4f(color1.x, color1.y, color1.z, color1.w);
+
+		glVertex3f(i, 0.0f, -gridLength);
+		glVertex3f(i, 0.0f, gridLength);
+		
+		glColor4f(color2.x, color2.y, color2.z, color2.w);
+		
+		glVertex3f(-gridLength, 0.0f, i);
+		glVertex3f(gridLength, 0.0f, i);
+		
+		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+
+>>>>>>> Development
 	}
 
 	glEnd();

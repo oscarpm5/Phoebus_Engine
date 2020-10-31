@@ -1,7 +1,20 @@
-#pragma once
+#ifndef __CAMERA_3D__
+#define __CAMERA_3D__
+
+
 #include "Module.h"
 #include "Globals.h"
-#include "glmath.h"
+//#include "glmath.h"
+
+class vec3;
+class mat4x4;
+
+enum class CamObjective
+{
+	REFERENCE,
+	CAMERA
+};
+
 
 enum class CamObjective
 {
@@ -47,3 +60,4 @@ private:
 	float zoomLevel;
 	mat4x4 ViewMatrix, ViewMatrixInverse;
 };
+#endif // !__CAMERA_3D__

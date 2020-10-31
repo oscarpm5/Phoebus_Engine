@@ -1,4 +1,5 @@
 
+<<<<<<< HEAD
 #include "Globals.h"
 #include "Glew/include/glew.h" //order matters
 #include <gl/GL.h>
@@ -84,19 +85,42 @@ bool Primitive::PrimitiveGenerateBuffers(float vertexArray[], uint indexArray[],
 }
 
 void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<unsigned int> &indices, float radius, uint sectors, uint stacks)
+=======
+//#include "Globals.h"
+//#include "Glew/include/glew.h" //order matters
+//#include <gl/GL.h>
+//#include <gl/GLU.h>
+#include "Primitive.h"
+#include "Application.h" //This could be erased from here? (only used for PI)
+//#include "glmath.h"
+//#include "MathGeoLib/include/MathGeoLib.h"
+
+
+// ------------------------------------------------------------
+void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<unsigned int> &indices, float radius, unsigned int sectors, unsigned int stacks)
+>>>>>>> Development
 {
 		float x, y, z, xy;
 		int k1, k2;
 
 		// vertex position
 
+<<<<<<< HEAD
 		float sectorStep = 2 * pi / sectors;
 		float stackStep = pi / stacks;
+=======
+		float sectorStep = 2 * M_PI / sectors;
+		float stackStep = M_PI / stacks;
+>>>>>>> Development
 		float sectorAngle, stackAngle;
 
 		for (int i = 0; i <= stacks; ++i)
 		{
+<<<<<<< HEAD
 			stackAngle = pi / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+=======
+			stackAngle = M_PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+>>>>>>> Development
 			xy = radius * cosf(stackAngle);             // r * cos(u)
 			z = radius * sinf(stackAngle);              // r * sin(u)
 
@@ -144,12 +168,21 @@ void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<u
 		}
 }
 
+<<<<<<< HEAD
 void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase, float rTop, float height, uint sectorCount, uint stacks)
 {
 	std::vector<float> unitCircleVertices; // this will be used in filling the vertices for the base and top
 
 	float sectorStep = 2 * pi / sectorCount;
 	float stackStep = pi / stacks;
+=======
+void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase, float rTop, float height, unsigned int sectorCount, unsigned int stacks)
+{
+	std::vector<float> unitCircleVertices; // this will be used in filling the vertices for the base and top
+
+	float sectorStep = 2 * M_PI / sectorCount;
+	float stackStep = M_PI / stacks;
+>>>>>>> Development
 	float sectorAngle, stackAngle;
 	float radius;                     // radius for each stack
 	float x, y, z;                     // vertex position
@@ -279,13 +312,18 @@ void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector
 	}
 }
 
+<<<<<<< HEAD
 void ConeFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase, float height, uint sectors, uint stacks)
+=======
+void ConeFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector<unsigned int>& indices, float rBase, float height, unsigned int sectors, unsigned int stacks)
+>>>>>>> Development
 {
 	CylinderFillVectorsVertexAndIndex(vertices, indices, rBase, 0, height, sectors, stacks); //Megamind
 }
 
 
 // ------------------------------------------------------------
+<<<<<<< HEAD
 void Primitive::Draw() const
 {
 	glPushMatrix();
@@ -681,5 +719,7 @@ vec3 PPlane::GetNormal() const
 {
 	return normal;
 }
+=======
+>>>>>>> Development
 
 

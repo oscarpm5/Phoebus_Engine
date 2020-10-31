@@ -16,4 +16,9 @@ namespace Importer
 	bool LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const char* relativePath); //lenght of the buffer, in bytes
 
 	GameObject* LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent,std::string relPath);//optName lets the node name to be sent to the gameobj
+<<<<<<< HEAD
+=======
+
+	unsigned int LoadPureImageGL(const char* path);
+>>>>>>> Development
 }

@@ -324,9 +324,12 @@
     <ClInclude Include="ModuleFileSystem.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="texture.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+=======
+>>>>>>> Development
     <ClInclude Include="GameObject.h">
       <Filter>Sources\Game Object</Filter>
     </ClInclude>
@@ -519,9 +522,12 @@
     <ClCompile Include="ModuleFileSystem.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="texture.cpp">
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
+=======
+>>>>>>> Development
     <ClCompile Include="GameObject.cpp">
       <Filter>Sources\Game Object</Filter>
     </ClCompile>

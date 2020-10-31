@@ -3,13 +3,21 @@
 
 #include <vector>
 #include <string>
+<<<<<<< HEAD
 #include "glmath.h"
+=======
+//#include "glmath.h"
+>>>>>>> Development
 
 
 class Component;
 class C_Transform;
 enum class ComponentType;
 
+<<<<<<< HEAD
+=======
+class mat4x4;
+>>>>>>> Development
 
 class GameObject
 {
@@ -49,6 +57,12 @@ public:
 	}
 
 
+<<<<<<< HEAD
+=======
+	void UpdateChildTransforms();
+
+
+>>>>>>> Development
 
 	void DrawOnEditorAllComponents();
 private:

@@ -66,13 +66,22 @@ void C_Material::OnEditor()
 		ImGui::Indent();
 		ImGui::Separator();
 
+<<<<<<< HEAD
 		ImGui::Text("ID: %i", this->GetTextureID()); 
+=======
+		ImGui::Text("ID: %i", this->GetTextureID());
+>>>>>>> Development
 		ImGui::Text("Size in Bytes: %i ", this->sizeInBytes);
 		ImGui::Separator();
 		ImGui::Checkbox("Checkers", &usingCkeckers);
 		ImGui::Separator();
+<<<<<<< HEAD
 		if (ImGui::TreeNode("Texture Preview")) 
 		{	
+=======
+		if (ImGui::TreeNode("Texture Preview"))
+		{
+>>>>>>> Development
 			ImGui::SliderInt("Size", &size, 1, 400);
 			ImGui::Image((ImTextureID)this->GetTextureID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::TreePop();
@@ -85,6 +94,45 @@ void C_Material::OnEditor()
 
 		ImGui::Separator();
 		ImGui::Unindent();
+<<<<<<< HEAD
+=======
+
+		if (ImGui::BeginPopup("Delete Material",ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("you are about to delete\n this component");
+
+			if (ImGui::Button("Go ahead"))
+			{
+				//TODO delete component here
+				toDelete = true;
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+		
+		float maxWidth = ImGui::GetWindowContentRegionMax().x;
+		ImGui::SetCursorPosX(maxWidth - 50);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+		
+		if (ImGui::Button("Delete"))
+		{
+			ImGui::OpenPopup("Delete Material");
+		}
+		ImGui::PopStyleColor(2);
+
+
+
+
+
+
+>>>>>>> Development
 	}
 }
 
