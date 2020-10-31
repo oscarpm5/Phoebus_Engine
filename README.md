@@ -87,11 +87,14 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Dynamic grid that adjusts its tile size depending on the user distance.
 
 * Components can be deleted from the inspector (if the component is able to do so).
+
+* Game objects can be moved, scaled & rotated (simple implementation just to avoid all the objects getting crammed in the world origin).
  
 ## Aditional comments for the teacher:
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
 * The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)
+* Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
 
 ## Licenses
