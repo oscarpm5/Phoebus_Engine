@@ -178,15 +178,18 @@ void C_Transform::SetLocalScale(vec3 newScale)
 
 void C_Transform::SetLocalRot(float3x3 newRot)
 {
-	lTransformMat[0]= newRot.v[0][0];
+	lTransformMat[0]=newRot.v[0][0];
 	lTransformMat[1]=newRot.v[0][1];
 	lTransformMat[2]=newRot.v[0][2];
+
 	lTransformMat[4]=newRot.v[1][0];
 	lTransformMat[5]=newRot.v[1][1];
 	lTransformMat[6]=newRot.v[1][2];
+
 	lTransformMat[8]=newRot.v[2][0];
 	lTransformMat[9]=newRot.v[2][1];
 	lTransformMat[10]=newRot.v[2][2];
+
 	UpdateGlobalMat();
 	owner->UpdateChildTransforms();
 }
@@ -232,6 +235,25 @@ vec3 C_Transform::GetEulerFromQuat(aiQuaterniont<float> rotation)
 	}
 
 	return vec3(heading, attitude, bank);
+}
+
+mat4x4 C_Transform::RottoTrans(float3x3 rot)
+{
+	mat4x4 ret = mat4x4();
+
+	ret[0] = rot.v[0][0];
+	ret[1] = rot.v[0][1];
+	ret[2] = rot.v[0][2];
+
+	ret[4] = rot.v[1][0];
+	ret[5] = rot.v[1][1];
+	ret[6] = rot.v[1][2];
+
+	ret[8] = rot.v[2][0];
+	ret[9] = rot.v[2][1];
+	ret[10] = rot.v[2][2];
+
+	return ret;
 }
 
 

@@ -3,7 +3,7 @@
 #include "Mesh.h"
 
 C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
-normalVertexSize(0.0f),normalFaceSize(0.0f),normalDrawMode(0),meshDrawMode(0)
+normalVertexSize(0.5f),normalFaceSize(0.5f),normalDrawMode(0),meshDrawMode(0)
 {
 }
 
@@ -14,8 +14,8 @@ C_Mesh::~C_Mesh()
 		delete m;
 		m = nullptr;
 	}
-	normalVertexSize = 0;
-	normalFaceSize = 0;
+	normalVertexSize = 1;
+	normalFaceSize = 1;
 	normalDrawMode = 0;
 	meshDrawMode = 0;
 }

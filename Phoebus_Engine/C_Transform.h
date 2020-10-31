@@ -30,6 +30,7 @@ public:
 private:
 	aiMatrix4x4 lTraansIntoAssimpMatrix();
 	vec3 GetEulerFromQuat(aiQuaterniont<float> rotation);
+	mat4x4 RottoTrans(float3x3 rot);
 private:
 
 	mat4x4 lTransformMat;//local transform mat
