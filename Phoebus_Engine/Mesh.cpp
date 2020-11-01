@@ -10,11 +10,7 @@
 #include "DevIL/include/IL/ilut.h"
 
 
-<<<<<<< HEAD
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords,NewTexture* texture) :
-=======
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords) :
->>>>>>> Development
 	/*drawMode(MeshDrawMode::DRAW_MODE_FILL), normalMode(NormalDrawMode::NORMAL_MODE_NONE),*/
 	idVertex(0), idIndex(0), idNormals(0), idTexCoords(0) /*,shadingFlat(true), texture(texture)*/
 {

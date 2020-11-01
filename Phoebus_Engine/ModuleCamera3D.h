@@ -16,13 +16,6 @@ enum class CamObjective
 };
 
 
-enum class CamObjective
-{
-	REFERENCE,
-	CAMERA
-};
-
-
 class ModuleCamera3D : public Module
 {
 public:

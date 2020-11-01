@@ -28,10 +28,7 @@ public:
 public:
 	GameObject* owner;
 
-<<<<<<< HEAD
-=======
 	bool toDelete;
->>>>>>> Development
 private:
 	ComponentType type;
 protected:

@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-#include "C_Transform.h"
-#include "GameObject.h"
-#include "glmath.h"
-#include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
-#include "Assimp/include/matrix4x4.inl"
-#include "Assimp/include/vector3.h"
-
-=======
 #include "glmath.h"
 #include "GameObject.h"
 #include "C_Transform.h"
@@ -14,7 +5,6 @@
 #include "Assimp/include/matrix4x4.inl"
 #include "Assimp/include/vector3.h"
 #include "MathGeoLib/include/MathGeoLib.h"
->>>>>>> Development
 
 
 C_Transform::C_Transform(GameObject* owner, mat4x4 lTransform) :Component(ComponentType::TRANSFORM, owner),
@@ -46,24 +36,6 @@ void C_Transform::OnEditor()
 		ImGui::Separator();
 
 
-<<<<<<< HEAD
-		//Calculate all the stuff
-		aiVector3t<float> scaling; aiQuaterniont<float> rotation; aiVector3t<float> position;
-		lTraansIntoAssimpMatrix().Decompose(scaling, rotation, position);
-		vec3 auxvec3 = GetEulerFromQuat(rotation);
-		float v[3];
-		//Show me the things
-		v[0] = position.x; v[1] = position.y; v[2] = position.z;
-		ImGui::InputFloat3("Position", v);
-		ImGui::Separator();
-
-		v[0] = auxvec3.x; v[1] = auxvec3.y; v[2] = auxvec3.z;
-		ImGui::InputFloat3("Rotation", v);
-		ImGui::Separator();
-
-		v[0] = scaling.x; v[1] = scaling.y; v[2] = scaling.z;
-		ImGui::InputFloat3("Scale", v);
-=======
 		float v[3];
 		//Show me the things
 		v[0]= lTransformMat.translation().x;
@@ -108,7 +80,6 @@ void C_Transform::OnEditor()
 			SetLocalScale(vec3(v[0], v[1], v[2]));
 		}
 
->>>>>>> Development
 		ImGui::Separator();
 
 		//Additional info
@@ -163,8 +134,6 @@ vec3 C_Transform::GetGlobalPosition()
 	return vec3(gTransformMat.M[12], gTransformMat.M[13], gTransformMat.M[14]);
 }
 
-<<<<<<< HEAD
-=======
 vec3 C_Transform::GetLocalScale()
 {
 	return vec3(lTransformMat.M[0], lTransformMat.M[5], lTransformMat.M[10]);
@@ -225,7 +194,6 @@ void C_Transform::SetLocalRot(float3x3 newRot)
 	owner->UpdateChildTransforms();
 }
 
->>>>>>> Development
 void C_Transform::UpdateGlobalMat()
 {
 	if (owner->parent != nullptr)

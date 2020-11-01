@@ -4,11 +4,8 @@
 #include "C_Mesh.h"
 #include "C_Material.h"
 #include "Application.h"
-<<<<<<< HEAD
-=======
 #include "imgui/imgui.h"
 //#include "glmath.h"//new, we should include glMath here but C_Transform already has it and we cannot remove it from there
->>>>>>> Development
 
 
 int GameObject::numberOfObjects = 0;
@@ -35,8 +32,6 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 
 void GameObject::Update(float dt)
 {
-<<<<<<< HEAD
-=======
 	for (int i = 0; i < components.size(); i++)
 	{
 		if (components[i]->toDelete)
@@ -48,7 +43,6 @@ void GameObject::Update(float dt)
 		}
 	}
 
->>>>>>> Development
 	if (isActive)
 	{
 
@@ -181,8 +175,6 @@ bool GameObject::IsParentActive()
 	return isActive;
 }
 
-<<<<<<< HEAD
-=======
 void GameObject::UpdateChildTransforms()
 {
 	GetComponent<C_Transform>()->UpdateGlobalMat();
@@ -193,7 +185,6 @@ void GameObject::UpdateChildTransforms()
 	}
 }
 
->>>>>>> Development
 void GameObject::DrawOnEditorAllComponents()
 {
 	if (ImGui::BeginChild("Object name window", ImVec2(0.0f, 30.0f)))

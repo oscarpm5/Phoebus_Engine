@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-#include "Globals.h"
-#include "Application.h"
-#include "ModuleRenderer3D.h"
-#include "ModuleEditor3D.h"
-=======
 //#include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
@@ -15,7 +9,6 @@
 #include "C_Material.h"
 //include & lib of glew
 
->>>>>>> Development
 #include "Glew/include/glew.h"
 #pragma comment(lib,"Glew/libx86/glew32.lib")
 
@@ -25,19 +18,11 @@
 #include <gl/GLU.h>
 
 
-<<<<<<< HEAD
-
-#include "glmath.h"
-#include"Color.h"
-
-
-=======
 //#include "glmath.h"
 
 #include"Color.h"
 
 #include <math.h>
->>>>>>> Development
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
@@ -78,8 +63,6 @@ uint indexArray[] = {
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
 {
-<<<<<<< HEAD
-=======
 	frameBuffer = -1;
 	renderTex = -1;
 	depthBuffer = -1;
@@ -102,7 +85,6 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 
 	//Just making sure this is initialized
 	gridLength = 500.f;
->>>>>>> Development
 }
 
 // Destructor
@@ -134,11 +116,7 @@ bool ModuleRenderer3D::Init()
 
 	if (ret == true)
 	{
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> Development
 
 		//Initialize Projection Matrix
 		glMatrixMode(GL_PROJECTION);
@@ -198,11 +176,7 @@ bool ModuleRenderer3D::Init()
 
 
 		//Use Vsync
-<<<<<<< HEAD
-		if (VSYNC && 
-=======
 		if (VSYNC &&
->>>>>>> Development
 			SDL_GL_SetSwapInterval(1) < 0)
 			LOG("[warning] Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 
@@ -220,12 +194,6 @@ bool ModuleRenderer3D::Init()
 	//TestingRenderAtStart();
 
 
-<<<<<<< HEAD
-	//Just making sure this is initialized
-	gridLength = 500.f;
-	separation = 20.f;
-=======
->>>>>>> Development
 
 	//SAux = PSphere(0.5, 1);
 	//SAux.SetPos(0, 1, 1);
@@ -246,11 +214,7 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
 
-<<<<<<< HEAD
-	for (uint i = 0; i < MAX_LIGHTS; ++i)
-=======
 	for (unsigned int i = 0; i < MAX_LIGHTS; ++i)
->>>>>>> Development
 		lights[i].Render();
 
 	return UPDATE_CONTINUE;
@@ -412,11 +376,7 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
-<<<<<<< HEAD
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-=======
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
->>>>>>> Development
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -446,41 +406,8 @@ void ModuleRenderer3D::Draw3D()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
-<<<<<<< HEAD
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//In the future render all objects here (iterate all objects and call its draw function?)
-	//PPlane p(vec3(0, 1, 0));
-
-			//Testing goodness
-	//p.axis = true;
-	//p.Render();
-	//SAux.Render();
-	//Testing ground
-	//TestingRender();
-
-	//PCube auxCube;
-	//auxCube.SetPos(2, 0, 0);
-	//auxCube.SetRotation(45, { 1,0,0 });
-	//auxCube.Draw();
-
-	//PCube auxCube2 = PCube(IdentityMatrix, {1.0f,1.0f,2.0f});
-	//auxCube2.SetPos(0, 1, 0);
-	//auxCube2.SetRotation(-45, { 0,1,0 });
-	//auxCube2.wire = true;
-	//auxCube2.Draw();
-
-	//PCylinder auxCyl(0, 2, 3,4,4);
-	//auxCyl.SetPos(0, 0, 0);
-	//auxCyl.Draw();
-
-
-	//TestingRenderAtStart();
-=======
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
->>>>>>> Development
 	if (drawGrid)
 	{
 		DrawGrid();
@@ -506,39 +433,6 @@ void ModuleRenderer3D::RenderMeshes()
 
 void ModuleRenderer3D::DrawGrid()
 {
-<<<<<<< HEAD
-	glLineWidth(1.0f);
-
-	glBegin(GL_LINES);
-	glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
-
-	for (float i = -gridLength; i <= gridLength; i += separation)
-	{
-		float centerLine = false;
-		if (i >= -separation * 0.5f && i <= separation * 0.5f)
-		{
-			centerLine = true;
-		}
-
-		if (centerLine)
-		{
-			glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-		}
-		glVertex3f(i, 0.0f, -gridLength);
-		glVertex3f(i, 0.0f, gridLength);
-		
-		if (centerLine)
-		{
-			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-		}
-		glVertex3f(-gridLength, 0.0f, i);
-		glVertex3f(gridLength, 0.0f, i);
-
-		if (centerLine)
-		{
-			glColor4f(0.8f, 0.8f, 0.8f, 0.8f);
-		}
-=======
 	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
 	
 	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
@@ -601,7 +495,6 @@ void ModuleRenderer3D::DrawGrid()
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 
->>>>>>> Development
 	}
 
 	glEnd();

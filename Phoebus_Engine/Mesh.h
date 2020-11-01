@@ -1,9 +1,5 @@
 #pragma once
 #include<vector>
-<<<<<<< HEAD
-#include "texture.h"
-=======
->>>>>>> Development
 
 enum class MeshDrawMode
 {
@@ -23,11 +19,7 @@ class Mesh
 {
 public:
 
-<<<<<<< HEAD
-	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords, NewTexture* texture = nullptr);
-=======
 	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords);
->>>>>>> Development
 	Mesh(const Mesh& other);
 	~Mesh();
 

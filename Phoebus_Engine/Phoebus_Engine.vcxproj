@@ -177,10 +177,6 @@
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="RenderMesh.h" />
     <ClInclude Include="resource.h" />
-<<<<<<< HEAD
-    <ClInclude Include="texture.h" />
-=======
->>>>>>> Development
     <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
@@ -246,10 +242,6 @@
     <ClCompile Include="ModuleWindow.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RenderMesh.cpp" />
-<<<<<<< HEAD
-    <ClCompile Include="texture.cpp" />
-=======
->>>>>>> Development
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>

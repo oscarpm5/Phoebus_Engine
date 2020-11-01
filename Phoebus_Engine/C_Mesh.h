@@ -1,16 +1,10 @@
 #ifndef __C_MESH__
 #define __C_MESH__
-<<<<<<< HEAD
-#include "Component.h"
-#include <vector>
-#include "Mesh.h"
-=======
 
 #include "Component.h"
 #include <vector>
 //#include "Mesh.h"
 class Mesh;
->>>>>>> Development
 
 class C_Mesh:public Component
 {

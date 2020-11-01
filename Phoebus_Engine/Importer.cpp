@@ -23,10 +23,6 @@
 #include"glmath.h"
 #include"MathGeoLib/include/MathGeoLib.h"
 
-<<<<<<< HEAD
-#include "texture.h"
-=======
->>>>>>> Development
 #include "GameObject.h"
 #include "Component.h"
 #include "C_Mesh.h"
@@ -386,8 +382,6 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	}
 	return newObj;
 }
-<<<<<<< HEAD
-=======
 
 //returns 0 by default if something failed
 unsigned int Importer::LoadPureImageGL(const char* path)
@@ -444,4 +438,3 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	}
 	return 0;
 }
->>>>>>> Development
