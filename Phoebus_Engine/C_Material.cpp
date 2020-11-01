@@ -119,7 +119,7 @@ void C_Material::OnEditor()
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 		
-		if (ImGui::Button("Delete"))
+		if (ImGui::Button("Delete##Material"))
 		{
 			ImGui::OpenPopup("Delete Material");
 		}
