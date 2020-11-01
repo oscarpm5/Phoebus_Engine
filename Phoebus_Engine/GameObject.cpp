@@ -23,7 +23,6 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 		parent->children.push_back(this);
 	}
 
-	//TODO add transform component here
 	this->transform = new C_Transform(this, transform);
 	components.push_back(this->transform);
 
@@ -98,7 +97,6 @@ GameObject::~GameObject()
 	}
 	children.clear();
 
-	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
 	RemoveMyselfFromParent();
 
 	if (App)
@@ -248,7 +246,7 @@ void GameObject::DrawGameObject()
 	{
 		if (meshes[i]->IsActive())
 		{
-			App->editor3d->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform()); //TODO drawMode& normal Mode not needed anymore
+			App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform()); 
 		}
 
 	}

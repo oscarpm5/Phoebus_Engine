@@ -5,6 +5,9 @@
 #include "Module.h"
 //#include "Globals.h"
 #include "Light.h" //incuded due to an array declared here
+#include <vector>
+#include "RenderMesh.h"
+
 
 
 #define MAX_LIGHTS 8
@@ -29,6 +32,10 @@ public:
 	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
+
+	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform);
+
+
 private:
 	void RenderMeshes();
 	void DrawGrid();
@@ -42,7 +49,7 @@ private:
 	unsigned int vertexBind;
 	int nVertex;
 	int indexSize;
-
+	std::vector<RenderMesh> drawMeshes;
 
 
 

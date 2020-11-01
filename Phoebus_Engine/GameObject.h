@@ -30,7 +30,7 @@ public:
 
 	std::string GetName();
 
-	bool IsParentActive(); //will need this when the hierarchy is implemented TODO
+	bool IsParentActive();
 
 	GameObject* parent;
 

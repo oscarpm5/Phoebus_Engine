@@ -27,6 +27,7 @@
 #include "Importer.h"
 #include "Component.h"
 #include "C_Mesh.h"
+#include "Mesh.h"
 
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -53,9 +54,6 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	Vsync = VSYNC;
 
 	resizable = true;
-	borderless = false;
-	fullscreen = false;
-	fullDesktop = false;
 
 
 	ar1 = 0;
@@ -1036,7 +1034,7 @@ bool ModuleRenderer2D::Show3DWindow()
 	if (ImGui::IsWindowHovered() &&
 		mousePos.x >= winPos.x && mousePos.x <= winPos.x + winSize.x && mousePos.y >= winPos.y && mousePos.y <= winPos.y + winSize.y)//inside window
 	{
-		App->editor3d->mouseActive = true;//TODO change variable to be in this module
+		App->editor3d->mouseActive = true;//TODO change variable to be in this module ??
 	}
 	else if (App->editor3d->mouseActive &&
 		!(App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT) &&

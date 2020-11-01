@@ -4,7 +4,7 @@
 #include <string>
 
 C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
-normalVertexSize(0.5f),normalFaceSize(0.5f),normalDrawMode(0),meshDrawMode(0)
+normalVertexSize(1.0f),normalFaceSize(1.0f),normalDrawMode(0),meshDrawMode(0)
 {
 }
 
@@ -15,8 +15,8 @@ C_Mesh::~C_Mesh()
 		delete m;
 		m = nullptr;
 	}
-	normalVertexSize = 1;
-	normalFaceSize = 1;
+	normalVertexSize = 0;
+	normalFaceSize = 0;
 	normalDrawMode = 0;
 	meshDrawMode = 0;
 }
@@ -90,9 +90,9 @@ void C_Mesh::OnEditor()
 
 
 		if (normalDrawMode == 1 || normalDrawMode == 3)
-			ImGui::SliderFloat("Vertex Normal Size", &normalVertexSize, 0.0f, 1.0f);
+			ImGui::SliderFloat("Vertex Normal Size", &normalVertexSize, 0.1f, 1.0f);
 		if (normalDrawMode == 2 || normalDrawMode == 3)
-			ImGui::SliderFloat("Face Normal Size", &normalFaceSize, 0.0f, 1.0f);
+			ImGui::SliderFloat("Face Normal Size", &normalFaceSize, 0.1f, 1.0f);
 
 		
 		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };           
@@ -131,7 +131,6 @@ void C_Mesh::OnEditor()
 
 			if (ImGui::Button("Go ahead"))
 			{
-				//TODO delete component here
 				toDelete = true;
 			}
 

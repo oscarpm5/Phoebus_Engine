@@ -230,10 +230,6 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 		TransformToLowerCase(strFormat);
 	}
 
-
-	//TODO: convert ext into a lowercase const char *
-
-
 	if (strFormat.size() == 0)
 	{
 		// somehow no extension 
@@ -241,7 +237,7 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	}
 	else
 	{
-		format = FileFormats::UNDEFINED; //delete the uppercase scenarios once the prior TODO is done
+		format = FileFormats::UNDEFINED; 
 
 		if (!strcmp(strFormat.c_str(), ".fbx"))
 		{

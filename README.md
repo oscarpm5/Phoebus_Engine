@@ -86,6 +86,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Dynamic grid that adjusts its tile size depending on the user distance.
 
+* Game Objects can be deleted. Select the game obj and press Delete key. Note: it will also delete its childs
+
 * Components can be deleted from the inspector (if the component is able to do so).
 
 * Game objects can be moved, scaled & rotated (simple implementation just to avoid all the objects getting crammed in the world origin).

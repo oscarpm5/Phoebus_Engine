@@ -2,13 +2,11 @@
 #include "Module.h"
 #include "Globals.h"
 
-#include "Mesh.h"
-#include "RenderMesh.h"
-
 #define PRIMITIVES_IN_SCENE 10
 
 class mat4x4;
 class GameObject;
+enum class MeshDrawMode;
 
 class ModuleEditor3D : public Module
 {
@@ -22,9 +20,6 @@ public:
 	update_status Update(float dt) override;
 	update_status PostUpdate(float dt) override;
 	bool CleanUp();
-
-	void DrawAllMeshes();
-	void AddMeshToDraw(C_Mesh* mesh, C_Material* material,mat4x4 gTransform);
 
 	bool SetSelectedGameObject(GameObject* selected, bool addMode = false);
 	bool RemoveGameObjFromSelected(GameObject* toRemove);
@@ -41,8 +36,7 @@ private:
 	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique
 
 public:
-	GameObject* root;
-	std::vector<RenderMesh> drawMeshes;
+	GameObject* root; //TODO move this into a scene once we have one
 
 	std::vector<GameObject*> selectedGameObjs;
 

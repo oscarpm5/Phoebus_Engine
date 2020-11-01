@@ -102,7 +102,6 @@ void C_Material::OnEditor()
 
 			if (ImGui::Button("Go ahead"))
 			{
-				//TODO delete component here
 				toDelete = true;
 			}
 
