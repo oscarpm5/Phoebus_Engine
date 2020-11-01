@@ -60,28 +60,29 @@ unsigned int C_Material::GetCheckersID() const
 void C_Material::OnEditor()
 {
 	if (idTexture == 0) return;
+	bool activeAux = active;
+	
+	std::string headerName = "Texture";
+	if (!activeAux)headerName += " (not active)";
 
-	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen))
+	if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::CollapsingHeader(headerName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
+		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
+		ImGui::Checkbox("IS ACTIVE##MaterialCheckbox", &active); //##adds more to the label id without displaying so we can have 2 checkbox with the same text
+
+
 		ImGui::Indent();
 		ImGui::Separator();
 
-<<<<<<< HEAD
-		ImGui::Text("ID: %i", this->GetTextureID()); 
-=======
 		ImGui::Text("ID: %i", this->GetTextureID());
->>>>>>> Development
 		ImGui::Text("Size in Bytes: %i ", this->sizeInBytes);
 		ImGui::Separator();
 		ImGui::Checkbox("Checkers", &usingCkeckers);
 		ImGui::Separator();
-<<<<<<< HEAD
-		if (ImGui::TreeNode("Texture Preview")) 
-		{	
-=======
 		if (ImGui::TreeNode("Texture Preview"))
 		{
->>>>>>> Development
 			ImGui::SliderInt("Size", &size, 1, 400);
 			ImGui::Image((ImTextureID)this->GetTextureID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0));
 			ImGui::TreePop();
@@ -94,8 +95,6 @@ void C_Material::OnEditor()
 
 		ImGui::Separator();
 		ImGui::Unindent();
-<<<<<<< HEAD
-=======
 
 		if (ImGui::BeginPopup("Delete Material",ImGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -103,7 +102,6 @@ void C_Material::OnEditor()
 
 			if (ImGui::Button("Go ahead"))
 			{
-				//TODO delete component here
 				toDelete = true;
 			}
 
@@ -125,15 +123,14 @@ void C_Material::OnEditor()
 		{
 			ImGui::OpenPopup("Delete Material");
 		}
+
+
+		if (!activeAux)ImGui::PopStyleColor();
 		ImGui::PopStyleColor(2);
-
-
-
-
-
-
->>>>>>> Development
 	}
+
+	if (!activeAux)ImGui::PopStyleColor();
+
 }
 
 void C_Material::GenTextureFromName(unsigned int ilImageName, std::string path)

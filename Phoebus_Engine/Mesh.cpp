@@ -9,8 +9,6 @@
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
 
-//TODO normal structure done, still haven't found a way to implement them into the buffers
-
 
 <<<<<<< HEAD
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords,NewTexture* texture) :
@@ -50,71 +48,8 @@ Mesh::~Mesh()
 	normals.clear();
 	texCoords.clear();
 
-	//texture = nullptr;//TODO tell the texture that this user is not using it, and delete accordingly
-
-	//drawMode = MeshDrawMode::DRAW_MODE_FILL;
-	//normalMode = NormalDrawMode::NORMAL_MODE_NONE;
 }
 
-
-//TODO for oscar : this could be structured better, FIX IT
-//void Mesh::Draw()
-//{
-//	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
-//	if (shadingFlat)glEnableClientState(GL_NORMAL_ARRAY);
-//	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//
-//
-//	/*if (idVertex == 0 || idIndex == 0 ||idNormals==0|idTexCoords==0)
-//		GenerateBuffers();*/
-//
-//	if ((normalMode == NormalDrawMode::NORMAL_MODE_VERTEX || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !normals.empty())
-//		DrawVertexNormals();
-//
-//	if ((normalMode == NormalDrawMode::NORMAL_MODE_FACES || normalMode == NormalDrawMode::NORMAL_MODE_BOTH) && !normals.empty())
-//		DrawFacesNormals();
-//
-//
-//	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
-//
-//	if (drawMode == MeshDrawMode::DRAW_MODE_WIRE)
-//	{
-//		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//	}
-//	else if (drawMode == MeshDrawMode::DRAW_MODE_FILL)
-//	{
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//	}
-//	else
-//	{
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-//
-//		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
-//
-//		DrawBuffers();
-//		
-//		glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
-//
-//		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-//
-//	}
-//
-//	DrawBuffers();
-//	
-//	
-//	glDisableClientState(GL_VERTEX_ARRAY); // ... TODO (2) Put this on end of render postupdate
-//	if (shadingFlat)glDisableClientState(GL_NORMAL_ARRAY); // ... TODO (2) Put this on end of render postupdate
-//	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-//	//
-//	
-//	//clear buffers
-//
-//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//
-//
-//}
 
 void Mesh::GenerateBuffers()
 {

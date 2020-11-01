@@ -3,6 +3,7 @@
 #include "Importer.h"
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
+#include "Mesh.h"
 
 
 ModuleEditor3D::ModuleEditor3D(bool start_enabled) :Module(start_enabled)
@@ -104,22 +105,6 @@ bool ModuleEditor3D::CleanUp()
 	root = nullptr;
 
 	return ret;
-}
-
-void ModuleEditor3D::DrawAllMeshes()
-{
-	for (int i = 0; i < drawMeshes.size(); i++)
-	{
-		drawMeshes[i].Draw(maxSceneDrawMode);
-	}
-
-	drawMeshes.clear();
-	drawMeshes.shrink_to_fit();
-}
-
-void ModuleEditor3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform)
-{
-	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }
 
 bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)

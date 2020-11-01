@@ -139,9 +139,6 @@ private:
 	//flags
 	bool Vsync;
 	bool resizable; 
-	bool borderless; 
-	bool fullscreen; 
-	bool fullDesktop; //TODO: move to window?
 	ImVec2 imgSize;
 
 	//this is for displaying our portraits in the About

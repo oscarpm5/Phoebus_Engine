@@ -84,8 +84,6 @@ struct Cnsl
 
 		ImGui::TextWrapped("Enter 'HELP' for help.");
 
-		// TODO: display items starting from the bottom
-
 		if (ImGui::SmallButton("Clear")) { ClearLog(); }
 		ImGui::SameLine();
 		bool copy_to_clipboard = ImGui::SmallButton("Copy");

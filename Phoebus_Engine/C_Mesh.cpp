@@ -1,12 +1,10 @@
 #include "C_Mesh.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
-<<<<<<< HEAD
-=======
 #include "Mesh.h"
->>>>>>> Development
+#include <string>
 
 C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
-normalVertexSize(0.0f),normalFaceSize(0.0f),normalDrawMode(0),meshDrawMode(0)
+normalVertexSize(1.0f),normalFaceSize(1.0f),normalDrawMode(0),meshDrawMode(0)
 {
 }
 
@@ -44,9 +42,24 @@ Mesh* C_Mesh::GetMesh() const
 void C_Mesh::OnEditor()
 {
 	if (m == nullptr) return;
+		bool activeAux = active;
 
-	if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen))
+	std::string headerName = "Mesh";
+	if (!activeAux)headerName += " (not active)";
+
+	/*ImGui::Checkbox(" ", &active);
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX()-12);*/
+	ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_DefaultOpen;
+
+	if(!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::CollapsingHeader(headerName.c_str(), headerFlags))
 	{
+		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
+		/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20);*/
+		ImGui::Checkbox("IS ACTIVE##MeshCheckbox", &active);
+
 		ImGui::Separator();
 		ImGui::Indent();
 
@@ -77,9 +90,9 @@ void C_Mesh::OnEditor()
 
 
 		if (normalDrawMode == 1 || normalDrawMode == 3)
-			ImGui::SliderFloat("Vertex Normal Size", &normalVertexSize, 0.0f, 1.0f);
+			ImGui::SliderFloat("Vertex Normal Size", &normalVertexSize, 0.1f, 1.0f);
 		if (normalDrawMode == 2 || normalDrawMode == 3)
-			ImGui::SliderFloat("Face Normal Size", &normalFaceSize, 0.0f, 1.0f);
+			ImGui::SliderFloat("Face Normal Size", &normalFaceSize, 0.1f, 1.0f);
 
 		
 		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };           
@@ -112,15 +125,12 @@ void C_Mesh::OnEditor()
 		ImGui::Separator();
 		ImGui::Unindent();
 
-<<<<<<< HEAD
-=======
 		if (ImGui::BeginPopup("Delete Mesh", ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text("you are about to delete\n this component");
 
 			if (ImGui::Button("Go ahead"))
 			{
-				//TODO delete component here
 				toDelete = true;
 			}
 
@@ -144,8 +154,11 @@ void C_Mesh::OnEditor()
 
 
 		}
+		
+		if (!activeAux)ImGui::PopStyleColor();
 		ImGui::PopStyleColor(2);
->>>>>>> Development
 
 	}
+
+	if (!activeAux)ImGui::PopStyleColor();
 }

@@ -10,28 +10,16 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer2D.h"
-<<<<<<< HEAD
-#include "ModuleRenderer3D.h" //we need the projection matrix
-#include "ModuleCamera3D.h"
-
-=======
 //#include "ModuleRenderer3D.h" //we need the projection matrix
 //#include "ModuleCamera3D.h"
 
 
 #include "Primitive.h"
->>>>>>> Development
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "MathGeoLib/include/MathGeoLib.h"
 
 #include "Console.h"
 #include "MathChecks.h"
-<<<<<<< HEAD
-#include "Mesh.h"
-#include "ModuleWindow.h"
-#include "Hierarchy.h"
-#include "GameObject.h"
-=======
 //#include "Mesh.h"
 #include "ModuleWindow.h"
 #include "Hierarchy.h"
@@ -39,7 +27,7 @@
 #include "Importer.h"
 #include "Component.h"
 #include "C_Mesh.h"
->>>>>>> Development
+#include "Mesh.h"
 
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -49,10 +37,6 @@
 
 
 
-<<<<<<< HEAD
-ModuleRenderer2D::ModuleRenderer2D(bool start_enabled)
-{
-=======
 ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 {
 	showDemoWindow = false;
@@ -70,9 +54,6 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	Vsync = VSYNC;
 
 	resizable = true;
-	borderless = false;
-	fullscreen = false;
-	fullDesktop = false;
 
 
 	ar1 = 0;
@@ -81,7 +62,6 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	ar4 = 0;
 	ar5 = 0;
 
->>>>>>> Development
 	console = new Cnsl();
 }
 
@@ -134,15 +114,12 @@ bool ModuleRenderer2D::Init()
 	//fps goodness
 	fps_log.resize(maxFPShown);
 
-<<<<<<< HEAD
-=======
 		//portrait badness
 	AdriID = Importer::LoadPureImageGL("Assets/our_pics/ASL.png");
 	OscarID = Importer::LoadPureImageGL("Assets/our_pics/OPM.png");
 	PhoebusIcon = Importer::LoadPureImageGL("Assets/our_pics/PhoebusIcon.png");
 	if (AdriID == 0 || OscarID == 0 || PhoebusIcon == 0) LOG("[error] Could not load portraits!!");
 
->>>>>>> Development
 	return ret;
 }
 
@@ -168,20 +145,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 		if (ImGui::BeginMenu("Menu", true))
 		{
-<<<<<<< HEAD
-			////Sample Dropdown menu with options
-			//if (ImGui::BeginMenu("Export", true))
-			//{
-			//	if (ImGui::MenuItem("As PNG")) {}
-			//	if (ImGui::MenuItem("As JPG")) {}
-			//	if (ImGui::MenuItem("As JPEG")) {}
-
-
-			//	ImGui::EndMenu();
-			//}
-			////End of sample
-=======
->>>>>>> Development
 
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
@@ -264,16 +227,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::EndMenu();
 			}
 
-<<<<<<< HEAD
-			////Pyramid
-			//if (ImGui::BeginMenu("Pyramid")) {
-			//	ImGui::Text("Pyramid param:");
-			//	CreateBasicForm(PrimitiveTypes::Primitive_Cone);
-			//	ImGui::EndMenu();
-			//}
-
-=======
->>>>>>> Development
 			//Cone
 			if (ImGui::BeginMenu("Cone")) {
 				ImGui::Text("Cone param:");
@@ -304,24 +257,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
-<<<<<<< HEAD
-		//if (ImGui::MenuItem("Example Window")) { showDemoWindow = true; }
-		//if (ImGui::MenuItem("Console")) { showConsoleWindow = true; }
-		//if (ImGui::MenuItem("3D Viewport")) { show3DWindow = true; }
-		//if (ImGui::MenuItem("Hierarchy")) { showHierarchy = true; }
-		//if (ImGui::MenuItem("Display Selected")) { showSelected = true; }
-
-		ImGui::EndMainMenuBar();
-
-	}
-	if (showHierarchy)
-	{
-		if (!ImGui::Begin("Hierarchy", &showHierarchy))		//this is how you add the cross button to a window
-		{
-
-		}
-		ShowHierarchyTab();
-=======
 	}
 	ImGui::EndMainMenuBar();
 	if (showHierarchy)
@@ -330,7 +265,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		{
 			ShowHierarchyTab();
 		}
->>>>>>> Development
 		ImGui::End();
 	}
 	if (showDemoWindow)
@@ -339,21 +273,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 	if (showInspector)
 	{
-<<<<<<< HEAD
-		if (ImGui::Begin("Inspector", &showInspector))		//this is how you add the cross button to a window
-		{
-			App->editor3d->UpdateInfoOnSelectedGameObject();
-			ImGui::End();
-
-		}
-=======
 		if (ImGui::Begin("Inspector", &showInspector))
 		{
 			App->editor3d->UpdateInfoOnSelectedGameObject();
 
 		}
 		ImGui::End();
->>>>>>> Development
 	}
 	if (showAboutWindowbool)
 	{
@@ -367,13 +292,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ShowExampleAppConsole(&showConsoleWindow);
 	}
-<<<<<<< HEAD
-
-	if (show3DWindow) {
-=======
 	if (show3DWindow)
 	{
->>>>>>> Development
 		Show3DWindow();
 	}
 
@@ -400,12 +320,9 @@ bool ModuleRenderer2D::CleanUp()
 {
 	bool ret = true;
 
-<<<<<<< HEAD
-=======
 	if(OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
 	if (AdriID != 0) glDeleteTextures(1, &AdriID);	AdriID = 0;
 	if (PhoebusIcon != 0) glDeleteTextures(1, &PhoebusIcon);	PhoebusIcon = 0;
->>>>>>> Development
 	//TODO: Void functions, no return, no check possible. FIX!
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
@@ -467,93 +384,6 @@ bool ModuleRenderer2D::showAboutWindow()
 
 
 	//name of engine
-<<<<<<< HEAD
-	const char* aux = "PHOEBUS ENGINE";
-	ImGui::TextColored(ImVec4(0, 100, 130, 150), aux);
-	ImGui::Spacing();
-	ImGui::Spacing();
-
-	//descrption
-	ImGui::Text("Welcome to Phoebus Engine! This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university");
-	ImGui::Text("The intent is to create a 3D functional engine with a focus on sound design, performance and capability (hence the engine name)");
-	ImGui::Text("We hope you'll enjoy using it as much as we enjoyed making it!");
-	ImGui::Spacing();
-	ImGui::Spacing();
-
-	//autohors
-	ImGui::Text("This Engine was made by these two brave souls: ");
-	ImGui::Spacing();
-	if (ImGui::MenuItem("Adria Serrano Lopez")) { ShellExecuteA(NULL, NULL, "https://github.com/adriaserrano97", NULL, NULL, SW_SHOWNORMAL); }
-	if (ImGui::MenuItem("Oscar Perez martin")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5", NULL, NULL, SW_SHOWNORMAL); }
-	ImGui::Spacing();
-	ImGui::Spacing();
-	if (ImGui::MenuItem("Check out the GitHub Project!")) { ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5/Phoebus_Engine", NULL, NULL, SW_SHOWNORMAL); }
-	ImGui::Spacing();
-	ImGui::Spacing();
-	//libraries version used with links
-	if (ImGui::MenuItem("Libraries used")) { showLibs = true; }
-
-	if (showLibs) { showLibsFunc(); }
-	ImGui::Spacing();
-	ImGui::Spacing();
-
-	//Project License
-	if (ImGui::MenuItem("Engine License")) { ShellExecuteA(NULL, NULL, "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL); }
-
-
-
-
-	ImGui::End();
-
-	return true;
-}
-
-bool ModuleRenderer2D::showLibsFunc()
-{
-	//this can't be externalized because of ShellExecuteA command + SDL references
-	if (!ImGui::Begin("Libraries used:", &showLibs))		//this is how you add the cross button to a window
-	{
-		ImGui::End();
-		return false;
-	}
-
-	ImGui::Text("MathGeoLib v1.5"); //TODO: MathGeoLib has no get version lel, stuck on 1.5 since 2004 or something
-	ImGui::Spacing();
-
-	ImGui::Text("ImGui");
-	ImGui::SameLine();
-	ImGui::Text(ImGui::GetVersion());
-	ImGui::Spacing();
-
-	ImGui::Text("SDL");
-	ImGui::SameLine();
-	SDL_version compiled;
-	SDL_VERSION(&compiled);
-	ImGui::Text("%d.%d.%d", compiled.major, compiled.minor, compiled.patch); //Because returning a string was too easy huh
-	ImGui::Spacing();
-
-	ImGui::Text("OpenGL v.");
-	GLint aux1; (glGetIntegerv(GL_MAJOR_VERSION, &aux1));
-	GLint aux2; (glGetIntegerv(GL_MINOR_VERSION, &aux2));
-	ImGui::SameLine();
-	ImGui::Text("%i.", int(aux1));
-	ImGui::SameLine();
-	ImGui::Text("%i.", int(aux2));
-	ImGui::Spacing();
-
-
-	ImGui::Text("Devil v.");
-	int devilVer = ilutGetInteger(ILUT_VERSION_NUM);
-	ImGui::SameLine();
-	ImGui::Text("%i.", int(devilVer));
-	ImGui::Spacing();
-
-
-	ImGui::End();
-	return true;
-}
-
-=======
 	const char* aux = "PHOEBUS ENGINE"; 
 	ImGui::Spacing();
 	ImGui::Indent();
@@ -661,7 +491,6 @@ bool ModuleRenderer2D::showLibsFunc()
 }
 
 
->>>>>>> Development
 bool ModuleRenderer2D::showConfigFunc()
 {
 	if (!ImGui::Begin("Configuration", &showConfig))		//this is how you add the cross button to a window
@@ -731,25 +560,6 @@ bool ModuleRenderer2D::showConfigFunc()
 		{
 			SDL_GL_SetSwapInterval(Vsync);
 		}
-<<<<<<< HEAD
-		/*
-		if (ImGui::Checkbox("Borderless", &borderless))
-		{
-			//SDL_SetWindowFullscreen(App->window->window, );
-			//SDL_SetWindowBordered(App->window->window, (SDL_bool)borderless);
-			LOG("[warning]TODO: this button is still not fully operational");
-		}
-		if (ImGui::Checkbox("Fullscreen", &fullscreen))
-		{
-			LOG("[warning]TODO: this button is still not fully operational");
-		}
-		if (ImGui::Checkbox("Full desktop", &fullDesktop))
-		{
-			LOG("[warning]TODO: this button is still not fully operational");
-		}
-		*/
-=======
->>>>>>> Development
 		ImGui::PopStyleColor();
 
 	}
@@ -793,24 +603,12 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
 		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
-<<<<<<< HEAD
-		
-=======
 
->>>>>>> Development
 		if (ImGui::DragFloat("Grid Lenght", &App->renderer3D->gridLength, 0.1f, 1.0f, 1000.0f, "%.3f"))
 		{
 			//
 		}
-<<<<<<< HEAD
-		if (ImGui::DragFloat("Grid Separation", &App->renderer3D->separation, 0.1f, 1.0f, App->renderer3D->gridLength/2, "%.3f"))
-		{
-			//
-		}
-		
-=======
 
->>>>>>> Development
 
 		if (ImGui::Checkbox("Depth Testing", &App->renderer3D->depthTesting))
 		{
@@ -846,12 +644,6 @@ bool ModuleRenderer2D::showConfigFunc()
 			else glDisable(GL_TEXTURE_2D);
 		}
 
-<<<<<<< HEAD
-
-		//if (ImGui::Checkbox("Wireframe", &App->renderer3D->wireframe)) {/*TODO wire code here*/ /*App->renderer3D->SAux.wire = !App->renderer3D->SAux.wire;*/ }
-
-=======
->>>>>>> Development
 		//TODO group combos into a function
 		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };
 		const char* drawLabel = drawModes[(int)App->editor3d->maxSceneDrawMode];  // Label to preview before opening the combo (technically it could be anything)
@@ -1242,7 +1034,7 @@ bool ModuleRenderer2D::Show3DWindow()
 	if (ImGui::IsWindowHovered() &&
 		mousePos.x >= winPos.x && mousePos.x <= winPos.x + winSize.x && mousePos.y >= winPos.y && mousePos.y <= winPos.y + winSize.y)//inside window
 	{
-		App->editor3d->mouseActive = true;//TODO change variable to be in this module
+		App->editor3d->mouseActive = true;//TODO change variable to be in this module ??
 	}
 	else if (App->editor3d->mouseActive &&
 		!(App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT) &&

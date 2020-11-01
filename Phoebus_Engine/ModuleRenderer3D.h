@@ -1,11 +1,3 @@
-<<<<<<< HEAD
-#pragma once
-#include "Module.h"
-#include "Globals.h"
-#include "glmath.h"
-#include "Light.h"
-#include "Primitive.h"
-=======
 #ifndef __MODULE_RENDERER__
 #define __MODULE_RENDERER__
 
@@ -13,18 +5,17 @@
 #include "Module.h"
 //#include "Globals.h"
 #include "Light.h" //incuded due to an array declared here
->>>>>>> Development
+#include <vector>
+#include "RenderMesh.h"
+
 
 
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
 
-<<<<<<< HEAD
-=======
 class mat3x3;
 class mat4x4;
 
->>>>>>> Development
 class ModuleRenderer3D : public Module
 {
 public:
@@ -41,6 +32,10 @@ public:
 	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
+
+	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform);
+
+
 private:
 	void RenderMeshes();
 	void DrawGrid();
@@ -49,20 +44,12 @@ private:
 	void SetGLRenderingOptions();
 
 private:
-<<<<<<< HEAD
-	uint exampleMeshIdentifier = 0;
-	uint indexBind = 0;
-	uint vertexBind = 0;
-	int nVertex = 0;
-	int indexSize = 0;
-=======
 	unsigned int exampleMeshIdentifier;
 	unsigned int indexBind;
 	unsigned int vertexBind;
 	int nVertex;
 	int indexSize;
->>>>>>> Development
-
+	std::vector<RenderMesh> drawMeshes;
 
 
 
@@ -73,25 +60,6 @@ public:
 	mat3x3 NormalMatrix;
 	mat4x4 ProjectionMatrix;
 
-<<<<<<< HEAD
-	uint frameBuffer = -1;
-	uint renderTex = -1;
-	uint depthBuffer = -1;
-
-	float gridLength;
-	float separation;
-
-	//rendering config bools
-
-	bool depthTesting = true;
-	bool cullFace = true;
-	bool lighting = true;
-	bool colorMaterial = true;
-	bool texture2D = true;
-	//bool wireframe = false;
-	bool drawGrid = true;
-};
-=======
 	unsigned int frameBuffer;
 	unsigned int renderTex;
 	unsigned int depthBuffer;
@@ -107,4 +75,3 @@ public:
 	bool drawGrid;
 };
 #endif // !__MODULE_RENDERER__
->>>>>>> Development

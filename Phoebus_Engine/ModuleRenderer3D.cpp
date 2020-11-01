@@ -10,7 +10,9 @@
 //#include "Light.h"
 
 #include "ModuleEditor3D.h"
-
+#include "RenderMesh.h"
+#include "C_Mesh.h"
+#include "C_Material.h"
 //include & lib of glew
 
 >>>>>>> Development
@@ -439,7 +441,7 @@ void ModuleRenderer3D::Draw3D()
 {
 
 
-	//Set a color here TODO from the camera
+	//Set a color here TODO from the camera ??
 	Color c = Color(0.05f, 0.05f, 0.1f);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -494,10 +496,12 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::RenderMeshes()
 {
-	for (int i = 0; i < App->editor3d->drawMeshes.size(); i++)
+	for (int i = 0; i < drawMeshes.size(); i++)
 	{
-		App->editor3d->DrawAllMeshes();
+		drawMeshes[i].Draw(App->editor3d->maxSceneDrawMode);
 	}
+	drawMeshes.clear();
+	drawMeshes.shrink_to_fit();
 }
 
 void ModuleRenderer3D::DrawGrid()
@@ -618,4 +622,10 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	else glDisable(GL_TEXTURE_2D);
 
 	//wireframe here too?
+}
+
+
+void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform)
+{
+	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }

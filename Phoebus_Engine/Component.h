@@ -34,6 +34,7 @@ public:
 >>>>>>> Development
 private:
 	ComponentType type;
+protected:
 	bool active;
 };
 

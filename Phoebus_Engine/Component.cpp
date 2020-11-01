@@ -32,7 +32,8 @@ ComponentType Component::GetType() const
 
 void Component::SetActive(bool active)
 {
-	this->active = active;
+	if (type != ComponentType::TRANSFORM)
+		this->active = active;
 }
 
 bool Component::IsActive() const

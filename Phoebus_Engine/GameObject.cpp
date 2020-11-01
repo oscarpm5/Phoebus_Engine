@@ -26,7 +26,6 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 		parent->children.push_back(this);
 	}
 
-	//TODO add transform component here
 	this->transform = new C_Transform(this, transform);
 	components.push_back(this->transform);
 
@@ -104,7 +103,6 @@ GameObject::~GameObject()
 	}
 	children.clear();
 
-	//This may cause some sort of cyclic behaviour??? TODO investigate if vector.erase just removes the element or also calls de destructor
 	RemoveMyselfFromParent();
 
 	if (App)
@@ -213,7 +211,7 @@ void GameObject::DrawOnEditorAllComponents()
 
 
 		ImGui::SameLine();
-		ImGui::SetCursorPosX(ImGui::GetCursorPosX()-10);
+		ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 10);
 		char* auxName = (char*)name.c_str();
 		std::string oldName = name;
 		if (ImGui::InputText("Object Name", auxName, 100))
@@ -227,7 +225,7 @@ void GameObject::DrawOnEditorAllComponents()
 			App->editor3d->ChangeObjName(oldName, name);
 		}
 	}
-		ImGui::EndChild();
+	ImGui::EndChild();
 	//ImGui::Text("My name is %s", name.c_str());
 	ImGui::Separator();
 	ImGui::Spacing();
@@ -247,9 +245,18 @@ void GameObject::DrawGameObject()
 	}*/
 	std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
+	C_Material* mat = GetComponent<C_Material>();
+	if (mat!=nullptr && !mat->IsActive())
+	{
+		mat = nullptr;
+	}
+
 	for (int i = 0; i < meshes.size(); i++)
 	{
-		App->editor3d->AddMeshToDraw(meshes[i], GetComponent<C_Material>(), transform->GetGlobalTransform()); //TODO drawMode& normal Mode not needed anymore
+		if (meshes[i]->IsActive())
+		{
+			App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform()); 
+		}
 
 	}
 

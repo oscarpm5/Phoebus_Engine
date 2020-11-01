@@ -30,6 +30,7 @@
 #include "GameObject.h"
 #include "Component.h"
 #include "C_Mesh.h"
+#include "Mesh.h"
 #include "C_Material.h"
 
 bool Importer::InitializeDevIL()
@@ -51,7 +52,6 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 	ilGenImages(1, &newImage);
 	ilBindImage(newImage);
 
-	//TODO this will need to accept more formats in the future
 	bool ret = ilLoadL(IL_TYPE_UNKNOWN, Buffer, Length);
 
 
@@ -65,50 +65,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 	{
-		//NewTexture* t = new NewTexture;
-		//App->editor3d->textures.push_back(t);
-
-
-		//ILinfo ImageInfo;
-		//iluGetImageInfo(&ImageInfo);
-		//if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
-		//{
-		//	iluFlipImage();
-		//}
-		////TODO load this
-		//ImageInfo.Format; 
-		//int i=ilGetInteger(IL_IMAGE_FORMAT);
-		///*IL_COLOUR_INDEX
-		//	IL_RGB
-		//	IL_RGBA
-		//	IL_BGR
-		//	IL_BGRA
-		//	IL_LUMINANCE*/
-		//
-		//ImageInfo.Depth;
-		//ImageInfo.Bpp;//bytes per pixel
-		//ImageInfo.SizeOfData;//bytes
-		////End of TODO
-		//App->editor3d->textures.back()->width = ilGetInteger(IL_IMAGE_WIDTH);
-		//App->editor3d->textures.back()->height = ilGetInteger(IL_IMAGE_HEIGHT);
-		//App->editor3d->textures.back()->GenTextureFromName(newImage);
-
-		//temporal code that puts the image in every mesh avaliable
-		/*for (int i = 0; i < App->editor3d->meshes.size(); i++)
-		{
-			App->editor3d->meshes[i].GenerateTexturefromILUT();
-		}*/
-
-		//testing code
-		/*if (App->editor3d->meshes.size() > 0)
-		{
-			if (App->editor3d->meshes.back().texture == nullptr)
-			{
-				App->editor3d->meshes.back().texture = App->editor3d->textures.back();
-			}
-		}*/
-
-
+		
 		if (App->editor3d->selectedGameObjs.size() > 0 && App->editor3d->selectedGameObjs.back() != App->editor3d->root)
 		{
 
@@ -134,7 +91,6 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 	ilGenImages(1, &newImage);
 	ilBindImage(newImage);
 
-	//TODO this will need to accept more formats in the future
 	bool ret = ilLoadL(IL_TYPE_UNKNOWN, Buffer, Length);
 
 	if (!ret)
@@ -196,9 +152,25 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 			std::deque<GameObject*>gameObjParents;
 
 			parents.push_back(node);
-			gameObjParents.push_back(nullptr);//first node is root and doesn't have mesh nor game object
 
-			//create obj for root and pushes it to gameObjParents TODO
+			std::string name = "Untitled";
+			std::string fbxName;
+
+			App->fileSystem->SeparatePath(relativePath, nullptr, &fbxName);
+			int dotIndex=fbxName.find_last_of(".");
+			if (dotIndex >=0 && dotIndex < fbxName.length())
+			{
+				name = fbxName.substr(0, dotIndex);
+				name += " File";
+			}
+			else if (node->mName.C_Str() != "")
+			{
+				name = "Default ";
+				name += node->mName.C_Str();
+			}
+
+			GameObject* pObj = new GameObject(App->editor3d->root, name, mat4x4());
+			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh
 
 			while (parents.size() > 0)
 			{
@@ -267,7 +239,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	if (parent == nullptr)
 		newParent = App->editor3d->root;
 
-	//Transform importing TODO can be optimized
+	//Transform importing TODO can be optimized ??
 	aiVector3D translation, scaling;
 	aiQuaternion rotation;
 	currNode->mTransformation.Decompose(scaling, rotation, translation);
@@ -401,8 +373,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
 				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
 				LoadNewImageFromObj(buffer, buffLength, newObj, path.C_Str());
-				//App->fileSystem->LoadAsset(c); //TODO make path relative to the folder we want to load from
-				//use also the LoadNewImageFromObj() function when the file system only returns buffers
+				
 
 			}
 		}
@@ -428,7 +399,6 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	ilGenImages(1, &ID);
 	ilBindImage(ID);
 
-	//TODO this will need to accept more formats in the future
 	bool ret = ilLoadL(IL_TYPE_UNKNOWN, new_buffer, length);
 
 	if (!ret)
