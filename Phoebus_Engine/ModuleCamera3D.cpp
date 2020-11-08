@@ -53,7 +53,7 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->editor3d->mouseActive)
 	{
 
-		vec3 targetpos = { 0,0,0 };
+		float3 targetpos = { 0,0,0 };
 		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		{
 			GameObject* target = nullptr; 
@@ -62,7 +62,7 @@ update_status ModuleCamera3D::Update(float dt)
 				target = App->editor3d->selectedGameObjs.back();
 				targetpos = target->GetComponent<C_Transform>()->GetGlobalPosition(); //get global pos
 			}
-			MoveTo(targetpos, CamObjective::REFERENCE);
+			MoveTo(vec3(targetpos.x,targetpos.y,targetpos.z), CamObjective::REFERENCE);
 		}
 
 

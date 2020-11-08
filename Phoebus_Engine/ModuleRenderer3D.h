@@ -33,7 +33,7 @@ public:
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
 
-	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform);
+	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
 
 
 private:

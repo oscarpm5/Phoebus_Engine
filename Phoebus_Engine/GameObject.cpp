@@ -5,16 +5,17 @@
 #include "C_Material.h"
 #include "Application.h"
 #include "imgui/imgui.h"
+
+#include "MathGeoLib/include/MathGeoLib.h"
 //#include "glmath.h"//new, we should include glMath here but C_Transform already has it and we cannot remove it from there
 
 
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr), focused(false)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform):name(name),transform(nullptr), focused(false)
 {
 	App->editor3d->AddObjName(this->name);
-
 	this->parent = parent;
 	isActive = true;
 
@@ -22,11 +23,13 @@ GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :
 	{
 		parent->children.push_back(this);
 	}
-
 	this->transform = new C_Transform(this, transform);
 	components.push_back(this->transform);
 
 	numberOfObjects++;
+
+	globalAABB.SetNegativeInfinity();
+	globalOBB.SetNegativeInfinity();
 
 }
 
@@ -183,6 +186,29 @@ void GameObject::UpdateChildTransforms()
 	{
 		children[i]->UpdateChildTransforms();
 	}
+}
+
+void GameObject::UpdateBoundingBox()
+{
+	//TODO this won't work until we change our matrix system to float4x4
+
+	//C_Mesh* mesh = GetComponent <C_Mesh>(); //TODO for now we will only make it that the first mesh draws the bounding box, add support for multiple boundingboxes (if more than 1 mesh)
+	//
+	//if (mesh!=nullptr)
+	//{
+	//	globalOBB = mesh->GetAABB();
+	//	globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());//TODO we need to fork with float4x4 and not mat4x4
+
+	//	globalAABB.SetNegativeInfinity();
+	//	globalAABB.Enclose(globalOBB);
+	//}
+	//else
+	//{
+	//	globalAABB.SetNegativeInfinity();
+	//	globalAABB.SetFromCenterAndSize((float3)transform->GetGlobalPosition(), float3(1, 1, 1));//todo we need to return float3 not vec3
+	//	globalOBB = globalAABB;
+	//}
+
 }
 
 void GameObject::DrawOnEditorAllComponents()

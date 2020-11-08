@@ -873,7 +873,7 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 	if (name != "")
 		newName = name;
 
-	GameObject* newObj = new GameObject(App->editor3d->root, newName, IdentityMatrix);
+	GameObject* newObj = new GameObject(App->editor3d->root, newName, float4x4::identity);
 	newObj->CreateComponent(ComponentType::MESH);
 	newObj->GetComponent<C_Mesh>()->SetMesh(newMesh);
 }

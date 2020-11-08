@@ -165,7 +165,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 				name += node->mName.C_Str();
 			}
 
-			GameObject* pObj = new GameObject(App->editor3d->root, name, mat4x4());
+			GameObject* pObj = new GameObject(App->editor3d->root, name, float4x4::identity);
 			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh
 
 			while (parents.size() > 0)
@@ -240,7 +240,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	aiQuaternion rotation;
 	currNode->mTransformation.Decompose(scaling, rotation, translation);
 
-	mat4x4 transformMat = IdentityMatrix;
+	/*mat4x4 transformMat = IdentityMatrix;
 	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
 	float3 vec;
 	float angle;
@@ -252,11 +252,18 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	mat4x4 auxTransform = transformMat;
 
 	transformMat = auxTransform.rotate(angle, { vec.x,vec.y,vec.z }) * transformMat;
-	transformMat.translate(translation.x, translation.y, translation.z);
+	transformMat.translate(translation.x, translation.y, translation.z);*/
 
+
+
+	float3 newTranslation = float3(translation.x, translation.y, translation.z);
+	
+	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+	
+	float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
 
 	//creates new game object
-	GameObject* newObj = new GameObject(newParent, name, transformMat);
+	GameObject* newObj = new GameObject(newParent, name, newTransform);
 
 	LOG("----------Importing mesh '%s'----------", (char*)name.c_str());
 

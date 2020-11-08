@@ -19,7 +19,7 @@
 
 
 //#include "glmath.h"
-
+#include "MathGeoLib/include/MathGeoLib.h"
 #include"Color.h"
 
 #include <math.h>
@@ -518,7 +518,7 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 }
 
 
-void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform)
+void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform)
 {
 	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }

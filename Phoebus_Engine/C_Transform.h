@@ -9,32 +9,27 @@ class C_Transform : public Component
 {
 public:
 
-	C_Transform(GameObject* owner, mat4x4 lTransform);
+	C_Transform(GameObject* owner, float4x4 lTransform);
 	~C_Transform();
 
-	mat4x4 GetGlobalTransform()const;
-	mat4x4 GetLocalTransform()const;
+	float4x4 GetGlobalTransform()const;
+	float4x4 GetLocalTransform()const;
 	void OnEditor();
 
-	vec3 GetLocalPosition();
-	vec3 GetGlobalPosition();
-	vec3 GetLocalScale();
-	float3x3 GetRotationMat();
+	float3 GetLocalPosition();
+	float3 GetGlobalPosition();
+	float3 GetLocalScale();
 
-	void SetLocalPosition(vec3 newPos);
-	void SetLocalScale(vec3 newScale);
+	void SetLocalPosition(float3 newPos);
+	void SetLocalScale(float3 newScale);
 	void SetLocalRot(float3x3 newRot);
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 
 private:
-	aiMatrix4x4 lTraansIntoAssimpMatrix();
-	vec3 GetEulerFromQuat(aiQuaterniont<float> rotation);
-	mat4x4 RottoTrans(float3x3 rot);
-private:
 
-	mat4x4 lTransformMat;//local transform mat
-	mat4x4 gTransformMat;//global transform mat
+	float4x4 lTransformMat;//local transform mat
+	float4x4 gTransformMat;//global transform mat
 };
 
 

@@ -5,18 +5,17 @@
 #include <string>
 //#include "glmath.h"
 
+#include "MathGeoLib/include/MathGeoLib.h"
 
 class Component;
 class C_Transform;
 enum class ComponentType;
 
-class mat4x4;
-
 class GameObject
 {
 public:
 
-	GameObject(GameObject* parent, std::string name, mat4x4 transform);
+	GameObject(GameObject* parent, std::string name, float4x4 transform);
 
 	void Update(float dt);
 
@@ -51,7 +50,7 @@ public:
 
 
 	void UpdateChildTransforms();
-
+	void UpdateBoundingBox();
 
 
 	void DrawOnEditorAllComponents();
@@ -64,6 +63,9 @@ private:
 
 
 	std::string name;
+
+	AABB globalAABB;
+	OBB globalOBB;
 
 public:
 	bool isActive;

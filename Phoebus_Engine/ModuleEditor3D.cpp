@@ -29,8 +29,7 @@ bool ModuleEditor3D::Start()
 	bool ret = true;
 	Importer::InitializeDevIL();
 
-	mat4x4 transform;
-	root = new GameObject(nullptr, "SceneRoot", transform);
+	root = new GameObject(nullptr, "SceneRoot", float4x4::identity);
 
 	App->camera->Move(vec3(1.0f, 1.0f, 0.0f));
 	App->camera->LookAt(vec3(0, 0, 0));
