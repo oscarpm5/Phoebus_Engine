@@ -52,6 +52,9 @@
     <Filter Include="Sources\Game Object\Components">
       <UniqueIdentifier>{a661a412-5c45-46c4-b255-b9d18e9a5c4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\PhoebusFormat">
+      <UniqueIdentifier>{87be89a4-9b57-4c45-a897-520c470a430b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -346,6 +349,9 @@
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="PHO.h">
+      <Filter>Sources\PhoebusFormat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
