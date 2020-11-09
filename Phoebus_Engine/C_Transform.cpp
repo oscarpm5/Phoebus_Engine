@@ -181,7 +181,7 @@ void C_Transform::SetLocalScale(float3 newScale)
 
 }
 
-void C_Transform::SetLocalRot(float3x3 newRot)
+void C_Transform::SetLocalRot(Quat newRot)
 {
 	//TODO
 

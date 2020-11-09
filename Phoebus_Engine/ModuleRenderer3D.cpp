@@ -245,6 +245,9 @@ bool ModuleRenderer3D::CleanUp()
 
 	SDL_GL_DeleteContext(context);
 
+	drawMeshes.clear();
+	drawAABBs.clear();
+
 	return true;
 }
 
@@ -413,6 +416,7 @@ void ModuleRenderer3D::Draw3D()
 		DrawGrid();
 	}
 	RenderMeshes();
+	RenderAABBs();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);
@@ -429,6 +433,16 @@ void ModuleRenderer3D::RenderMeshes()
 	}
 	drawMeshes.clear();
 	drawMeshes.shrink_to_fit();
+}
+
+void ModuleRenderer3D::RenderAABBs()
+{
+	for (int i = 0; i < drawAABBs.size(); i++)
+	{
+		drawAABBs[i].Draw();
+	}
+	drawAABBs.clear();
+	drawAABBs.shrink_to_fit();
 }
 
 void ModuleRenderer3D::DrawGrid()
@@ -521,4 +535,9 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform)
 {
 	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
+}
+
+void ModuleRenderer3D::AddAABBToDraw(AABB aabb)
+{
+	drawAABBs.push_back(RenderAABB(aabb));//TODO change AABB color here (global config var?)
 }

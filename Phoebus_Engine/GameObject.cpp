@@ -13,12 +13,12 @@
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform):name(name),transform(nullptr), focused(false)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB) :name(name), transform(nullptr), focused(false), displayBoundingBox(showAABB)
 {
 	App->editor3d->AddObjName(this->name);
 	this->parent = parent;
 	isActive = true;
-
+	bbHasToUpdate = true;
 	if (parent)
 	{
 		parent->children.push_back(this);
@@ -30,7 +30,6 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform)
 
 	globalAABB.SetNegativeInfinity();
 	globalOBB.SetNegativeInfinity();
-
 }
 
 void GameObject::Update(float dt)
@@ -66,7 +65,10 @@ void GameObject::Update(float dt)
 				children[i]->Update(dt);
 			}
 		}
-
+		if (bbHasToUpdate)
+		{
+			UpdateBoundingBox();
+		}
 		DrawGameObject();
 	}
 }
@@ -181,7 +183,7 @@ bool GameObject::IsParentActive()
 void GameObject::UpdateChildTransforms()
 {
 	GetComponent<C_Transform>()->UpdateGlobalMat();
-
+	bbHasToUpdate = true;
 	for (int i = 0; i < children.size(); i++)
 	{
 		children[i]->UpdateChildTransforms();
@@ -190,25 +192,24 @@ void GameObject::UpdateChildTransforms()
 
 void GameObject::UpdateBoundingBox()
 {
-	//TODO this won't work until we change our matrix system to float4x4
+	C_Mesh* mesh = GetComponent <C_Mesh>(); //TODO for now we will only make it that the first mesh draws the bounding box, add support for multiple boundingboxes (if more than 1 mesh)
 
-	//C_Mesh* mesh = GetComponent <C_Mesh>(); //TODO for now we will only make it that the first mesh draws the bounding box, add support for multiple boundingboxes (if more than 1 mesh)
-	//
-	//if (mesh!=nullptr)
-	//{
-	//	globalOBB = mesh->GetAABB();
-	//	globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());//TODO we need to fork with float4x4 and not mat4x4
+	if (mesh != nullptr)
+	{
+		globalOBB = mesh->GetAABB();
+		globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());//TODO we need to fork with float4x4 and not mat4x4
 
-	//	globalAABB.SetNegativeInfinity();
-	//	globalAABB.Enclose(globalOBB);
-	//}
-	//else
-	//{
-	//	globalAABB.SetNegativeInfinity();
-	//	globalAABB.SetFromCenterAndSize((float3)transform->GetGlobalPosition(), float3(1, 1, 1));//todo we need to return float3 not vec3
-	//	globalOBB = globalAABB;
-	//}
+		globalAABB.SetNegativeInfinity();
+		globalAABB.Enclose(globalOBB);
+	}
+	else
+	{
+		globalAABB.SetNegativeInfinity();
+		globalAABB.SetFromCenterAndSize((float3)transform->GetGlobalPosition(), float3(1, 1, 1));//todo we need to return float3 not vec3
+		globalOBB = globalAABB;
+	}
 
+	bbHasToUpdate = false;
 }
 
 void GameObject::DrawOnEditorAllComponents()
@@ -263,7 +264,7 @@ void GameObject::DrawGameObject()
 	std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
 	C_Material* mat = GetComponent<C_Material>();
-	if (mat!=nullptr && !mat->IsActive())
+	if (mat != nullptr && !mat->IsActive())
 	{
 		mat = nullptr;
 	}
@@ -272,9 +273,14 @@ void GameObject::DrawGameObject()
 	{
 		if (meshes[i]->IsActive())
 		{
-			App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform()); 
+			App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform());
 		}
 
+	}
+
+	if (displayBoundingBox&&focused)
+	{
+		App->renderer3D->AddAABBToDraw(globalAABB);
 	}
 
 }

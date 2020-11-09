@@ -7,6 +7,7 @@
 #include "Light.h" //incuded due to an array declared here
 #include <vector>
 #include "RenderMesh.h"
+#include "RenderAABB.h"
 
 
 
@@ -33,11 +34,13 @@ public:
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
 
-	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
+	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
 
+	void AddAABBToDraw(AABB aabb);
 
 private:
 	void RenderMeshes();
+	void RenderAABBs();
 	void DrawGrid();
 
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
@@ -50,7 +53,7 @@ private:
 	int nVertex;
 	int indexSize;
 	std::vector<RenderMesh> drawMeshes;
-
+	std::vector<RenderAABB> drawAABBs;
 
 
 public:

@@ -15,7 +15,7 @@ class GameObject
 {
 public:
 
-	GameObject(GameObject* parent, std::string name, float4x4 transform);
+	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true);
 
 	void Update(float dt);
 
@@ -70,6 +70,8 @@ private:
 public:
 	bool isActive;
 	bool focused;
+	bool displayBoundingBox;
+	bool bbHasToUpdate;
 	std::vector<GameObject*> children; //we need them public for hierarchy
 
 	static int numberOfObjects;

@@ -22,7 +22,7 @@ public:
 
 	void SetLocalPosition(float3 newPos);
 	void SetLocalScale(float3 newScale);
-	void SetLocalRot(float3x3 newRot);
+	void SetLocalRot(Quat newRot);
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
 

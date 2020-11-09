@@ -176,6 +176,7 @@
     <ClInclude Include="PHO.h" />
     <ClInclude Include="PhysFS\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="RenderAABB.h" />
     <ClInclude Include="RenderMesh.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Timer.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="ModuleRenderer3D.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
     <ClCompile Include="Primitive.cpp" />
+    <ClCompile Include="RenderAABB.cpp" />
     <ClCompile Include="RenderMesh.cpp" />
     <ClCompile Include="Timer.cpp" />
   </ItemGroup>
