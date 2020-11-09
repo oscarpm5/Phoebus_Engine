@@ -78,6 +78,7 @@ public:
 	bool colorMaterial;
 	bool texture2D;
 	bool drawGrid;
+	bool showDepth;
 	C_Camera* activeCam;
 };
 #endif // !__MODULE_RENDERER__

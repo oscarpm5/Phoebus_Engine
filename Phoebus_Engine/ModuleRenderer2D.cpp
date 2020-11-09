@@ -619,6 +619,10 @@ bool ModuleRenderer2D::showConfigFunc()
 			else glDisable(GL_DEPTH_TEST);
 		}
 
+		if (ImGui::Checkbox("Depth Display", &App->renderer3D->showDepth))
+		{
+			App->renderer3D->GenerateBuffers(App->window->w, App->window->h);
+		}
 
 		if (ImGui::Checkbox("Cull Faces", &App->renderer3D->cullFace))
 		{

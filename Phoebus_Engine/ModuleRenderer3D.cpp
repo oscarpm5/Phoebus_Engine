@@ -85,6 +85,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
+	showDepth = false;
 	activeCam = nullptr;
 
 	//Just making sure this is initialized
@@ -390,7 +391,12 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	if (showDepth)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -405,7 +411,10 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
 
 	//attaching the image to the frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+	if (showDepth)
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
+	else
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//unbind framebuffer
@@ -459,12 +468,12 @@ void ModuleRenderer3D::RenderAABBs()
 void ModuleRenderer3D::DrawGrid()
 {
 	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
-	
+
 	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
 
-	float sepLvl = logf(cameraHeight)/ logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
-	
-	float transparency = 1-fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
+	float sepLvl = logf(cameraHeight) / logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
+
+	float transparency = 1 - fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
 
 	sepLvl = max(sepLvl, 0);
 
@@ -472,7 +481,7 @@ void ModuleRenderer3D::DrawGrid()
 	float newSep = pow(nQuadsInAQuad, (int)floor(sepLvl)); //what is the new separation compared to the original one (4 times bigger?,..)
 	//float realGridLength = gridLength- (fmod(gridLength, newSep));
 	//float lineCount = realGridLength / newSep;
-	
+
 
 	float realGridLength = gridLength / (newSep * nQuadsInAQuad);
 	realGridLength = ceil(realGridLength);
@@ -482,15 +491,15 @@ void ModuleRenderer3D::DrawGrid()
 
 	for (float i = -realGridLength; i <= realGridLength; i += newSep)
 	{
-		float greatLines = fmod(i+realGridLength,newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
+		float greatLines = fmod(i + realGridLength, newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
 
 		bool isCenterLine = false;
 		bool isGreatLine = false;
 		if (i >= -newSep * 0.5f && i <= newSep * 0.5f)isCenterLine = true;
 		if (greatLines == 0)isGreatLine = true;
-		
-		vec4 color1=vec4(transparency, transparency, transparency, transparency);
-		vec4 color2=vec4(transparency, transparency, transparency, transparency);;
+
+		vec4 color1 = vec4(transparency, transparency, transparency, transparency);
+		vec4 color2 = vec4(transparency, transparency, transparency, transparency);;
 
 		if (isGreatLine)
 		{
@@ -504,19 +513,19 @@ void ModuleRenderer3D::DrawGrid()
 			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
-		
+
 		glLineWidth(1.0f);
 
 		glColor4f(color1.x, color1.y, color1.z, color1.w);
 
 		glVertex3f(i, 0.0f, -gridLength);
 		glVertex3f(i, 0.0f, gridLength);
-		
+
 		glColor4f(color2.x, color2.y, color2.z, color2.w);
-		
+
 		glVertex3f(-gridLength, 0.0f, i);
 		glVertex3f(gridLength, 0.0f, i);
-		
+
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 
