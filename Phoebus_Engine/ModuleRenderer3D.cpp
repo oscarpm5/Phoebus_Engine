@@ -27,6 +27,9 @@
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 
+//TODO make a bool that tells whether we are on editor mode or play mode and changes camera accordingly
+
+
 float vertexArray[] = {
 	0.f, 0.f, 0.f,
 	10.f, 0.f, 0.f,
@@ -82,6 +85,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
+	activeCam = nullptr;
 
 	//Just making sure this is initialized
 	gridLength = 500.f;
@@ -89,7 +93,9 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 
 // Destructor
 ModuleRenderer3D::~ModuleRenderer3D()
-{}
+{
+	activeCam = nullptr;
+}
 
 // Called before render is available
 bool ModuleRenderer3D::Init()
@@ -209,7 +215,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	glMatrixMode(GL_MODELVIEW);
 
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	//glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
@@ -258,11 +265,15 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&ProjectionMatrix);
+	//ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&ProjectionMatrix);
+
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	//glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	GenerateBuffers(width, height);
 }

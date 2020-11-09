@@ -3,6 +3,7 @@
 #include "C_Transform.h"
 #include "C_Mesh.h"
 #include "C_Material.h"
+#include "C_Camera.h"
 #include "Application.h"
 #include "imgui/imgui.h"
 
@@ -148,7 +149,11 @@ Component* GameObject::CreateComponent(ComponentType type)
 		//only one instance of material for a certain gameObj
 		if (GetComponent<C_Material>() == nullptr)
 			ret = new C_Material(this);
-
+		break;
+	case ComponentType::CAMERA:
+		//only one instance of camera for a certain gameObj
+		if (GetComponent<C_Camera>() == nullptr)
+			ret = new C_Camera(this);
 		break;
 	}
 

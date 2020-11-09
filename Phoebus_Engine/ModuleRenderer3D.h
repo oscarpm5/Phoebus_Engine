@@ -9,6 +9,8 @@
 #include "RenderMesh.h"
 #include "RenderAABB.h"
 
+#include "C_Camera.h" //TODO forward declare this
+
 
 
 #define MAX_LIGHTS 8
@@ -76,5 +78,6 @@ public:
 	bool colorMaterial;
 	bool texture2D;
 	bool drawGrid;
+	C_Camera* activeCam;
 };
 #endif // !__MODULE_RENDERER__

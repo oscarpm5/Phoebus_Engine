@@ -339,11 +339,14 @@ void ModuleRenderer2D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+	//App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
+
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	//App->renderer3D->OnResize(width, height);
 
@@ -677,9 +680,10 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		ImGui::Spacing();
 		ImGui::Spacing();
-
-		if (ImGui::SliderFloat("FoV", &App->camera->foV, 1.0f, 90.0f))
+		float camFoV = App->camera->editorCam->GetFoV();
+		if (ImGui::SliderFloat("FoV", &camFoV, 1.0f, 90.0f))
 		{
+			App->camera->editorCam->SetNewFoV(camFoV);
 			OnResize(App->window->w, App->window->h);
 		};
 
@@ -687,13 +691,17 @@ bool ModuleRenderer2D::showConfigFunc()
 		int sensitivity = 100;
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)sensitivity = 1000000; //use Lshift to be more precise
 
-		if (ImGui::DragFloat("Near Plane", &App->camera->nearPlaneDist, App->camera->farPlaneDist / sensitivity, 0.01f, App->camera->farPlaneDist, "%.3f", flags))
+		float nearPDist = App->camera->editorCam->GetNearPlaneDist();
+		float farPDist = App->camera->editorCam->GetFarPlaneDist();
+		if (ImGui::DragFloat("Near Plane", &nearPDist, farPDist / sensitivity, 0.01f, farPDist, "%.3f", flags))
 		{
+			App->camera->editorCam->SetNearPlane(nearPDist);
 			OnResize(App->window->w, App->window->h);
 		}
 
-		if (ImGui::DragFloat("Far Plane", &App->camera->farPlaneDist, (abs(App->camera->farPlaneDist - App->camera->nearPlaneDist)) / sensitivity, App->camera->nearPlaneDist, 2000.0f, "%.3f", flags))
+		if (ImGui::DragFloat("Far Plane", &farPDist, (abs(farPDist - nearPDist)) / sensitivity, nearPDist, 2000.0f, "%.3f", flags))
 		{
+			App->camera->editorCam->SetFarPlane(farPDist);
 			OnResize(App->window->w, App->window->h);
 		}
 
@@ -894,8 +902,11 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+	//App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
