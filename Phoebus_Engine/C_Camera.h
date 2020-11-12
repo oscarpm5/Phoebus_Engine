@@ -21,6 +21,7 @@ public:
 	float4x4 GetViewMat()const;
 
 	void SetNewAspectRatio(int width, int height);
+	void SetNewAspectRatio(float aspectRatio);
 	void SetNewFoV(float foV);
 	void SetNearPlane(float dist);
 	void SetFarPlane(float dist);
@@ -28,6 +29,8 @@ public:
 	float GetNearPlaneDist()const;
 	float GetFarPlaneDist()const;
 	float GetFoV()const;
+	float GetAspectRatio()const;
+	float GetInvAspectRatio()const;
 
 	void GetFrustumPoints(std::vector<float3>& emptyVector);
 

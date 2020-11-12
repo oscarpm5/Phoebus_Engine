@@ -1,8 +1,11 @@
 #include "C_Camera.h"
 #include "GameObject.h"
 #include "C_Transform.h"
-C_Camera::C_Camera(GameObject* owner):Component(ComponentType::CAMERA,owner), 
-nearPlaneDist(0.1f),farPlaneDist(500.0f),FoVx(70.0f),FoVy(0.0f),invAspectRatio(0),
+#include "imgui/imgui.h"
+
+
+C_Camera::C_Camera(GameObject* owner) :Component(ComponentType::CAMERA, owner),
+nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRatio(0),
 projectionMatrix(float4x4::identity)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
@@ -26,6 +29,113 @@ bool C_Camera::Update(float dt)
 
 void C_Camera::OnEditor()
 {
+	bool activeAux = active;
+
+	std::string headerName = "Camera";
+	if (!activeAux)headerName += " (not active)";
+
+	/*ImGui::Checkbox(" ", &active);
+	ImGui::SameLine();
+	ImGui::SetCursorPosX(ImGui::GetCursorPosX()-12);*/
+	ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_DefaultOpen;
+
+	if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+	if (ImGui::CollapsingHeader(headerName.c_str(), headerFlags))
+	{
+		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
+		/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20);*/
+		ImGui::Checkbox("IS ACTIVE##MeshCheckbox", &active);
+
+		ImGui::Separator();
+		ImGui::Indent();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		//TODO camera things here
+		float auxf = GetFoV();
+		if (ImGui::DragFloat("FoV##CamFoVx", &auxf, 0.1f, 1.0f, 180.0f))
+		{
+			SetNewFoV(auxf);
+		}
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		//Near plane
+		auxf = GetNearPlaneDist();
+		int flags = ImGuiSliderFlags_Logarithmic;
+
+		if (ImGui::DragFloat("NearPlaneDist##CamNearDist", &auxf, 0.0f, 0.01f,GetFarPlaneDist(),"%.3f", flags))
+		{
+			SetNearPlane(auxf);
+		}
+		//flags = ImGuiSliderFlags_None;
+		//Far plane
+		auxf = GetFarPlaneDist();
+		if (ImGui::DragFloat("FarPlaneDist##CamFarDist", &auxf, 0.0f, 0.1f,20000.0f, "%.3f", flags))
+		{
+			SetFarPlane(auxf);
+		}
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		//aspectRatio
+		auxf = GetAspectRatio();
+		if (ImGui::DragFloat("AspectRatio##CamAspectRatio", &auxf, 0.1f, 0.01f, 10.0f, "%.3f", flags))
+		{
+			SetNewAspectRatio(auxf);
+		}
+
+
+		//camera things end here
+		ImGui::Spacing();
+		ImGui::Spacing();
+
+		ImGui::Separator();
+		ImGui::Unindent();
+
+		if (ImGui::BeginPopup("Delete Camera", ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("you are about to delete\n this component");
+
+			if (ImGui::Button("Go ahead"))
+			{
+				toDelete = true;
+			}
+
+			ImGui::SameLine();
+			if (ImGui::Button("Cancel"))
+			{
+				ImGui::CloseCurrentPopup();
+			}
+
+			ImGui::EndPopup();
+		}
+
+		float maxWidth = ImGui::GetWindowContentRegionMax().x;
+		ImGui::SetCursorPosX(maxWidth - 50);
+		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+		if (ImGui::Button("Delete##Camera"))
+		{
+			ImGui::OpenPopup("Delete Camera");
+		}
+
+		if (!activeAux)ImGui::PopStyleColor();
+		ImGui::PopStyleColor(2);
+
+	}
+
+	if (!activeAux)ImGui::PopStyleColor();
 }
 
 void C_Camera::CalcCamPosFromTransformMat(float4x4& gTransform)
@@ -46,7 +156,7 @@ void C_Camera::CalcCamPosFromDirections(float3 pos, float3 front, float3 up)
 	float3 normFront = front.Normalized();
 	float3 normUP = up.Normalized();
 	//TODO this global mat might have to be transposed?
-	frustum.pos =pos;
+	frustum.pos = pos;
 	frustum.front = -normFront; // The camera looks towards -Z axis of the given transform. TODO Z+ invert cam
 	frustum.up = normUP; // The camera up points towards +Y of the given transform.
 	assume(pos.IsFinite());
@@ -74,11 +184,20 @@ void C_Camera::SetNewAspectRatio(int width, int height)
 	SetNewFoV(FoVx);
 }
 
+void C_Camera::SetNewAspectRatio(float aspectRatio)
+{
+	aspectRatio = max(aspectRatio, 0.1f);
+	aspectRatio = min(aspectRatio, 10.0f);
+
+	invAspectRatio = 1 / aspectRatio;
+	SetNewFoV(FoVx);
+}
+
 void C_Camera::SetNewFoV(float foV)
 {
 
 	FoVx = max(foV, 1.0f);
-	FoVx = min(foV, 180.0f);
+	FoVx = min(FoVx, 180.0f);
 
 	float aux = Tan(DegToRad(FoVx / 2));
 	aux *= invAspectRatio;
@@ -133,12 +252,23 @@ float C_Camera::GetFoV() const
 	return RadToDeg(frustum.horizontalFov);
 }
 
+float C_Camera::GetAspectRatio() const
+{
+
+	return 1/invAspectRatio;
+}
+
+float C_Camera::GetInvAspectRatio() const
+{
+	return invAspectRatio;
+}
+
 void C_Camera::GetFrustumPoints(std::vector<float3>& emptyVector)
 {
-	float3* frustrumPoints=new float3[8];
-	memset(frustrumPoints, NULL, sizeof(float3)*8);
+	float3* frustrumPoints = new float3[8];
+	memset(frustrumPoints, NULL, sizeof(float3) * 8);
 	frustum.GetCornerPoints(frustrumPoints);
-	
+
 	emptyVector.clear();
 
 	for (int i = 0; i < 8; i++)
