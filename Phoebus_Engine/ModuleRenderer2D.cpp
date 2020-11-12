@@ -163,6 +163,20 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("GameObjects##menu", true))
+		{
+			if (ImGui::MenuItem("Empty##GameObjectCreate"))
+			{
+				new GameObject(App->editor3d->root, "Empty", float4x4::identity);
+			}
+			if (ImGui::MenuItem("Camera##GameObjectCreate"))
+			{
+				GameObject* obj=new GameObject(App->editor3d->root, "Camera", float4x4::identity);
+				obj->CreateComponent(ComponentType::CAMERA);
+				obj = nullptr;
+			}
+			ImGui::EndMenu();
+		}
 		//Basic forms menu
 		if (ImGui::BeginMenu("Basic Forms Generator", true))
 		{
