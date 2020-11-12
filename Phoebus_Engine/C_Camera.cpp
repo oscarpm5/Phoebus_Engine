@@ -5,7 +5,7 @@ C_Camera::C_Camera(GameObject* owner):Component(ComponentType::CAMERA,owner),
 nearPlaneDist(0.1f),farPlaneDist(500.0f),FoVx(70.0f),FoVy(0.0f),invAspectRatio(0),
 projectionMatrix(float4x4::identity)
 {
-	frustrum.type = math::FrustumType::PerspectiveFrustum;
+	frustum.type = math::FrustumType::PerspectiveFrustum;
 	SetNewAspectRatio(1920.0f, 1080.0f);//TODO default
 }
 
@@ -31,9 +31,9 @@ void C_Camera::OnEditor()
 void C_Camera::CalcCamPosFromTransformMat(float4x4& gTransform)
 {
 	//TODO this global mat might have to be transposed?
-	frustrum.pos = gTransform.TranslatePart();
-	frustrum.front = gTransform.Col3(2); // The camera looks towards +Z axis of the given transform.
-	frustrum.up = gTransform.Col3(1); // The camera up points towards +Y of the given transform.
+	frustum.pos = gTransform.TranslatePart();
+	frustum.front = gTransform.Col3(2); // The camera looks towards +Z axis of the given transform.
+	frustum.up = gTransform.Col3(1); // The camera up points towards +Y of the given transform.
 	assume(pos.IsFinite());
 	assume(front.IsNormalized());
 	assume(up.IsNormalized());
@@ -46,9 +46,9 @@ void C_Camera::CalcCamPosFromDirections(float3 pos, float3 front, float3 up)
 	float3 normFront = front.Normalized();
 	float3 normUP = up.Normalized();
 	//TODO this global mat might have to be transposed?
-	frustrum.pos =pos;
-	frustrum.front = -normFront; // The camera looks towards -Z axis of the given transform. TODO Z+ invert cam
-	frustrum.up = normUP; // The camera up points towards +Y of the given transform.
+	frustum.pos =pos;
+	frustum.front = -normFront; // The camera looks towards -Z axis of the given transform. TODO Z+ invert cam
+	frustum.up = normUP; // The camera up points towards +Y of the given transform.
 	assume(pos.IsFinite());
 	assume(front.IsNormalized());
 	assume(up.IsNormalized());
@@ -61,7 +61,7 @@ float4x4 C_Camera::GetProjMat() const
 
 float4x4 C_Camera::GetViewMat() const
 {
-	float4x4 viewMat = frustrum.ViewMatrix();
+	float4x4 viewMat = frustum.ViewMatrix();
 	return viewMat.Transposed();
 }
 
@@ -120,24 +120,42 @@ void C_Camera::SetFarPlane(float dist)
 
 float C_Camera::GetNearPlaneDist() const
 {
-	return frustrum.nearPlaneDistance;
+	return frustum.nearPlaneDistance;
 }
 
 float C_Camera::GetFarPlaneDist() const
 {
-	return frustrum.farPlaneDistance;
+	return frustum.farPlaneDistance;
 }
 
 float C_Camera::GetFoV() const
 {
-	return RadToDeg(frustrum.horizontalFov);
+	return RadToDeg(frustum.horizontalFov);
+}
+
+void C_Camera::GetFrustumPoints(std::vector<float3>& emptyVector)
+{
+	float3* frustrumPoints=new float3[8];
+	memset(frustrumPoints, NULL, sizeof(float3)*8);
+	frustum.GetCornerPoints(frustrumPoints);
+	
+	emptyVector.clear();
+
+	for (int i = 0; i < 8; i++)
+	{
+		emptyVector.push_back(frustrumPoints[i]);
+	}
+	delete[]frustrumPoints;
+	frustrumPoints = nullptr;
+
 }
 
 void C_Camera::UpdateProjectionMat()
 {
-	frustrum.nearPlaneDistance = nearPlaneDist;
-	frustrum.farPlaneDistance = farPlaneDist;
-	frustrum.horizontalFov = DegToRad(FoVx);
-	frustrum.verticalFov = DegToRad(FoVy);
-	projectionMatrix = frustrum.ProjectionMatrix().Transposed();
+	frustum.nearPlaneDistance = nearPlaneDist;
+	frustum.farPlaneDistance = farPlaneDist;
+	frustum.horizontalFov = DegToRad(FoVx);
+	frustum.verticalFov = DegToRad(FoVy);
+	projectionMatrix = frustum.ProjectionMatrix().Transposed();
+
 }

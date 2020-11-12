@@ -29,6 +29,8 @@ public:
 	float GetFarPlaneDist()const;
 	float GetFoV()const;
 
+	void GetFrustumPoints(std::vector<float3>& emptyVector);
+
 private:
 	void UpdateProjectionMat();
 private:
@@ -39,7 +41,7 @@ private:
 	float FoVy;//Vertical FoV, the user cannot change this
 	float invAspectRatio;
 
-	Frustum frustrum;
+	Frustum frustum;
 
 	float4x4 projectionMatrix;//this matrix is already transposed for use in opengl
 };

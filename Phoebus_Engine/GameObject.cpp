@@ -214,6 +214,8 @@ void GameObject::UpdateBoundingBox()
 		globalOBB = globalAABB;
 	}
 
+
+
 	bbHasToUpdate = false;
 }
 
@@ -283,9 +285,35 @@ void GameObject::DrawGameObject()
 
 	}
 
-	if (displayBoundingBox&&focused)
+	if (displayBoundingBox && focused)
 	{
-		App->renderer3D->AddAABBToDraw(globalAABB);
+		std::vector<float3> aabbVec;
+		GetPointsFromAABB(globalAABB, aabbVec);
+		App->renderer3D->AddBoxToDraw(aabbVec);
 	}
 
+	C_Camera* cam = GetComponent<C_Camera>();
+	if (cam)
+	{
+		std::vector<float3> vec;
+		cam->GetFrustumPoints(vec);
+		App->renderer3D->AddBoxToDraw(vec);
+	}
+}
+
+//Takes an aabb and fills empty vector with its points
+void GameObject::GetPointsFromAABB(AABB& aabb, std::vector<float3>& emptyVector)
+{
+	float3* frustrumPoints = new float3[8];
+	memset(frustrumPoints, NULL, sizeof(float3) * 8);
+	aabb.GetCornerPoints(frustrumPoints);
+
+	emptyVector.clear();
+
+	for (int i = 0; i < 8; i++)
+	{
+		emptyVector.push_back(frustrumPoints[i]);
+	}
+	delete[]frustrumPoints;
+	frustrumPoints = nullptr;
 }

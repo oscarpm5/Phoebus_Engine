@@ -1,21 +1,21 @@
 #ifndef __RENDER_AABB__
-#define __RENDER_AABB__
+#define __RENDER_BOX__
 
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "Color.h"
 
-class RenderAABB
+class RenderBox
 {
 public:
-	RenderAABB(AABB renderBox, Color col = Color(1.0f, 1.0f, 1.0f));
-
-	~RenderAABB();
+	RenderBox(std::vector<float3> points, Color col = Color(1.0f, 1.0f, 1.0f));
+	
+	~RenderBox();
 
 	void Draw();
 
 private:
-	AABB renderBox;
 	Color bbColor;
+	std::vector<float3> points;
 };
 
 

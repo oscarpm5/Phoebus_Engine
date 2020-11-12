@@ -56,6 +56,7 @@ public:
 	void DrawOnEditorAllComponents();
 private:
 	void DrawGameObject();
+	void GetPointsFromAABB(AABB&aabb,std::vector<float3>& emptyVector);
 private:
 	std::vector<Component*> components;
 	C_Transform* transform;

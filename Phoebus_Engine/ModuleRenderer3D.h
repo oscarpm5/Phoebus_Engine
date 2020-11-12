@@ -7,7 +7,7 @@
 #include "Light.h" //incuded due to an array declared here
 #include <vector>
 #include "RenderMesh.h"
-#include "RenderAABB.h"
+#include "RenderBox.h"
 
 #include "C_Camera.h" //TODO forward declare this
 
@@ -38,7 +38,8 @@ public:
 
 	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
 
-	void AddAABBToDraw(AABB aabb);
+	void AddBoxToDraw(AABB aabb);
+	void AddBoxToDraw(std::vector<float3> corners);
 
 private:
 	void RenderMeshes();
@@ -55,7 +56,7 @@ private:
 	int nVertex;
 	int indexSize;
 	std::vector<RenderMesh> drawMeshes;
-	std::vector<RenderAABB> drawAABBs;
+	std::vector<RenderBox> drawAABBs;
 
 
 public:

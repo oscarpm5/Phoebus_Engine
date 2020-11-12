@@ -557,7 +557,7 @@ void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x
 	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }
 
-void ModuleRenderer3D::AddAABBToDraw(AABB aabb)
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
 {
-	drawAABBs.push_back(RenderAABB(aabb));//TODO change AABB color here (global config var?)
+	drawAABBs.push_back(RenderBox(corners));//TODO change Box color here (global config var?)
 }
