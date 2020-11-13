@@ -31,6 +31,7 @@ public:
 	float GetFoV()const;
 	float GetAspectRatio()const;
 	float GetInvAspectRatio()const;
+	const Frustum& GetFrustum() const;
 
 	void GetFrustumPoints(std::vector<float3>& emptyVector);
 

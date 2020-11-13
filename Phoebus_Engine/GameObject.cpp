@@ -264,40 +264,43 @@ void GameObject::DrawOnEditorAllComponents()
 
 void GameObject::DrawGameObject()
 {
-	/*if (C_Mesh * m = GetComponent<C_Mesh>())
-	{
-		App->editor3d->AddMeshToDraw(m, transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
-	}*/
-	std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
+	//TODO test if inside camera cull
+	std::vector<float3> aabbVec;
+	GetPointsFromAABB(globalAABB, aabbVec);
 
-	C_Material* mat = GetComponent<C_Material>();
-	if (mat != nullptr && !mat->IsActive())
+	if (App->renderer3D->IsInsideFrustum(aabbVec))
 	{
-		mat = nullptr;
-	}
 
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		if (meshes[i]->IsActive())
+
+		std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
+
+		C_Material* mat = GetComponent<C_Material>();
+		if (mat != nullptr && !mat->IsActive())
 		{
-			App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform());
+			mat = nullptr;
 		}
 
-	}
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			if (meshes[i]->IsActive())
+			{
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform());
+			}
 
-	if (displayBoundingBox && focused)
-	{
-		std::vector<float3> aabbVec;
-		GetPointsFromAABB(globalAABB, aabbVec);
-		App->renderer3D->AddBoxToDraw(aabbVec);
-	}
+		}
 
-	C_Camera* cam = GetComponent<C_Camera>();
-	if (cam)
-	{
-		std::vector<float3> vec;
-		cam->GetFrustumPoints(vec);
-		App->renderer3D->AddBoxToDraw(vec);
+		if (displayBoundingBox && focused)
+		{
+			App->renderer3D->AddBoxToDraw(aabbVec);
+		}
+
+		C_Camera* cam = GetComponent<C_Camera>();
+		if (cam)
+		{
+			std::vector<float3> vec;
+			cam->GetFrustumPoints(vec);
+			App->renderer3D->AddBoxToDraw(vec);
+		}
 	}
 }
 

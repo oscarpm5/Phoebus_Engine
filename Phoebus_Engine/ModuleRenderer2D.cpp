@@ -173,6 +173,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				GameObject* obj=new GameObject(App->editor3d->root, "Camera", float4x4::identity);
 				obj->CreateComponent(ComponentType::CAMERA);
+
+				App->renderer3D->activeCam = obj->GetComponent<C_Camera>();//TODO for now the active cam will be the last one created
+				
 				obj = nullptr;
 			}
 			ImGui::EndMenu();

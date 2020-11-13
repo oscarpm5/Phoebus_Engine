@@ -38,8 +38,9 @@ public:
 
 	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
 
-	void AddBoxToDraw(AABB aabb);
 	void AddBoxToDraw(std::vector<float3> corners);
+
+	bool IsInsideFrustum(std::vector<float3>& points);
 
 private:
 	void RenderMeshes();
@@ -80,6 +81,6 @@ public:
 	bool texture2D;
 	bool drawGrid;
 	bool showDepth;
-	C_Camera* activeCam;
+	C_Camera* activeCam;//culling camera
 };
 #endif // !__MODULE_RENDERER__

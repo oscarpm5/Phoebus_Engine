@@ -424,7 +424,7 @@ void ModuleRenderer3D::Draw3D()
 {
 
 
-	//Set a color here TODO from the camera ??
+	//TODO Set a color here  from the camera ?? on editor mode take it from the editor cam on game take it from the main cam
 	Color c = Color(0.05f, 0.05f, 0.1f);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -560,4 +560,47 @@ void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x
 void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
 {
 	drawAABBs.push_back(RenderBox(corners));//TODO change Box color here (global config var?)
+}
+
+bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
+{
+	//if inside frustum ret true
+
+	int iTotalIn = 0;
+
+	//for each camera plane
+	for (int p = 0; p < 6; ++p) {
+		int iInCount = 8;
+		int iPtIn = 1;
+		//for each corner of the AABB box
+		for (int i = 0; i < 8; ++i) {
+			// test this point against the planes
+
+			Frustum f;
+			Plane planes[6];
+			if (activeCam != nullptr&&activeCam->IsActive())
+			{
+				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted
+			}
+			else
+			{
+				f = App->camera->editorCam->GetFrustum();
+			}
+			f.GetPlanes(planes);
+
+			if (planes[p].IsOnPositiveSide(points[i])) //<-- “IsOnPositiveSide” from MathGeoLib
+			{
+				iPtIn = 0;
+				--iInCount;
+			}
+		}
+		// were all the points outside of plane p?
+		if (iInCount == 0)
+			return false;
+		// check if they were all on the right side of the plane
+		iTotalIn += iPtIn;
+	}
+	// so if iTotalIn is 6, then all are inside the view
+	if (iTotalIn == 6)
+		return true;
 }

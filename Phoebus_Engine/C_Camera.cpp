@@ -3,6 +3,7 @@
 #include "C_Transform.h"
 #include "imgui/imgui.h"
 
+#include "Application.h"
 
 C_Camera::C_Camera(GameObject* owner) :Component(ComponentType::CAMERA, owner),
 nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRatio(0),
@@ -14,6 +15,10 @@ projectionMatrix(float4x4::identity)
 
 C_Camera::~C_Camera()
 {
+	if (App!=nullptr&& App->renderer3D->activeCam == this)//TODO this seems not ok... we dont want camera to be dependant on renderer 3d
+	{
+		App->renderer3D->activeCam = nullptr;
+	}
 }
 
 bool C_Camera::Update(float dt)
@@ -261,6 +266,11 @@ float C_Camera::GetAspectRatio() const
 float C_Camera::GetInvAspectRatio() const
 {
 	return invAspectRatio;
+}
+
+const Frustum& C_Camera::GetFrustum() const
+{
+	return frustum;
 }
 
 void C_Camera::GetFrustumPoints(std::vector<float3>& emptyVector)
