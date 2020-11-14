@@ -271,6 +271,13 @@ void ModuleCamera3D::CamZoom(int addZoomAmount)
 
 }
 
+void ModuleCamera3D::CreateRayFromScreenPos(float normalizedX, float normalizedY)
+{
+	LineSegment picking = editorCam->GetFrustum().UnProjectLineSegment(normalizedX, normalizedY);
+
+	App->editor3d->TestRayHitObj(picking);
+}
+
 // -----------------------------------------------------------------
 /*
 float* ModuleCamera3D::GetRawViewMatrix()

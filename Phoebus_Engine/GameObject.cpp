@@ -219,6 +219,23 @@ void GameObject::UpdateBoundingBox()
 	bbHasToUpdate = false;
 }
 
+void GameObject::GetObjAndAllChilds(std::vector<GameObject*>&childs)
+{
+	childs.push_back(this);
+
+	for (int i = 0; i < children.size(); i++)
+	{
+			children[i]->GetObjAndAllChilds(childs);
+	}
+
+
+}
+
+AABB GameObject::GetWorldAABB() const
+{
+	return globalAABB;
+}
+
 void GameObject::DrawOnEditorAllComponents()
 {
 	if (ImGui::BeginChild("Object name window", ImVec2(0.0f, 30.0f)))

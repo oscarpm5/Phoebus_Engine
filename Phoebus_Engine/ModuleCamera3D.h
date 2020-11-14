@@ -34,6 +34,8 @@ public:
 	//float* GetRawViewMatrix();
 	//mat4x4 GetViewMatrix();
 
+	void CreateRayFromScreenPos(float normalizedX, float normalizedY);
+
 private:
 
 	//void CalculateViewMatrix();

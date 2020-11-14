@@ -31,6 +31,8 @@ public:
 	void RemoveName(std::string name);//removes a name from the name vector
 	void ChangeObjName(std::string oldName, std::string& newName); //modifies a name from the vector
 
+	void TestRayHitObj(LineSegment ray);
+
 private:
 	int DoesNameExist(std::string name); //returns an index of where the current name is, defaults in -1
 	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique

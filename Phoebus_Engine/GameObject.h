@@ -51,8 +51,8 @@ public:
 
 	void UpdateChildTransforms();
 	void UpdateBoundingBox();
-
-
+	void GetObjAndAllChilds(std::vector<GameObject*>&childs);
+	AABB GetWorldAABB()const;
 	void DrawOnEditorAllComponents();
 private:
 	void DrawGameObject();
