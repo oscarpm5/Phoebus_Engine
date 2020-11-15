@@ -8,6 +8,8 @@
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
+	viewportClickRecieved = false;
+	lastKnowMousePos = float2(-1.0f, -1.0f);
 	//CalculateViewMatrix();
 
 	X = vec3(1.0f, 0.0f, 0.0f);
@@ -81,7 +83,6 @@ update_status ModuleCamera3D::Update(float dt)
 			}
 			MoveTo(vec3(targetpos.x, targetpos.y, targetpos.z), CamObjective::REFERENCE);
 		}
-
 
 
 
@@ -162,6 +163,10 @@ update_status ModuleCamera3D::Update(float dt)
 
 			Reference = Position - Z * length(Reference);
 		}
+		else if (viewportClickRecieved && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
+		{
+			CreateRayFromScreenPos(lastKnowMousePos.x, lastKnowMousePos.y);
+		}
 		else if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)//camera orbit
 		{
 			int dx = -App->input->GetMouseXMotion();
@@ -202,8 +207,10 @@ update_status ModuleCamera3D::Update(float dt)
 			CamZoom(App->input->GetMouseZ());
 		}
 
-	}
 
+
+	}
+	viewportClickRecieved = false;
 
 	editorCam->CalcCamPosFromDirections(
 		float3(Position.x, Position.y, Position.z),

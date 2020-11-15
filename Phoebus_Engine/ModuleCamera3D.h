@@ -53,6 +53,8 @@ public:
 
 	//NEW
 	C_Camera* editorCam;
+	float2 lastKnowMousePos;
+	bool viewportClickRecieved;
 
 private:
 	float zoomLevel;

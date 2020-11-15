@@ -1079,7 +1079,8 @@ bool ModuleRenderer2D::Show3DWindow()
 			LOG("X:%f", relativeMousePos.x);
 			LOG("Y:%f", relativeMousePos.y);
 
-			App->camera->CreateRayFromScreenPos(relativeMousePos.x, relativeMousePos.y);
+			App->camera->lastKnowMousePos=relativeMousePos;
+			App->camera->viewportClickRecieved = true;
 		}
 
 
