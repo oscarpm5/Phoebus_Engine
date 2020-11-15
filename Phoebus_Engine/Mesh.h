@@ -20,6 +20,7 @@ class Mesh
 public:
 
 	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords);
+	Mesh();
 	Mesh(const Mesh& other);
 	~Mesh();
 
@@ -37,6 +38,8 @@ public:
 	//bool shadingFlat;
 	//MeshDrawMode drawMode;
 	//NormalDrawMode normalMode;
+
+
 
 	unsigned int idIndex; // index in VRAM
 	std::vector<unsigned int> indices;//index array

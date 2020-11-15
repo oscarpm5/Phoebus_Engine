@@ -207,7 +207,9 @@ void ModuleFileSystem::LoadAsset(char* path)
 		Importer::LoadNewImageFromBuffer(buffer, size, newPath);
 		break;
 
-
+	case FileFormats::PHO:
+		Importer::LoadMeshFromPho(buffer, size, newPath);
+		break;
 	case FileFormats::UNDEFINED:
 		LOG("[error]asset from %s has no recognizable format", path);
 		break;
@@ -267,6 +269,10 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 		{
 			format = FileFormats::JSON;
 		}
+		else if (!strcmp(strFormat.c_str(), ".pho"))
+		{
+			format = FileFormats::PHO;
+		}
 	}
 	return format;
 }
@@ -281,5 +287,44 @@ ModuleFileSystem::ModuleFileSystem(bool start_enabled)
 	// We only need this when compiling in debug. In Release we don't need it.
 	PHYSFS_mount(".", nullptr, 1);
 
+	PHYSFS_setWriteDir("./Assets"); //necessary to save in own file format
+									//this should be library?
 }
 
+// Save a whole buffer to disk
+unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, unsigned int size)
+{
+	unsigned int ret = 0;
+
+	bool overwrite = PHYSFS_exists(file) != 0;
+
+	PHYSFS_file* fs_file = PHYSFS_openWrite(file);
+
+	if (fs_file != nullptr)
+	{
+		uint written = (uint)PHYSFS_write(fs_file, (const void*)buffer, 1, size);
+		if (written != size)
+		{
+			LOG("[error] File System error while writing to file %s: %s", file, PHYSFS_getLastError());
+		}
+		else
+		{
+			if (overwrite == true)
+			{
+				LOG("File [%s] overwritten with %u bytes", file, size);
+			}
+			else
+			{
+				LOG("New file created [%s] of %u bytes", file, size);
+			}
+			ret = written;
+		}
+
+		if (PHYSFS_close(fs_file) == 0)
+			LOG("[error] File System error while closing file %s: %s", file, PHYSFS_getLastError());
+	}
+	else
+		LOG("[error] File System error while opening file %s: %s", file, PHYSFS_getLastError());
+
+	return ret;
+}

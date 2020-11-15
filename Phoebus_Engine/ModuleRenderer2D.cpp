@@ -281,6 +281,21 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
 			ImGui::EndMenu();
 		}
+		if (ImGui::Button("TEST BUTTON", ImVec2(125,20)))
+		{
+			LOG("Testing:");
+			std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
+		
+			for (float i = 0; i < 50; i++) {
+				vertices.push_back(i); vertices.push_back(i); vertices.push_back(i);
+				indices.push_back((uint)i);
+				normals.push_back(i);
+				texCoords.push_back(i); texCoords.push_back(i); texCoords.push_back(i);
+			}
+			Mesh test(vertices, indices, normals, texCoords);
+			char* testBuffer = Importer::SaveMesh(test);
+			App->fileSystem->LoadAsset("Assets/testing.pho");
+		}
 
 	}
 	ImGui::EndMainMenuBar();
