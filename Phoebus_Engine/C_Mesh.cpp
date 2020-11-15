@@ -117,7 +117,7 @@ void C_Mesh::OnEditor()
 		ImGui::Text("ID_Index: %i", m->idIndex);
 		ImGui::Text("ID_Vertex: %i", m->idVertex);
 		ImGui::Text("ID_Normals: %i", m->idNormals);									
-		ImGui::Text("N of vertices: %i", m->vertices.size());
+		ImGui::Text("N of vertices: %i", m->vertices.size() / 3);
 
 		ImGui::Spacing();
 		ImGui::Separator();

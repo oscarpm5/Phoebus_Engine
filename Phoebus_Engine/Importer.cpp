@@ -8,6 +8,9 @@
 
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
+//Saving things in own format
+#include "PhysFS/include/physfs.h"
+
 //devil initialization
 #include "DevIL/include/IL/il.h"  //loading-saving-converting iamges
 #include "DevIL/include/IL/ilu.h" //middle level library for image manipulation
@@ -61,7 +64,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 	{
-		
+
 		if (App->editor3d->selectedGameObjs.size() > 0 && App->editor3d->selectedGameObjs.back() != App->editor3d->root)
 		{
 
@@ -153,8 +156,8 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 			std::string fbxName;
 
 			App->fileSystem->SeparatePath(relativePath, nullptr, &fbxName);
-			int dotIndex=fbxName.find_last_of(".");
-			if (dotIndex >=0 && dotIndex < fbxName.length())
+			int dotIndex = fbxName.find_last_of(".");
+			if (dotIndex >= 0 && dotIndex < fbxName.length())
 			{
 				name = fbxName.substr(0, dotIndex);
 				name += " File";
@@ -206,7 +209,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 	}
 	else
 	{
-	LOG("[error]Error scene with path '%s' doesnt exist", relativePath);
+		LOG("[error]Error scene with path '%s' doesnt exist", relativePath);
 	}
 	return ret;
 }
@@ -369,7 +372,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
 				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
 				LoadNewImageFromObj(buffer, buffLength, newObj, path.C_Str());
-				
+
 
 			}
 		}
@@ -438,3 +441,118 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	}
 	return 0;
 }
+
+char* Importer::SaveMesh(Mesh mesh)
+{
+	// amount of indices / vertices / colors / normals / texture_coords / AABB
+	//uint ranges[2] = { mesh.num_indices, mesh.num_vertices };
+	uint ranges[4] = { mesh.indices.size(), mesh.vertices.size(), mesh.normals.size(), mesh.texCoords.size() };
+	uint size = 
+			sizeof(ranges) 
+			+ sizeof(uint) * mesh.indices.size() 
+			+ sizeof(float) * mesh.vertices.size() 
+			+ sizeof(float)* mesh.normals.size() 
+			+ sizeof(float)* mesh.texCoords.size();
+
+	char* fileBuffer = new char[size]; // Allocate
+	char* cursor = fileBuffer;
+
+	uint bytes = sizeof(ranges); // First store ranges
+	memcpy(cursor, ranges, bytes);
+	cursor += bytes;
+
+	// Store indices
+	bytes = sizeof(uint) * mesh.indices.size();
+	memcpy(cursor, &mesh.indices[0], bytes);
+	cursor += bytes;
+
+	// Store vertex
+	bytes = sizeof(float) * mesh.vertices.size();
+	memcpy(cursor, &mesh.vertices[0], bytes);
+	cursor += bytes;
+
+	// Store normals
+	bytes = sizeof(float) * mesh.normals.size();
+	memcpy(cursor, &mesh.normals[0], bytes);
+	cursor += bytes;
+
+	// Store tex coords
+	bytes = sizeof(float) * mesh.texCoords.size();
+	memcpy(cursor, &mesh.texCoords[0], bytes);
+	cursor += bytes;
+
+	App->fileSystem->SavePHO("testing.pho", fileBuffer, size);
+
+	return fileBuffer;
+}
+
+bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string path)
+{	
+	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
+	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
+
+	// amount of indices / vertices / colors / normals / texture_coords
+	uint ranges[4]; //necessarily hardcoded
+	uint bytes = sizeof(ranges);
+	memcpy(ranges, cursor, bytes);
+	cursor += bytes;
+	int num_indices = ranges[0];
+	int num_vertices = ranges[1];
+	int num_normals = ranges[2];
+	int num_tex = ranges[3];
+
+	// Load indices
+	bytes = sizeof(uint) * num_indices;
+
+	for (int i = 0; i < num_indices; i++)
+	{
+		indices.push_back(1); //TODO: ask Oscar a less ghetto way to do this
+	}
+	memcpy(&indices[0], cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
+	cursor += bytes;
+	
+
+	// Load vertex
+	bytes = sizeof(float) * num_vertices;
+	for (int i = 0; i < num_vertices; i++)
+	{
+		vertices.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	}
+	//ret.indices = new uint[num_indices];
+	memcpy(&vertices[0], cursor, bytes);
+	cursor += bytes;
+
+
+	// Load normals
+	bytes = sizeof(float) * num_normals;
+	for (int i = 0; i < num_normals; i++)
+	{
+		normals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	}
+	//ret.indices = new uint[num_indices];
+	memcpy(&normals[0], cursor, bytes);
+	cursor += bytes;
+
+
+	// Load texcoords
+	bytes = sizeof(float) * num_tex;
+	for (int i = 0; i < num_tex; i++)
+	{
+		texCoords.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	}
+	//ret.indices = new uint[num_indices];
+	memcpy(&texCoords[0], cursor, bytes);
+	cursor += bytes;
+
+
+	//Remake the mesh
+	Mesh ret(vertices, indices, normals, texCoords);
+	if (!ret.vertices.empty() && !ret.indices.empty()) { return true; }
+	else {
+		LOG("Malformed mesh loaded from PHO");
+		return false;
+	};
+	
+}
+
+

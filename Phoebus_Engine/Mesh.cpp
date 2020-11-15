@@ -21,6 +21,10 @@ Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::
 	GenerateBuffers();
 }
 
+Mesh::Mesh() : idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+{
+}
+
 Mesh::Mesh(const Mesh& other)
 {
 	this->vertices = other.vertices;

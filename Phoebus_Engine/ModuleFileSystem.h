@@ -16,7 +16,8 @@ enum class FileFormats
 	PNG,
 	JPG,
 	JPEG,
-	DDS
+	DDS,
+	PHO //<3
 };
 
 
@@ -47,6 +48,9 @@ public:
 	void LoadAsset(char * path);
 
 	FileFormats CheckFileFormat(const char* path);
+
+	// PHO
+	unsigned int SavePHO(const char* file, const void* buffer, unsigned int size);
 };
 
 #endif // __MODULEFILESYSTEModuleH__
