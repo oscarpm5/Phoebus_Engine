@@ -36,7 +36,6 @@ public:
 private:
 	int DoesNameExist(std::string name); //returns an index of where the current name is, defaults in -1
 	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique
-	void EditTransform(const C_Camera& camera, float4x4& matrix);
 
 public:
 	GameObject* root; //TODO move this into a scene once we have one

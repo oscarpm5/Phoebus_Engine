@@ -32,6 +32,7 @@ public:
 
 	void ShowExampleAppConsole(bool* p_open);
 	bool Show3DWindow();
+	void GuizmoEditTransform();
 	bool showAboutWindow();
 	bool showConfigFunc();
 	bool showQuitPopup();

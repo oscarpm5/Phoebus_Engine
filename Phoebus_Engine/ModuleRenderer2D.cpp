@@ -31,7 +31,7 @@
 #include "Component.h"
 #include "C_Mesh.h"
 #include "Mesh.h"
-
+#include "C_Transform.h"
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
 #include "DevIL/include/IL/il.h"
@@ -1060,8 +1060,12 @@ bool ModuleRenderer2D::Show3DWindow()
 	imgPos = ImGui::GetWindowPos();
 	imgPos.x = imgPos.x+lastCursorPos.x;
 	imgPos.y = imgPos.y + lastCursorPos.y;
+
+
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
+	
+	GuizmoEditTransform();
 
 	ImVec2 winPos = ImGui::GetWindowPos();
 	winSize = ImGui::GetWindowSize();
@@ -1131,4 +1135,45 @@ bool ModuleRenderer2D::Show3DWindow()
 	ImGui::End();
 	style = ref_saved_style;
 	return true;
+}
+
+void ModuleRenderer2D::GuizmoEditTransform()
+{
+	//operation type
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (App->input->GetKey(SDL_SCANCODE_U) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	if (App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+
+	if (App->editor3d->selectedGameObjs.empty())
+	{
+		return;
+	}
+
+	GameObject* currGameObj = App->editor3d->selectedGameObjs.back();
+
+
+
+	float4x4 editMat = currGameObj->GetComponent<C_Transform>()->GetGlobalTransform().Transposed();
+	float4x4 viewMat = App->camera->editorCam->GetViewMat();
+
+	ImGuizmo::SetDrawlist();
+	
+	float2 viewportPos;
+	float2 viewportSize;
+	GetViewportRectUI(viewportPos, viewportSize);
+	ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+	
+	ImGuizmo::Manipulate(viewMat.ptr(), App->camera->editorCam->GetProjMat().Transposed().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, editMat.ptr());
+
+
+	if (ImGuizmo::IsUsing())//if the user is interacting with the guizmo update matrix
+	{
+		currGameObj->GetComponent<C_Transform>()->SetGlobalTransform(editMat.Transposed());
+	}
 }
