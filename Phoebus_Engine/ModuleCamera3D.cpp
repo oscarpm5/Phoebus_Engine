@@ -8,7 +8,9 @@
 
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
-	CalculateViewMatrix();
+	viewportClickRecieved = false;
+	lastKnowMousePos = float2(-1.0f, -1.0f);
+	//CalculateViewMatrix();
 
 	X = vec3(1.0f, 0.0f, 0.0f);
 	Y = vec3(0.0f, 1.0f, 0.0f);
@@ -16,26 +18,43 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 
 	Position = vec3(2.0f, 2.0f, 2.0f);
 	Reference = vec3(0.0f, 0.0f, 0.0f);
-	foV = 60.0f;
-	nearPlaneDist = 0.125f;
-	farPlaneDist = 512.0f;
+	//foV = 60.0f;
+	//nearPlaneDist = 0.125f;
+	//farPlaneDist = 512.0f;
+
+	editorCam = new C_Camera(nullptr);
+	editorCam->SetNewFoV(60.0f);
+	editorCam->SetNearPlane(0.125f);
+	editorCam->SetFarPlane(500.0f);
+
 }
 
 ModuleCamera3D::~ModuleCamera3D()
-{}
+{
+	delete editorCam;
+	editorCam = nullptr;
+}
 
 // -----------------------------------------------------------------
 bool ModuleCamera3D::Start()
 {
 	LOG("Setting up the camera");
 	bool ret = true;
-	debugcamera = false;
+	//debugcamera = false;
 
 	zoomLevel = 20;
 	CamZoom(0);//sets cam zoom to its level variable
 
 	camSpeed = 16.0f;
 	camSpeedMult = 2.0f;
+
+
+	//NEW
+	editorCam->CalcCamPosFromDirections(
+		float3(Position.x, Position.y, Position.z),
+		float3(Z.x, Z.y, Z.z),
+		float3(Y.x, Y.y, Y.z));
+
 
 	return ret;
 }
@@ -53,18 +72,17 @@ update_status ModuleCamera3D::Update(float dt)
 	if (App->editor3d->mouseActive)
 	{
 
-		vec3 targetpos = { 0,0,0 };
+		float3 targetpos = { 0,0,0 };
 		if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		{
-			GameObject* target = nullptr; 
+			GameObject* target = nullptr;
 			if (!App->editor3d->selectedGameObjs.empty())
 			{
 				target = App->editor3d->selectedGameObjs.back();
 				targetpos = target->GetComponent<C_Transform>()->GetGlobalPosition(); //get global pos
 			}
-			MoveTo(targetpos, CamObjective::REFERENCE);
+			MoveTo(vec3(targetpos.x, targetpos.y, targetpos.z), CamObjective::REFERENCE);
 		}
-
 
 
 
@@ -145,6 +163,10 @@ update_status ModuleCamera3D::Update(float dt)
 
 			Reference = Position - Z * length(Reference);
 		}
+		else if (viewportClickRecieved && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
+		{
+			CreateRayFromScreenPos(lastKnowMousePos.x, lastKnowMousePos.y);
+		}
 		else if (App->input->GetKey(SDL_SCANCODE_LALT) == KEY_REPEAT && App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_REPEAT)//camera orbit
 		{
 			int dx = -App->input->GetMouseXMotion();
@@ -185,11 +207,21 @@ update_status ModuleCamera3D::Update(float dt)
 			CamZoom(App->input->GetMouseZ());
 		}
 
+
+
 	}
+	viewportClickRecieved = false;
+
+	editorCam->CalcCamPosFromDirections(
+		float3(Position.x, Position.y, Position.z),
+		float3(Z.x, Z.y, Z.z),
+		float3(Y.x, Y.y, Y.z));
+
 	return UPDATE_CONTINUE;
 }
 
 // -----------------------------------------------------------------
+/*
 void ModuleCamera3D::Look(const vec3& Position, const vec3& Reference, bool RotateAroundReference)
 {
 	this->Position = Position;
@@ -205,8 +237,9 @@ void ModuleCamera3D::Look(const vec3& Position, const vec3& Reference, bool Rota
 		this->Position += Z * 0.05f;
 	}
 }
-
+*/
 // -----------------------------------------------------------------
+/*
 void ModuleCamera3D::LookAt(const vec3& Spot)
 {
 	Reference = Spot;
@@ -215,7 +248,7 @@ void ModuleCamera3D::LookAt(const vec3& Spot)
 	X = normalize(cross(vec3(0.0f, 1.0f, 0.0f), Z));
 	Y = cross(Z, X);
 }
-
+*/
 
 // -----------------------------------------------------------------
 void ModuleCamera3D::Move(const vec3& Movement)
@@ -245,22 +278,34 @@ void ModuleCamera3D::CamZoom(int addZoomAmount)
 
 }
 
+void ModuleCamera3D::CreateRayFromScreenPos(float normalizedX, float normalizedY)
+{
+	LineSegment picking = editorCam->GetFrustum().UnProjectLineSegment(normalizedX, normalizedY);
+
+	App->editor3d->TestRayHitObj(picking);
+}
+
 // -----------------------------------------------------------------
+/*
 float* ModuleCamera3D::GetRawViewMatrix()
 {
 	CalculateViewMatrix();
 	return &ViewMatrix;
 }
-
+*/
+/*
 mat4x4 ModuleCamera3D::GetViewMatrix()
 {
 	CalculateViewMatrix();
 	return ViewMatrix;
 }
+*/
 
 // -----------------------------------------------------------------
+/*
 void ModuleCamera3D::CalculateViewMatrix()
 {
 	ViewMatrix = mat4x4(X.x, Y.x, Z.x, 0.0f, X.y, Y.y, Z.y, 0.0f, X.z, Y.z, Z.z, 0.0f, -dot(X, Position), -dot(Y, Position), -dot(Z, Position), 1.0f);
 	ViewMatrixInverse = inverse(ViewMatrix);
 }
+*/

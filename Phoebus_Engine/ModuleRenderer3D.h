@@ -7,6 +7,9 @@
 #include "Light.h" //incuded due to an array declared here
 #include <vector>
 #include "RenderMesh.h"
+#include "RenderBox.h"
+
+#include "C_Camera.h" //TODO forward declare this
 
 
 
@@ -33,11 +36,15 @@ public:
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
 
-	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform);
+	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
 
+	void AddBoxToDraw(std::vector<float3> corners);
+
+	bool IsInsideFrustum(std::vector<float3>& points);
 
 private:
 	void RenderMeshes();
+	void RenderAABBs();
 	void DrawGrid();
 
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
@@ -50,7 +57,7 @@ private:
 	int nVertex;
 	int indexSize;
 	std::vector<RenderMesh> drawMeshes;
-
+	std::vector<RenderBox> drawAABBs;
 
 
 public:
@@ -73,5 +80,7 @@ public:
 	bool colorMaterial;
 	bool texture2D;
 	bool drawGrid;
+	bool showDepth;
+	C_Camera* activeCam;//culling camera
 };
 #endif // !__MODULE_RENDERER__

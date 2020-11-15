@@ -5,7 +5,7 @@
 #include "C_Material.h"
 #include "Glew/include/glew.h"
 
-RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform) :
+RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform) :
 	mesh(mesh), material(material),transform(gTransform)
 {}
 
@@ -17,7 +17,8 @@ RenderMesh::~RenderMesh()
 
 void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 {
-
+	float4x4 newTrans = transform;
+	newTrans.Transpose();
 
 	Mesh* m = mesh->GetMesh();
 
@@ -26,7 +27,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glPushMatrix();
-	glMultMatrixf(transform.M);
+	glMultMatrixf(newTrans.v[0]);
 	
 
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_VERTEX || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
@@ -94,8 +95,8 @@ void RenderMesh::DrawVertexNormals()
 	for (int i = 0; i < mesh->GetMesh()->normals.size() / 3; i++)
 	{
 		Mesh* m = mesh->GetMesh();
-		vec3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
-		vec3 vertex1 =
+		float3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
+		float3 vertex1 =
 		{
 			m->vertices[i * 3] + (m->normals[i * 3] * magnitude),
 			m->vertices[(i * 3) + 1] + (m->normals[(i * 3) + 1] * magnitude),
@@ -132,17 +133,19 @@ void RenderMesh::DrawFacesNormals()
 		unsigned int vertex2id = m->indices[i + 2];
 
 
-		vec3 vertex0 = { m->vertices[vertex0id * 3],m->vertices[(vertex0id * 3) + 1], m->vertices[(vertex0id * 3) + 2] };
-		vec3 vertex1 = { m->vertices[vertex1id * 3], m->vertices[(vertex1id * 3) + 1], m->vertices[(vertex1id * 3) + 2] };
-		vec3 vertex2 = { m->vertices[vertex2id * 3], m->vertices[(vertex2id * 3) + 1], m->vertices[(vertex2id * 3) + 2] };
+		float3 vertex0 = { m->vertices[vertex0id * 3],m->vertices[(vertex0id * 3) + 1], m->vertices[(vertex0id * 3) + 2] };
+		float3 vertex1 = { m->vertices[vertex1id * 3], m->vertices[(vertex1id * 3) + 1], m->vertices[(vertex1id * 3) + 2] };
+		float3 vertex2 = { m->vertices[vertex2id * 3], m->vertices[(vertex2id * 3) + 1], m->vertices[(vertex2id * 3) + 2] };
 
-		vec3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
-		vec3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
-		vec3 normal = normalize(cross(vector01, vector02));
+		float3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
+		float3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
+		float3 normal = Cross(vector01, vector02);
+		normal.Normalize();
+
 		normal *= magnitude;
 
 
-		vec3 center = (vertex0 + vertex1 + vertex2) / 3;
+		float3 center = (vertex0 + vertex1 + vertex2) / 3;
 		//Provisional placement (it displays the normal in the first vertex)
 		glVertex3f(center.x, center.y, center.z);
 		glVertex3f((center.x + normal.x), (center.y + normal.y), (center.z + normal.z));

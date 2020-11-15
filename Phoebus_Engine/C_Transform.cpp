@@ -6,9 +6,11 @@
 #include "Assimp/include/vector3.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 
+#include "Globals.h" //for testing purposes temporal
 
-C_Transform::C_Transform(GameObject* owner, mat4x4 lTransform) :Component(ComponentType::TRANSFORM, owner),
-lTransformMat(lTransform), gTransformMat(IdentityMatrix)
+
+C_Transform::C_Transform(GameObject* owner, float4x4 lTransform) :Component(ComponentType::TRANSFORM, owner),
+lTransformMat(lTransform), gTransformMat(float4x4::identity)
 {
 
 	UpdateGlobalMat();
@@ -18,12 +20,12 @@ C_Transform::~C_Transform()
 {
 }
 
-mat4x4 C_Transform::GetGlobalTransform() const
+float4x4 C_Transform::GetGlobalTransform() const
 {
 	return gTransformMat;
 }
 
-mat4x4 C_Transform::GetLocalTransform() const
+float4x4 C_Transform::GetLocalTransform() const
 {
 	return lTransformMat;
 }
@@ -35,49 +37,55 @@ void C_Transform::OnEditor()
 		ImGui::Indent();
 		ImGui::Separator();
 
-
 		float v[3];
+		float3 vAux;
 		//Show me the things
-		v[0]= lTransformMat.translation().x;
-		v[1] = lTransformMat.translation().y;
-		v[2] = lTransformMat.translation().z;
-		
+		vAux = lTransformMat.TranslatePart();
+		v[0] = vAux.x;
+		v[1] = vAux.y;
+		v[2] = vAux.z;
+
 		if (ImGui::DragFloat3("Position", v, 0.1f))
 		{
-			SetLocalPosition(vec3(v[0],v[1],v[2]));
+			SetLocalPosition(float3(v[0], v[1], v[2]));
 		}
 		ImGui::Separator();
 
 		//de matriz a euler
 		//display
 		//de euler a matriz
-		float3x3 rotMat = GetRotationMat();
-		float3 rotEuler=rotMat.ToEulerXYZ();
-		
-		v[0] = RadToDeg(rotEuler.x);
-		v[1] = RadToDeg(rotEuler.y);
-		v[2] = RadToDeg(rotEuler.z);
 
-		if (ImGui::DragFloat3("Rotation", v, 0.1f,-360.0f,360.0f))
+		//TODO this doesn't exist for now
+
+		float3 euler = lTransformMat.ToEulerXYZ();
+		float4x4 auxTrans= float4x4::FromEulerXYZ(euler.x, euler.y, euler.z);
+		auxTrans.Inverse();
+
+		v[0] = RadToDeg(euler.x);
+		v[1] = RadToDeg(euler.y);
+		v[2] = RadToDeg(euler.z);
+
+		if (ImGui::DragFloat3("Rotation", v, 0.01f, -360.0f, 360.0f))
 		{
-
-			rotEuler.x = DegToRad(v[0]);
-			rotEuler.y = DegToRad(v[1]);
-			rotEuler.z = DegToRad(v[2]);
-
-			rotMat = float3x3::FromEulerXYZ(rotEuler.x, rotEuler.y, rotEuler.z);
-			SetLocalRot(rotMat);
+			Quat q = Quat::FromEulerXYZ(DegToRad(v[0]), DegToRad(v[1]), DegToRad(v[2]));
+			lTransformMat = lTransformMat * auxTrans;
+			lTransformMat = lTransformMat * q;
+			UpdateGlobalMat();
+			owner->UpdateChildTransforms();
 
 		}
 		ImGui::Separator();
 
-		v[0] = lTransformMat[0];
-		v[1] = lTransformMat[5];
-		v[2] = lTransformMat[10];
-		if (ImGui::DragFloat3("Scale", v, 0.1f))
+
+		vAux = GetLocalScale();
+		v[0] = vAux.x;
+		v[1] = vAux.y;
+		v[2] = vAux.z;
+
+		if (ImGui::DragFloat3("Scale", v, 0.1f, 0.01f, 1000.0f))//TODO wtf happens with scale there must be a function hidden somewhere that adjusts the matrix scale?!
 		{
 
-			SetLocalScale(vec3(v[0], v[1], v[2]));
+			SetLocalScale(float3(v[0], v[1], v[2]));
 		}
 
 		ImGui::Separator();
@@ -92,7 +100,7 @@ void C_Transform::OnEditor()
 			{
 				for (int j = 0; j < 4; j++)
 				{
-					float auxF = float(lTransformMat.M[j * i + j]);
+					float auxF = float(lTransformMat.v[i][j]);
 					ImGui::Text("%f", auxF);
 					if (j < 3) ImGui::SameLine();
 				}
@@ -110,7 +118,7 @@ void C_Transform::OnEditor()
 			{
 				for (int j = 0; j < 4; j++)
 				{
-					float auxF = float(gTransformMat.M[j * i + j]);
+					float auxF = float(gTransformMat.v[i][j]);
 					ImGui::Text("%f", auxF);
 					if (j < 3) ImGui::SameLine();
 				}
@@ -124,71 +132,58 @@ void C_Transform::OnEditor()
 	}
 }
 
-vec3 C_Transform::GetLocalPosition()
+float3 C_Transform::GetLocalPosition()
 {
-	return vec3(lTransformMat.M[12], lTransformMat.M[13], lTransformMat.M[14]);
+	return lTransformMat.TranslatePart();
 }
 
-vec3 C_Transform::GetGlobalPosition()
+float3 C_Transform::GetGlobalPosition()
 {
-	return vec3(gTransformMat.M[12], gTransformMat.M[13], gTransformMat.M[14]);
+	return gTransformMat.TranslatePart();
 }
 
-vec3 C_Transform::GetLocalScale()
+float3 C_Transform::GetLocalScale()
 {
-	return vec3(lTransformMat.M[0], lTransformMat.M[5], lTransformMat.M[10]);
+	return lTransformMat.GetScale();
 }
 
-float3x3 C_Transform::GetRotationMat()
+
+void C_Transform::SetLocalPosition(float3 newPos)
 {
-	float3x3 rotMat;
-	rotMat.v[0][0] = lTransformMat[0];
-	rotMat.v[0][1] = lTransformMat[1];
-	rotMat.v[0][2] = lTransformMat[2];
-	rotMat.v[1][0] = lTransformMat[4];
-	rotMat.v[1][1] = lTransformMat[5];
-	rotMat.v[1][2] = lTransformMat[6];
-	rotMat.v[2][0] = lTransformMat[8];
-	rotMat.v[2][1] = lTransformMat[9];
-	rotMat.v[2][2] = lTransformMat[10];
-
-	//rotMat.Transpose();
-	//we suppose this matrix is normalized and affine
-
-	return rotMat;
-}
-
-void C_Transform::SetLocalPosition(vec3 newPos)
-{
-	lTransformMat.translate(newPos.x, newPos.y, newPos.z);
+	lTransformMat.SetTranslatePart(newPos);
 	UpdateGlobalMat();
 	owner->UpdateChildTransforms();
 }
 
-void C_Transform::SetLocalScale(vec3 newScale)
+void C_Transform::SetLocalScale(float3 newScale)
 {
-	lTransformMat.M[0] = newScale.x;
-	lTransformMat.M[5] = newScale.y;
-	lTransformMat.M[10] = newScale.z;
+	/*lTransformMat[0][0] = 1;
+	lTransformMat[1][1] = 1;
+	lTransformMat[2][2] = 1;*/
+
+	/*newScale.x = min(newScale.x, FLT_MAX);
+	newScale.y = min(newScale.y, FLT_MAX);
+	newScale.z = min(newScale.z, FLT_MAX);
+*/
+
+	float3 scale = lTransformMat.GetScale();
+	float3 auxScale;
+	auxScale.x = (scale.x == 0.0f) ? newScale.x : (newScale.x / scale.x);
+	auxScale.y = (scale.y == 0.0f) ? newScale.y : (newScale.y / scale.y);
+	auxScale.z = (scale.z == 0.0f) ? newScale.z : (newScale.z / scale.z);
+	float ret = auxScale.x * auxScale.y * auxScale.z;
+	if (ret < 0) LOG("[error] scale is 0");
+	//LOG("x:%i,y:%i,z:%i",scale.x,scale.y,scale.z);
+	lTransformMat = lTransformMat * float4x4::Scale(auxScale);
 
 	UpdateGlobalMat();
 	owner->UpdateChildTransforms();
 
 }
 
-void C_Transform::SetLocalRot(float3x3 newRot)
+void C_Transform::SetLocalRot(Quat newRot)
 {
-	lTransformMat[0]=newRot.v[0][0];
-	lTransformMat[1]=newRot.v[0][1];
-	lTransformMat[2]=newRot.v[0][2];
-
-	lTransformMat[4]=newRot.v[1][0];
-	lTransformMat[5]=newRot.v[1][1];
-	lTransformMat[6]=newRot.v[1][2];
-
-	lTransformMat[8]=newRot.v[2][0];
-	lTransformMat[9]=newRot.v[2][1];
-	lTransformMat[10]=newRot.v[2][2];
+	//TODO
 
 	UpdateGlobalMat();
 	owner->UpdateChildTransforms();
@@ -202,58 +197,6 @@ void C_Transform::UpdateGlobalMat()
 	}
 	else
 		gTransformMat = lTransformMat;
-}
-
-aiMatrix4x4 C_Transform::lTraansIntoAssimpMatrix()
-{
-	aiMatrix4x4 ret(lTransformMat.M[0], lTransformMat.M[1], lTransformMat.M[2], lTransformMat.M[3],
-		lTransformMat.M[4], lTransformMat.M[5], lTransformMat.M[6], lTransformMat.M[7],
-		lTransformMat.M[8], lTransformMat.M[9], lTransformMat.M[10], lTransformMat.M[11],
-		lTransformMat.M[12], lTransformMat.M[13], lTransformMat.M[14], lTransformMat.M[15]);
-
-	ret.Transpose();
-	return ret;
-}
-
-vec3 C_Transform::GetEulerFromQuat(aiQuaterniont<float> rotation)
-{
-	float qx = rotation.x; float qy = rotation.y; float qz = rotation.z; float qw = rotation.w; float heading; float attitude; float bank;
-
-	attitude = asin(2 * qx * qy + 2 * qz * qw);
-	heading = atan2(2 * qy * qw - 2 * qx * qz, 1 - 2 * qy * qy - 2 * qz * qz);
-	bank = atan2(2 * qx * qw - 2 * qy * qz, 1 - 2 * qx * qx - 2 * qz * qz);
-
-	if (qx * qy + qz * qw == 0.5)
-	{
-		heading = 2 * atan2(qx, qw);
-		bank = 0;
-	}
-	if (qx * qy + qz * qw == -0.5)
-	{
-		heading = -2 * atan2(qx, qw);
-		bank = 0;
-	}
-
-	return vec3(heading, attitude, bank);
-}
-
-mat4x4 C_Transform::RottoTrans(float3x3 rot)
-{
-	mat4x4 ret = mat4x4();
-
-	ret[0] = rot.v[0][0];
-	ret[1] = rot.v[0][1];
-	ret[2] = rot.v[0][2];
-
-	ret[4] = rot.v[1][0];
-	ret[5] = rot.v[1][1];
-	ret[6] = rot.v[1][2];
-
-	ret[8] = rot.v[2][0];
-	ret[9] = rot.v[2][1];
-	ret[10] = rot.v[2][2];
-
-	return ret;
 }
 
 

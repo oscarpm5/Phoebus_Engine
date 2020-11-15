@@ -2,9 +2,10 @@
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
 #include "Mesh.h"
 #include <string>
+#include "MathGeoLib/include/Geometry/AABB.h"
 
 C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
-normalVertexSize(1.0f),normalFaceSize(1.0f),normalDrawMode(0),meshDrawMode(0)
+normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0)
 {
 }
 
@@ -19,6 +20,8 @@ C_Mesh::~C_Mesh()
 	normalFaceSize = 0;
 	normalDrawMode = 0;
 	meshDrawMode = 0;
+
+	localAABB.SetNegativeInfinity();
 }
 
 
@@ -32,6 +35,11 @@ void C_Mesh::SetMesh(Mesh mesh)
 	}
 
 	m = new Mesh(mesh);
+
+	localAABB.SetNegativeInfinity();//this is like setting the AABB to null
+	localAABB.Enclose((float3*)m->vertices.data(), m->vertices.size() / 3); //generates an AABB on local space from a set of vertices
+
+
 }
 
 Mesh* C_Mesh::GetMesh() const
@@ -42,7 +50,7 @@ Mesh* C_Mesh::GetMesh() const
 void C_Mesh::OnEditor()
 {
 	if (m == nullptr) return;
-		bool activeAux = active;
+	bool activeAux = active;
 
 	std::string headerName = "Mesh";
 	if (!activeAux)headerName += " (not active)";
@@ -52,7 +60,7 @@ void C_Mesh::OnEditor()
 	ImGui::SetCursorPosX(ImGui::GetCursorPosX()-12);*/
 	ImGuiTreeNodeFlags headerFlags = ImGuiTreeNodeFlags_DefaultOpen;
 
-	if(!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+	if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
 	if (ImGui::CollapsingHeader(headerName.c_str(), headerFlags))
 	{
@@ -94,8 +102,8 @@ void C_Mesh::OnEditor()
 		if (normalDrawMode == 2 || normalDrawMode == 3)
 			ImGui::SliderFloat("Face Normal Size", &normalFaceSize, 0.1f, 1.0f);
 
-		
-		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };           
+
+		const char* drawModes[] = { "BOTH","FILL","WIREFRAME" };
 		const char* drawLabel = drawModes[meshDrawMode];  // Label to preview before opening the combo (technically it could be anything)
 		if (ImGui::BeginCombo("Draw Mode", drawLabel, flags))
 		{
@@ -154,11 +162,16 @@ void C_Mesh::OnEditor()
 
 
 		}
-		
+
 		if (!activeAux)ImGui::PopStyleColor();
 		ImGui::PopStyleColor(2);
 
 	}
 
 	if (!activeAux)ImGui::PopStyleColor();
+}
+
+AABB C_Mesh::GetAABB() const
+{
+	return localAABB;
 }

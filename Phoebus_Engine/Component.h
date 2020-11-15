@@ -7,7 +7,8 @@ class GameObject;
 	{
 		TRANSFORM,
 		MESH,
-		MATERIAL
+		MATERIAL,
+		CAMERA
 	};
 
 class Component

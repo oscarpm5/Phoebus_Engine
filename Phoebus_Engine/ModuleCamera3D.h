@@ -26,31 +26,39 @@ public:
 	update_status Update(float dt) override;
 	bool CleanUp();
 
-	void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
-	void LookAt(const vec3 &Spot);
+	//void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
+	//void LookAt(const vec3 &Spot);
 	void Move(const vec3 &Movement);
 	void MoveTo(const vec3& Destination,CamObjective toMove);
 	void CamZoom(int addZoomAmount);
-	float* GetRawViewMatrix();
-	mat4x4 GetViewMatrix();
+	//float* GetRawViewMatrix();
+	//mat4x4 GetViewMatrix();
+
+	void CreateRayFromScreenPos(float normalizedX, float normalizedY);
 
 private:
 
-	void CalculateViewMatrix();
+	//void CalculateViewMatrix();
 
 public:
 	
 	vec3 X, Y, Z, Position, Reference;
-	float foV;
-	float nearPlaneDist;
-	float farPlaneDist;
-	bool debugcamera;
+	//float foV;
+	//float nearPlaneDist;
+	//float farPlaneDist;
+	//bool debugcamera;
 
 	float camSpeed;
 	float camSpeedMult;
 
+	//NEW
+	C_Camera* editorCam;
+	float2 lastKnowMousePos;
+	bool viewportClickRecieved;
+
 private:
 	float zoomLevel;
 	mat4x4 ViewMatrix, ViewMatrixInverse;
+
 };
 #endif // !__CAMERA_3D__

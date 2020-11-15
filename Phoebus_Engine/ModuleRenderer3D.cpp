@@ -19,12 +19,15 @@
 
 
 //#include "glmath.h"
-
+#include "MathGeoLib/include/MathGeoLib.h"
 #include"Color.h"
 
 #include <math.h>
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
+
+
+//TODO make a bool that tells whether we are on editor mode or play mode and changes camera accordingly
 
 
 float vertexArray[] = {
@@ -82,6 +85,8 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
+	showDepth = false;
+	activeCam = nullptr;
 
 	//Just making sure this is initialized
 	gridLength = 500.f;
@@ -89,7 +94,9 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 
 // Destructor
 ModuleRenderer3D::~ModuleRenderer3D()
-{}
+{
+	activeCam = nullptr;
+}
 
 // Called before render is available
 bool ModuleRenderer3D::Init()
@@ -209,7 +216,8 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 
 	glMatrixMode(GL_MODELVIEW);
 
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	//glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
@@ -245,6 +253,9 @@ bool ModuleRenderer3D::CleanUp()
 
 	SDL_GL_DeleteContext(context);
 
+	drawMeshes.clear();
+	drawAABBs.clear();
+
 	return true;
 }
 
@@ -255,11 +266,15 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&ProjectionMatrix);
+	//ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&ProjectionMatrix);
+
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	//glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	GenerateBuffers(width, height);
 }
@@ -376,7 +391,12 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	if (showDepth)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -391,7 +411,10 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
 
 	//attaching the image to the frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+	if (showDepth)
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
+	else
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
 
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//unbind framebuffer
@@ -401,7 +424,7 @@ void ModuleRenderer3D::Draw3D()
 {
 
 
-	//Set a color here TODO from the camera ??
+	//TODO Set a color here  from the camera ?? on editor mode take it from the editor cam on game take it from the main cam
 	Color c = Color(0.05f, 0.05f, 0.1f);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
@@ -413,6 +436,7 @@ void ModuleRenderer3D::Draw3D()
 		DrawGrid();
 	}
 	RenderMeshes();
+	RenderAABBs();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);
@@ -431,15 +455,25 @@ void ModuleRenderer3D::RenderMeshes()
 	drawMeshes.shrink_to_fit();
 }
 
+void ModuleRenderer3D::RenderAABBs()
+{
+	for (int i = 0; i < drawAABBs.size(); i++)
+	{
+		drawAABBs[i].Draw();
+	}
+	drawAABBs.clear();
+	drawAABBs.shrink_to_fit();
+}
+
 void ModuleRenderer3D::DrawGrid()
 {
 	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
-	
+
 	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
 
-	float sepLvl = logf(cameraHeight)/ logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
-	
-	float transparency = 1-fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
+	float sepLvl = logf(cameraHeight) / logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
+
+	float transparency = 1 - fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
 
 	sepLvl = max(sepLvl, 0);
 
@@ -447,7 +481,7 @@ void ModuleRenderer3D::DrawGrid()
 	float newSep = pow(nQuadsInAQuad, (int)floor(sepLvl)); //what is the new separation compared to the original one (4 times bigger?,..)
 	//float realGridLength = gridLength- (fmod(gridLength, newSep));
 	//float lineCount = realGridLength / newSep;
-	
+
 
 	float realGridLength = gridLength / (newSep * nQuadsInAQuad);
 	realGridLength = ceil(realGridLength);
@@ -457,15 +491,15 @@ void ModuleRenderer3D::DrawGrid()
 
 	for (float i = -realGridLength; i <= realGridLength; i += newSep)
 	{
-		float greatLines = fmod(i+realGridLength,newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
+		float greatLines = fmod(i + realGridLength, newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
 
 		bool isCenterLine = false;
 		bool isGreatLine = false;
 		if (i >= -newSep * 0.5f && i <= newSep * 0.5f)isCenterLine = true;
 		if (greatLines == 0)isGreatLine = true;
-		
-		vec4 color1=vec4(transparency, transparency, transparency, transparency);
-		vec4 color2=vec4(transparency, transparency, transparency, transparency);;
+
+		vec4 color1 = vec4(transparency, transparency, transparency, transparency);
+		vec4 color2 = vec4(transparency, transparency, transparency, transparency);;
 
 		if (isGreatLine)
 		{
@@ -479,19 +513,19 @@ void ModuleRenderer3D::DrawGrid()
 			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
-		
+
 		glLineWidth(1.0f);
 
 		glColor4f(color1.x, color1.y, color1.z, color1.w);
 
 		glVertex3f(i, 0.0f, -gridLength);
 		glVertex3f(i, 0.0f, gridLength);
-		
+
 		glColor4f(color2.x, color2.y, color2.z, color2.w);
-		
+
 		glVertex3f(-gridLength, 0.0f, i);
 		glVertex3f(gridLength, 0.0f, i);
-		
+
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 
@@ -518,7 +552,55 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 }
 
 
-void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform)
+void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform)
 {
 	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
+}
+
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
+{
+	drawAABBs.push_back(RenderBox(corners));//TODO change Box color here (global config var?)
+}
+
+bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
+{
+	//if inside frustum ret true
+
+	int iTotalIn = 0;
+
+	//for each camera plane
+	for (int p = 0; p < 6; ++p) {
+		int iInCount = 8;
+		int iPtIn = 1;
+		//for each corner of the AABB box
+		for (int i = 0; i < 8; ++i) {
+			// test this point against the planes
+
+			Frustum f;
+			Plane planes[6];
+			if (activeCam != nullptr&&activeCam->IsActive())
+			{
+				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted
+			}
+			else
+			{
+				f = App->camera->editorCam->GetFrustum();
+			}
+			f.GetPlanes(planes);
+
+			if (planes[p].IsOnPositiveSide(points[i])) //<-- “IsOnPositiveSide” from MathGeoLib
+			{
+				iPtIn = 0;
+				--iInCount;
+			}
+		}
+		// were all the points outside of plane p?
+		if (iInCount == 0)
+			return false;
+		// check if they were all on the right side of the plane
+		iTotalIn += iPtIn;
+	}
+	// so if iTotalIn is 6, then all are inside the view
+	if (iTotalIn == 6)
+		return true;
 }

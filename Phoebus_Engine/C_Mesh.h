@@ -4,6 +4,9 @@
 #include "Component.h"
 #include <vector>
 //#include "Mesh.h"
+
+#include "MathGeoLib/include/Geometry/AABB.h"
+
 class Mesh;
 
 class C_Mesh:public Component
@@ -17,6 +20,8 @@ public:
 
 	void OnEditor();
 
+	AABB GetAABB()const;
+
 public:
 	float normalVertexSize;
 	float normalFaceSize;
@@ -24,7 +29,7 @@ public:
 	int meshDrawMode;
 private:
 	Mesh* m;
-
+	AABB localAABB;
 	//WILL store bounding box here in the future
 };
 

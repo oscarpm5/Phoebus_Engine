@@ -114,7 +114,7 @@ bool ModuleRenderer2D::Init()
 	//fps goodness
 	fps_log.resize(maxFPShown);
 
-		//portrait badness
+	//portrait badness
 	AdriID = Importer::LoadPureImageGL("Assets/our_pics/ASL.png");
 	OscarID = Importer::LoadPureImageGL("Assets/our_pics/OPM.png");
 	PhoebusIcon = Importer::LoadPureImageGL("Assets/our_pics/PhoebusIcon.png");
@@ -163,6 +163,23 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
+		if (ImGui::BeginMenu("GameObjects##menu", true))
+		{
+			if (ImGui::MenuItem("Empty##GameObjectCreate"))
+			{
+				new GameObject(App->editor3d->root, "Empty", float4x4::identity);
+			}
+			if (ImGui::MenuItem("Camera##GameObjectCreate"))
+			{
+				GameObject* obj = new GameObject(App->editor3d->root, "Camera", float4x4::identity);
+				obj->CreateComponent(ComponentType::CAMERA);
+
+				App->renderer3D->activeCam = obj->GetComponent<C_Camera>();//TODO for now the active cam will be the last one created
+
+				obj = nullptr;
+			}
+			ImGui::EndMenu();
+		}
 		//Basic forms menu
 		if (ImGui::BeginMenu("Basic Forms Generator", true))
 		{
@@ -335,7 +352,7 @@ bool ModuleRenderer2D::CleanUp()
 {
 	bool ret = true;
 
-	if(OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
+	if (OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
 	if (AdriID != 0) glDeleteTextures(1, &AdriID);	AdriID = 0;
 	if (PhoebusIcon != 0) glDeleteTextures(1, &PhoebusIcon);	PhoebusIcon = 0;
 	//TODO: Void functions, no return, no check possible. FIX!
@@ -354,11 +371,14 @@ void ModuleRenderer2D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+	//App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
+
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	//App->renderer3D->OnResize(width, height);
 
@@ -399,12 +419,12 @@ bool ModuleRenderer2D::showAboutWindow()
 
 
 	//name of engine
-	const char* aux = "PHOEBUS ENGINE"; 
+	const char* aux = "PHOEBUS ENGINE";
 	ImGui::Spacing();
 	ImGui::Indent();
 	ImGui::TextColored(ImVec4(153, 153, 000, 250), aux); //(0, 100, 130, 150)
 	ImVec2 vecaux = ImGui::GetCursorPos();
-	ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y -20);
+	ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y - 20);
 	ImGui::Image((ImTextureID)PhoebusIcon, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0));
 	ImGui::Unindent();
 	ImGui::Spacing();
@@ -419,16 +439,16 @@ bool ModuleRenderer2D::showAboutWindow()
 		ImGui::Text("We hope you'll enjoy using it as much as we enjoyed making it!");
 		ImGui::Spacing();
 		(ImGui::Text("Check out the GitHub:")); ImGui::SameLine();
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() -3);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
 		if (ImGui::Button("Here!"))
 		{
 			ShellExecuteA(NULL, NULL, "https://github.com/oscarpm5/Phoebus_Engine", NULL, NULL, SW_SHOWNORMAL);
 		}
 		ImGui::Unindent();
 	}
-	
+
 	ImGui::Separator();
-	
+
 	if (ImGui::CollapsingHeader("Authors"))
 	{
 		ImGui::Indent();
@@ -440,7 +460,7 @@ bool ModuleRenderer2D::showAboutWindow()
 		ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::Spacing();
 		ImGui::Text("Check us out in Github:"); ImGui::SameLine();
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY() -3);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
 		if (ImGui::Button("Here!"))
 		{
 			ShellExecuteA(NULL, NULL, "https://github.com/adriaserrano97", NULL, NULL, SW_SHOWNORMAL);
@@ -492,7 +512,7 @@ bool ModuleRenderer2D::showAboutWindow()
 			ImGui::TreePop();
 		}
 		ImGui::Text("Check the engine license:"); ImGui::SameLine();
-		ImGui::SetCursorPosY(ImGui::GetCursorPosY()-3);
+		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
 		if (ImGui::Button("Here!"))
 		{
 			ShellExecuteA(NULL, NULL, "https://opensource.org/licenses/MIT", NULL, NULL, SW_SHOWNORMAL);
@@ -631,6 +651,10 @@ bool ModuleRenderer2D::showConfigFunc()
 			else glDisable(GL_DEPTH_TEST);
 		}
 
+		if (ImGui::Checkbox("Depth Display", &App->renderer3D->showDepth))
+		{
+			App->renderer3D->GenerateBuffers(App->window->w, App->window->h);
+		}
 
 		if (ImGui::Checkbox("Cull Faces", &App->renderer3D->cullFace))
 		{
@@ -692,9 +716,10 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		ImGui::Spacing();
 		ImGui::Spacing();
-
-		if (ImGui::SliderFloat("FoV", &App->camera->foV, 1.0f, 90.0f))
+		float camFoV = App->camera->editorCam->GetFoV();
+		if (ImGui::SliderFloat("FoV", &camFoV, 1.0f, 90.0f))
 		{
+			App->camera->editorCam->SetNewFoV(camFoV);
 			OnResize(App->window->w, App->window->h);
 		};
 
@@ -702,13 +727,17 @@ bool ModuleRenderer2D::showConfigFunc()
 		int sensitivity = 100;
 		if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)sensitivity = 1000000; //use Lshift to be more precise
 
-		if (ImGui::DragFloat("Near Plane", &App->camera->nearPlaneDist, App->camera->farPlaneDist / sensitivity, 0.01f, App->camera->farPlaneDist, "%.3f", flags))
+		float nearPDist = App->camera->editorCam->GetNearPlaneDist();
+		float farPDist = App->camera->editorCam->GetFarPlaneDist();
+		if (ImGui::DragFloat("Near Plane", &nearPDist, farPDist / sensitivity, 0.01f, farPDist, "%.3f", flags))
 		{
+			App->camera->editorCam->SetNearPlane(nearPDist);
 			OnResize(App->window->w, App->window->h);
 		}
 
-		if (ImGui::DragFloat("Far Plane", &App->camera->farPlaneDist, (abs(App->camera->farPlaneDist - App->camera->nearPlaneDist)) / sensitivity, App->camera->nearPlaneDist, 2000.0f, "%.3f", flags))
+		if (ImGui::DragFloat("Far Plane", &farPDist, (abs(farPDist - nearPDist)) / sensitivity, nearPDist, 2000.0f, "%.3f", flags))
 		{
+			App->camera->editorCam->SetFarPlane(farPDist);
 			OnResize(App->window->w, App->window->h);
 		}
 
@@ -888,7 +917,7 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 	if (name != "")
 		newName = name;
 
-	GameObject* newObj = new GameObject(App->editor3d->root, newName, IdentityMatrix);
+	GameObject* newObj = new GameObject(App->editor3d->root, newName, float4x4::identity);
 	newObj->CreateComponent(ComponentType::MESH);
 	newObj->GetComponent<C_Mesh>()->SetMesh(newMesh);
 }
@@ -909,8 +938,11 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+	//App->renderer3D->ProjectionMatrix = perspective(App->camera->foV, (width / 2) / height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&App->renderer3D->ProjectionMatrix);
+
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -1015,6 +1047,8 @@ bool ModuleRenderer2D::Show3DWindow()
 
 	ImVec2 winPos = ImGui::GetWindowPos();
 	winSize = ImGui::GetWindowSize();
+	winSize.y -= 19;
+	winPos.y += 19;
 	ImVec2 mousePos = ImGui::GetMousePos();
 
 	ImVec2 viewportTextOffset = { 5.0f,5.0f };//offset from the image border
@@ -1049,6 +1083,22 @@ bool ModuleRenderer2D::Show3DWindow()
 	if (ImGui::IsWindowHovered() &&
 		mousePos.x >= winPos.x && mousePos.x <= winPos.x + winSize.x && mousePos.y >= winPos.y && mousePos.y <= winPos.y + winSize.y)//inside window
 	{
+		if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_DOWN)
+		{
+
+			float2 relativeMousePos; //gets the mouse pos relative to the bottom left corner normalized between -1 and 1
+			//being the bottom left corner -1,-1 and the upper right 1,1
+			relativeMousePos.x = ((mousePos.x - winPos.x) / (winSize.x * 0.5f)) - 1.0f;
+			relativeMousePos.y = -1.0f*(((mousePos.y - winPos.y) / (winSize.y * 0.5f)) - 1.0f);
+
+			LOG("X:%f", relativeMousePos.x);
+			LOG("Y:%f", relativeMousePos.y);
+
+			App->camera->lastKnowMousePos=relativeMousePos;
+			App->camera->viewportClickRecieved = true;
+		}
+
+
 		App->editor3d->mouseActive = true;//TODO change variable to be in this module ??
 	}
 	else if (App->editor3d->mouseActive &&

@@ -3,31 +3,34 @@
 #include "C_Transform.h"
 #include "C_Mesh.h"
 #include "C_Material.h"
+#include "C_Camera.h"
 #include "Application.h"
 #include "imgui/imgui.h"
+
+#include "MathGeoLib/include/MathGeoLib.h"
 //#include "glmath.h"//new, we should include glMath here but C_Transform already has it and we cannot remove it from there
 
 
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, mat4x4 transform) :name(name), transform(nullptr), focused(false)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB) :name(name), transform(nullptr), focused(false), displayBoundingBox(showAABB)
 {
 	App->editor3d->AddObjName(this->name);
-
 	this->parent = parent;
 	isActive = true;
-
+	bbHasToUpdate = true;
 	if (parent)
 	{
 		parent->children.push_back(this);
 	}
-
 	this->transform = new C_Transform(this, transform);
 	components.push_back(this->transform);
 
 	numberOfObjects++;
 
+	globalAABB.SetNegativeInfinity();
+	globalOBB.SetNegativeInfinity();
 }
 
 void GameObject::Update(float dt)
@@ -63,7 +66,10 @@ void GameObject::Update(float dt)
 				children[i]->Update(dt);
 			}
 		}
-
+		if (bbHasToUpdate)
+		{
+			UpdateBoundingBox();
+		}
 		DrawGameObject();
 	}
 }
@@ -143,7 +149,11 @@ Component* GameObject::CreateComponent(ComponentType type)
 		//only one instance of material for a certain gameObj
 		if (GetComponent<C_Material>() == nullptr)
 			ret = new C_Material(this);
-
+		break;
+	case ComponentType::CAMERA:
+		//only one instance of camera for a certain gameObj
+		if (GetComponent<C_Camera>() == nullptr)
+			ret = new C_Camera(this);
 		break;
 	}
 
@@ -178,11 +188,52 @@ bool GameObject::IsParentActive()
 void GameObject::UpdateChildTransforms()
 {
 	GetComponent<C_Transform>()->UpdateGlobalMat();
-
+	bbHasToUpdate = true;
 	for (int i = 0; i < children.size(); i++)
 	{
 		children[i]->UpdateChildTransforms();
 	}
+}
+
+void GameObject::UpdateBoundingBox()
+{
+	C_Mesh* mesh = GetComponent <C_Mesh>(); //TODO for now we will only make it that the first mesh draws the bounding box, add support for multiple boundingboxes (if more than 1 mesh)
+
+	if (mesh != nullptr)
+	{
+		globalOBB = mesh->GetAABB();
+		globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());//TODO we need to fork with float4x4 and not mat4x4
+
+		globalAABB.SetNegativeInfinity();
+		globalAABB.Enclose(globalOBB);
+	}
+	else
+	{
+		globalAABB.SetNegativeInfinity();
+		globalAABB.SetFromCenterAndSize((float3)transform->GetGlobalPosition(), float3(1, 1, 1));//todo we need to return float3 not vec3
+		globalOBB = globalAABB;
+	}
+
+
+
+	bbHasToUpdate = false;
+}
+
+void GameObject::GetObjAndAllChilds(std::vector<GameObject*>&childs)
+{
+	childs.push_back(this);
+
+	for (int i = 0; i < children.size(); i++)
+	{
+			children[i]->GetObjAndAllChilds(childs);
+	}
+
+
+}
+
+AABB GameObject::GetWorldAABB() const
+{
+	return globalAABB;
 }
 
 void GameObject::DrawOnEditorAllComponents()
@@ -230,25 +281,59 @@ void GameObject::DrawOnEditorAllComponents()
 
 void GameObject::DrawGameObject()
 {
-	/*if (C_Mesh * m = GetComponent<C_Mesh>())
-	{
-		App->editor3d->AddMeshToDraw(m, transform->GetGlobalTransform(), MeshDrawMode::DRAW_MODE_BOTH, NormalDrawMode::NORMAL_MODE_NONE);
-	}*/
-	std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
+	//TODO test if inside camera cull
+	std::vector<float3> aabbVec;
+	GetPointsFromAABB(globalAABB, aabbVec);
 
-	C_Material* mat = GetComponent<C_Material>();
-	if (mat!=nullptr && !mat->IsActive())
+	if (App->renderer3D->IsInsideFrustum(aabbVec))
 	{
-		mat = nullptr;
-	}
 
-	for (int i = 0; i < meshes.size(); i++)
-	{
-		if (meshes[i]->IsActive())
+
+		std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
+
+		C_Material* mat = GetComponent<C_Material>();
+		if (mat != nullptr && !mat->IsActive())
 		{
-			App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform()); 
+			mat = nullptr;
 		}
 
-	}
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			if (meshes[i]->IsActive())
+			{
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform());
+			}
 
+		}
+
+		if (displayBoundingBox && focused)
+		{
+			App->renderer3D->AddBoxToDraw(aabbVec);
+		}
+
+		C_Camera* cam = GetComponent<C_Camera>();
+		if (cam)
+		{
+			std::vector<float3> vec;
+			cam->GetFrustumPoints(vec);
+			App->renderer3D->AddBoxToDraw(vec);
+		}
+	}
+}
+
+//Takes an aabb and fills empty vector with its points
+void GameObject::GetPointsFromAABB(AABB& aabb, std::vector<float3>& emptyVector)
+{
+	float3* frustrumPoints = new float3[8];
+	memset(frustrumPoints, NULL, sizeof(float3) * 8);
+	aabb.GetCornerPoints(frustrumPoints);
+
+	emptyVector.clear();
+
+	for (int i = 0; i < 8; i++)
+	{
+		emptyVector.push_back(frustrumPoints[i]);
+	}
+	delete[]frustrumPoints;
+	frustrumPoints = nullptr;
 }

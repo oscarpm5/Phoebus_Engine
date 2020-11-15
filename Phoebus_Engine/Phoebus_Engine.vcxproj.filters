@@ -352,6 +352,12 @@
     <ClInclude Include="PHO.h">
       <Filter>Sources\PhoebusFormat</Filter>
     </ClInclude>
+    <ClInclude Include="C_Camera.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBox.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -542,6 +548,12 @@
     </ClCompile>
     <ClCompile Include="C_Material.cpp">
       <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Camera.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderBox.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
