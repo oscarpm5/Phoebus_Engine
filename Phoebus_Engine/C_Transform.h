@@ -14,18 +14,30 @@ public:
 
 	float4x4 GetGlobalTransform()const;
 	float4x4 GetLocalTransform()const;
+	void SetGlobalTransform(float4x4 newGTransform);
+	void SetLocalTransform(float4x4 newLTransform);
+
 	void OnEditor();
 
 	float3 GetLocalPosition();
 	float3 GetGlobalPosition();
 	float3 GetLocalScale();
+	float3 GetGlobalScale();
+
 
 	void SetLocalPosition(float3 newPos);
 	void SetLocalScale(float3 newScale);
 	void SetLocalRot(Quat newRot);
+	void SetGlobalPosition(float3 newPos);
+	void SetGlobalScale(float3 newScale);
+	void SetGlobalRot(Quat newRot);
+
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
+	void UpdateLocalMat();//updates the local matrix according to the global matrix
 
+public:
+	bool localMode;
 private:
 
 	float4x4 lTransformMat;//local transform mat

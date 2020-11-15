@@ -3,6 +3,9 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
+
+#include "ImGuizmo/ImGuizmo.h"
+
 #include "Glew/include/glew.h"
 #include "SDL/include/SDL.h"
 
@@ -63,6 +66,9 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	ar5 = 0;
 
 	console = new Cnsl();
+	imgPos = ImVec2(0.0f, 0.0f);
+	imgSize = ImVec2(0.0f, 0.0f);
+
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -132,6 +138,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplSDL2_NewFrame(App->window->window);
 	ImGui::NewFrame();
+	//Start ImGuizmo frame
+	ImGuizmo::BeginFrame();
 
 	// Our state
 	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
@@ -933,6 +941,14 @@ void ModuleRenderer2D::OpenGLOnResize(int w, int h)
 	glLoadIdentity();
 }
 
+void ModuleRenderer2D::GetViewportRectUI(float2& screenPos, float2& size) const
+{
+	screenPos.x = imgPos.x;
+	screenPos.y = imgPos.y;
+	size.x = imgSize.x;
+	size.y = imgSize.y;
+}
+
 void ModuleRenderer2D::ShowExampleAppConsole(bool* p_open)
 {
 	console->Draw("Example: Console", p_open);
@@ -1026,7 +1042,9 @@ bool ModuleRenderer2D::Show3DWindow()
 		OnResize(winSize.x, winSize.y);
 
 	ImVec2 lastCursorPos = ImGui::GetCursorPos();
-
+	imgPos = ImGui::GetWindowPos();
+	imgPos.x = imgPos.x+lastCursorPos.x;
+	imgPos.y = imgPos.y + lastCursorPos.y;
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
 

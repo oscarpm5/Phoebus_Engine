@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "Mesh.h"
+#include "ImGuizmo/ImGuizmo.h"
 
 #include <map>
 #include "C_Transform.h"
@@ -63,6 +64,25 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 update_status ModuleEditor3D::Update(float dt)
 {
+	if (!selectedGameObjs.empty())
+	{
+		C_Transform* t = selectedGameObjs.back()->GetComponent<C_Transform>();
+		if (t->localMode)
+		{
+
+			float4x4 newTransform = t->GetLocalTransform();
+			EditTransform(*App->camera->editorCam, newTransform);
+			selectedGameObjs.back()->GetComponent<C_Transform>()->SetLocalTransform(newTransform);
+		}
+		else
+		{
+			float4x4 newTransform = t->GetGlobalTransform();
+			EditTransform(*App->camera->editorCam, newTransform);
+			selectedGameObjs.back()->GetComponent<C_Transform>()->SetGlobalTransform(newTransform);
+		}
+	}
+
+
 	if (root)
 		root->Update(dt);
 
@@ -231,24 +251,24 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 			{
 				Mesh* currMesh = meshes[i]->GetMesh();
 				//Test mesh triangles here
-				std::pair<float, float3>lastBestHit = std::pair<float, float3>(floatMax,float3(floatMax, floatMax, floatMax));
+				std::pair<float, float3>lastBestHit = std::pair<float, float3>(floatMax, float3(floatMax, floatMax, floatMax));
 
-				for (int v = 0; v < currMesh->indices.size(); v+=3)
+				for (int v = 0; v < currMesh->indices.size(); v += 3)
 				{
 					Triangle tri;
 					//construct triangle
 					//index 1
 					float3 vertex1;
-					vertex1.x=currMesh->vertices[(currMesh->indices[v] * 3)];
-					vertex1.y=currMesh->vertices[(currMesh->indices[v] * 3)+1];
-					vertex1.z=currMesh->vertices[(currMesh->indices[v] * 3)+2];
+					vertex1.x = currMesh->vertices[(currMesh->indices[v] * 3)];
+					vertex1.y = currMesh->vertices[(currMesh->indices[v] * 3) + 1];
+					vertex1.z = currMesh->vertices[(currMesh->indices[v] * 3) + 2];
 					tri.a = vertex1;
 
 					//index 2
 					float3 vertex2;
-					vertex2.x = currMesh->vertices[(currMesh->indices[v+1] * 3)];
-					vertex2.y = currMesh->vertices[(currMesh->indices[v+1] * 3) + 1];
-					vertex2.z = currMesh->vertices[(currMesh->indices[v+1] * 3) + 2];
+					vertex2.x = currMesh->vertices[(currMesh->indices[v + 1] * 3)];
+					vertex2.y = currMesh->vertices[(currMesh->indices[v + 1] * 3) + 1];
+					vertex2.z = currMesh->vertices[(currMesh->indices[v + 1] * 3) + 2];
 					tri.b = vertex2;
 
 					//index 3
@@ -262,7 +282,7 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 					float nearHit = -1;
 					float3 intersectionP;
 
-					hit = (hit|localRay.Intersects(tri, &nearHit, &intersectionP));
+					hit = (hit | localRay.Intersects(tri, &nearHit, &intersectionP));
 
 					if (nearHit < lastBestHit.first)
 					{
@@ -419,3 +439,28 @@ void ModuleEditor3D::MakeNameUnique(std::string& name)
 }
 
 
+void ModuleEditor3D::EditTransform(const C_Camera& camera, float4x4& matrix)
+{
+	static float snap[3] = { 1.f, 1.f, 1.f };
+	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
+	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+	if (App->input->GetKey(SDL_SCANCODE_U) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::ROTATE;
+	if (App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN)
+		mCurrentGizmoOperation = ImGuizmo::SCALE;
+
+
+	float4x4 editMat = matrix.Transposed();
+	float2 viewportPos;
+	float2 viewportSize;
+	App->renderer2D->GetViewportRectUI(viewportPos, viewportSize);
+
+	ImGuiIO& io = ImGui::GetIO();
+	ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+	ImGuizmo::Manipulate(camera.GetViewMat().ptr(), camera.GetProjMat().Transposed().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, &editMat.v[0][0]);
+
+	matrix = editMat.Transposed();
+
+}

@@ -59,6 +59,8 @@ public:
 
 	Cnsl* console;
 
+	void GetViewportRectUI(float2& screenPos, float2& size)const;
+
 private:
 	//arguments for the primitive functions (TODO this could be changed in the future, find a way to have multiple args)
 	float ar1; 
@@ -76,6 +78,8 @@ private:
 	bool Vsync;
 	bool resizable; 
 	ImVec2 imgSize;
+
+	ImVec2 imgPos;
 
 	//this is for displaying our portraits in the About
 private:
