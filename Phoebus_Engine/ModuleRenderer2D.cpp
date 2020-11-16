@@ -1167,8 +1167,13 @@ void ModuleRenderer2D::GuizmoEditTransform()
 	float2 viewportPos;
 	float2 viewportSize;
 	GetViewportRectUI(viewportPos, viewportSize);
-	ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
-	
+	float2 halfSize=viewportSize/2;
+	float2 centerPos = float2(viewportPos.x + halfSize.x, viewportPos.y + halfSize.y);
+	float scale = 0.25f;//It works when scaled by 0.25f but why????!!!
+	ImGuizmo::SetGizmoSizeClipSpace(0.5f);//scale of the gizmo
+	//ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
+	ImGuizmo::SetRect(centerPos.x-(halfSize.x*scale), centerPos.y - halfSize.y*scale, viewportSize.x * scale, viewportSize.y * scale);
+
 	ImGuizmo::Manipulate(viewMat.ptr(), App->camera->editorCam->GetProjMat().Transposed().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, editMat.ptr());
 
 
