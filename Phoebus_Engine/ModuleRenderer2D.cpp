@@ -1160,6 +1160,8 @@ void ModuleRenderer2D::GuizmoEditTransform()
 			mCurrentGizmoOperation = ImGuizmo::ROTATE;
 		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 			mCurrentGizmoOperation = ImGuizmo::SCALE;
+		if(App->input->GetKey(SDL_SCANCODE_Q)==KEY_DOWN)//makes gizmo to not show when pressing q (if we want to select the object but see it without the gizmo in front of it)
+			mCurrentGizmoOperation = ImGuizmo::BOUNDS;
 	}
 
 	if (App->editor3d->selectedGameObjs.empty())
