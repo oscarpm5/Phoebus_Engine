@@ -9,6 +9,7 @@
 ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 {
 	viewportClickRecieved = false;
+	isGizmoInteracting = false;
 	lastKnowMousePos = float2(-1.0f, -1.0f);
 	//CalculateViewMatrix();
 
@@ -69,7 +70,7 @@ bool ModuleCamera3D::CleanUp()
 // -----------------------------------------------------------------
 update_status ModuleCamera3D::Update(float dt)
 {
-	if (App->editor3d->mouseActive)
+	if (App->editor3d->mouseActive&&!isGizmoInteracting)
 	{
 
 		float3 targetpos = { 0,0,0 };
@@ -216,6 +217,9 @@ update_status ModuleCamera3D::Update(float dt)
 		float3(Position.x, Position.y, Position.z),
 		float3(Z.x, Z.y, Z.z),
 		float3(Y.x, Y.y, Y.z));
+
+	if (isGizmoInteracting)
+		isGizmoInteracting = false;
 
 	return UPDATE_CONTINUE;
 }

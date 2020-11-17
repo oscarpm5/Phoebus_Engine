@@ -55,6 +55,7 @@ public:
 	C_Camera* editorCam;
 	float2 lastKnowMousePos;
 	bool viewportClickRecieved;
+	bool isGizmoInteracting; //TODO too many bools, change the way the inputs to the camera are sent and recieved
 
 private:
 	float zoomLevel;

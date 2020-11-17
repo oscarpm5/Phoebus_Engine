@@ -82,8 +82,13 @@ private:
 
 	ImVec2 imgPos;
 
+	float gizmoSize;
+
+
+
+
 	//this is for displaying our portraits in the About
-private:
+
 	unsigned int AdriID;
 	unsigned int OscarID;
 	unsigned int PhoebusIcon;

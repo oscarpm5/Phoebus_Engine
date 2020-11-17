@@ -69,6 +69,8 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	imgPos = ImVec2(0.0f, 0.0f);
 	imgSize = ImVec2(0.0f, 0.0f);
 
+	gizmoSize = 0.5f;
+
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -281,11 +283,11 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
 			ImGui::EndMenu();
 		}
-		if (ImGui::Button("TEST BUTTON", ImVec2(125,20)))
+		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
 			LOG("Testing:");
 			std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
-		
+
 			for (float i = 0; i < 50; i++) {
 				vertices.push_back(i); vertices.push_back(i); vertices.push_back(i);
 				indices.push_back((uint)i);
@@ -645,7 +647,14 @@ bool ModuleRenderer2D::showConfigFunc()
 	{
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f)); // Set window background to white
 
+		if (ImGui::DragFloat("Gizmo Size", &gizmoSize, 0.01f, 0.1f, 1.0f, "%.3f", ImGuiSliderFlags_Logarithmic))
+		{
+			gizmoSize = max(gizmoSize, 0.1f);
+			gizmoSize = min(gizmoSize, 1.0f);
+		}
+
 		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
+
 
 		if (ImGui::DragFloat("Grid Lenght", &App->renderer3D->gridLength, 0.1f, 1.0f, 1000.0f, "%.3f"))
 		{
@@ -1058,13 +1067,13 @@ bool ModuleRenderer2D::Show3DWindow()
 
 	ImVec2 lastCursorPos = ImGui::GetCursorPos();
 	imgPos = ImGui::GetWindowPos();
-	imgPos.x = imgPos.x+lastCursorPos.x;
+	imgPos.x = imgPos.x + lastCursorPos.x;
 	imgPos.y = imgPos.y + lastCursorPos.y;
 
 
 	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
-	
+
 	GuizmoEditTransform();
 
 	ImVec2 winPos = ImGui::GetWindowPos();
@@ -1111,12 +1120,12 @@ bool ModuleRenderer2D::Show3DWindow()
 			float2 relativeMousePos; //gets the mouse pos relative to the bottom left corner normalized between -1 and 1
 			//being the bottom left corner -1,-1 and the upper right 1,1
 			relativeMousePos.x = ((mousePos.x - winPos.x) / (winSize.x * 0.5f)) - 1.0f;
-			relativeMousePos.y = -1.0f*(((mousePos.y - winPos.y) / (winSize.y * 0.5f)) - 1.0f);
+			relativeMousePos.y = -1.0f * (((mousePos.y - winPos.y) / (winSize.y * 0.5f)) - 1.0f);
 
 			LOG("X:%f", relativeMousePos.x);
 			LOG("Y:%f", relativeMousePos.y);
 
-			App->camera->lastKnowMousePos=relativeMousePos;
+			App->camera->lastKnowMousePos = relativeMousePos;
 			App->camera->viewportClickRecieved = true;
 		}
 
@@ -1142,13 +1151,16 @@ void ModuleRenderer2D::GuizmoEditTransform()
 	//operation type
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
 	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
-	if (App->input->GetKey(SDL_SCANCODE_T) == KEY_DOWN)
-		mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
-	if (App->input->GetKey(SDL_SCANCODE_U) == KEY_DOWN)
-		mCurrentGizmoOperation = ImGuizmo::ROTATE;
-	if (App->input->GetKey(SDL_SCANCODE_I) == KEY_DOWN)
-		mCurrentGizmoOperation = ImGuizmo::SCALE;
 
+	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)//TODO we have to check this to not make camera inputs not overlap with gizmo ones, we should change this or camera inputs to not make the same checks
+	{
+		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_DOWN)
+			mCurrentGizmoOperation = ImGuizmo::TRANSLATE;
+		if (App->input->GetKey(SDL_SCANCODE_E) == KEY_DOWN)
+			mCurrentGizmoOperation = ImGuizmo::ROTATE;
+		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
+			mCurrentGizmoOperation = ImGuizmo::SCALE;
+	}
 
 	if (App->editor3d->selectedGameObjs.empty())
 	{
@@ -1163,22 +1175,24 @@ void ModuleRenderer2D::GuizmoEditTransform()
 	float4x4 viewMat = App->camera->editorCam->GetViewMat();
 
 	ImGuizmo::SetDrawlist();
-	
+
 	float2 viewportPos;
 	float2 viewportSize;
 	GetViewportRectUI(viewportPos, viewportSize);
-	float2 halfSize=viewportSize/2;
+	float2 halfSize = viewportSize / 2;
 	float2 centerPos = float2(viewportPos.x + halfSize.x, viewportPos.y + halfSize.y);
 	float scale = 0.25f;//It works when scaled by 0.25f but why????!!!
-	ImGuizmo::SetGizmoSizeClipSpace(0.5f);//scale of the gizmo
+	ImGuizmo::SetGizmoSizeClipSpace(gizmoSize);//scale of the gizmo
 	//ImGuizmo::SetRect(viewportPos.x, viewportPos.y, viewportSize.x, viewportSize.y);
-	ImGuizmo::SetRect(centerPos.x-(halfSize.x*scale), centerPos.y - halfSize.y*scale, viewportSize.x * scale, viewportSize.y * scale);
+	ImGuizmo::SetRect(centerPos.x - (halfSize.x * scale), centerPos.y - halfSize.y * scale, viewportSize.x * scale, viewportSize.y * scale);
 
 	ImGuizmo::Manipulate(viewMat.ptr(), App->camera->editorCam->GetProjMat().Transposed().ptr(), mCurrentGizmoOperation, mCurrentGizmoMode, editMat.ptr());
 
 
 	if (ImGuizmo::IsUsing())//if the user is interacting with the guizmo update matrix
 	{
+		App->camera->isGizmoInteracting = true;
 		currGameObj->GetComponent<C_Transform>()->SetGlobalTransform(editMat.Transposed());
 	}
+
 }
