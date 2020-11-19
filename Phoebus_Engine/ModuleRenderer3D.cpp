@@ -4,9 +4,12 @@
 //#include "Light.h"
 
 #include "ModuleEditor3D.h"
+#include "GameObject.h"
 #include "RenderMesh.h"
+#include "Mesh.h"
 #include "C_Mesh.h"
 #include "C_Material.h"
+#include "C_Transform.h"
 //include & lib of glew
 
 #include "Glew/include/glew.h"
@@ -211,7 +214,7 @@ bool ModuleRenderer3D::Init()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
@@ -254,6 +257,7 @@ bool ModuleRenderer3D::CleanUp()
 	SDL_GL_DeleteContext(context);
 
 	drawMeshes.clear();
+	drawStencil.clear();
 	drawAABBs.clear();
 
 	return true;
@@ -405,14 +409,14 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	//Generate the depth buffer
 	glGenRenderbuffers(1, &depthBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
 
 	//attaching the image to the frame buffer
 	if (showDepth)
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
 	else
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
 
@@ -429,13 +433,15 @@ void ModuleRenderer3D::Draw3D()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+
 
 	if (drawGrid)
 	{
 		DrawGrid();
 	}
-	RenderMeshes();
+	DrawOutline();
+	//RenderMeshes();
 	RenderAABBs();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -443,6 +449,48 @@ void ModuleRenderer3D::Draw3D()
 
 
 
+}
+
+void ModuleRenderer3D::DrawOutline()
+{
+	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
+	{
+		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
+		std::vector<C_Mesh*> meshes= App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
+
+
+		float4x4 transfMat = transf->GetGlobalTransform();
+		for (int j = 0; j < meshes.size(); j++)
+		{
+			AddMeshToStencil(meshes[i], transfMat);
+		}
+
+	}
+
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	glStencilMask(0xFF);
+
+
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF);
+	RenderMeshes();
+
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilMask(0x00);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LIGHTING);
+	RenderStencil();
+	glStencilMask(0xFF);
+	glStencilFunc(GL_ALWAYS, 0, 0xFF);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	//TODO for the moment we harcode enable/ disable of the depth/lighting here and that causes depth 6 lightning display to have stopped working
+	//TODO make objects scale from their bounding box center when on outline mode or ideally scale from vertex normal
+
+	glDisable(GL_STENCIL_TEST);
 }
 
 void ModuleRenderer3D::RenderMeshes()
@@ -453,6 +501,16 @@ void ModuleRenderer3D::RenderMeshes()
 	}
 	drawMeshes.clear();
 	drawMeshes.shrink_to_fit();
+}
+
+void ModuleRenderer3D::RenderStencil()
+{
+	for (int i = 0; i < drawStencil.size(); i++)
+	{
+		drawStencil[i].Draw(MeshDrawMode::DRAW_MODE_FILL);
+	}
+	drawStencil.clear();
+	drawStencil.shrink_to_fit();
 }
 
 void ModuleRenderer3D::RenderAABBs()
@@ -555,6 +613,12 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform)
 {
 	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
+}
+
+void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform)
+{
+	float scale = 1.05f;
+	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform * float4x4::Scale(float3(scale, scale, scale)),float3(1.0f, 0.5f, 0.0f)));
 }
 
 void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)

@@ -5,8 +5,8 @@
 #include "C_Material.h"
 #include "Glew/include/glew.h"
 
-RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform) :
-	mesh(mesh), material(material),transform(gTransform)
+RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform, float3 color) :
+	mesh(mesh), material(material),transform(gTransform),color(color)
 {}
 
 RenderMesh::~RenderMesh()
@@ -37,7 +37,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 		DrawFacesNormals();
 
 
-	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
+	glColor3f(color.x,color.y,color.z);//TODO change this for the default mesh color
 
 	int localDrawMode=(int)sceneMaxDrawMode;
 
@@ -62,7 +62,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 		DrawBuffers();
 
-		glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
+		glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 

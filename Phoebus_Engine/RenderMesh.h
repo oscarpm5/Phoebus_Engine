@@ -12,7 +12,7 @@ enum class MeshDrawMode;
 class RenderMesh
 {
 public:
-	RenderMesh(C_Mesh* mesh,C_Material*material, float4x4 gTransform);
+	RenderMesh(C_Mesh* mesh,C_Material*material, float4x4 gTransform,float3 color=float3(1.0f,1.0f,1.0f));
 	~RenderMesh();
 	void Draw(MeshDrawMode sceneMaxDrawMode);
 
@@ -26,7 +26,7 @@ private:
 	C_Material* material;
 
 	float4x4 transform;
-
+	float3 color;
 
 
 };

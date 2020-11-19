@@ -35,15 +35,18 @@ public:
 	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
+	void DrawOutline();
+
 
 	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
-
+	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform);
 	void AddBoxToDraw(std::vector<float3> corners);
 
 	bool IsInsideFrustum(std::vector<float3>& points);
 
 private:
 	void RenderMeshes();
+	void RenderStencil();
 	void RenderAABBs();
 	void DrawGrid();
 
@@ -57,6 +60,7 @@ private:
 	int nVertex;
 	int indexSize;
 	std::vector<RenderMesh> drawMeshes;
+	std::vector<RenderMesh> drawStencil;
 	std::vector<RenderBox> drawAABBs;
 
 
