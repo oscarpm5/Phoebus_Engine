@@ -18,6 +18,7 @@
 
 class mat3x3;
 class mat4x4;
+class Mesh;
 
 class ModuleRenderer3D : public Module
 {
@@ -39,7 +40,7 @@ public:
 
 
 	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
-	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform);
+	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform,float3 color=float3(1.0f,1.0f,1.0f));
 	void AddBoxToDraw(std::vector<float3> corners);
 
 	bool IsInsideFrustum(std::vector<float3>& points);
@@ -53,6 +54,8 @@ private:
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
 
+	bool ExpandMeshVerticesByScale(Mesh& m, float newScale);//returns false if scaling cannot be done
+
 private:
 	unsigned int exampleMeshIdentifier;
 	unsigned int indexBind;
@@ -62,6 +65,7 @@ private:
 	std::vector<RenderMesh> drawMeshes;
 	std::vector<RenderMesh> drawStencil;
 	std::vector<RenderBox> drawAABBs;
+	std::vector<C_Mesh*> stencilMeshes;
 
 
 public:

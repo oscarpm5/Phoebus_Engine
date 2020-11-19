@@ -259,6 +259,17 @@ bool ModuleRenderer3D::CleanUp()
 	drawMeshes.clear();
 	drawStencil.clear();
 	drawAABBs.clear();
+	while (!stencilMeshes.empty())//clear stencil meshes
+	{
+
+		C_Mesh* currMesh = stencilMeshes.back();
+		delete currMesh;
+		currMesh = nullptr;
+
+		stencilMeshes.pop_back();
+	}
+	stencilMeshes.clear();
+	stencilMeshes.shrink_to_fit();
 
 	return true;
 }
@@ -436,10 +447,6 @@ void ModuleRenderer3D::Draw3D()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 
 
-	if (drawGrid)
-	{
-		DrawGrid();
-	}
 	DrawOutline();
 	//RenderMeshes();
 	RenderAABBs();
@@ -453,6 +460,9 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::DrawOutline()
 {
+	const float3 outlineColorMain = float3(1.0f, 0.5f, 0.0f);
+	const float3 outlineColorSecond = float3(0.75f, 0.25f, 0.0f);
+
 	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
 	{
 		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
@@ -462,7 +472,22 @@ void ModuleRenderer3D::DrawOutline()
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			AddMeshToStencil(meshes[i], transfMat);
+			Mesh m = Mesh(*meshes[i]->GetMesh());
+			ExpandMeshVerticesByScale(m, 1.05f);
+			m.FreeBuffers();
+			m.GenerateBuffers();
+
+			C_Mesh* currMesh = new C_Mesh(nullptr);
+			currMesh->SetMesh(m);
+			stencilMeshes.push_back(currMesh);
+
+			float3 currentOutlineCol = outlineColorMain;
+			if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+			{
+				currentOutlineCol = outlineColorSecond;
+			}
+
+			AddMeshToStencil(currMesh, transfMat,currentOutlineCol);
 		}
 
 	}
@@ -472,7 +497,10 @@ void ModuleRenderer3D::DrawOutline()
 	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 	glStencilMask(0xFF);
-
+	if (drawGrid)
+	{
+		DrawGrid();
+	}
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
@@ -482,11 +510,14 @@ void ModuleRenderer3D::DrawOutline()
 	glStencilMask(0x00);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
+	//glDisable(GL_CULL_FACE);
 	RenderStencil();
 	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 0, 0xFF);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+	//glEnable(GL_CULL_FACE);
+
 	//TODO for the moment we harcode enable/ disable of the depth/lighting here and that causes depth 6 lightning display to have stopped working
 	//TODO make objects scale from their bounding box center when on outline mode or ideally scale from vertex normal
 
@@ -511,6 +542,19 @@ void ModuleRenderer3D::RenderStencil()
 	}
 	drawStencil.clear();
 	drawStencil.shrink_to_fit();
+
+	while (!stencilMeshes.empty())//clear stencil meshes
+	{
+		
+		C_Mesh* currMesh = stencilMeshes.back();
+		delete currMesh;
+		currMesh = nullptr;
+
+		stencilMeshes.pop_back();
+	}
+	stencilMeshes.clear();
+	stencilMeshes.shrink_to_fit();
+
 }
 
 void ModuleRenderer3D::RenderAABBs()
@@ -609,16 +653,37 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	//wireframe here too?
 }
 
+bool ModuleRenderer3D::ExpandMeshVerticesByScale(Mesh& m, float newScale)//TODO consider creating an expanded mesh when the mesh is created instead of doing it every frame
+{
+	if (m.normals.empty())//TODO in the future if scaling cannot be done by vertex normals, use generated face normals or normal scaling instead
+		return false;
+
+	for (int i = 0; i < m.vertices.size(); i+=3)
+	{
+		float3 currVertex=float3(m.vertices[i],m.vertices[i+1],m.vertices[i+2]);
+		float3 currNormal=float3(m.normals[i], m.normals[i + 1], m.normals[i + 2]);
+
+		currVertex += (currNormal*(newScale-1.0f));//if newScale is 1 it means the scale should remain the same
+
+		m.vertices[i] = currVertex.x;
+		m.vertices[i+1] = currVertex.y;
+		m.vertices[i+2] = currVertex.z;
+
+	}
+
+
+}
+
 
 void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform)
 {
 	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }
 
-void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform)
+void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, float3 color)
 {
 	float scale = 1.05f;
-	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform * float4x4::Scale(float3(scale, scale, scale)),float3(1.0f, 0.5f, 0.0f)));
+	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/,color));
 }
 
 void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
