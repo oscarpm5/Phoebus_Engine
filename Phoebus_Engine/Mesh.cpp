@@ -8,6 +8,7 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
+#include "MathGeoLib/include/MathGeoLib.h"
 
 
 Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords) :
@@ -18,6 +19,7 @@ Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::
 	this->indices = indices;
 	this->normals = normals;
 	this->texCoords = texCoords;
+	GenerateSmoothedNormals();
 	GenerateBuffers();
 }
 
@@ -35,7 +37,8 @@ Mesh::Mesh(const Mesh& other)
 	//this->normalMode = other.normalMode;
 	//this->shadingFlat = other.shadingFlat;
 	//this->texture = other.texture;
-	
+
+	this->smoothedNormals = other.smoothedNormals;
 	GenerateBuffers();
 }
 
@@ -47,27 +50,139 @@ Mesh::~Mesh()
 	vertices.clear();
 	normals.clear();
 	texCoords.clear();
+	smoothedNormals.clear();
 
 }
 
+
+void Mesh::GenerateSmoothedNormals()
+{
+	std::vector<float3> faceNormals;//1 normal for every 3 indices
+	//first we calculate the mesh face normals
+	for (int i = 0; i < indices.size(); i += 3)
+	{
+		unsigned int vertex0id = indices[i];
+		unsigned int vertex1id = indices[i + 1];
+		unsigned int vertex2id = indices[i + 2];
+
+
+		float3 vertex0 = { vertices[vertex0id * 3],vertices[(vertex0id * 3) + 1], vertices[(vertex0id * 3) + 2] };
+		float3 vertex1 = { vertices[vertex1id * 3],vertices[(vertex1id * 3) + 1], vertices[(vertex1id * 3) + 2] };
+		float3 vertex2 = { vertices[vertex2id * 3], vertices[(vertex2id * 3) + 1], vertices[(vertex2id * 3) + 2] };
+
+		float3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
+		float3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
+		float3 normal = Cross(vector01, vector02);
+		normal.Normalize();
+		faceNormals.push_back(normal);
+
+	}
+
+	//then we calculate the smoothed averaged normals for each vertex
+	smoothedNormals.resize(normals.size());
+	for (int i = 0; i < smoothedNormals.size(); i += 3)
+	{
+		float3 averagedNormal = { 0.0f,0.0f,0.0f };
+		std::vector<float3>normalsToAverage;
+
+		for (int j = 0; j < indices.size(); j++)//we iterate every index and save the ones that point to the vertex for which we want to calculate teh normal 
+		{
+			if (indices[j] == i / 3)
+			{
+				float3 currFaceNormal = faceNormals[j / 3];
+
+				bool alreadyStored = false;
+				for (int l = 0; l < normalsToAverage.size(); l++)
+				{
+					if (normalsToAverage[l].x == currFaceNormal.x && normalsToAverage[l].y == currFaceNormal.y && normalsToAverage[l].z == currFaceNormal.z)
+					{
+						alreadyStored = true;
+						break;
+					}
+				}
+
+				if (alreadyStored == false)
+					normalsToAverage.push_back(faceNormals[j / 3]);
+			}
+		}
+
+		//average the normals
+		for (int k = 0; k < normalsToAverage.size(); k++)
+		{
+			averagedNormal += normalsToAverage[k];
+		}
+		//averagedNormal = averagedNormal / normalsToAverage.size();
+		averagedNormal.Normalize();
+
+		smoothedNormals[i] = averagedNormal.x;
+		smoothedNormals[i + 1] = averagedNormal.y;
+		smoothedNormals[i + 2] = averagedNormal.z;
+
+	}
+
+
+	//TODO FOR OSCAR still need to check if 2 vertices are in the same place and merge normals accordingly
+	//TODO FOR OSCAR this code can be optimized, don't check already visited indices
+	for (int i = 0; i < vertices.size(); i += 3)//if 2 vertices are in the same place merge their normals
+	{
+		std::vector<int> normalsToChange;//this is the id of the normals that need to be changed
+		std::vector<float3> averagedNormal;
+
+		normalsToChange.push_back(i);
+		averagedNormal.push_back({ smoothedNormals[i],smoothedNormals[i + 1],smoothedNormals[i + 2] });
+
+		for (int j = 0; j < vertices.size(); j += 3)
+		{
+			if (i == j)
+				continue;
+
+			if (vertices[i] == vertices[j] && vertices[i + 1] == vertices[j + 1] && vertices[i + 2] == vertices[j + 2])
+			{
+				normalsToChange.push_back(j);
+				averagedNormal.push_back({ smoothedNormals[j],smoothedNormals[j + 1],smoothedNormals[j + 2] });
+			}
+
+
+		}
+
+		if (averagedNormal.size() > 1) //if there is more than one normal to average, average them
+		{
+			float3 newAverage = {0.0f,0.0f,0.0f};
+
+			for (int i = 0; i < averagedNormal.size(); i++)
+			{
+				newAverage += averagedNormal[i];
+			}
+			newAverage.Normalize();
+
+			for (int i = 0; i < normalsToChange.size(); i++)
+			{
+				smoothedNormals[normalsToChange[i]] = newAverage.x;
+				smoothedNormals[normalsToChange[i]+1] = newAverage.y;
+				smoothedNormals[normalsToChange[i]+2] = newAverage.z;
+			}
+		}
+
+	}
+}
 
 void Mesh::GenerateBuffers()
 {
 
 	//gen buffers=========================================
-	 
+
 	//vertex buffer
 	glGenBuffers(1, &idVertex);
 	glBindBuffer(GL_ARRAY_BUFFER, idVertex);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-	
 
-	
+
+
 	//index buffer
 	glGenBuffers(1, &idIndex);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-	
+
 
 	if (!this->normals.empty())
 	{

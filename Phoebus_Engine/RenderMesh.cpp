@@ -98,9 +98,9 @@ void RenderMesh::DrawVertexNormals()
 		float3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
 		float3 vertex1 =
 		{
-			m->vertices[i * 3] + (m->normals[i * 3] * magnitude),
-			m->vertices[(i * 3) + 1] + (m->normals[(i * 3) + 1] * magnitude),
-			m->vertices[(i * 3) + 2] + (m->normals[(i * 3) + 2] * magnitude)
+			m->vertices[i * 3] + (m->smoothedNormals[i * 3] * magnitude),//TODO FOR OSCAR i changed normals for smoothed normals here for testing purposes, change this back
+			m->vertices[(i * 3) + 1] + (m->smoothedNormals[(i * 3) + 1] * magnitude),
+			m->vertices[(i * 3) + 2] + (m->smoothedNormals[(i * 3) + 2] * magnitude)
 		};
 
 

@@ -30,6 +30,7 @@
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
 
 
+
 //TODO make a bool that tells whether we are on editor mode or play mode and changes camera accordingly
 
 
@@ -444,7 +445,7 @@ void ModuleRenderer3D::Draw3D()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 
 	DrawOutline();
@@ -466,14 +467,14 @@ void ModuleRenderer3D::DrawOutline()
 	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
 	{
 		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
-		std::vector<C_Mesh*> meshes= App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
+		std::vector<C_Mesh*> meshes = App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
 
 
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
 			Mesh m = Mesh(*meshes[i]->GetMesh());
-			ExpandMeshVerticesByScale(m, 1.05f);
+			ExpandMeshVerticesByScale(m, 1.1f);//TODO make the user adjust this from the config panel
 			m.FreeBuffers();
 			m.GenerateBuffers();
 
@@ -487,7 +488,7 @@ void ModuleRenderer3D::DrawOutline()
 				currentOutlineCol = outlineColorSecond;
 			}
 
-			AddMeshToStencil(currMesh, transfMat,currentOutlineCol);
+			AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
 		}
 
 	}
@@ -538,14 +539,14 @@ void ModuleRenderer3D::RenderStencil()
 {
 	for (int i = 0; i < drawStencil.size(); i++)
 	{
-		drawStencil[i].Draw(MeshDrawMode::DRAW_MODE_FILL);
+		drawStencil[i].Draw(MeshDrawMode::DRAW_MODE_BOTH);
 	}
 	drawStencil.clear();
 	drawStencil.shrink_to_fit();
 
 	while (!stencilMeshes.empty())//clear stencil meshes
 	{
-		
+
 		C_Mesh* currMesh = stencilMeshes.back();
 		delete currMesh;
 		currMesh = nullptr;
@@ -605,13 +606,13 @@ void ModuleRenderer3D::DrawGrid()
 
 		if (isGreatLine)
 		{
-			glLineWidth(3.0f);
+			glLineWidth(1.0f);
 			color1 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 			color2 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 		if (isCenterLine)
 		{
-			glLineWidth(6.0f);
+			glLineWidth(1.0f);
 			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
 			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
@@ -658,20 +659,22 @@ bool ModuleRenderer3D::ExpandMeshVerticesByScale(Mesh& m, float newScale)//TODO 
 	if (m.normals.empty())//TODO in the future if scaling cannot be done by vertex normals, use generated face normals or normal scaling instead
 		return false;
 
-	for (int i = 0; i < m.vertices.size(); i+=3)
+
+	for (int i = 0; i < m.vertices.size(); i += 3)
 	{
-		float3 currVertex=float3(m.vertices[i],m.vertices[i+1],m.vertices[i+2]);
-		float3 currNormal=float3(m.normals[i], m.normals[i + 1], m.normals[i + 2]);
+		float3 currVertex = float3(m.vertices[i], m.vertices[i + 1], m.vertices[i + 2]);
 
-		currVertex += (currNormal*(newScale-1.0f));//if newScale is 1 it means the scale should remain the same
-
+		//if newScale is 1 it means the scale should remain the same
+		currVertex.x += (m.smoothedNormals[i] * (newScale - 1.0f));
+		currVertex.y += (m.smoothedNormals[i + 1] * (newScale - 1.0f));
+		currVertex.z += (m.smoothedNormals[i + 2] * (newScale - 1.0f));
 		m.vertices[i] = currVertex.x;
-		m.vertices[i+1] = currVertex.y;
-		m.vertices[i+2] = currVertex.z;
+		m.vertices[i + 1] = currVertex.y;
+		m.vertices[i + 2] = currVertex.z;
 
 	}
 
-
+	
 }
 
 
@@ -683,7 +686,7 @@ void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x
 void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, float3 color)
 {
 	float scale = 1.05f;
-	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/,color));
+	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/, color));
 }
 
 void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
@@ -707,7 +710,7 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 
 			Frustum f;
 			Plane planes[6];
-			if (activeCam != nullptr&&activeCam->IsActive())
+			if (activeCam != nullptr && activeCam->IsActive())
 			{
 				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted
 			}
