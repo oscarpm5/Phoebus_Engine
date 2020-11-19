@@ -80,6 +80,7 @@ public:
 	unsigned int depthBuffer;
 
 	float gridLength;
+	float outlineScale;
 	LCG seed;
 
 	//rendering config bools

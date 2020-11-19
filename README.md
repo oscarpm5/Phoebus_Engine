@@ -72,6 +72,8 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 
 ## Aditional functionality:
 
+### First Assigment
+
 * Unique Naming system that prevents two objects from having the same name by renaming them when needed. 
 
 * Global Draw mode (each object can be drawn as Wire/Filled/Both independently but the scene has a "maximum draw type" that overwrites the object draw mode if it is more restrictive).
@@ -93,8 +95,17 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Game objects can be moved, scaled & rotated (simple implementation just to avoid all the objects getting crammed in the world origin).
 
 * Components & game objects can now be activated/ deactivated independently.
+
+### Second Assigment
+
+* Objects have an outline when selected, outline size can be configured via the config panel.
+
+* [TODO] Still WiP Object Translate/Rotate/Scale can be done in both local & global space.
+
  
 ## Aditional comments for the teacher:
+
+### First Assigment
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
 * The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)

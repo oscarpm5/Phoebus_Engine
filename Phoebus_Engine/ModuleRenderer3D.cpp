@@ -94,6 +94,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 
 	//Just making sure this is initialized
 	gridLength = 500.f;
+	outlineScale = 1.1f;
 }
 
 // Destructor
@@ -477,7 +478,7 @@ void ModuleRenderer3D::DrawOutline()
 		for (int j = 0; j < meshes.size(); j++)
 		{
 			Mesh m = Mesh(*meshes[i]->GetMesh());
-			ExpandMeshVerticesByScale(m, 1.1f);//TODO make the user adjust this from the config panel
+			ExpandMeshVerticesByScale(m, outlineScale);//TODO make the user adjust this from the config panel
 			m.FreeBuffers();
 			m.GenerateBuffers();
 

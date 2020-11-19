@@ -644,6 +644,12 @@ bool ModuleRenderer2D::showConfigFunc()
 			gizmoSize = min(gizmoSize, 1.0f);
 		}
 
+		if (ImGui::DragFloat("Outline Scale", &App->renderer3D->outlineScale, 0.01f, 1.0f, 1.5f, "%.3f", ImGuiSliderFlags_Logarithmic))
+		{
+			App->renderer3D->outlineScale = max(App->renderer3D->outlineScale, 1.0f);
+			App->renderer3D->outlineScale = min(App->renderer3D->outlineScale, 1.5f);
+		}
+
 		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
 
 
