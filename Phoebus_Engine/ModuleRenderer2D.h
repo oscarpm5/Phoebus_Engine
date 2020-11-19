@@ -5,7 +5,6 @@
 #include "Module.h"
 //#include "Globals.h"
 //#include "glmath.h"
-//#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #include "imgui/imgui.h" //ImVec2 cannot be forward declared
 //#include "Primitive.h" //wtf
 //#include <iostream> 
@@ -57,7 +56,6 @@ public:
 	bool showConfig;
 	bool showQuit;
 	bool quitAlreadyOpened;
-
 	Cnsl* console;
 
 	void GetViewportRectUI(float2& screenPos, float2& size)const;

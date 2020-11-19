@@ -8,7 +8,7 @@
 #include <vector>
 #include "RenderMesh.h"
 #include "RenderBox.h"
-
+#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #include "C_Camera.h" //TODO forward declare this
 
 
@@ -80,6 +80,7 @@ public:
 	unsigned int depthBuffer;
 
 	float gridLength;
+	LCG seed;
 
 	//rendering config bools
 	bool depthTesting;

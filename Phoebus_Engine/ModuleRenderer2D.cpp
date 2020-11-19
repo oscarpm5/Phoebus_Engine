@@ -31,6 +31,7 @@
 #include "Component.h"
 #include "C_Mesh.h"
 #include "Mesh.h"
+#include "C_Material.h"
 #include "C_Transform.h"
 
 //We're using pretty much all of it for cheks, so we're just including the whole thing
@@ -115,9 +116,6 @@ bool ModuleRenderer2D::Init()
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
 	ImGui_ImplOpenGL3_Init("#version 140"); //TODO: this is hardcoded. Deal with it.
-
-	//Start number generator seed
-	//seed = LCG::LCG();
 
 	//fps goodness
 	fps_log.resize(maxFPShown);
@@ -286,17 +284,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
 			LOG("Testing:");
-			std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
-
-			for (float i = 0; i < 50; i++) {
-				vertices.push_back(i); vertices.push_back(i); vertices.push_back(i);
-				indices.push_back((uint)i);
-				normals.push_back(i);
-				texCoords.push_back(i); texCoords.push_back(i); texCoords.push_back(i);
-			}
-			Mesh test(vertices, indices, normals, texCoords);
-			char* testBuffer = Importer::SaveMesh(test);
-			App->fileSystem->LoadAsset("Assets/testing.pho");
+			C_Material AlexGenio(App->editor3d->root, 777, "lololo");
+			AlexGenio.path = "tengoPathTeLoJuro";
+			char* testBuffer = Importer::SaveMaterial(&AlexGenio);			
+			App->fileSystem->LoadAsset("Assets/testingMaterial.pho");
 		}
 
 	}

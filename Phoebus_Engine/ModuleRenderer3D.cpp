@@ -107,6 +107,9 @@ bool ModuleRenderer3D::Init()
 	LOG("Creating 3D Renderer context");
 	bool ret = true;
 
+	//Start number generator seed
+	seed = LCG::LCG();
+
 	//Create context
 	context = SDL_GL_CreateContext(App->window->window);
 	if (context == NULL)
