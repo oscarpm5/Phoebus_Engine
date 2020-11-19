@@ -31,6 +31,8 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 
 	globalAABB.SetNegativeInfinity();
 	globalOBB.SetNegativeInfinity();
+
+	this->ID = App->renderer3D->seed.Int(); //begone T H O T
 }
 
 void GameObject::Update(float dt)

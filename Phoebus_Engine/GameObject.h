@@ -14,6 +14,7 @@ enum class ComponentType;
 class GameObject
 {
 public:
+	unsigned int ID; //save / load func
 
 	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true);
 

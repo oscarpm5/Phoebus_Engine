@@ -47,6 +47,8 @@ bool Importer::InitializeDevIL()
 
 bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, std::string path)
 {
+	
+	
 	ILuint newImage = 0;
 	ilGenImages(1, &newImage);
 	ilBindImage(newImage);
@@ -67,7 +69,13 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 
 		if (App->editor3d->selectedGameObjs.size() > 0 && App->editor3d->selectedGameObjs.back() != App->editor3d->root)
 		{
-
+			/* TODO: Ask Adri about this (Alex explained)
+			aiColor4D materialColor;
+			if (aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &materialColor) == aiReturn_SUCCESS)
+			{
+				myNewMaterial->SetColor(Color{ materialColor.r, materialColor.g, materialColor.b, materialColor.a });
+			}
+			*/
 			C_Material* mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
 
 			if (mat == nullptr)
@@ -493,6 +501,32 @@ char* Importer::SaveMesh(Mesh mesh)
 	return fileBuffer;
 }
 
+char* Importer::SaveMaterial(C_Material * aux)
+{
+	uint values[1] = { aux->path.length() };
+	std::string auxPath = aux->path;
+	
+
+	uint size = sizeof(values) + auxPath.length();
+	char* fileBuffer = new char[size]; // Allocate
+	char* cursor = fileBuffer;
+	
+	// First store values
+	uint bytes = sizeof(values); 
+	memcpy(cursor, values, bytes);
+	cursor += bytes;
+
+	// Store path
+	bytes = auxPath.length();
+	memcpy(cursor, auxPath.c_str(), bytes);
+	cursor += bytes;
+
+	App->fileSystem->SavePHO("testingMaterial.pho", fileBuffer, size);
+	
+	return fileBuffer;
+	
+}
+
 bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string path)
 {	
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
@@ -510,7 +544,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 
 	// Load indices
 	bytes = sizeof(uint) * num_indices;
-
+	//indices.resize(num_indices); TODO: THIS IS THE LESS GHETTO WAY TO DO IT
 	for (int i = 0; i < num_indices; i++)
 	{
 		indices.push_back(1); //TODO: ask Oscar a less ghetto way to do this
@@ -560,6 +594,51 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 		return false;
 	};
 	
+}
+
+bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path)
+{
+
+	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
+
+	// amount of indices / vertices / colors / normals / texture_coords
+	uint values[1]; //necessarily hardcoded
+	uint bytes = sizeof(values);
+	memcpy(values, cursor, bytes);
+	cursor += bytes;
+
+	// Load path;
+	bytes = values[0];
+	std::string NewPath;
+	NewPath.resize(bytes);
+	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
+	cursor += bytes;
+
+	//Remake the Material
+	// TODO: we have the path to the texture, now do all the Ilbind image stuff
+	
+	return true;
+}
+
+char* Importer::SerializeGameObject(GameObject * aux) //serialize fbx 
+{
+	return nullptr;
+}
+
+char* Importer::SerializeScene(GameObject* root)	 //serialize scene
+{
+	/*
+	TODO: Look at Marc Json functions?? -> class config + class configarray
+	*/
+	/*
+	1: search for children
+	2. save gameobject -> UID,UID of parent (0 if root, ghetto Alex), save components as children  
+	3. save its components -> type, active, switch to know that extra info to save
+	4. recurr
+	
+	*/
+	
+	return nullptr;
 }
 
 
