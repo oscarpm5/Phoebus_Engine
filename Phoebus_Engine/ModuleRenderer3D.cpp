@@ -705,11 +705,11 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 	int iTotalIn = 0;
 
 	//for each camera plane
-	for (int p = 0; p < 6; ++p) {
+	for (int p = 0; p < 6; p++) {
 		int iInCount = 8;
 		int iPtIn = 1;
 		//for each corner of the AABB box
-		for (int i = 0; i < 8; ++i) {
+		for (int i = 0; i < 8; i++) {
 			// test this point against the planes
 
 			Frustum f;
@@ -737,6 +737,6 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 		iTotalIn += iPtIn;
 	}
 	// so if iTotalIn is 6, then all are inside the view
-	if (iTotalIn == 6)
+	if (iTotalIn >0)
 		return true;
 }
