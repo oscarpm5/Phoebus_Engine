@@ -52,9 +52,9 @@ void SeekMyChildren(GameObject* myself)
 
 			// Display preview (could be anything, e.g. when dragging an image we could decide to display
 			// the filename and a small preview of the image, etc.)
-			
-			ImGui::Text("%s",myself->GetName().c_str());
-			
+
+			ImGui::Text("%s", myself->GetName().c_str());
+
 			ImGui::EndDragDropSource();
 		}
 		if (ImGui::BeginDragDropTarget())
@@ -63,15 +63,19 @@ void SeekMyChildren(GameObject* myself)
 			{
 				IM_ASSERT(payload->DataSize == sizeof(unsigned int));
 				//int payload_n = *(const int*)payload->Data;
-			
-				GameObject* newObj = nullptr;
-				App->editor3d->root->GetChildWithID(*(const unsigned int*)payload->Data,newObj);
-				GameObject* newParent = nullptr;
-				App->editor3d->root->GetChildWithID(myself->ID,newParent);
-				
-				newObj->ChangeParent(newParent);
 
+				GameObject* newObj = nullptr;
+				App->editor3d->root->GetChildWithID(*(const unsigned int*)payload->Data, newObj);
+				GameObject* newParent = nullptr;
+				App->editor3d->root->GetChildWithID(myself->ID, newParent);
+
+				GameObject* isParent = nullptr;
+				newObj->GetChildWithID(newParent->ID, isParent);
 				
+				if (!isParent)
+					newObj->ChangeParent(newParent);
+
+
 				/*newParent->children.push_back(newObj);
 				newObj->parent = newParent;*/
 

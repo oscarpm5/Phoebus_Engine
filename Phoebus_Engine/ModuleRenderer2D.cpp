@@ -286,7 +286,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			LOG("Testing:");
 			C_Material AlexGenio(App->editor3d->root, 777, "lololo");
 			AlexGenio.path = "tengoPathTeLoJuro";
-			char* testBuffer = Importer::SaveMaterial(&AlexGenio);			
+			char* testBuffer = Importer::SaveMaterial(&AlexGenio);
 			App->fileSystem->LoadAsset("Assets/testingMaterial.pho");
 		}
 
@@ -297,6 +297,27 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::Begin("Hierarchy", &showHierarchy))
 		{
 			ShowHierarchyTab();
+
+			ImGui::BeginChild("HierarchyChild");
+			ImGui::EndChild();
+
+			if (ImGui::BeginDragDropTarget())
+			{
+				if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("OBJ_ID"))
+				{
+					IM_ASSERT(payload->DataSize == sizeof(unsigned int));
+
+					GameObject* newObj = nullptr;
+					App->editor3d->root->GetChildWithID(*(const unsigned int*)payload->Data, newObj);
+					newObj->ChangeParent(nullptr);
+				}
+				ImGui::EndDragDropTarget();
+
+			}
+
+
+
+
 		}
 		ImGui::End();
 	}
@@ -1157,7 +1178,7 @@ void ModuleRenderer2D::GuizmoEditTransform()
 			mCurrentGizmoOperation = ImGuizmo::ROTATE;
 		if (App->input->GetKey(SDL_SCANCODE_R) == KEY_DOWN)
 			mCurrentGizmoOperation = ImGuizmo::SCALE;
-		if(App->input->GetKey(SDL_SCANCODE_Q)==KEY_DOWN)//makes gizmo to not show when pressing q (if we want to select the object but see it without the gizmo in front of it)
+		if (App->input->GetKey(SDL_SCANCODE_Q) == KEY_DOWN)//makes gizmo to not show when pressing q (if we want to select the object but see it without the gizmo in front of it)
 			mCurrentGizmoOperation = ImGuizmo::BOUNDS;
 	}
 
