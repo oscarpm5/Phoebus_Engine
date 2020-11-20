@@ -736,6 +736,11 @@ bool ModuleRenderer2D::showConfigFunc()
 			ImGui::EndCombo();
 		}
 
+
+
+		ImGui::Checkbox("Display all AABBs", &App->renderer3D->displayAABBs);
+		
+
 		ImGui::PopStyleColor();
 	}
 

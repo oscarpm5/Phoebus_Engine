@@ -91,7 +91,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	drawGrid = true;
 	showDepth = false;
 	activeCam = nullptr;
-
+	displayAABBs = false;
 	//Just making sure this is initialized
 	gridLength = 500.f;
 	outlineScale = 1.1f;

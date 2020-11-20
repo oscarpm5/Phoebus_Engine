@@ -18,6 +18,11 @@ bool Component::Update(float dt)
 	return true;
 }
 
+bool Component::GameUpdate(float dt)
+{
+	return true;
+}
+
 void Component::OnEditor()
 {
 }

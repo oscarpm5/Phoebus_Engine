@@ -35,6 +35,10 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 	this->ID = App->renderer3D->seed.Int(); //begone T H O T
 }
 
+void GameObject::Awake()
+{
+}
+
 void GameObject::Update(float dt)
 {
 	for (int i = 0; i < components.size(); i++)
@@ -68,6 +72,7 @@ void GameObject::Update(float dt)
 				children[i]->Update(dt);
 			}
 		}
+
 		if (bbHasToUpdate)
 		{
 			UpdateBoundingBox();
@@ -348,7 +353,7 @@ void GameObject::DrawGameObject()
 
 		}
 
-		if (displayBoundingBox && focused)
+		if (App->renderer3D->displayAABBs||(displayBoundingBox && focused))
 		{
 			App->renderer3D->AddBoxToDraw(aabbVec);
 		}
