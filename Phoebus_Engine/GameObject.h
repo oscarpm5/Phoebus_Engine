@@ -24,6 +24,8 @@ public:
 
 	void RemoveChildren(GameObject* toRemove);
 
+	void ChangeParent(GameObject* newParent);//TODO
+
 	void RemoveMyselfFromParent();
 
 	Component* CreateComponent(ComponentType type);
@@ -49,6 +51,7 @@ public:
 		return compVec;
 	}
 
+	void GetChildWithID(unsigned int ID, GameObject*& childOut);
 
 	void UpdateChildTransforms();
 	void UpdateBoundingBox();

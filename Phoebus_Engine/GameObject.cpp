@@ -130,6 +130,28 @@ void GameObject::RemoveChildren(GameObject* toRemove)
 
 }
 
+void GameObject::ChangeParent(GameObject* newParent)
+{
+	RemoveMyselfFromParent();
+	//newParent->children
+	
+	if (newParent == nullptr)
+	{
+		parent = App->editor3d->root;
+	}
+	else
+	{
+		parent = newParent;
+	}
+
+	parent->children.push_back(this);
+
+	C_Transform* transform = GetComponent<C_Transform>();
+	transform->UpdateLocalMat();
+	UpdateChildTransforms();
+
+}
+
 void GameObject::RemoveMyselfFromParent()
 {
 	if (parent)
@@ -187,6 +209,24 @@ bool GameObject::IsParentActive()
 	return isActive;
 }
 
+void GameObject::GetChildWithID(unsigned int ID, GameObject*& childOut)//Note that child out must be nullptr at the start
+{
+	if (this->ID == ID)
+	{
+		childOut = this;
+	}
+	else
+	{
+		for (int i = 0; i < children.size(); i++)
+		{
+			if (childOut == nullptr)
+			{
+				children[i]->GetChildWithID(ID, childOut);
+			}
+		}
+	}
+}
+
 void GameObject::UpdateChildTransforms()
 {
 	GetComponent<C_Transform>()->UpdateGlobalMat();
@@ -221,13 +261,13 @@ void GameObject::UpdateBoundingBox()
 	bbHasToUpdate = false;
 }
 
-void GameObject::GetObjAndAllChilds(std::vector<GameObject*>&childs)
+void GameObject::GetObjAndAllChilds(std::vector<GameObject*>& childs)
 {
 	childs.push_back(this);
 
 	for (int i = 0; i < children.size(); i++)
 	{
-			children[i]->GetObjAndAllChilds(childs);
+		children[i]->GetObjAndAllChilds(childs);
 	}
 
 

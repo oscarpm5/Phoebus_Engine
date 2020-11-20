@@ -40,6 +40,54 @@ void SeekMyChildren(GameObject* myself)
 
 		bool open = ImGui::TreeNodeEx(myself->GetName().c_str(), TreeNodeEx_flags);
 
+
+
+
+		//==========================================================================================
+		// Our buttons are both drag sources and drag targets here!
+		if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+		{
+			// Set payload to carry the object pointer
+			ImGui::SetDragDropPayload("OBJ_ID", &myself->ID, sizeof(unsigned int));
+
+			// Display preview (could be anything, e.g. when dragging an image we could decide to display
+			// the filename and a small preview of the image, etc.)
+			
+			ImGui::Text("%s",myself->GetName().c_str());
+			
+			ImGui::EndDragDropSource();
+		}
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("OBJ_ID"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(unsigned int));
+				//int payload_n = *(const int*)payload->Data;
+			
+				GameObject* newObj = nullptr;
+				App->editor3d->root->GetChildWithID(*(const unsigned int*)payload->Data,newObj);
+				GameObject* newParent = nullptr;
+				App->editor3d->root->GetChildWithID(myself->ID,newParent);
+				
+				newObj->ChangeParent(newParent);
+
+				
+				/*newParent->children.push_back(newObj);
+				newObj->parent = newParent;*/
+
+				/*if (mode == Mode_Move)
+				{
+					names[n] = names[payload_n];
+					names[payload_n] = "";
+				}*/
+			}
+			ImGui::EndDragDropTarget();
+		}
+
+		//==========================================================================================
+
+
+
 		if (ImGui::IsItemClicked())
 		{
 			if (!App->editor3d->GetSelectedGameObject().empty())
