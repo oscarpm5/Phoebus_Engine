@@ -17,10 +17,14 @@ public:
 	unsigned int ID; //save / load func
 
 	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true);
+	
+	void Awake();
 
 	void Update(float dt);
 
 	~GameObject();
+
+
 
 	void RemoveChildren(GameObject* toRemove);
 

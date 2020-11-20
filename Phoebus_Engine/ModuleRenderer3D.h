@@ -91,6 +91,7 @@ public:
 	bool texture2D;
 	bool drawGrid;
 	bool showDepth;
+	bool displayAABBs;
 	C_Camera* activeCam;//culling camera
 };
 #endif // !__MODULE_RENDERER__

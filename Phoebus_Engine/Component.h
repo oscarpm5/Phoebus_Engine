@@ -18,6 +18,7 @@ public:
 	Component(ComponentType type,GameObject* owner);
 	virtual ~Component();
 	virtual bool Update(float dt);
+	virtual bool GameUpdate(float dt);
 
 	virtual void OnEditor();//component drawing itself on the window
 	

@@ -111,6 +111,9 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)
 * Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
+### Second Assigment
+* Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs"
+
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
