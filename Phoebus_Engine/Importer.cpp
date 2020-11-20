@@ -629,15 +629,15 @@ char* Importer::SerializeScene(GameObject* root)	 //serialize scene
 {
 	/*
 	TODO: Look at Marc Json functions?? -> class config + class configarray
+										config has own destructor, no worries there
 	*/
 	/*
 	1: search for children
 	2. save gameobject -> UID,UID of parent (0 if root, ghetto Alex), save components as children  
 	3. save its components -> type, active, switch to know that extra info to save
 	4. recurr
-	
 	*/
-	
+
 	return nullptr;
 }
 
