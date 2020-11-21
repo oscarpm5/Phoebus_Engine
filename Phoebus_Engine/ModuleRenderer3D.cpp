@@ -262,6 +262,7 @@ bool ModuleRenderer3D::CleanUp()
 	SDL_GL_DeleteContext(context);
 
 	drawMeshes.clear();
+	drawSelectedMeshes.clear();
 	drawStencil.clear();
 	drawAABBs.clear();
 	while (!stencilMeshes.empty())//clear stencil meshes
@@ -506,10 +507,11 @@ void ModuleRenderer3D::DrawOutline()
 	{
 		DrawGrid();
 	}
+	RenderMeshes();
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
 	glStencilMask(0xFF);
-	RenderMeshes();
+	RenderSelectedMeshes();
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
@@ -537,6 +539,16 @@ void ModuleRenderer3D::RenderMeshes()
 	}
 	drawMeshes.clear();
 	drawMeshes.shrink_to_fit();
+}
+
+void ModuleRenderer3D::RenderSelectedMeshes()
+{
+	for (int i = 0; i < drawSelectedMeshes.size(); i++)
+	{
+		drawSelectedMeshes[i].Draw(App->editor3d->maxSceneDrawMode);
+	}
+	drawSelectedMeshes.clear();
+	drawSelectedMeshes.shrink_to_fit();
 }
 
 void ModuleRenderer3D::RenderStencil()
@@ -678,13 +690,16 @@ bool ModuleRenderer3D::ExpandMeshVerticesByScale(Mesh& m, float newScale)//TODO 
 
 	}
 
-	
+
 }
 
 
-void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform)
+void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform, bool isSelected)
 {
-	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
+	if (isSelected)
+		drawSelectedMeshes.push_back(RenderMesh(mesh, material, gTransform));
+	else
+		drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }
 
 void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, float3 color)
@@ -737,6 +752,6 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 		iTotalIn += iPtIn;
 	}
 	// so if iTotalIn is 6, then all are inside the view
-	if (iTotalIn >0)
+	if (iTotalIn > 0)
 		return true;
 }

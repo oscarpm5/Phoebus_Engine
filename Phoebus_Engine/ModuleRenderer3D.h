@@ -39,7 +39,7 @@ public:
 	void DrawOutline();
 
 
-	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform);
+	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform,bool isSelected);
 	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform,float3 color=float3(1.0f,1.0f,1.0f));
 	void AddBoxToDraw(std::vector<float3> corners);
 
@@ -47,6 +47,7 @@ public:
 
 private:
 	void RenderMeshes();
+	void RenderSelectedMeshes();
 	void RenderStencil();
 	void RenderAABBs();
 	void DrawGrid();
@@ -63,6 +64,7 @@ private:
 	int nVertex;
 	int indexSize;
 	std::vector<RenderMesh> drawMeshes;
+	std::vector<RenderMesh> drawSelectedMeshes;
 	std::vector<RenderMesh> drawStencil;
 	std::vector<RenderBox> drawAABBs;
 	std::vector<C_Mesh*> stencilMeshes;

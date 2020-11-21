@@ -348,7 +348,7 @@ void GameObject::DrawGameObject()
 		{
 			if (meshes[i]->IsActive())
 			{
-				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform());
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(),focused);//TODO change focused for selected in the future when we have more than 1 selection
 			}
 
 		}
