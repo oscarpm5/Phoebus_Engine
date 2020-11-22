@@ -70,7 +70,7 @@ bool Application::Init()
 	}
 
 	ms_timer.Start();
-	
+
 	return ret;
 }
 
@@ -79,7 +79,7 @@ void Application::PrepareUpdate()
 {
 	Uint32 msDT = ms_timer.Read();
 	realTime += msDT;
-	realDT = (float)msDT *0.001f;
+	realDT = (float)msDT * 0.001f;
 
 
 	ProcessGameStates(lastRelevantStateChange);
@@ -88,8 +88,20 @@ void Application::PrepareUpdate()
 	if (gameState == GameStateEnum::PLAYED || gameState == GameStateEnum::ADVANCEONE)
 	{
 		frameCount++;//when we finish a frame, add 1 to the frame count
-		time += (timeScale * msDT);
-		gameDT = (float)msDT * 0.001f*timeScale;
+		if ((time + (timeScale * msDT)) < 0)
+		{
+			time = 0;
+			LOG("");
+			LOG("[error] Well, well, it seems that someone has tried to go back in time to before the creation of time iself.\nWe have tried that too, and we assure you that is not possible.");
+			LOG("[warning] We will now proceed to restore the flow of time as it should be...\nPress 'Pause' button to continue the execution of the game")
+			timeScale = 1.0f;
+			SetNewGameState(GameStateEnum::PAUSED);
+		}
+		else
+		{
+			time += (timeScale * msDT);
+		}
+		gameDT = (float)msDT * 0.001f * timeScale;
 	}
 	if (gameState == GameStateEnum::STOPPED && time != 0)
 	{
@@ -254,7 +266,7 @@ Uint32 Application::GetFrameCount() const
 
 float Application::GetTime() const
 {
-	return (time*0.001f);
+	return (time * 0.001f);
 }
 
 float Application::GetTimeScale() const
@@ -269,7 +281,7 @@ float Application::GetGameDT() const
 
 float Application::GetRealTime() const
 {
-	return (realTime*0.001f);
+	return (realTime * 0.001f);
 }
 
 float Application::GetRealDT() const
