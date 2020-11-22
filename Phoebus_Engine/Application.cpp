@@ -95,6 +95,7 @@ void Application::PrepareUpdate()
 	{
 		time = 0;
 		frameCount = 0;
+		gameDT = 0.0f;
 	}
 
 	//FPS buffer for graph display
@@ -165,8 +166,6 @@ bool Application::CleanUp()
 
 void Application::ProcessGameStates(GameStateEnum newState)
 {
-	if (newState == GameStateEnum::UNKNOWN)
-		return;
 
 	switch (gameState)
 	{

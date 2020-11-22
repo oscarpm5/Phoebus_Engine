@@ -295,20 +295,84 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 
 		//testing code for button disable
-		bool disabled = true;
-		if (disabled)
+		GameStateEnum state = App->GetGameState();
+
+		bool isGamePlaying=true;//when this is true, the color of the play button should turn blue, also enable both pause & step
+		bool isGamePaused = false;//when this is true the color of the pause button should turn blue
+
+		if (state == GameStateEnum::STOPPED)
+			isGamePlaying = false;
+		if (state == GameStateEnum::PAUSED|| state == GameStateEnum::ADVANCEONE)
+			isGamePaused = true;
+		
+		//Play button
+		if (isGamePlaying)
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.5f, 1.0f, 1.0f));
+		}
+		if (ImGui::ArrowButton("Play##button", ImGuiDir_Right))
+		{
+			if (isGamePlaying)
+			{
+				App->SetNewGameState(GameStateEnum::STOPPED);
+			}
+			else
+			{
+				App->SetNewGameState(GameStateEnum::PLAYED);
+			}
+		}
+		if (isGamePlaying)
+		{
+			ImGui::PopStyleColor();
+		}
+
+		//Pause button
+		if (!isGamePlaying)
 		{
 			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 		}
-		ImGui::ArrowButton("Play##button", ImGuiDir_Right);
-		ImGui::Button("Pause##button");
-		ImGui::Button("Step Frame##button");
-		if (disabled)
+		else if(isGamePaused)
+		{ 
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.5f, 1.0f, 1.0f));
+		}
+		if (ImGui::Button("Pause##button"))
+		{
+			if (isGamePaused)
+			{
+				App->SetNewGameState(GameStateEnum::PLAYED);
+			}
+			else
+			{
+				App->SetNewGameState(GameStateEnum::PAUSED);
+			}
+		}
+		if (!isGamePlaying)
 		{
 			ImGui::PopItemFlag();
 			ImGui::PopStyleVar();
 		}
+		else if (isGamePaused)
+		{
+			ImGui::PopStyleColor();
+		}
+
+		//Step button
+		if (!isGamePlaying)
+		{
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		}
+		if (ImGui::Button("Step Frame##button"))
+		{
+			App->SetNewGameState(GameStateEnum::ADVANCEONE);
+		}
+		if (!isGamePlaying)
+		{
+			ImGui::PopItemFlag();
+			ImGui::PopStyleVar();
+		}
+
 		//end of testing code
 	}
 	ImGui::EndMainMenuBar();
@@ -591,11 +655,14 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		sprintf_s(title, 25, "Milliseconds %.1f", App->millisecondsBuffer[App->millisecondsBuffer.size() - 1]);
 		ImGui::PlotHistogram("##ms", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
-
+		ImGui::Spacing();
+		ImGui::Spacing();
 		ImGui::Text("FrameCount: %u", App->GetFrameCount());
 		ImGui::Text("GameClock:  %.3f", App->GetTime());
-		ImGui::Text("TimeScale:  %.3f", App->GetTimeScale());
 		ImGui::Text("Game DT:    %.3f", App->GetGameDT());
+		ImGui::Text("TimeScale:  %.3f", App->GetTimeScale());
+		ImGui::Spacing();
+		ImGui::Spacing();
 		ImGui::Text("RealClock:  %.3f", App->GetRealTime());
 		ImGui::Text("Engine DT:  %.3f", App->GetRealDT());
 
