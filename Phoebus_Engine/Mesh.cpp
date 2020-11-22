@@ -3,7 +3,7 @@
 #include "Mesh.h"
 
 #include "Glew/include/glew.h" //order matters
-#include "glmath.h"
+//#include "glmath.h"
 
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"

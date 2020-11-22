@@ -13,12 +13,12 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 	lastKnowMousePos = float2(-1.0f, -1.0f);
 	//CalculateViewMatrix();
 
-	X = vec3(1.0f, 0.0f, 0.0f);
-	Y = vec3(0.0f, 1.0f, 0.0f);
-	Z = vec3(0.0f, 0.0f, 1.0f);
+	X = float3(1.0f, 0.0f, 0.0f);
+	Y = float3(0.0f, 1.0f, 0.0f);
+	Z = float3(0.0f, 0.0f, 1.0f);
 
-	Position = vec3(2.0f, 2.0f, 2.0f);
-	Reference = vec3(0.0f, 0.0f, 0.0f);
+	Position = float3(2.0f, 2.0f, 2.0f);
+	Reference = float3(0.0f, 0.0f, 0.0f);
 	//foV = 60.0f;
 	//nearPlaneDist = 0.125f;
 	//farPlaneDist = 512.0f;
@@ -82,7 +82,7 @@ update_status ModuleCamera3D::Update(float dt)
 				target = App->editor3d->selectedGameObjs.back();
 				targetpos = target->GetComponent<C_Transform>()->GetGlobalPosition(); //get global pos
 			}
-			MoveTo(vec3(targetpos.x, targetpos.y, targetpos.z), CamObjective::REFERENCE);
+			MoveTo(float3(targetpos.x, targetpos.y, targetpos.z), CamObjective::REFERENCE);
 		}
 
 
@@ -93,7 +93,8 @@ update_status ModuleCamera3D::Update(float dt)
 			int dx = -App->input->GetMouseXMotion();
 			int dy = App->input->GetMouseYMotion();
 
-			float Sensitivity = sqrt(length(Position - Reference) * 0.005f) * 0.5f;/*Pow(2.0f,zoomLevel*0.075f)*0.005f;*/
+			float3 aux = Position - Reference;
+			float Sensitivity = sqrt(aux.Length() * 0.005f) * 0.5f;/*Pow(2.0f,zoomLevel*0.075f)*0.005f;*/
 			Sensitivity = max(Sensitivity, 0.05f);
 
 			if (dx != 0)
@@ -113,7 +114,7 @@ update_status ModuleCamera3D::Update(float dt)
 		}
 		else if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_REPEAT)//Camera Rotate TODO: Camera rotate & camera orbit have duplicated code
 		{
-			vec3 newPos(0, 0, 0);
+			float3 newPos(0, 0, 0);
 			float speed = camSpeed * dt;
 			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 				speed *= camSpeedMult;
@@ -143,26 +144,26 @@ update_status ModuleCamera3D::Update(float dt)
 			{
 				float DeltaX = (float)dx * Sensitivity;
 
-				X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));//TODO rotate still works with gl math
-				Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-				Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+				X = Rotate(X, DeltaX, float3(0.0f, 1.0f, 0.0f));//TODO rotate still works with gl math
+				Y = Rotate(Y, DeltaX, float3(0.0f, 1.0f, 0.0f));
+				Z = Rotate(Z, DeltaX, float3(0.0f, 1.0f, 0.0f));
 			}
 
 			if (dy != 0)
 			{
 				float DeltaY = (float)dy * Sensitivity;
 
-				Y = rotate(Y, DeltaY, X);
-				Z = rotate(Z, DeltaY, X);
+				Y = Rotate(Y, DeltaY, X);
+				Z = Rotate(Z, DeltaY, X);
 
 				if (Y.y < 0.0f)
 				{
-					Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-					Y = cross(Z, X);
+					Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+					Y = Z.Cross(X);
 				}
 			}
 
-			Reference = Position - Z * length(Reference);
+			Reference = Position - Z * Reference.Length();
 		}
 		else if (viewportClickRecieved && App->input->GetKey(SDL_SCANCODE_LALT) == KEY_IDLE)
 		{
@@ -181,26 +182,26 @@ update_status ModuleCamera3D::Update(float dt)
 			{
 				float DeltaX = (float)dx * Sensitivity;
 
-				X = rotate(X, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-				Y = rotate(Y, DeltaX, vec3(0.0f, 1.0f, 0.0f));
-				Z = rotate(Z, DeltaX, vec3(0.0f, 1.0f, 0.0f));
+				X = Rotate(X, DeltaX, float3(0.0f, 1.0f, 0.0f));
+				Y = Rotate(Y, DeltaX, float3(0.0f, 1.0f, 0.0f));
+				Z = Rotate(Z, DeltaX, float3(0.0f, 1.0f, 0.0f));
 			}
 
 			if (dy != 0)
 			{
 				float DeltaY = (float)dy * Sensitivity;
 
-				Y = rotate(Y, DeltaY, X);
-				Z = rotate(Z, DeltaY, X);
+				Y = Rotate(Y, DeltaY, X);
+				Z = Rotate(Z, DeltaY, X);
 
 				if (Y.y < 0.0f)
 				{
-					Z = vec3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
-					Y = cross(Z, X);
+					Z = float3(0.0f, Z.y > 0.0f ? 1.0f : -1.0f, 0.0f);
+					Y = Z.Cross(X);
 				}
 			}
 
-			Position = Reference + Z * length(Position);
+			Position = Reference + Z * Position.Length();
 		}
 
 		if (App->input->GetMouseZ() != 0)
@@ -255,15 +256,15 @@ void ModuleCamera3D::LookAt(const vec3& Spot)
 */
 
 // -----------------------------------------------------------------
-void ModuleCamera3D::Move(const vec3& Movement)
+void ModuleCamera3D::Move(const float3& Movement)
 {
 	Position += Movement;
 	Reference += Movement;
 }
 
-void ModuleCamera3D::MoveTo(const vec3& Destination, CamObjective toMove)
+void ModuleCamera3D::MoveTo(const float3& Destination, CamObjective toMove)
 {
-	vec3 movement;
+	float3 movement;
 
 	if (toMove == CamObjective::REFERENCE)
 		movement = Destination - Reference;
@@ -287,6 +288,15 @@ void ModuleCamera3D::CreateRayFromScreenPos(float normalizedX, float normalizedY
 	LineSegment picking = editorCam->GetFrustum().UnProjectLineSegment(normalizedX, normalizedY);
 
 	App->editor3d->TestRayHitObj(picking);
+}
+
+float3 ModuleCamera3D::Rotate(const float3& u, float angle, const float3& v)
+{
+	float newAngle= DegToRad(angle);
+	float4x4 rotMat = float4x4::RotateAxisAngle(v, newAngle);
+	float4 aux= rotMat *float4(u, 1.0f);
+
+	return float3(aux.x,aux.y,aux.z);
 }
 
 // -----------------------------------------------------------------

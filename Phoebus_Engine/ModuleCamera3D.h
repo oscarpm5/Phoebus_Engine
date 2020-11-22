@@ -6,8 +6,8 @@
 #include "Globals.h"
 //#include "glmath.h"
 
-class vec3;
-class mat4x4;
+//class vec3;
+//class mat4x4;
 //TODO this module still works with glmath, change this (vec3, cross method, rotate method)
 
 
@@ -32,8 +32,8 @@ public:
 
 	//void Look(const vec3 &Position, const vec3 &Reference, bool RotateAroundReference = false);
 	//void LookAt(const vec3 &Spot);
-	void Move(const vec3 &Movement);
-	void MoveTo(const vec3& Destination,CamObjective toMove);
+	void Move(const float3 &Movement);
+	void MoveTo(const float3& Destination,CamObjective toMove);
 	void CamZoom(int addZoomAmount);
 	//float* GetRawViewMatrix();
 	//mat4x4 GetViewMatrix();
@@ -43,10 +43,10 @@ public:
 private:
 
 	//void CalculateViewMatrix();
-
+	float3 Rotate(const float3& u, float angle, const float3& v);
 public:
 	
-	vec3 X, Y, Z, Position, Reference;
+	float3 X, Y, Z, Position, Reference;
 	//float foV;
 	//float nearPlaneDist;
 	//float farPlaneDist;
@@ -63,7 +63,7 @@ public:
 
 private:
 	float zoomLevel;
-	mat4x4 ViewMatrix, ViewMatrixInverse;
+	//mat4x4 ViewMatrix, ViewMatrixInverse;
 
 };
 #endif // !__CAMERA_3D__

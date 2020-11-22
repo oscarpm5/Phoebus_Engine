@@ -16,8 +16,6 @@
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
 
-class mat3x3;
-class mat4x4;
 class Mesh;
 
 class ModuleRenderer3D : public Module
@@ -74,8 +72,7 @@ public:
 	Light lights[MAX_LIGHTS];
 
 	SDL_GLContext context;
-	mat3x3 NormalMatrix;
-	mat4x4 ProjectionMatrix;
+	
 
 	unsigned int frameBuffer;
 	unsigned int renderTex;

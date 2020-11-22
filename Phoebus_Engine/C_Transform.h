@@ -2,7 +2,7 @@
 #define __C_TRANSFORM__
 #include "Component.h"
 #include "Assimp/include/matrix4x4.h" //we cant do forward declaration. Thanks, assimp
-#include "glmath.h"//we cant do forward declaration.
+//#include "glmath.h"//we cant do forward declaration.
 #include "MathGeoLib/include/MathGeoLib.h"
 
 class C_Transform : public Component

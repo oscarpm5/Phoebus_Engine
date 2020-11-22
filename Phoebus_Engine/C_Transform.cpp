@@ -1,4 +1,4 @@
-#include "glmath.h"
+//#include "glmath.h"
 #include "GameObject.h"
 #include "C_Transform.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?

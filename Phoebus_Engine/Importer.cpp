@@ -23,7 +23,7 @@
 #pragma comment(lib,"DevIL/lib/x86/Release/ILUT.lib")
 
 #include<deque>
-#include"glmath.h"
+//#include"glmath.h"
 #include"MathGeoLib/include/MathGeoLib.h"
 
 #include "GameObject.h"

@@ -617,20 +617,20 @@ void ModuleRenderer3D::DrawGrid()
 		if (i >= -newSep * 0.5f && i <= newSep * 0.5f)isCenterLine = true;
 		if (greatLines == 0)isGreatLine = true;
 
-		vec4 color1 = vec4(transparency, transparency, transparency, transparency);
-		vec4 color2 = vec4(transparency, transparency, transparency, transparency);;
+		float4 color1 = float4(transparency, transparency, transparency, transparency);
+		float4 color2 = float4(transparency, transparency, transparency, transparency);;
 
 		if (isGreatLine)
 		{
 			glLineWidth(1.0f);
-			color1 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-			color2 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			color1 = float4(1.0f, 1.0f, 1.0f, 1.0f);
+			color2 = float4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 		if (isCenterLine)
 		{
 			glLineWidth(1.0f);
-			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
-			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			color1 = float4(0.0f, 0.0f, 1.0f, 1.0f);
+			color2 = float4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
 
 		glLineWidth(1.0f);
