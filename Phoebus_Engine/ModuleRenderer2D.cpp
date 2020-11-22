@@ -1,6 +1,7 @@
 
 //The order is relevant from here...
 #include "imgui/imgui.h"
+#include "imgui/imgui_internal.h"
 #include "imgui/imgui_impl_sdl.h"
 #include "imgui/imgui_impl_opengl3.h"
 
@@ -290,8 +291,28 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			App->fileSystem->LoadAsset("Assets/testingMaterial.pho");
 		}
 
+
+
+
+		//testing code for button disable
+		bool disabled = true;
+		if (disabled)
+		{
+			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+		}
+		ImGui::ArrowButton("Play##button", ImGuiDir_Right);
+		ImGui::Button("Pause##button");
+		ImGui::Button("Step Frame##button");
+		if (disabled)
+		{
+			ImGui::PopItemFlag();
+			ImGui::PopStyleVar();
+		}
+		//end of testing code
 	}
 	ImGui::EndMainMenuBar();
+
 	if (showHierarchy)
 	{
 		if (ImGui::Begin("Hierarchy", &showHierarchy))
@@ -569,7 +590,16 @@ bool ModuleRenderer2D::showConfigFunc()
 
 
 		sprintf_s(title, 25, "Milliseconds %.1f", App->millisecondsBuffer[App->millisecondsBuffer.size() - 1]);
-		ImGui::PlotHistogram("##framerate", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
+		ImGui::PlotHistogram("##ms", &App->millisecondsBuffer[0], App->millisecondsBuffer.size(), 0, title, 0.0f, 100.0f, ImVec2(400, 100));
+
+		ImGui::Text("FrameCount: %u", App->GetFrameCount());
+		ImGui::Text("GameClock:  %.3f", App->GetTime());
+		ImGui::Text("TimeScale:  %.3f", App->GetTimeScale());
+		ImGui::Text("Game DT:    %.3f", App->GetGameDT());
+		ImGui::Text("RealClock:  %.3f", App->GetRealTime());
+		ImGui::Text("Engine DT:  %.3f", App->GetRealDT());
+
+
 
 		ImGui::PopStyleColor(2);
 
