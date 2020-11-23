@@ -60,3 +60,11 @@ enum update_status
 class Application;
 
 extern Application* App;
+
+
+//define paths
+#define LIB_PATH "Library/"
+#define MESH_PATH "Library/Meshes/"
+#define MATERIAL_PATH "Library/Materials/"
+#define TEXTURE_PATH "Library/Textures/"
+#define SCENE_PATH "Library/Scenes/"
