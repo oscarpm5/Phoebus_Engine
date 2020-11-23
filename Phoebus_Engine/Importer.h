@@ -5,6 +5,8 @@ struct aiScene;
 class GameObject;
 class Mesh;
 class C_Material;
+class C_Transform;
+class C_Camera;
 
 namespace Importer
 {
@@ -25,9 +27,12 @@ namespace Importer
 	//Testing own file format
 	char* SaveMesh(Mesh aux);
 	char* SaveMaterial(C_Material * aux);
+	char* SaveTransform(C_Transform * aux);
+	char* SaveCamera(C_Camera* aux);
 	bool LoadMeshFromPho(char* Buffer, unsigned int Length, std::string path);
 	bool LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path);
-
+	bool LoadTransformFromPho(char* buffer, unsigned int Lenght, std::string path);
+	bool LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string path);
 
 	char* SerializeGameObject(GameObject * aux);
 	char* SerializeScene(GameObject* root);

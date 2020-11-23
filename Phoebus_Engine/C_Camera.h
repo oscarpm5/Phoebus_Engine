@@ -29,6 +29,8 @@ public:
 	float GetNearPlaneDist()const;
 	float GetFarPlaneDist()const;
 	float GetFoV()const;
+	float GetFoVx() const;
+	float GetFoVY() const;
 	float GetAspectRatio()const;
 	float GetInvAspectRatio()const;
 	const Frustum& GetFrustum() const;

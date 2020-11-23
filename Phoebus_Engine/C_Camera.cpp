@@ -257,6 +257,16 @@ float C_Camera::GetFoV() const
 	return RadToDeg(frustum.horizontalFov);
 }
 
+float C_Camera::GetFoVx() const
+{
+	return FoVx;
+}
+
+float C_Camera::GetFoVY() const
+{
+	return FoVy;
+}
+
 float C_Camera::GetAspectRatio() const
 {
 

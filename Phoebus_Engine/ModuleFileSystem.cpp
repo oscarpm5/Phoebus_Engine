@@ -209,7 +209,9 @@ void ModuleFileSystem::LoadAsset(char* path)
 
 	case FileFormats::PHO:
 		//Importer::LoadMeshFromPho(buffer, size, newPath);
-		Importer::LoadMaterialFromPho(buffer, size, newPath);
+		//Importer::LoadMaterialFromPho(buffer, size, newPath);
+		//Importer::LoadTransformFromPho(buffer, size, newPath);
+		Importer::LoadCameraFromPho(buffer, size, newPath);
 		break;
 	case FileFormats::UNDEFINED:
 		LOG("[error]asset from %s has no recognizable format", path);

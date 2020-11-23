@@ -31,6 +31,8 @@
 #include "C_Mesh.h"
 #include "Mesh.h"
 #include "C_Material.h"
+#include "C_Transform.h"
+#include "C_Camera.h"
 
 bool Importer::InitializeDevIL()
 {
@@ -527,6 +529,46 @@ char* Importer::SaveMaterial(C_Material * aux)
 	
 }
 
+char* Importer::SaveTransform(C_Transform* aux)
+{
+	float4x4 values[1] = { aux->GetGlobalTransform() };
+
+	uint size = sizeof(values);
+	char* fileBuffer = new char[size]; // Allocate
+	char* cursor = fileBuffer;
+
+	// First store values
+	uint bytes = sizeof(values);
+	memcpy(cursor, values, bytes);
+	cursor += bytes;
+
+	App->fileSystem->SavePHO("testingTransform.pho", fileBuffer, size);
+
+	return fileBuffer;
+}
+
+char* Importer::SaveCamera(C_Camera* aux)
+{
+	//float nearPlaneDist;
+	//float farPlaneDist;
+	//float FoVx;
+	//float FoVy;
+	float values[4] = { aux->GetNearPlaneDist(), aux->GetFarPlaneDist(), aux->GetFoVx(), aux->GetFoVY() };
+
+	uint size = sizeof(values);
+	char* fileBuffer = new char[size]; // Allocate
+	char* cursor = fileBuffer;
+
+	// First store values
+	uint bytes = sizeof(values);
+	memcpy(cursor, values, bytes);
+	cursor += bytes;
+
+	App->fileSystem->SavePHO("testingCamera.pho", fileBuffer, size);
+
+	return fileBuffer;
+}
+
 bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string path)
 {	
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
@@ -601,7 +643,7 @@ bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::strin
 
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
-	// amount of indices / vertices / colors / normals / texture_coords
+	// path
 	uint values[1]; //necessarily hardcoded
 	uint bytes = sizeof(values);
 	memcpy(values, cursor, bytes);
@@ -617,6 +659,43 @@ bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::strin
 	//Remake the Material
 	// TODO: we have the path to the texture, now do all the Ilbind image stuff
 	
+	return true;
+}
+
+bool Importer::LoadTransformFromPho(char* buffer, unsigned int Lenght, std::string path)
+{
+	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
+
+	// global mat
+	float4x4 values[1]; //necessarily hardcoded
+	uint bytes = sizeof(values);
+	memcpy(values, cursor, bytes);
+	cursor += bytes;
+
+	// Load global mat (float4x4);
+	float4x4 gMat = values[0];
+
+	return true;
+}
+
+bool Importer::LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string path)
+{
+	//float nearPlaneDist; float farPlaneDist; float FoVx; float FoVy;
+	
+	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
+
+	// values stored
+	float values[4]; //necessarily hardcoded
+	uint bytes = sizeof(values);
+	memcpy(values, cursor, bytes);
+	cursor += bytes;
+
+	// Load global mat (float4x4);
+	float nearPlaneDist = values[0];
+	float farPlaneDist = values[1];
+	float FoVx = values[2];
+	float FoVy = values[3];
+
 	return true;
 }
 
