@@ -551,9 +551,8 @@ char* Importer::SaveCamera(C_Camera* aux)
 {
 	//float nearPlaneDist;
 	//float farPlaneDist;
-	//float FoVx;
-	//float FoVy;
-	float values[4] = { aux->GetNearPlaneDist(), aux->GetFarPlaneDist(), aux->GetFoVx(), aux->GetFoVY() };
+	//float FoV;
+	float values[4] = { aux->GetNearPlaneDist(), aux->GetFarPlaneDist(), aux->GetFoV(),aux->GetAspectRatio()};
 
 	uint size = sizeof(values);
 	char* fileBuffer = new char[size]; // Allocate
@@ -680,7 +679,7 @@ bool Importer::LoadTransformFromPho(char* buffer, unsigned int Lenght, std::stri
 
 bool Importer::LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string path)
 {
-	//float nearPlaneDist; float farPlaneDist; float FoVx; float FoVy;
+	//float nearPlaneDist; float farPlaneDist; float FoV; float aspectRatio;
 	
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
@@ -693,8 +692,8 @@ bool Importer::LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string 
 	// Load global mat (float4x4);
 	float nearPlaneDist = values[0];
 	float farPlaneDist = values[1];
-	float FoVx = values[2];
-	float FoVy = values[3];
+	float FoV = values[2];
+	float aspectRatio = values[3];
 
 	return true;
 }

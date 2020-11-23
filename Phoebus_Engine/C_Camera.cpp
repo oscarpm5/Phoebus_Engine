@@ -10,12 +10,42 @@ nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRat
 projectionMatrix(float4x4::identity)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
-	SetNewAspectRatio(1920.0f, 1080.0f);//TODO default
+
+	float2 screenSize;
+
+	if (App != nullptr)
+		App->renderer2D->GetViewportRectUI(float2(), screenSize);
+	else
+		screenSize = float2(1920, 1080);
+
+	SetNewAspectRatio(screenSize.x, screenSize.y);
+}
+
+C_Camera::C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV, float aspectRatio):Component(ComponentType::CAMERA, owner),
+nearPlaneDist(nPlaneDist),farPlaneDist(fPlaneDist), FoVx(foV), FoVy(0.0f), invAspectRatio(0),projectionMatrix(float4x4::identity)
+{
+	frustum.type = math::FrustumType::PerspectiveFrustum;
+	
+	float2 screenSize;
+
+	if (App != nullptr)
+		App->renderer2D->GetViewportRectUI(float2(), screenSize);
+	else
+		screenSize = float2(1920, 1080);
+
+	if (aspectRatio != 0.0f)
+	{
+		SetNewAspectRatio(aspectRatio);
+	}
+	else
+	{
+		SetNewAspectRatio(screenSize.x, screenSize.y);
+	}
 }
 
 C_Camera::~C_Camera()
 {
-	if (App!=nullptr&& App->renderer3D->activeCam == this)//TODO this seems not ok... we dont want camera to be dependant on renderer 3d
+	if (App != nullptr && App->renderer3D->activeCam == this)//TODO this seems not ok... we dont want camera to be dependant on renderer 3d
 	{
 		App->renderer3D->activeCam = nullptr;
 	}
@@ -74,14 +104,14 @@ void C_Camera::OnEditor()
 		auxf = GetNearPlaneDist();
 		int flags = ImGuiSliderFlags_Logarithmic;
 
-		if (ImGui::DragFloat("NearPlaneDist##CamNearDist", &auxf, 0.0f, 0.01f,GetFarPlaneDist(),"%.3f", flags))
+		if (ImGui::DragFloat("NearPlaneDist##CamNearDist", &auxf, 0.0f, 0.01f, GetFarPlaneDist(), "%.3f", flags))
 		{
 			SetNearPlane(auxf);
 		}
 		//flags = ImGuiSliderFlags_None;
 		//Far plane
 		auxf = GetFarPlaneDist();
-		if (ImGui::DragFloat("FarPlaneDist##CamFarDist", &auxf, 0.0f, 0.1f,20000.0f, "%.3f", flags))
+		if (ImGui::DragFloat("FarPlaneDist##CamFarDist", &auxf, 0.0f, 0.1f, 20000.0f, "%.3f", flags))
 		{
 			SetFarPlane(auxf);
 		}
@@ -257,20 +287,10 @@ float C_Camera::GetFoV() const
 	return RadToDeg(frustum.horizontalFov);
 }
 
-float C_Camera::GetFoVx() const
-{
-	return FoVx;
-}
-
-float C_Camera::GetFoVY() const
-{
-	return FoVy;
-}
-
 float C_Camera::GetAspectRatio() const
 {
 
-	return 1/invAspectRatio;
+	return 1 / invAspectRatio;
 }
 
 float C_Camera::GetInvAspectRatio() const

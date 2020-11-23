@@ -9,6 +9,7 @@ class C_Camera:public Component
 public:
 
 	C_Camera(GameObject* owner);
+	C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV,float aspectRatio=0.0f);
 	~C_Camera();
 
 	bool Update(float dt);
@@ -29,8 +30,7 @@ public:
 	float GetNearPlaneDist()const;
 	float GetFarPlaneDist()const;
 	float GetFoV()const;
-	float GetFoVx() const;
-	float GetFoVY() const;
+
 	float GetAspectRatio()const;
 	float GetInvAspectRatio()const;
 	const Frustum& GetFrustum() const;
