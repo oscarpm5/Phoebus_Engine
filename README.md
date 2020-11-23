@@ -70,6 +70,22 @@ Note that objects with children in the hierarchy will have to be deployed before
 Holding Shift when dragging the Far/Near plane buttons in the config/camera panels allows extra precision.
 
 
+
+* Q key
+	- Hide Gizmos
+
+* W key
+	- Use Move Gizmo
+
+* E key
+	- Use Rotate Gizmo
+
+* R key
+	- Use Scale Gizmo
+
+
+
+
 ## Aditional functionality:
 
 ### First Assigment
@@ -104,6 +120,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Object Translate/Rotate/Scale can be done in both local & global space.
 
+* Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]
+
  
 ## Aditional comments for the teacher:
 
@@ -117,6 +135,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
 * Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
+* Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
