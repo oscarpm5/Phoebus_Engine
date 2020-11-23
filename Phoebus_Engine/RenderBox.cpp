@@ -17,7 +17,6 @@ void RenderBox::Draw()
 	//there are 8 corners in a box
 	// They will be in the order 0: ---, 1: --+, 2: -+-, 3: -++, 4: +--, 5: +-+, 6: ++-, 7: +++.
 	//where - is the most negative point and + the max positive.
-	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
 
 	glLineWidth(2.0f);
@@ -66,6 +65,6 @@ void RenderBox::Draw()
 	glVertex3f(points[6].x, points[6].y, points[6].z);
 	
 	glEnd();
-	glEnable(GL_LIGHTING);
+
 
 }

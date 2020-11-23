@@ -442,7 +442,7 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 
 	//attaching the image to the frame buffer
 	if (showDepth)
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
 	else
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
 
@@ -528,14 +528,20 @@ void ModuleRenderer3D::DrawOutline()
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 	glStencilMask(0x00);
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
+
+	if (depthTesting)
+		glDisable(GL_DEPTH_TEST);
+	if (lighting)
+		glDisable(GL_LIGHTING);
 	//glDisable(GL_CULL_FACE);
 	RenderStencil();
 	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 0, 0xFF);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
+
+	if (depthTesting)
+		glEnable(GL_DEPTH_TEST);
+	if (lighting)
+		glEnable(GL_LIGHTING);
 	//glEnable(GL_CULL_FACE);
 
 	//TODO for the moment we harcode enable/ disable of the depth/lighting here and that causes depth 6 lightning display to have stopped working
@@ -589,12 +595,17 @@ void ModuleRenderer3D::RenderStencil()
 
 void ModuleRenderer3D::RenderAABBs()
 {
+	if (lighting)
+		glDisable(GL_LIGHTING);
 	for (int i = 0; i < drawAABBs.size(); i++)
 	{
 		drawAABBs[i].Draw();
 	}
 	drawAABBs.clear();
 	drawAABBs.shrink_to_fit();
+
+	if(lighting)
+		glEnable(GL_LIGHTING);
 }
 
 void ModuleRenderer3D::DrawGrid()
