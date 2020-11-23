@@ -770,6 +770,7 @@ bool ModuleRenderer2D::showConfigFunc()
 
 		ImGui::Checkbox("Draw Grid", &App->renderer3D->drawGrid);
 
+		ImGui::Checkbox("Draw DebugCamRay", &App->renderer3D->drawDebugRay);
 
 		if (ImGui::DragFloat("Grid Lenght", &App->renderer3D->gridLength, 0.1f, 1.0f, 1000.0f, "%.3f"))
 		{

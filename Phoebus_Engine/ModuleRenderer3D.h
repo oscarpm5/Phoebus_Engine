@@ -43,12 +43,15 @@ public:
 
 	bool IsInsideFrustum(std::vector<float3>& points);
 
+	void SetCamRay(LineSegment line);
+
 private:
 	void RenderMeshes();
 	void RenderSelectedMeshes();
 	void RenderStencil();
 	void RenderAABBs();
 	void DrawGrid();
+	void DrawDebugRay();
 
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
@@ -66,7 +69,7 @@ private:
 	std::vector<RenderMesh> drawStencil;
 	std::vector<RenderBox> drawAABBs;
 	std::vector<C_Mesh*> stencilMeshes;
-
+	LineSegment rayLine;
 
 public:
 	Light lights[MAX_LIGHTS];
@@ -89,6 +92,7 @@ public:
 	bool colorMaterial;
 	bool texture2D;
 	bool drawGrid;
+	bool drawDebugRay;
 	bool showDepth;
 	bool displayAABBs;
 	C_Camera* activeCam;//culling camera

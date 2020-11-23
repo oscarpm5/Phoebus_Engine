@@ -89,6 +89,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
+	drawDebugRay = false;
 	showDepth = false;
 	activeCam = nullptr;
 	displayAABBs = false;
@@ -162,7 +163,14 @@ bool ModuleRenderer3D::Init()
 
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
+
+		//TODO ADDED from class this enables alpha clip at 0.5 alpha
+		//glEnable(GL_ALPHA_TEST);
+		//glAlphaFunc(GL_GREATER, 0.5f);
+		//TODO ADDED from class this enables alpha blend
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		//Check for error
 		error = glGetError();
 		if (error != GL_NO_ERROR)
@@ -212,6 +220,7 @@ bool ModuleRenderer3D::Init()
 
 	//SAux = PSphere(0.5, 1);
 	//SAux.SetPos(0, 1, 1);
+
 
 	return ret;
 }
@@ -507,6 +516,10 @@ void ModuleRenderer3D::DrawOutline()
 	{
 		DrawGrid();
 	}
+	if (drawDebugRay)
+	{
+		DrawDebugRay();
+	}
 	RenderMeshes();
 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);
@@ -654,6 +667,30 @@ void ModuleRenderer3D::DrawGrid()
 
 }
 
+void ModuleRenderer3D::DrawDebugRay()
+{
+	float4 rayColor = float4(0.5f, 0.0f, 1.0f, 1.0f);
+
+	if (lighting)
+	{
+		glDisable(GL_LIGHTING);
+	}
+
+	glBegin(GL_LINES);
+	glColor4f(rayColor.x, rayColor.y, rayColor.z, rayColor.w);
+
+	glVertex3f(rayLine.a.x, rayLine.a.y, rayLine.a.z);
+	glVertex3f(rayLine.b.x, rayLine.b.y, rayLine.b.z);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glEnd();
+
+	if (lighting)
+	{
+		glEnable(GL_LIGHTING);
+	}
+}
+
 void ModuleRenderer3D::SetGLRenderingOptions()
 {
 	if (depthTesting)glEnable(GL_DEPTH_TEST);
@@ -754,4 +791,9 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 	// so if iTotalIn is 6, then all are inside the view
 	if (iTotalIn > 0)
 		return true;
+}
+
+void ModuleRenderer3D::SetCamRay(LineSegment line)
+{
+	rayLine = line;
 }

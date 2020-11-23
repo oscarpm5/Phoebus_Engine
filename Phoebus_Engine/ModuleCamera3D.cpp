@@ -288,6 +288,8 @@ void ModuleCamera3D::CreateRayFromScreenPos(float normalizedX, float normalizedY
 	LineSegment picking = editorCam->GetFrustum().UnProjectLineSegment(normalizedX, normalizedY);
 
 	App->editor3d->TestRayHitObj(picking);
+
+	App->renderer3D->SetCamRay(picking);
 }
 
 float3 ModuleCamera3D::Rotate(const float3& u, float angle, const float3& v)
