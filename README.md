@@ -100,7 +100,9 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Objects have an outline when selected, outline size can be configured via the config panel.
 
-* [TODO] Still WiP Object Translate/Rotate/Scale can be done in both local & global space.
+* Depth buffer can be displayed in the editor cam. To enable this go to Menu -> config -> rendering and check "Depth display"
+
+* Object Translate/Rotate/Scale can be done in both local & global space.
 
  
 ## Aditional comments for the teacher:
@@ -114,6 +116,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 ### Second Assigment
 * Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
+* Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
