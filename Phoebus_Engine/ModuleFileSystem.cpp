@@ -372,3 +372,36 @@ bool ModuleFileSystem::AddNewPath(const char* newPath)
 
 	return ret;
 }
+
+bool ModuleFileSystem::GetDirFiles(const char* dir, std::vector<std::string>& fileList, std::vector<std::string>& dirList)
+{
+	bool ret = false;
+
+	if (DoesFileExist(dir))
+	{
+		char** rc = PHYSFS_enumerateFiles(dir);
+		char** iter;
+
+		std::string directory = dir;
+
+		for (iter = rc; *iter != nullptr; iter++)
+		{
+			if (PHYSFS_isDirectory((directory + *iter).c_str()))
+				dirList.push_back(*iter);
+			else
+				fileList.push_back(*iter);
+		}
+
+		PHYSFS_freeList(rc);
+
+
+		ret = true;
+	}
+
+	return ret;
+}
+
+bool ModuleFileSystem::DoesFileExist(const char* file)
+{
+	return PHYSFS_exists(file) != 0;
+}

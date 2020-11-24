@@ -36,6 +36,7 @@ public:
 	bool showConfigFunc();
 	bool showQuitPopup();
 
+	void DrawDirectoryTree(const char* dir);
 
 
 	
@@ -50,6 +51,7 @@ public:
 	bool showDemoWindow;
 	bool showConsoleWindow;
 	bool showHierarchy;
+	bool showLoadFileWindow;
 	bool showInspector;
 	bool show3DWindow;
 	bool showAboutWindowbool;
@@ -91,7 +93,7 @@ private:
 	unsigned int OscarID;
 	unsigned int PhoebusIcon;
 	
-
+	char selectedFile[250];
 
 
 }; 

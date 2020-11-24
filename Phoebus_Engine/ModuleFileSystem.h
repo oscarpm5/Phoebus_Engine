@@ -60,7 +60,10 @@ public:
 	void CreateAllLibDirectories();
 	//Adds a new path to the search path, returns true on success
 	bool AddNewPath(const char* newPath);
-
+	//Returns a vector listing all files and folders in a specific directory, also returns false if specified directory doesn't exist
+	bool GetDirFiles(const char* dir, std::vector<std::string> &fileList, std::vector<std::string>& dirList);
+	//Returns true if a flie exists, otherwise returns false
+	bool DoesFileExist(const char* file);
 };
 
 #endif // __MODULEFILESYSTEModuleH__
