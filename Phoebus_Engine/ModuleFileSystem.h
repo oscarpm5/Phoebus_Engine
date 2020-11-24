@@ -51,6 +51,16 @@ public:
 
 	// PHO
 	unsigned int SavePHO(const char* file, const void* buffer, unsigned int size);
+
+	//checks if a certain file is a directory instead
+	bool IsFileDirectory(const char* file)const;
+	//returns true if directory has been created, otherwise(if it already exists) returns false
+	bool CreateNewDirectory(const char* directory);
+	//creates all Library folder structure
+	void CreateAllLibDirectories();
+	//Adds a new path to the search path, returns true on success
+	bool AddNewPath(const char* newPath);
+
 };
 
 #endif // __MODULEFILESYSTEModuleH__

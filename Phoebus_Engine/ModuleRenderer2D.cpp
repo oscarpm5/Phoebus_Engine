@@ -292,6 +292,11 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			delete file;
 			file = nullptr;
 
+			/*if (App->renderer3D->activeCam != NULL)
+			{
+				char* testBuffer = Importer::SaveCamera(App->renderer3D->activeCam);
+				App->fileSystem->LoadAsset("Library/testingCamera.pho");
+			}*/
 		}
 
 		//testing code for button disable

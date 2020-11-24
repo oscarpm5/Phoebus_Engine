@@ -19,6 +19,20 @@
 //linea 102 module input Importer:: load fbx -> llamaar el filesysatem y pasarle el path (dropfiledyr) para probarlo rapido
 
 
+ModuleFileSystem::ModuleFileSystem(bool start_enabled)
+{
+	// Initialize the PhysicsFS library
+	// This must be called before any other PhysicsFS function
+	// This should be called prior to any attempts to change your process's current working directory
+	PHYSFS_init(nullptr);
+
+	// We only need this when compiling in debug. In Release we don't need it.
+	AddNewPath(".");
+	PHYSFS_setWriteDir("."); //necessary to save in own file format (working directory aka Game)
+	AddNewPath("Assets");
+
+	CreateAllLibDirectories();
+}
 
 ModuleFileSystem::~ModuleFileSystem()
 {
@@ -43,11 +57,7 @@ bool ModuleFileSystem::Start()
 		LOG("[error]Failed loading Asset Manager");
 
 
-	// Add an archive or directory to the search path.
-	// If this is a duplicate, the entry is not added again, even though the function succeeds.
-	// When you mount an archive, it is added to a virtual file system...
-	// all files in all of the archives are interpolated into a single hierachical file tree.
-	PHYSFS_mount("Assets", nullptr, 1);
+	//PHYSFS_mount("Assets", nullptr, 1); //TODO why is that here?
 	return ret;
 }
 
@@ -180,7 +190,7 @@ void ModuleFileSystem::LoadAsset(char* path)
 	std::string newPath = NormalizePath(path);
 	//std::string newPath=path;
 
-	TransformToRelPath(newPath);
+	//TransformToRelPath(newPath);
 	//LOG("Loading Asset from path: %s", newPath.c_str());
 	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
 
@@ -208,10 +218,10 @@ void ModuleFileSystem::LoadAsset(char* path)
 		break;
 
 	case FileFormats::PHO:
-		//Importer::LoadMeshFromPho(buffer, size, newPath);
+		Importer::LoadMeshFromPho(buffer, size, newPath);
 		//Importer::LoadMaterialFromPho(buffer, size, newPath);
 		//Importer::LoadTransformFromPho(buffer, size, newPath);
-		Importer::LoadCameraFromPho(buffer, size, newPath);
+		//Importer::LoadCameraFromPho(buffer, size, newPath);
 		break;
 	case FileFormats::UNDEFINED:
 		LOG("[error]asset from %s has no recognizable format", path);
@@ -280,19 +290,6 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	return format;
 }
 
-ModuleFileSystem::ModuleFileSystem(bool start_enabled)
-{
-	// Initialize the PhysicsFS library
-	// This must be called before any other PhysicsFS function
-	// This should be called prior to any attempts to change your process's current working directory
-	PHYSFS_init(nullptr);
-
-	// We only need this when compiling in debug. In Release we don't need it.
-	PHYSFS_mount(".", nullptr, 1);
-
-	PHYSFS_setWriteDir("./Assets"); //necessary to save in own file format
-									//this should be library?
-}
 
 // Save a whole buffer to disk
 unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, unsigned int size)
@@ -328,6 +325,50 @@ unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, uns
 	}
 	else
 		LOG("[error] File System error while opening file %s: %s", file, PHYSFS_getLastError());
+
+	return ret;
+}
+
+bool ModuleFileSystem::IsFileDirectory(const char* file) const
+{
+	return PHYSFS_isDirectory(file) != 0;//TODO, deprecated funct? use PHYSFS_stat()?
+}
+
+bool ModuleFileSystem::CreateNewDirectory(const char* directory)
+{
+	bool ret = false;
+
+	if (!IsFileDirectory(directory))
+	{
+		PHYSFS_mkdir(directory);
+		ret = true;
+	}
+
+	return ret;
+}
+
+void ModuleFileSystem::CreateAllLibDirectories()
+{
+	CreateNewDirectory(LIB_PATH);
+	CreateNewDirectory(MESH_PATH);
+	CreateNewDirectory(MATERIAL_PATH);
+	CreateNewDirectory(TEXTURE_PATH);
+	CreateNewDirectory(SCENE_PATH);
+
+}
+
+bool ModuleFileSystem::AddNewPath(const char* newPath)
+{
+	bool ret = false;
+
+	if (PHYSFS_mount(newPath, nullptr, 1) == 0)
+	{
+		LOG("[error] Path could not be added to the file system: %s", PHYSFS_getLastError());
+	}
+	else
+	{
+		ret = true;
+	}
 
 	return ret;
 }

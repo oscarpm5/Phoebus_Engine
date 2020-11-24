@@ -463,9 +463,15 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 char* Importer::SaveMesh(Mesh mesh)
 {
 	// amount of indices / vertices / colors / normals / texture_coords / AABB
-	//unsigned int ranges[2] = { mesh.num_indices, mesh.num_vertices };
-	unsigned int ranges[4] = { mesh.indices.size(), mesh.vertices.size(), mesh.normals.size(), mesh.texCoords.size() };
-	unsigned int size = sizeof(ranges) + sizeof(unsigned int) * mesh.indices.size() + sizeof(float) * mesh.vertices.size() + sizeof(float) * mesh.normals.size() + sizeof(float) * mesh.texCoords.size();
+	//uint ranges[2] = { mesh.num_indices, mesh.num_vertices };
+	uint ranges[5] = { mesh.indices.size(), mesh.vertices.size(), mesh.normals.size(),mesh.smoothedNormals.size(), mesh.texCoords.size() };
+	uint size = 
+			sizeof(ranges) 
+			+ sizeof(uint) * mesh.indices.size() 
+			+ sizeof(float) * mesh.vertices.size() 
+			+ sizeof(float)* mesh.normals.size()
+			+ sizeof(float) * mesh.smoothedNormals.size()
+			+ sizeof(float)* mesh.texCoords.size();
 
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
@@ -489,12 +495,21 @@ char* Importer::SaveMesh(Mesh mesh)
 	memcpy(cursor, &mesh.normals[0], bytes);
 	cursor += bytes;
 
+	// Store smooth normals
+	bytes = sizeof(float) * mesh.smoothedNormals.size();
+	memcpy(cursor, &mesh.smoothedNormals[0], bytes);
+	cursor += bytes;
+
 	// Store tex coords
 	bytes = sizeof(float) * mesh.texCoords.size();
 	memcpy(cursor, &mesh.texCoords[0], bytes);
 	cursor += bytes;
 
-	App->fileSystem->SavePHO("testing.pho", fileBuffer, size);
+	//aqui directorio X
+
+	std::string fileName = MESH_PATH;
+	fileName += "testing.pho";
+	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
 
 	return fileBuffer;
 }
@@ -519,13 +534,15 @@ char* Importer::SaveMaterial(C_Material* aux)
 	memcpy(cursor, auxPath.c_str(), bytes);
 	cursor += bytes;
 
-	App->fileSystem->SavePHO("testingMaterial.pho", fileBuffer, size);
-
+	std::string fileName = MATERIAL_PATH;
+	fileName += "testingMaterial.pho";
+	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
+	
 	return fileBuffer;
 
 }
 
-char* Importer::SaveTransform(C_Transform* aux)
+char* Importer::SaveTransform(C_Transform* aux) //TODO DEPRECATED? should we use game object to store the transform?
 {
 	float4x4 values[1] = { aux->GetGlobalTransform() };
 
@@ -559,7 +576,9 @@ char* Importer::SaveCamera(C_Camera* aux)
 	memcpy(cursor, values, bytes);
 	cursor += bytes;
 
-	App->fileSystem->SavePHO("testingCamera.pho", fileBuffer, size);
+	std::string fileName = SCENE_PATH;
+	fileName += "testingCamera.pho";
+	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
 
 	return fileBuffer;
 }
@@ -582,66 +601,81 @@ void Importer::SaveComponentMaterial(Config& config, Component* auxMat)
 }
 
 bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string path)
-{
-	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
+{	
+	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> smoothedNormals; std::vector<float> texCoords;
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
-	// amount of indices / vertices / colors / normals / texture_coords
-	unsigned int ranges[4]; //necessarily hardcoded
-	unsigned int bytes = sizeof(ranges);
+	// amount of indices / vertices / smoothed vertices / colors / normals / texture_coords
+	uint ranges[5]; //necessarily hardcoded
+	uint bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
 	cursor += bytes;
 	int num_indices = ranges[0];
 	int num_vertices = ranges[1];
 	int num_normals = ranges[2];
-	int num_tex = ranges[3];
+	int num_smoothedNormals = ranges[3];
+	int num_tex = ranges[4];
 
 	// Load indices
-	bytes = sizeof(unsigned int) * num_indices;
-	//indices.resize(num_indices); TODO: THIS IS THE LESS GHETTO WAY TO DO IT
-	for (int i = 0; i < num_indices; i++)
-	{
-		indices.push_back(1); //TODO: ask Oscar a less ghetto way to do this
-	}
+	bytes = sizeof(uint) * num_indices;
+	indices.resize(num_indices); //TODO: THIS IS THE LESS GHETTO WAY TO DO IT
+	//for (int i = 0; i < num_indices; i++)
+	//{
+	//	indices.push_back(1); //TODO: ask Oscar a less ghetto way to do this
+	//}
 	memcpy(&indices[0], cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
 	cursor += bytes;
 
 
 	// Load vertex
 	bytes = sizeof(float) * num_vertices;
-	for (int i = 0; i < num_vertices; i++)
-	{
-		vertices.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	}
-	//ret.indices = new unsigned int[num_indices];
+	vertices.resize(num_vertices);
+	//for (int i = 0; i < num_vertices; i++)
+	//{
+	//	vertices.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	//}
+	//ret.indices = new uint[num_indices];
 	memcpy(&vertices[0], cursor, bytes);
 	cursor += bytes;
 
 
 	// Load normals
 	bytes = sizeof(float) * num_normals;
-	for (int i = 0; i < num_normals; i++)
-	{
-		normals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	}
-	//ret.indices = new unsigned int[num_indices];
+	normals.resize(num_normals);
+	//for (int i = 0; i < num_normals; i++)
+	//{
+	//	normals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	//}
+	//ret.indices = new uint[num_indices];
 	memcpy(&normals[0], cursor, bytes);
+	cursor += bytes;
+
+	// Load smoothed normals
+	bytes = sizeof(float) * num_smoothedNormals;
+	smoothedNormals.resize(num_smoothedNormals);
+	//for (int i = 0; i < num_smoothedNormals; i++)
+	//{
+	//	smoothedNormals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	//}
+	//ret.indices = new uint[num_indices];
+	memcpy(&smoothedNormals[0], cursor, bytes);
 	cursor += bytes;
 
 
 	// Load texcoords
 	bytes = sizeof(float) * num_tex;
-	for (int i = 0; i < num_tex; i++)
-	{
-		texCoords.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	}
-	//ret.indices = new unsigned int[num_indices];
+	texCoords.resize(num_tex);
+	//for (int i = 0; i < num_tex; i++)
+	//{
+	//	texCoords.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
+	//}
+	//ret.indices = new uint[num_indices];
 	memcpy(&texCoords[0], cursor, bytes);
 	cursor += bytes;
 
 
 	//Remake the mesh
-	Mesh ret(vertices, indices, normals, texCoords);
+	Mesh ret(vertices, indices, normals,smoothedNormals, texCoords);
 	if (!ret.vertices.empty() && !ret.indices.empty()) { return true; }
 	else {
 		LOG("Malformed mesh loaded from PHO");
