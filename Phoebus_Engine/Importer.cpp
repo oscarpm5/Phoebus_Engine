@@ -33,6 +33,7 @@
 #include "C_Material.h"
 #include "C_Transform.h"
 #include "C_Camera.h"
+#include "Config.h"
 
 bool Importer::InitializeDevIL()
 {
@@ -49,8 +50,8 @@ bool Importer::InitializeDevIL()
 
 bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, std::string path)
 {
-	
-	
+
+
 	ILuint newImage = 0;
 	ilGenImages(1, &newImage);
 	ilBindImage(newImage);
@@ -270,9 +271,9 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 
 
 	float3 newTranslation = float3(translation.x, translation.y, translation.z);
-	
+
 	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
-	
+
 	float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
 
 	//creates new game object
@@ -301,7 +302,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 		if (mesh->HasFaces())
 		{
 			//newMesh.numIndex = mesh->mNumFaces * 3;
-			//newMesh.index = new uint[newMesh.numIndex]; // assume each face is a triangle
+			//newMesh.index = new unsigned int[newMesh.numIndex]; // assume each face is a triangle
 			indices.reserve(mesh->mNumFaces * 3);
 			indices.resize(mesh->mNumFaces * 3);
 
@@ -462,24 +463,19 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 char* Importer::SaveMesh(Mesh mesh)
 {
 	// amount of indices / vertices / colors / normals / texture_coords / AABB
-	//uint ranges[2] = { mesh.num_indices, mesh.num_vertices };
-	uint ranges[4] = { mesh.indices.size(), mesh.vertices.size(), mesh.normals.size(), mesh.texCoords.size() };
-	uint size = 
-			sizeof(ranges) 
-			+ sizeof(uint) * mesh.indices.size() 
-			+ sizeof(float) * mesh.vertices.size() 
-			+ sizeof(float)* mesh.normals.size() 
-			+ sizeof(float)* mesh.texCoords.size();
+	//unsigned int ranges[2] = { mesh.num_indices, mesh.num_vertices };
+	unsigned int ranges[4] = { mesh.indices.size(), mesh.vertices.size(), mesh.normals.size(), mesh.texCoords.size() };
+	unsigned int size = sizeof(ranges) + sizeof(unsigned int) * mesh.indices.size() + sizeof(float) * mesh.vertices.size() + sizeof(float) * mesh.normals.size() + sizeof(float) * mesh.texCoords.size();
 
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
 
-	uint bytes = sizeof(ranges); // First store ranges
+	unsigned int bytes = sizeof(ranges); // First store ranges
 	memcpy(cursor, ranges, bytes);
 	cursor += bytes;
 
 	// Store indices
-	bytes = sizeof(uint) * mesh.indices.size();
+	bytes = sizeof(unsigned int) * mesh.indices.size();
 	memcpy(cursor, &mesh.indices[0], bytes);
 	cursor += bytes;
 
@@ -503,18 +499,18 @@ char* Importer::SaveMesh(Mesh mesh)
 	return fileBuffer;
 }
 
-char* Importer::SaveMaterial(C_Material * aux)
+char* Importer::SaveMaterial(C_Material* aux)
 {
-	uint values[1] = { aux->path.length() };
+	unsigned int values[1] = { aux->path.length() };
 	std::string auxPath = aux->path;
-	
 
-	uint size = sizeof(values) + auxPath.length();
+
+	unsigned int size = sizeof(values) + auxPath.length();
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
-	
+
 	// First store values
-	uint bytes = sizeof(values); 
+	unsigned int bytes = sizeof(values);
 	memcpy(cursor, values, bytes);
 	cursor += bytes;
 
@@ -524,21 +520,21 @@ char* Importer::SaveMaterial(C_Material * aux)
 	cursor += bytes;
 
 	App->fileSystem->SavePHO("testingMaterial.pho", fileBuffer, size);
-	
+
 	return fileBuffer;
-	
+
 }
 
 char* Importer::SaveTransform(C_Transform* aux)
 {
 	float4x4 values[1] = { aux->GetGlobalTransform() };
 
-	uint size = sizeof(values);
+	unsigned int size = sizeof(values);
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
 
 	// First store values
-	uint bytes = sizeof(values);
+	unsigned int bytes = sizeof(values);
 	memcpy(cursor, values, bytes);
 	cursor += bytes;
 
@@ -552,14 +548,14 @@ char* Importer::SaveCamera(C_Camera* aux)
 	//float nearPlaneDist;
 	//float farPlaneDist;
 	//float FoV;
-	float values[4] = { aux->GetNearPlaneDist(), aux->GetFarPlaneDist(), aux->GetFoV(),aux->GetAspectRatio()};
+	float values[4] = { aux->GetNearPlaneDist(), aux->GetFarPlaneDist(), aux->GetFoV(),aux->GetAspectRatio() };
 
-	uint size = sizeof(values);
+	unsigned int size = sizeof(values);
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
 
 	// First store values
-	uint bytes = sizeof(values);
+	unsigned int bytes = sizeof(values);
 	memcpy(cursor, values, bytes);
 	cursor += bytes;
 
@@ -568,14 +564,31 @@ char* Importer::SaveCamera(C_Camera* aux)
 	return fileBuffer;
 }
 
+void Importer::SaveComponentCamera(Config& config, Component* cam)
+{
+	C_Camera * camera =  (C_Camera *)cam;
+
+	config.SetNumber("FOV", camera->GetFoV()); //this is the x, y is calculated afterwards
+	config.SetNumber("NearPlane", camera->GetNearPlaneDist());
+	config.SetNumber("FarPlane", camera->GetFarPlaneDist());
+
+	//config.SetBool("MainCamera",camera->main);
+}
+
+void Importer::SaveComponentMaterial(Config& config, Component* auxMat)
+{
+	C_Material* mat = (C_Material*)auxMat;
+	config.SetString("Path", mat->path.c_str());
+}
+
 bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string path)
-{	
+{
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> texCoords;
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
 	// amount of indices / vertices / colors / normals / texture_coords
-	uint ranges[4]; //necessarily hardcoded
-	uint bytes = sizeof(ranges);
+	unsigned int ranges[4]; //necessarily hardcoded
+	unsigned int bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
 	cursor += bytes;
 	int num_indices = ranges[0];
@@ -584,7 +597,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 	int num_tex = ranges[3];
 
 	// Load indices
-	bytes = sizeof(uint) * num_indices;
+	bytes = sizeof(unsigned int) * num_indices;
 	//indices.resize(num_indices); TODO: THIS IS THE LESS GHETTO WAY TO DO IT
 	for (int i = 0; i < num_indices; i++)
 	{
@@ -592,7 +605,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 	}
 	memcpy(&indices[0], cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
 	cursor += bytes;
-	
+
 
 	// Load vertex
 	bytes = sizeof(float) * num_vertices;
@@ -600,7 +613,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 	{
 		vertices.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
 	}
-	//ret.indices = new uint[num_indices];
+	//ret.indices = new unsigned int[num_indices];
 	memcpy(&vertices[0], cursor, bytes);
 	cursor += bytes;
 
@@ -611,7 +624,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 	{
 		normals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
 	}
-	//ret.indices = new uint[num_indices];
+	//ret.indices = new unsigned int[num_indices];
 	memcpy(&normals[0], cursor, bytes);
 	cursor += bytes;
 
@@ -622,7 +635,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 	{
 		texCoords.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
 	}
-	//ret.indices = new uint[num_indices];
+	//ret.indices = new unsigned int[num_indices];
 	memcpy(&texCoords[0], cursor, bytes);
 	cursor += bytes;
 
@@ -634,7 +647,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 		LOG("Malformed mesh loaded from PHO");
 		return false;
 	};
-	
+
 }
 
 bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path)
@@ -643,8 +656,8 @@ bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::strin
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
 	// path
-	uint values[1]; //necessarily hardcoded
-	uint bytes = sizeof(values);
+	unsigned int values[1]; //necessarily hardcoded
+	unsigned int bytes = sizeof(values);
 	memcpy(values, cursor, bytes);
 	cursor += bytes;
 
@@ -657,7 +670,7 @@ bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::strin
 
 	//Remake the Material
 	// TODO: we have the path to the texture, now do all the Ilbind image stuff
-	
+
 	return true;
 }
 
@@ -667,7 +680,7 @@ bool Importer::LoadTransformFromPho(char* buffer, unsigned int Lenght, std::stri
 
 	// global mat
 	float4x4 values[1]; //necessarily hardcoded
-	uint bytes = sizeof(values);
+	unsigned int bytes = sizeof(values);
 	memcpy(values, cursor, bytes);
 	cursor += bytes;
 
@@ -680,12 +693,12 @@ bool Importer::LoadTransformFromPho(char* buffer, unsigned int Lenght, std::stri
 bool Importer::LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string path)
 {
 	//float nearPlaneDist; float farPlaneDist; float FoV; float aspectRatio;
-	
+
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
 	// values stored
 	float values[4]; //necessarily hardcoded
-	uint bytes = sizeof(values);
+	unsigned int bytes = sizeof(values);
 	memcpy(values, cursor, bytes);
 	cursor += bytes;
 
@@ -698,12 +711,29 @@ bool Importer::LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string 
 	return true;
 }
 
-char* Importer::SerializeGameObject(GameObject * aux) //serialize fbx 
+void Importer::SerializeGameObject(Config& config, GameObject* gameObject) //serialize GO
 {
-	return nullptr;
+	config.SetNumber("ID", gameObject->ID);
+	config.SetNumber("ParentUID", gameObject->parent ? gameObject->parent->ID : 0);
+	config.SetString("Name", gameObject->GetName().c_str());
+	config.SetBool("Active", gameObject->isActive);
+	config.SetBool("Focused", gameObject->focused);
+
+	//Global transform
+	const C_Transform* transform = gameObject->GetComponent<C_Transform>();
+	config.SetArray("Transform").Add4x4Mat(transform->GetGlobalTransform()); //yeah, we save it raw. Deal with it, Marc
+
+
+	Config_Array compConfig = config.SetArray("Components");
+	std::vector<Component*> components = gameObject->GetAllComponents();
+
+	for (unsigned int i = 0; i < components.size(); i++)
+	{
+		SaveComponentRaw(compConfig.AddNode(),  components[i]);
+	}
 }
 
-char* Importer::SerializeScene(GameObject* root)	 //serialize scene
+unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //serialize scene
 {
 	/*
 	TODO: Look at Marc Json functions?? -> class config + class configarray
@@ -711,12 +741,62 @@ char* Importer::SerializeScene(GameObject* root)	 //serialize scene
 	*/
 	/*
 	1: search for children
-	2. save gameobject -> UID,UID of parent (0 if root, ghetto Alex), save components as children  
+	2. save gameobject -> UID,UID of parent (0 if root, ghetto Alex), save components as children
 	3. save its components -> type, active, switch to know that extra info to save
 	4. recurr
 	*/
 
-	return nullptr;
+	Config file;
+	Config_Array ArrayGameObjects = file.SetArray("GameObjects");
+	std::vector<GameObject*> gameObjects;
+	SeekChildrenRecurvisely(root,  gameObjects);
+	//we saving root, apparently?
+	for (unsigned int i = 0; i < gameObjects.size(); ++i)
+	{
+		SerializeGameObject(ArrayGameObjects.AddNode(), gameObjects[i]);
+	}
+
+	unsigned int size = file.Serialize(TrueBuffer);
+	return size;
+}
+
+void Importer::SeekChildrenRecurvisely(GameObject* root, std::vector<GameObject*> & vectorToFill)
+{
+	vectorToFill.push_back(root);
+
+	for (unsigned int i = 0; i < root->children.size(); i++)
+	{
+		SeekChildrenRecurvisely(root->children[i], vectorToFill);
+	}
+}
+
+void Importer::SaveComponentRaw(Config& config, Component* component)
+{
+	config.SetNumber("ComponentType", (int)component->GetType());
+	config.SetNumber("ID", (int)component->ID);
+
+
+	switch (component->GetType())
+	{
+	case ComponentType::CAMERA:
+		SaveComponentCamera(config,  component);
+		break;
+	case ComponentType::MESH:
+		//all you need is component type and ID, and you already have that
+		break;
+	case ComponentType::MATERIAL:
+		SaveComponentMaterial(config,  component);
+		break;
+	case ComponentType::TRANSFORM:
+		//we're already saving it as an array
+		break;
+	
+	default:
+		//how did you even get here smh
+		LOG("[error] Trying to save component with ID %i from Game Object %s but the type is invalid", component->ID, component->owner->GetName());
+		break;
+	}
+	
 }
 
 

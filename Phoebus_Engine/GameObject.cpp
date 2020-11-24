@@ -326,6 +326,11 @@ void GameObject::DrawOnEditorAllComponents()
 	}
 }
 
+std::vector<Component*> GameObject::GetAllComponents()
+{
+	return this->components;
+}
+
 void GameObject::DrawGameObject()
 {
 	//TODO test if inside camera cull

@@ -62,6 +62,7 @@ public:
 	void GetObjAndAllChilds(std::vector<GameObject*>&childs);
 	AABB GetWorldAABB()const;
 	void DrawOnEditorAllComponents();
+	std::vector<Component*> GetAllComponents();
 private:
 	void DrawGameObject();
 	void GetPointsFromAABB(AABB&aabb,std::vector<float3>& emptyVector);

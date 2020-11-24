@@ -1,7 +1,7 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#include "Json/parson.h"
+
 #include <string>
 #include "Globals.h"
 #include <vector>
@@ -9,8 +9,11 @@
 
 //http://kgabis.github.io/parson/
 
-struct json_object_t;
-typedef struct json_object_t JSON_Object;
+
+//TODO FOR ADRI: For the love of God almighty, clean this shit. We have like 10x the amount of funcs we need
+
+//struct json_object_t;
+//typedef struct json_object_t JSON_Object;
 
 struct json_value_t;
 typedef struct json_value_t  JSON_Value;
@@ -74,6 +77,7 @@ public:
 	void AddBool(bool boolean);
 	void AddFloat3(const float3& data);
 	void AddFloat4(const float4& data);
+	void Add4x4Mat(const float4x4& trans);
 
 	void AddQuat(const Quat& data);
 	Config AddNode();

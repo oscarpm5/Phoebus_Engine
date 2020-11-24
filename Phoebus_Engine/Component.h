@@ -29,8 +29,9 @@ public:
 
 public:
 	GameObject* owner;
-
 	bool toDelete;
+	int ID;
+
 private:
 	ComponentType type;
 protected:

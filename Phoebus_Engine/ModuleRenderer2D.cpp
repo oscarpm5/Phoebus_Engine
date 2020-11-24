@@ -284,17 +284,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		}
 		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
-			LOG("Testing:");
-			/*C_Material AlexGenio(App->editor3d->root, 777, "lololo");
-			AlexGenio.path = "tengoPathTeLoJuro";
-			char* testBuffer = Importer::SaveMaterial(&AlexGenio);
-			App->fileSystem->LoadAsset("Assets/testingMaterial.pho");*/
+			LOG("Testing save scene:");
+			
+			char*  file;
+			int size = Importer::SerializeScene(App->editor3d->root, &file );
+			App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
+			delete file;
+			file = nullptr;
 
-			if (App->renderer3D->activeCam != NULL)
-			{
-				char* testBuffer = Importer::SaveCamera(App->renderer3D->activeCam);
-				App->fileSystem->LoadAsset("Assets/testingCamera.pho");
-			}
 		}
 
 		//testing code for button disable

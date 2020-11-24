@@ -1,3 +1,4 @@
+#include "Json/parson.h"
 #include "Config.h"
 
 //Contructor used for data append
@@ -162,6 +163,18 @@ void Config_Array::AddFloat4(const float4 & data)
 	json_array_append_number(arr, data.z);
 	json_array_append_number(arr, data.w);
 	size += 4;
+}
+
+void Config_Array::Add4x4Mat(const float4x4& trans)
+{
+	for (int i = 0; i < 4; i++) 
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			json_array_append_number(arr, trans.v[i][j]);
+		}
+	}
+	size += 16;
 }
 
 void Config_Array::AddQuat(const Quat & data)
