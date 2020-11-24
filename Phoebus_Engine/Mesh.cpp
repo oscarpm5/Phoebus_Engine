@@ -23,6 +23,17 @@ Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::
 	GenerateBuffers();
 }
 
+Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords):
+idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+{
+	this->vertices = vertices;
+	this->indices = indices;
+	this->normals = normals;
+	this->smoothedNormals = smoothedNormals;
+	this->texCoords = texCoords;
+	GenerateBuffers();
+}
+
 Mesh::Mesh() : idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 }

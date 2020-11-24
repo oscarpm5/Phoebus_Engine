@@ -190,7 +190,7 @@ void ModuleFileSystem::LoadAsset(char* path)
 	std::string newPath = NormalizePath(path);
 	//std::string newPath=path;
 
-	TransformToRelPath(newPath);
+	//TransformToRelPath(newPath);
 	//LOG("Loading Asset from path: %s", newPath.c_str());
 	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
 
@@ -218,10 +218,10 @@ void ModuleFileSystem::LoadAsset(char* path)
 		break;
 
 	case FileFormats::PHO:
-		//Importer::LoadMeshFromPho(buffer, size, newPath);
+		Importer::LoadMeshFromPho(buffer, size, newPath);
 		//Importer::LoadMaterialFromPho(buffer, size, newPath);
 		//Importer::LoadTransformFromPho(buffer, size, newPath);
-		Importer::LoadCameraFromPho(buffer, size, newPath);
+		//Importer::LoadCameraFromPho(buffer, size, newPath);
 		break;
 	case FileFormats::UNDEFINED:
 		LOG("[error]asset from %s has no recognizable format", path);

@@ -285,16 +285,20 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
 			LOG("Testing:");
-			/*C_Material AlexGenio(App->editor3d->root, 777, "lololo");
+		/*	C_Material AlexGenio(App->editor3d->root, 777, "lololo");
 			AlexGenio.path = "tengoPathTeLoJuro";
 			char* testBuffer = Importer::SaveMaterial(&AlexGenio);
-			App->fileSystem->LoadAsset("Assets/testingMaterial.pho");*/
+			App->fileSystem->LoadAsset("testingMaterial.pho");*/
 
-			if (App->renderer3D->activeCam != NULL)
+
+			char* testBuffer = Importer::SaveMesh(*App->editor3d->root->children[0]->children[0]->GetComponent<C_Mesh>()->GetMesh());
+			App->fileSystem->LoadAsset("Library/Meshes/testing.pho");
+
+			/*if (App->renderer3D->activeCam != NULL)
 			{
 				char* testBuffer = Importer::SaveCamera(App->renderer3D->activeCam);
-				App->fileSystem->LoadAsset("Assets/testingCamera.pho");
-			}
+				App->fileSystem->LoadAsset("Library/testingCamera.pho");
+			}*/
 		}
 
 		//testing code for button disable
