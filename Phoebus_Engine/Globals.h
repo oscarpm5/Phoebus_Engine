@@ -68,3 +68,4 @@ extern Application* App;
 #define MATERIAL_PATH "Library/Materials/"
 #define TEXTURE_PATH "Library/Textures/"
 #define SCENE_PATH "Library/Scenes/"
+#define MODEL_PATH "Library/Models/"

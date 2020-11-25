@@ -1,6 +1,7 @@
 #include<iostream>
 
 #include "Mesh.h"
+#include "Resources.h"
 
 #include "Glew/include/glew.h" //order matters
 //#include "glmath.h"
@@ -11,9 +12,8 @@
 #include "MathGeoLib/include/MathGeoLib.h"
 
 
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords) :
-	/*drawMode(MeshDrawMode::DRAW_MODE_FILL), normalMode(NormalDrawMode::NORMAL_MODE_NONE),*/
-	idVertex(0), idIndex(0), idNormals(0), idTexCoords(0) /*,shadingFlat(true), texture(texture)*/
+ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords, unsigned int UID) :
+	Resource(UID, ResourceType::MESH),idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -23,8 +23,8 @@ Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::
 	GenerateBuffers();
 }
 
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords):
-idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords, unsigned int UID):
+	Resource(UID, ResourceType::MESH),idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -34,11 +34,11 @@ idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 	GenerateBuffers();
 }
 
-Mesh::Mesh() : idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+ResourceMesh::ResourceMesh(unsigned int UID) :Resource(UID,ResourceType::MESH), idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 }
 
-Mesh::Mesh(const Mesh& other)
+ResourceMesh::ResourceMesh(const ResourceMesh& other):Resource(other.GetUID(),ResourceType::MESH)
 {
 	this->vertices = other.vertices;
 	this->indices = other.indices;
@@ -53,7 +53,7 @@ Mesh::Mesh(const Mesh& other)
 	GenerateBuffers();
 }
 
-Mesh::~Mesh()
+ResourceMesh::~ResourceMesh()
 {
 	FreeBuffers();
 
@@ -66,7 +66,7 @@ Mesh::~Mesh()
 }
 
 
-void Mesh::GenerateSmoothedNormals()
+void ResourceMesh::GenerateSmoothedNormals()
 {
 	std::vector<float3> faceNormals;//1 normal for every 3 indices
 	//first we calculate the mesh face normals
@@ -177,7 +177,7 @@ void Mesh::GenerateSmoothedNormals()
 	}
 }
 
-void Mesh::GenerateBuffers()
+void ResourceMesh::GenerateBuffers()
 {
 
 	//gen buffers=========================================
@@ -219,7 +219,7 @@ void Mesh::GenerateBuffers()
 
 }
 
-void Mesh::FreeBuffers()
+void ResourceMesh::FreeBuffers()
 {
 	if (idVertex != 0)
 	{

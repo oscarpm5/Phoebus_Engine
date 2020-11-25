@@ -26,7 +26,7 @@ C_Mesh::~C_Mesh()
 
 
 
-void C_Mesh::SetMesh(Mesh mesh)
+void C_Mesh::SetMesh(ResourceMesh mesh)
 {
 	if (m != nullptr)
 	{
@@ -34,7 +34,7 @@ void C_Mesh::SetMesh(Mesh mesh)
 		m = nullptr;
 	}
 
-	m = new Mesh(mesh);
+	m = new ResourceMesh(mesh);
 
 	localAABB.SetNegativeInfinity();//this is like setting the AABB to null
 	localAABB.Enclose((float3*)m->vertices.data(), m->vertices.size() / 3); //generates an AABB on local space from a set of vertices
@@ -42,7 +42,7 @@ void C_Mesh::SetMesh(Mesh mesh)
 
 }
 
-Mesh* C_Mesh::GetMesh() const
+ResourceMesh* C_Mesh::GetMesh() const
 {
 	return m;
 }

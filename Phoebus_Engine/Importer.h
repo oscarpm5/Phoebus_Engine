@@ -4,7 +4,7 @@ struct aiMesh;
 struct aiNode;
 struct aiScene;
 class GameObject;
-class Mesh;
+class ResourceMesh;
 class C_Material;
 class C_Transform;
 class C_Camera;
@@ -31,9 +31,8 @@ namespace Importer
 	unsigned int LoadPureImageGL(const char* path);
 
 
-	//Own file format
-	char* SaveMesh(Mesh aux);
-	//Own file format
+	//Testing own file format
+	char* SaveMesh(ResourceMesh aux);
 	char* SaveMaterial(C_Material * aux);
 	//Own file format
 	char* SaveTransform(C_Transform * aux);

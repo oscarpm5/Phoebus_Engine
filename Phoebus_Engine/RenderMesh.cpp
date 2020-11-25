@@ -20,7 +20,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	float4x4 newTrans = transform;
 	newTrans.Transpose();
 
-	Mesh* m = mesh->GetMesh();
+	ResourceMesh* m = mesh->GetMesh();
 
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -94,7 +94,7 @@ void RenderMesh::DrawVertexNormals()
 
 	for (int i = 0; i < mesh->GetMesh()->normals.size() / 3; i++)
 	{
-		Mesh* m = mesh->GetMesh();
+		ResourceMesh* m = mesh->GetMesh();
 		float3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
 		float3 vertex1 =
 		{
@@ -117,7 +117,7 @@ void RenderMesh::DrawVertexNormals()
 
 void RenderMesh::DrawFacesNormals()
 {
-	Mesh* m = mesh->GetMesh();
+	ResourceMesh* m = mesh->GetMesh();
 
 	float magnitude = mesh->normalFaceSize;
 	glColor3f(0.0f, 0.25f, 1.0f);
@@ -159,7 +159,7 @@ void RenderMesh::DrawFacesNormals()
 
 void RenderMesh::DrawBuffers()
 {
-	Mesh* m = mesh->GetMesh();
+	ResourceMesh* m = mesh->GetMesh();
 	unsigned int texIDtoBind = 0;
 	glBindBuffer(GL_ARRAY_BUFFER, m->idVertex);			//this is for printing the index
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about

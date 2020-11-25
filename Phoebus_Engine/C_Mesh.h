@@ -7,7 +7,7 @@
 
 #include "MathGeoLib/include/Geometry/AABB.h"
 
-class Mesh;
+class ResourceMesh;
 
 class C_Mesh:public Component
 {
@@ -15,8 +15,8 @@ public:
 	C_Mesh(GameObject* owner);
 	~C_Mesh();
 
-	void SetMesh(Mesh mesh);
-	Mesh* GetMesh()const;
+	void SetMesh(ResourceMesh mesh);
+	ResourceMesh* GetMesh()const;
 
 	void OnEditor();
 
@@ -28,7 +28,7 @@ public:
 	int normalDrawMode;
 	int meshDrawMode;
 private:
-	Mesh* m;
+	ResourceMesh* m;
 	AABB localAABB;
 	//WILL store bounding box here in the future
 };

@@ -370,7 +370,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 
 
 		newObj->CreateComponent(ComponentType::MESH);
-		newObj->GetComponent<C_Mesh>()->SetMesh(Mesh(vertices, indices, normals, texCoords));
+		newObj->GetComponent<C_Mesh>()->SetMesh(ResourceMesh(vertices, indices, normals, texCoords,0));//TODO for the moment we pass id 0 to the mesh
 
 
 		if (scene->HasMaterials())
@@ -461,7 +461,7 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	return 0;
 }
 
-char* Importer::SaveMesh(Mesh mesh)
+char* Importer::SaveMesh(ResourceMesh mesh)
 {
 	// amount of indices / vertices / colors / normals / texture_coords / AABB
 	//uint ranges[2] = { mesh.num_indices, mesh.num_vertices };
@@ -676,7 +676,7 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 
 
 	//Remake the mesh
-	Mesh ret(vertices, indices, normals,smoothedNormals, texCoords);
+	ResourceMesh ret(vertices, indices, normals,smoothedNormals, texCoords,0);//TODO for the moment we pass id 0 to the mesh
 	if (!ret.vertices.empty() && !ret.indices.empty()) { return true; }
 	else {
 		LOG("Malformed mesh loaded from PHO");

@@ -40,6 +40,7 @@
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
 
+#include<algorithm>
 
 
 ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
@@ -47,6 +48,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	showDemoWindow = false;
 	showConsoleWindow = true;
 	showHierarchy = true;
+	showLoadFileWindow = false;
 	showInspector = true;
 	show3DWindow = true;
 	showAboutWindowbool = false;
@@ -72,6 +74,8 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	imgSize = ImVec2(0.0f, 0.0f);
 
 	gizmoSize = 0.5f;
+
+	selectedFile[0] = '\0';
 
 }
 
@@ -379,6 +383,11 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::PopStyleVar();
 		}
 
+		if (ImGui::Button("ShowLoadPopup"))
+		{
+			showLoadFileWindow = true;
+		}
+
 		//end of testing code
 	}
 	ImGui::EndMainMenuBar();
@@ -442,7 +451,42 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		Show3DWindow();
 	}
 
+	if (showLoadFileWindow)
+	{
+		if (ImGui::Begin("Load File", NULL,ImGuiWindowFlags_AlwaysAutoResize| ImGuiWindowFlags_NoDocking| ImGuiWindowFlags_NoCollapse))
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+			ImGui::BeginChild("File Browser", ImVec2(0, 300), true);
 
+			DrawDirectoryTree("Assets");
+
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+
+			ImGui::PushItemWidth(250.f);
+			ImGui::InputText("##file_selector", selectedFile, 250, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+
+
+			ImGui::PopItemWidth();
+			ImGui::SameLine();
+			if (ImGui::Button("Ok", ImVec2(50, 20)))
+			{
+				//TODO Call load asset here??
+				showLoadFileWindow = false;
+				selectedFile[0] = '\0';
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Cancel", ImVec2(50, 20)))
+			{
+				showLoadFileWindow = false;
+				selectedFile[0] = '\0';
+			}
+
+		}
+		ImGui::End();
+	}
 
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP)
 		showQuit = true;
@@ -938,6 +982,50 @@ bool ModuleRenderer2D::showQuitPopup()
 	return ret;
 }
 
+void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
+{
+	std::vector<std::string> files;
+	std::vector<std::string> dirs;
+
+	std::string dir((newDir) ? newDir : "");
+	dir += "/";
+
+	App->fileSystem->GetDirFiles(dir.c_str(), files, dirs);
+
+	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
+	{
+		if (ImGui::TreeNodeEx((dir + (*it)).c_str(), 0, "%s/", (*it).c_str()))
+		{
+			DrawDirectoryTree((dir + (*it)).c_str());
+			ImGui::TreePop();
+		}
+	}
+
+	std::sort(files.begin(), files.end());//sorts all elements in the string list
+
+	for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+	{
+		const std::string& str = *it;
+		//we check if its a ".meta" file and if so we do not display them
+		std::string extension;
+		unsigned int index = str.find_last_of(".");
+
+		if (index < str.size())
+		{
+			extension = str.substr(index); //look for the last instance of a point. Format should be next
+		}
+
+		if (extension!=".meta" && ImGui::TreeNodeEx(str.c_str(), ImGuiTreeNodeFlags_Leaf))
+		{
+			if (ImGui::IsItemClicked()) {
+				sprintf_s(selectedFile, 250, "%s%s", dir.c_str(), str.c_str());
+			}
+
+			ImGui::TreePop();
+		}
+	}
+}
+
 bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2, float ar3, float ar4, float ar5)
 {
 	//We would love to make a switch, but we cant. Happyness huh
@@ -1054,7 +1142,7 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 		fakeTex.push_back(0);
 		fakeTex.push_back(0);
 	}
-	Mesh newMesh = Mesh(vertices, indices, fakeNormals, fakeTex);
+	ResourceMesh newMesh = ResourceMesh(vertices, indices, fakeNormals, fakeTex,0);//TODO for the moment we pass id 0 to the mesh
 	//AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
 	//App->editor3d->meshes.push_back(AuxM);
 	std::string newName = "Primitive";

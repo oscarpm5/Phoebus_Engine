@@ -10,6 +10,7 @@
 #include "ModuleCamera3D.h"
 #include "ModuleEditor3D.h"
 #include "ModuleFileSystem.h"
+#include "ModuleResourceManager.h"
 
 enum class GameStateEnum
 {
@@ -30,6 +31,7 @@ public:
 	ModuleCamera3D* camera;
 	ModuleEditor3D* editor3d;
 	ModuleFileSystem* fileSystem;
+	ModuleResourceManager* resourceManager;
 
 	bool debug;
 	bool renderPrimitives;
