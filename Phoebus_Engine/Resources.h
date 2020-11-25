@@ -35,11 +35,12 @@ public:
 	//virtual void Load(const Config& config);
 	//virtual bool LoadInMemory() = 0;
 
+public:
+	unsigned int referenceCount;
 
 protected:
 	unsigned int uid;
 	ResourceType type;
-	unsigned int referenceCount;
 
 	std::string assetsFile;
 	std::string libraryFile;

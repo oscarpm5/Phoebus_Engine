@@ -5,7 +5,7 @@
 #include "Mesh.h"
 #include "Texture.h"
 
-ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled)
+ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled),checkTimer(0.0f)
 {
 }
 
@@ -29,7 +29,7 @@ bool ModuleResourceManager::Start()
 update_status ModuleResourceManager::PreUpdate(float dt)
 {
 	checkTimer += dt;
-	if (checkTimer >= 1.0f)
+	if (App->GetGameState() == GameStateEnum::STOPPED && checkTimer >= 1.0f)//we only check assets when the engine is not in runtime
 	{
 		checkTimer = 0.0f;
 		//TODO check all asset files here
@@ -56,6 +56,41 @@ update_status ModuleResourceManager::PostUpdate(float dt)
 bool ModuleResourceManager::CleanUp()
 {
 	return true;
+}
+
+void ModuleResourceManager::FindRecursively(std::string uid, std::string currdir, std::string& foundfile)
+{
+	std::vector<std::string>files;
+	std::vector<std::string>dirs;
+
+	if (!App->fileSystem->GetDirFiles(currdir.c_str(), files, dirs))
+	{
+		LOG("[error] Trying to acces an invalid directory: %s", currdir.c_str());
+		return; //if directory doesn't exist return, just for safety
+	}
+
+	for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+	{
+		const std::string& str = *it;
+		std::string absPath = currdir + str;
+
+		if (str == (uid + ".pho"))
+		{
+			foundfile = absPath;
+			return;
+		}
+	}
+
+	//for every directory in the current directory, search
+	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
+	{
+		const std::string& str = *it;
+		FindRecursively(uid, currdir + str + "/", foundfile);
+		if (foundfile != "")
+		{
+			return;
+		}
+	}
 }
 //TODO THIS ISNT WORKING YET
 unsigned int ModuleResourceManager::ImportFile(const char* newAssetFile)
@@ -94,6 +129,19 @@ unsigned int ModuleResourceManager::ImportFile(const char* newAssetFile)
 	//after we are done using it, we unload the resource TODO
 
 	return ret;
+}
+
+Resource* ModuleResourceManager::RequestResource(unsigned int uid)
+{
+	//Find if the resource is already loaded
+	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+	if (it != resources.end())
+	{
+		it->second->referenceCount++;
+		return it->second;
+	}
+	//Find the library file (if exists) and load the custom file format
+	return TryToLoadResource(uid);
 }
 
 Resource* ModuleResourceManager::CreateNewResource(const char* assetsFile, ResourceType type)
@@ -290,4 +338,35 @@ ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 
 
 	return ret;
+}
+
+Resource* ModuleResourceManager::TryToLoadResource(unsigned int uid)
+{
+	Resource* res = nullptr;
+	//find resource path and load resource into the engine here
+
+	std::string result = "";
+	FindRecursively(std::to_string(uid), LIB_PATH, result);
+	if (result != "")
+	{
+		//TODO Load resource with path from lib (result) and assign it to "res" aka Importer::Load (not Import!!!)
+	}
+
+
+
+	return res;
+}
+
+bool ModuleResourceManager::ReleaseResource(unsigned int uid)
+{
+	
+	bool ret = false;
+	//Find if the resource is loaded
+	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+	if (it != resources.end())
+	{
+		//release resource here TODO
+
+		ret = true;
+	}	return ret;
 }
