@@ -22,7 +22,11 @@ public:
 	//returns a resource ID given an assets file
 	unsigned int Find(const char* file_in_assets) const;
 	//Imports a file in assets into a new resource
-	unsigned int ImportFile(const char* newAssetFile);	//TODO Generate IDs here
+	unsigned int ImportFile(const char* newAssetFile);
+
+	void GenerateMetaFile(Resource* res);
+	//TODO Generate IDs here
+
 private:
 	//creates a new resource given a file path from assets and a type (Factory method)
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type);
@@ -38,6 +42,9 @@ private:
 	std::string GenLibraryPath(Resource& res);
 
 	ResourceType ResourceTypeFromPath(std::string path);
+
+	//This func does the serialization AND creates file via FileManager
+	
 
 private:
 	//stores all resources that are loaded in memory

@@ -4,6 +4,7 @@
 #include "Importer.h"
 #include "Mesh.h"
 #include "Texture.h"
+#include "Config.h"
 
 ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled)
 {
@@ -290,4 +291,31 @@ ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 
 
 	return ret;
+}
+
+void ModuleResourceManager::GenerateMetaFile(Resource* res)
+{
+	char* bufferToFill;
+	const char* assetPath = res->GetAssetFile();
+	const char* metaExtension = ".meta";
+	
+	//fill the buffer with the necessary info
+	Config file;
+	file.SetNumber("ID", res->GetUID());
+	unsigned long lastModDate = App->fileSystem->GetLastModTimeFromPath(assetPath);
+	file.SetNumber("ModDate", lastModDate);
+	//TODO: import configs go here, if we're adding that into the future
+	unsigned int size = file.Serialize(&bufferToFill);
+	
+	//TODO: less ghetto way to do this? -Adri
+	char* AuxPath = (char*)malloc(1 + strlen(assetPath) + strlen(metaExtension));
+	strcpy(AuxPath, assetPath);
+	strcat(AuxPath, metaExtension);
+
+	//make physfs save the file
+	App->fileSystem->SavePHO(AuxPath, bufferToFill, size);
+
+	//clear buffer to avoid leaks (maybe it's automatic due to scope? Better safe than sorry)
+	delete bufferToFill;
+	bufferToFill = nullptr;
 }

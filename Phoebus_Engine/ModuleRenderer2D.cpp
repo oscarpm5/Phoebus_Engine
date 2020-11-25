@@ -288,20 +288,20 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		}
 		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
-			LOG("Testing save scene:");
-			
+			/*LOG("Testing save scene:");
 			char*  file;
-			int size = Importer::SerializeScene(App->editor3d->root, &file );
+			int size = Importer::SerializeScene(App->editor3d->root, &file );			DONT DELETE THIS!
 			App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
 			Importer::LoadScene(file, App->editor3d->root);
 			delete file;
-			file = nullptr;
+			file = nullptr;*/
+			
+			Resource auxTest(777,ResourceType::MESH);
+			auxTest.SetAssetPath("auxTestPath.mesh");
+			App->resourceManager->GenerateMetaFile(&auxTest);
 
-			/*if (App->renderer3D->activeCam != NULL)
-			{
-				char* testBuffer = Importer::SaveCamera(App->renderer3D->activeCam);
-				App->fileSystem->LoadAsset("Library/testingCamera.pho");
-			}*/
+			//Resource(unsigned int UID,ResourceType type);
+
 		}
 
 		//testing code for button disable

@@ -290,6 +290,11 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	return format;
 }
 
+unsigned long ModuleFileSystem::GetLastModTimeFromPath(const char* file)
+{
+	return PHYSFS_getLastModTime(file);
+}
+
 
 // Save a whole buffer to disk
 unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, unsigned int size)
