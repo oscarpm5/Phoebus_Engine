@@ -90,6 +90,7 @@ public:
 	float3 GetFloat3(uint index, float3 default = float3::zero) const; //Index is based on float3 not on single data!
 	float4 GetFloat4(uint index, float4 default = float4::zero) const; //Index is based on float4 not on single data!
 	Quat GetQuat(uint index, Quat  default = Quat::identity) const;
+	float4x4 GetMatTransform(uint index, float4x4 default = float4x4::identity) const;
 	void FillVectorNumber(std::vector<double>& vector) const;
 	void FillVectorString(std::vector<char*>& vector) const;
 	void FillVectorBoool(std::vector<bool>& vector) const;

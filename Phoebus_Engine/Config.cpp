@@ -255,6 +255,21 @@ Quat Config_Array::GetQuat(uint index, Quat  default) const
 	return ret;
 }
 
+float4x4 Config_Array::GetMatTransform(uint index, float4x4 default) const
+{
+	index *= 16;
+	float4x4 ret = default;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			ret[i][j] = GetNumber(index + i * 4 + j, ret[i][j]); // M A T H
+		}
+	}
+	return ret;
+}
+
 bool Config_Array::GetBool(uint index, bool default) const
 {
 	if (index < size)

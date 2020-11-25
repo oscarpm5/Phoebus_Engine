@@ -184,6 +184,8 @@ Component* GameObject::CreateComponent(ComponentType type)
 		if (GetComponent<C_Camera>() == nullptr)
 			ret = new C_Camera(this);
 		break;
+	default:
+		break;
 	}
 
 

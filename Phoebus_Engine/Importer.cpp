@@ -34,6 +34,7 @@
 #include "C_Transform.h"
 #include "C_Camera.h"
 #include "Config.h"
+#include <map>
 
 bool Importer::InitializeDevIL()
 {
@@ -784,7 +785,8 @@ unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //se
 	Config_Array ArrayGameObjects = file.SetArray("GameObjects");
 	std::vector<GameObject*> gameObjects;
 	SeekChildrenRecurvisely(root,  gameObjects);
-	//we saving root, apparently?
+	//We don't want to save root
+	gameObjects.erase(gameObjects.begin());
 	for (unsigned int i = 0; i < gameObjects.size(); ++i)
 	{
 		SerializeGameObject(ArrayGameObjects.AddNode(), gameObjects[i]);
@@ -792,6 +794,76 @@ unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //se
 
 	unsigned int size = file.Serialize(TrueBuffer);
 	return size;
+}
+
+void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
+{
+	//Open the bufer you are going to be reading
+	Config file(buffer);
+	//set the root of the new scene
+	App->editor3d->root = sceneRoot;
+	//the map is a correlation between ID nad GO. It comes useful later. Thanks Marc!
+	std::map<int, GameObject*> createdGameObjects;
+	Config_Array gameObjects_array = file.GetArray("GameObjects");
+	for (uint i = 0; i < gameObjects_array.GetSize(); ++i)
+	{
+		//Pinpoint the GO 
+		Config gameObject_node = gameObjects_array.GetNode(i);
+
+		//Get its Global mat needed to call constructor
+		float4x4 auxGlobalMat = gameObject_node.GetArray("Transform").GetMatTransform(0); //they shouldnt have more than 1 Global transform...
+
+		//Parent setup
+		GameObject* parent = nullptr;
+		std::map<int, GameObject*>::iterator it = createdGameObjects.find(gameObject_node.GetNumber("ParentUID"));
+		if (it != createdGameObjects.end())
+			parent = it->second;
+		//Create the GO
+		GameObject* gameObject = new GameObject(parent ? parent : sceneRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
+		
+		//Set properties of GO
+		gameObject->ID = gameObject_node.GetNumber("ID");
+		createdGameObjects[gameObject->ID] = gameObject;
+		gameObject->isActive = gameObject_node.GetBool("Active");
+		gameObject->focused = gameObject_node.GetBool("Focused");
+
+		//get the components
+		Config_Array components = gameObject_node.GetArray("Components");
+
+		for (uint i = 0; i < components.GetSize(); i++)
+		{
+			Config comp = components.GetNode(i);
+			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
+
+			if (Component* component = gameObject->CreateComponent(type))
+			{
+				component->ID = comp.GetNumber("ID");
+				
+				switch (type)
+				{
+				case ComponentType::CAMERA:
+					break;
+				case ComponentType::MESH:
+					break;
+				case ComponentType::MATERIAL:
+					break;
+				case ComponentType::TRANSFORM:
+					//Nothing: this is already done in constructor
+					break;
+				default:
+					LOG("[error] Tried to load a scene, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
+					break;
+				}
+
+
+				//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
+				
+			}
+
+		}
+		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
+	}
+
 }
 
 void Importer::SeekChildrenRecurvisely(GameObject* root, std::vector<GameObject*> & vectorToFill)

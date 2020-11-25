@@ -289,6 +289,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			char*  file;
 			int size = Importer::SerializeScene(App->editor3d->root, &file );
 			App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
+			Importer::LoadScene(file, App->editor3d->root);
 			delete file;
 			file = nullptr;
 
