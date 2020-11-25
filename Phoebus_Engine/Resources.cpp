@@ -16,7 +16,7 @@ ResourceType Resource::GetType() const
 
 unsigned int Resource::GetUID() const
 {
-	return 0;
+	return uid;
 }
 
 const char* Resource::GetAssetFile() const

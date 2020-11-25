@@ -49,6 +49,8 @@ public:
 
 	FileFormats CheckFileFormat(const char* path);
 
+	unsigned long GetLastModTimeFromPath(const char* filename);
+
 	// PHO
 	unsigned int SavePHO(const char* file, const void* buffer, unsigned int size);
 
