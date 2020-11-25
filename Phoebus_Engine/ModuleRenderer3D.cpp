@@ -508,7 +508,7 @@ void ModuleRenderer3D::DrawOutline()
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			Mesh m = Mesh(*meshes[i]->GetMesh());
+			ResourceMesh m = ResourceMesh(*meshes[i]->GetMesh());
 			ExpandMeshVerticesByScale(m, outlineScale);//TODO make the user adjust this from the config panel
 			m.FreeBuffers();
 			m.GenerateBuffers();
@@ -739,7 +739,7 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	//wireframe here too?
 }
 
-bool ModuleRenderer3D::ExpandMeshVerticesByScale(Mesh& m, float newScale)//TODO consider creating an expanded mesh when the mesh is created instead of doing it every frame
+bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale)//TODO consider creating an expanded mesh when the mesh is created instead of doing it every frame
 {
 	if (m.normals.empty())//TODO in the future if scaling cannot be done by vertex normals, use generated face normals or normal scaling instead
 		return false;

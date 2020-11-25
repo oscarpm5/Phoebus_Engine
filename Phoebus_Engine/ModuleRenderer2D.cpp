@@ -1141,7 +1141,7 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 		fakeTex.push_back(0);
 		fakeTex.push_back(0);
 	}
-	Mesh newMesh = Mesh(vertices, indices, fakeNormals, fakeTex);
+	ResourceMesh newMesh = ResourceMesh(vertices, indices, fakeNormals, fakeTex,0);//TODO for the moment we pass id 0 to the mesh
 	//AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
 	//App->editor3d->meshes.push_back(AuxM);
 	std::string newName = "Primitive";

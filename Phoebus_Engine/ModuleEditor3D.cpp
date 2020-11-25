@@ -231,7 +231,7 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 			//test collision for every mesh in the object
 			for (int i = 0; i < meshes.size(); i++)
 			{
-				Mesh* currMesh = meshes[i]->GetMesh();
+				ResourceMesh* currMesh = meshes[i]->GetMesh();
 				//Test mesh triangles here
 				std::pair<float, float3>lastBestHit = std::pair<float, float3>(floatMax, float3(floatMax, floatMax, floatMax));
 

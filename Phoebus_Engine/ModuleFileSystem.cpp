@@ -354,6 +354,7 @@ void ModuleFileSystem::CreateAllLibDirectories()
 	CreateNewDirectory(MATERIAL_PATH);
 	CreateNewDirectory(TEXTURE_PATH);
 	CreateNewDirectory(SCENE_PATH);
+	CreateNewDirectory(MODEL_PATH);
 
 }
 

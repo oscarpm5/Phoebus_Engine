@@ -45,7 +45,7 @@ public:
 
 	void SeparatePath(std::string path, std::string* newPath, std::string* file);
 	std::string NormalizePath(const char* path);
-	void LoadAsset(char * path);
+	void LoadAsset(char * path);//TODO this method will soon be deptrecated -> moving it to resource manager
 
 	FileFormats CheckFileFormat(const char* path);
 

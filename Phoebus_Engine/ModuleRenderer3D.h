@@ -16,7 +16,7 @@
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
 
-class Mesh;
+class ResourceMesh;
 
 class ModuleRenderer3D : public Module
 {
@@ -56,7 +56,7 @@ private:
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
 
-	bool ExpandMeshVerticesByScale(Mesh& m, float newScale);//returns false if scaling cannot be done
+	bool ExpandMeshVerticesByScale(ResourceMesh& m, float newScale);//returns false if scaling cannot be done
 
 private:
 	unsigned int exampleMeshIdentifier;

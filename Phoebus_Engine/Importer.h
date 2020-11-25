@@ -4,7 +4,7 @@ struct aiMesh;
 struct aiNode;
 struct aiScene;
 class GameObject;
-class Mesh;
+class ResourceMesh;
 class C_Material;
 class C_Transform;
 class C_Camera;
@@ -29,7 +29,7 @@ namespace Importer
 
 
 	//Testing own file format
-	char* SaveMesh(Mesh aux);
+	char* SaveMesh(ResourceMesh aux);
 	char* SaveMaterial(C_Material * aux);
 	char* SaveTransform(C_Transform * aux);
 	char* SaveCamera(C_Camera* aux);

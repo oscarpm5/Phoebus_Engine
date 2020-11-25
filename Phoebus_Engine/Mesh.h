@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include "Resources.h"
 
 enum class MeshDrawMode
 {
@@ -15,15 +16,15 @@ enum class NormalDrawMode
 	NORMAL_MODE_BOTH
 };
 
-class Mesh
+class ResourceMesh : public Resource
 {
 public:
 
-	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords);
-	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords);
-	Mesh();
-	Mesh(const Mesh& other);
-	~Mesh();
+	ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords,unsigned int UID);
+	ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords, unsigned int UID);
+	ResourceMesh(unsigned int UID);
+	ResourceMesh(const ResourceMesh& other);
+	~ResourceMesh();
 
 	//void Draw();
 	void GenerateSmoothedNormals();
