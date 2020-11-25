@@ -24,15 +24,26 @@ public:
 	//Imports a file in assets into a new resource
 	unsigned int ImportFile(const char* newAssetFile);	//TODO Generate IDs here
 private:
-	//creates a new resource given a file path from assets and a type
-	Resource* CreateNewResource(const char* assetsFile);
+	//creates a new resource given a file path from assets and a type (Factory method)
+	Resource* CreateNewResource(const char* assetsFile, ResourceType type);
 
 	void LoadAllAssets();
 	void LoadAssetsRecursively(std::string dir);
 	void LoadAssetsFromDir(std::string dir);
+
+	//checks if the asset has been already imported and its up to date, if it is not, acts accordingly (generates lib files + meta)
+	void ManageAssetUpdate(const char* newAssetFile);
+
+	//Generates a lib path from a given resource
+	std::string GenLibraryPath(Resource& res);
+
+	ResourceType ResourceTypeFromPath(std::string path);
+
 private:
 	//stores all resources that are loaded in memory
 	std::map<unsigned int, Resource*> resources; 
+
+	float checkTimer;
 };
 
 

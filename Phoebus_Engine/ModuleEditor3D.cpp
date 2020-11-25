@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "ModuleEditor3D.h"
-#include "Importer.h"
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "Mesh.h"
@@ -32,7 +31,6 @@ bool ModuleEditor3D::Init()
 bool ModuleEditor3D::Start()
 {
 	bool ret = true;
-	Importer::InitializeDevIL();
 
 	root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false);
 	App->camera->Move(float3(1.0f, 1.0f, 0.0f));

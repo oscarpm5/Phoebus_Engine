@@ -1,5 +1,10 @@
 #ifndef __RESOURCES_H__
 #define __RESOURCES_H__
+#include <string>
+
+//#include "Config.h"
+
+//class Config;
 
 enum class ResourceType {
 	TEXTURE,
@@ -18,12 +23,26 @@ public:
 	ResourceType GetType()const;
 	unsigned int GetUID()const;
 
+
+	const char* GetAssetFile() const;
+	const char* GetLibraryFile() const;
+
+	void SetAssetPath(std::string newPath);
+	void SetLibPath(std::string newPath);
+
+	//TODO should we save/load here or in the importer?
+	//virtual void Save(Config& config) const;
+	//virtual void Load(const Config& config);
+	//virtual bool LoadInMemory() = 0;
+
+
 protected:
 	unsigned int uid;
 	ResourceType type;
 	unsigned int referenceCount;
 
-
+	std::string assetsFile;
+	std::string libraryFile;
 
 };
 

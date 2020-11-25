@@ -5,6 +5,7 @@
 #include "Component.h"
 #include <string>
 
+class ResourceTexture;
 class C_Material:public Component
 {
 public:
@@ -20,10 +21,10 @@ public:
 
 	void OnEditor();
 
-	void GenTextureFromName(unsigned int ilImageName, std::string path = "");
+	//void GenTextureFromName(unsigned int ilImageName, std::string path = "");
 private:
 
-	void DestroyTexture();
+	//void DestroyTexture();
 	void DestroyCheckers();
 	void GenDefaultTexture();
 
@@ -31,16 +32,18 @@ private:
 public:
 	bool usingCkeckers;
 
-	unsigned int width, height;
-	int format;
-	int depth;
-	int sizeInBytes;
-	unsigned int bpp;
+	//unsigned int width, height;
+	//int format;
+	//int depth;
+	//int sizeInBytes;
+	//unsigned int bpp;
 	std::string path;
 
 private:
 	unsigned int idCheckers;
-	unsigned int idTexture;
+	//unsigned int idTexture;
 	int size = 200; //preview
+	ResourceTexture* texture;
+
 };
 #endif // !__C_MATERIAL__

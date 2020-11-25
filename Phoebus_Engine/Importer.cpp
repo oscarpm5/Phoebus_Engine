@@ -88,7 +88,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 				mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
 			}
 
-			mat->GenTextureFromName(newImage, path);
+			//mat->GenTextureFromName(newImage, path);
 
 		}
 		ilDeleteImages(1, &newImage);
@@ -125,7 +125,7 @@ bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, Game
 				mat = target->GetComponent<C_Material>();
 			}
 
-			mat->GenTextureFromName(newImage, path);
+			//mat->GenTextureFromName(newImage, path);
 
 		}
 		ilDeleteImages(1, &newImage);
