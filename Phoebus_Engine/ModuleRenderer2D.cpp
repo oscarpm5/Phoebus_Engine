@@ -55,7 +55,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	showConfig = false;
 	showQuit = false;
 	quitAlreadyOpened = false;
-
+	showResourcesActive = true;
 	maxFPShown = 60;
 
 	Vsync = VSYNC;
@@ -283,6 +283,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Console", NULL, &showConsoleWindow);
 			ImGui::MenuItem("Hierarchy", NULL, &showHierarchy);
 			ImGui::MenuItem("Inspector", NULL, &showInspector);
+			ImGui::MenuItem("Active Resurces", NULL, &showResourcesActive);
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
 			ImGui::EndMenu();
 		}
@@ -295,8 +296,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			Importer::LoadScene(file, App->editor3d->root);
 			delete file;
 			file = nullptr;*/
-			
-			Resource auxTest(777,ResourceType::MESH);
+
+			Resource auxTest(777, ResourceType::MESH);
 			auxTest.SetAssetPath("auxTestPath.mesh");
 			App->resourceManager->GenerateMetaFile(&auxTest);
 
@@ -307,14 +308,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		//testing code for button disable
 		GameStateEnum state = App->GetGameState();
 
-		bool isGamePlaying=true;//when this is true, the color of the play button should turn blue, also enable both pause & step
+		bool isGamePlaying = true;//when this is true, the color of the play button should turn blue, also enable both pause & step
 		bool isGamePaused = false;//when this is true the color of the pause button should turn blue
 
 		if (state == GameStateEnum::STOPPED)
 			isGamePlaying = false;
-		if (state == GameStateEnum::PAUSED|| state == GameStateEnum::ADVANCEONE)
+		if (state == GameStateEnum::PAUSED || state == GameStateEnum::ADVANCEONE)
 			isGamePaused = true;
-		
+
 		//Play button
 		if (isGamePlaying)
 		{
@@ -342,8 +343,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
 			ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
 		}
-		else if(isGamePaused)
-		{ 
+		else if (isGamePaused)
+		{
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.25f, 0.5f, 1.0f, 1.0f));
 		}
 		if (ImGui::Button("Pause##button"))
@@ -450,10 +451,13 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		Show3DWindow();
 	}
-
+	if (showResourcesActive)
+	{
+		ShowResourcesActive();
+	}
 	if (showLoadFileWindow)
 	{
-		if (ImGui::Begin("Load File", NULL,ImGuiWindowFlags_AlwaysAutoResize| ImGuiWindowFlags_NoDocking| ImGuiWindowFlags_NoCollapse))
+		if (ImGui::Begin("Load File", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("File Browser", ImVec2(0, 300), true);
@@ -887,7 +891,7 @@ bool ModuleRenderer2D::showConfigFunc()
 
 
 		ImGui::Checkbox("Display all AABBs", &App->renderer3D->displayAABBs);
-		
+
 
 		ImGui::PopStyleColor();
 	}
@@ -982,6 +986,106 @@ bool ModuleRenderer2D::showQuitPopup()
 	return ret;
 }
 
+bool ModuleRenderer2D::ShowResourcesActive()
+{
+
+	ActiveResources act = App->resourceManager->GetActiveResources();
+
+	if (ImGui::Begin("Active Resources", &showResourcesActive))		//this is how you add the cross button to a window
+	{
+		//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+		if (ImGui::CollapsingHeader("Textures##resources"))
+		{
+			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			for (int i = 0; i < act.textures.size(); i++)
+			{
+				ImGui::Selectable(act.textures[i]->GetAssetFile());
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					
+					std::string count = std::to_string(act.textures[i]->referenceCount);
+					std::string ID = std::to_string(act.textures[i]->GetUID());
+
+					ImGui::Text("ID: %s",ID.c_str());
+					ImGui::Text("References: %s", count.c_str());
+
+					ImGui::EndTooltip();
+				}
+			}
+			//ImGui::PopStyleColor();
+		}
+		if (ImGui::CollapsingHeader("Meshes##resources"))
+		{
+			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			for (int i = 0; i < act.meshes.size(); i++)
+			{
+				ImGui::Selectable(act.meshes[i]->GetAssetFile());
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+
+					std::string count = std::to_string(act.meshes[i]->referenceCount);
+					std::string ID = std::to_string(act.meshes[i]->GetUID());
+
+					ImGui::Text("ID: %s", ID.c_str());
+					ImGui::Text("References: %s", count.c_str());
+
+					ImGui::EndTooltip();
+				}
+			}
+			//ImGui::PopStyleColor();
+		}
+		if (ImGui::CollapsingHeader("Scenes##resources"))
+		{
+			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			for (int i = 0; i < act.scenes.size(); i++)
+			{
+				ImGui::Selectable(act.scenes[i]->GetAssetFile());
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+
+					std::string count = std::to_string(act.scenes[i]->referenceCount);
+					std::string ID = std::to_string(act.scenes[i]->GetUID());
+
+					ImGui::Text("ID: %s", ID.c_str());
+					ImGui::Text("References: %s", count.c_str());
+
+					ImGui::EndTooltip();
+				}
+			}
+			//ImGui::PopStyleColor();
+		}
+		if (ImGui::CollapsingHeader("Models##resources"))
+		{
+			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+			for (int i = 0; i < act.models.size(); i++)
+			{
+				ImGui::Selectable(act.models[i]->GetAssetFile());
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+
+					std::string count = std::to_string(act.models[i]->referenceCount);
+					std::string ID = std::to_string(act.models[i]->GetUID());
+
+					ImGui::Text("ID: %s", ID.c_str());
+					ImGui::Text("References: %s", count.c_str());
+
+					ImGui::EndTooltip();
+				}
+			}
+			//ImGui::PopStyleColor();
+		}
+
+		//ImGui::PopStyleColor();
+		ImGui::End();
+	}
+	return true;
+}
+
 void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
 {
 	std::vector<std::string> files;
@@ -1015,7 +1119,7 @@ void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
 			extension = str.substr(index); //look for the last instance of a point. Format should be next
 		}
 
-		if (extension!=".meta" && ImGui::TreeNodeEx(str.c_str(), ImGuiTreeNodeFlags_Leaf))
+		if (extension != ".meta" && ImGui::TreeNodeEx(str.c_str(), ImGuiTreeNodeFlags_Leaf))
 		{
 			if (ImGui::IsItemClicked()) {
 				sprintf_s(selectedFile, 250, "%s%s", dir.c_str(), str.c_str());
@@ -1142,7 +1246,7 @@ void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> verti
 		fakeTex.push_back(0);
 		fakeTex.push_back(0);
 	}
-	ResourceMesh newMesh = ResourceMesh(vertices, indices, fakeNormals, fakeTex,0);//TODO for the moment we pass id 0 to the mesh
+	ResourceMesh newMesh = ResourceMesh(vertices, indices, fakeNormals, fakeTex, 0);//TODO for the moment we pass id 0 to the mesh
 	//AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
 	//App->editor3d->meshes.push_back(AuxM);
 	std::string newName = "Primitive";

@@ -11,7 +11,7 @@ Resource::~Resource()
 
 ResourceType Resource::GetType() const
 {
-	return ResourceType();
+	return type;
 }
 
 unsigned int Resource::GetUID() const

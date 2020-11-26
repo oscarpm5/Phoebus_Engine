@@ -6,6 +6,15 @@
 #include "Resources.h" //NOTE! Resources with capital R and final s is the good one, change nomenclature as to not get confused with resource & Resource
 #include <map>
 
+struct ActiveResources
+{
+	std::vector<Resource*> meshes;
+	std::vector<Resource*> textures;
+	std::vector<Resource*> scenes;
+	std::vector<Resource*> models;
+};
+
+
 class ModuleResourceManager : public Module
 {
 public:
@@ -24,7 +33,7 @@ public:
 	//returns the path of the lib asset given a uid, the path is empty if the asset is not found
 	void FindRecursively(std::string uid, std::string currdir, std::string& foundfile);
 	//Imports a file in assets into a new resource
-	unsigned int ImportFile(const char* newAssetFile);		void GenerateMetaFile(Resource* res);		Resource* RequestResource(unsigned int uid);	//TODO Generate IDs here	//returns true if success otherwise returns false	//bool ReleaseResource(unsigned int uid);
+	unsigned int ImportFile(const char* newAssetFile);		void GenerateMetaFile(Resource* res);		Resource* RequestResource(unsigned int uid);	ActiveResources GetActiveResources();	//TODO Generate IDs here
 private:
 	//creates a new resource given a file path from assets and a type (Factory method)
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type);

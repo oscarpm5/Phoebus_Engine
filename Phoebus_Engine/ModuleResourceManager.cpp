@@ -23,7 +23,22 @@ bool ModuleResourceManager::Init()
 bool ModuleResourceManager::Start()
 {
 	//LoadAllAssets();
+
 	checkTimer = 0.0f;
+	
+	
+	
+	
+	
+	//TODO this is tensting code, delete after done
+	CreateNewResource("emptyMesh", ResourceType::MESH);
+	CreateNewResource("emptyMesh2", ResourceType::MESH); 
+	CreateNewResource("emptyMesh3", ResourceType::MESH);
+	CreateNewResource("emptyTexture", ResourceType::TEXTURE);
+	CreateNewResource("emptyModel", ResourceType::MODEL);
+	CreateNewResource("emptyScene", ResourceType::SCENE);
+	CreateNewResource("emptyUnknown", ResourceType::UNKNOWN);
+
 	return true;
 }
 
@@ -37,6 +52,11 @@ update_status ModuleResourceManager::PreUpdate(float dt)
 
 
 		//Testing code
+	/*	CreateNewResource("emptyMesh", ResourceType::MESH);
+		CreateNewResource("emptyTexture", ResourceType::TEXTURE);
+
+		ActiveResources act= GetActiveResources();*/
+
 
 	}
 	return UPDATE_CONTINUE;
@@ -143,6 +163,40 @@ Resource* ModuleResourceManager::RequestResource(unsigned int uid)
 	}
 	//Find the library file (if exists) and load the custom file format
 	return TryToLoadResource(uid);
+}
+
+ActiveResources ModuleResourceManager::GetActiveResources()
+{
+	ActiveResources res;
+
+	std::map<unsigned int, Resource*>::iterator it = resources.begin();
+	
+	for ( it;it!=resources.end();it++)
+	{
+		ResourceType type = it->second->GetType();
+		switch (type)
+		{
+		case ResourceType::TEXTURE:
+			res.textures.push_back(it->second);
+			break;
+		case ResourceType::MESH:
+			res.meshes.push_back(it->second);
+			break;
+		case ResourceType::SCENE:
+			res.scenes.push_back(it->second);
+			break;
+		case ResourceType::MODEL:
+			res.models.push_back(it->second);
+			break;
+		case ResourceType::UNKNOWN:
+		default:
+			LOG("Unknown active resource with id: %i", it->second->GetUID());
+			break;
+		}
+	}
+
+
+	return res;
 }
 
 Resource* ModuleResourceManager::CreateNewResource(const char* assetsFile, ResourceType type)

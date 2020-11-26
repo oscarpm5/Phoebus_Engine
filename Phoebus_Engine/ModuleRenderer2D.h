@@ -35,6 +35,7 @@ public:
 	bool showAboutWindow();
 	bool showConfigFunc();
 	bool showQuitPopup();
+	bool ShowResourcesActive();
 
 	void DrawDirectoryTree(const char* dir);
 
@@ -58,6 +59,7 @@ public:
 	bool showConfig;
 	bool showQuit;
 	bool quitAlreadyOpened;
+	bool showResourcesActive;
 	Cnsl* console;
 
 	void GetViewportRectUI(float2& screenPos, float2& size)const;
