@@ -44,6 +44,8 @@ public:
 
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this for Import 
 	
+	void ManageAssetUpdate(const char* newAssetFile);
+
 private:
 
 	void LoadAllAssets();
@@ -52,7 +54,6 @@ private:
 
 	void LoadAssetsFromDir(std::string dir);
 
-	void ManageAssetUpdate(const char* newAssetFile);
 
 
 

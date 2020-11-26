@@ -289,13 +289,13 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		}
 		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
-			/*LOG("Testing save scene:");
-			char*  file;
-			int size = Importer::SerializeScene(App->editor3d->root, &file );			DONT DELETE THIS!
-			App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
-			Importer::LoadScene(file, App->editor3d->root);
-			delete file;
-			file = nullptr;*/
+			//LOG("Testing save scene:");
+			//char*  file;
+			//int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
+			//App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
+			//Importer::LoadScene("TestingSaveScene.pho", App->editor3d->root);
+			//delete file;
+			//file = nullptr;
 
 			char* whatev = "whatev,rly";
 

@@ -216,14 +216,32 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 						if (parents.back()->mNumMeshes > 0) {
 							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
-							//Resource * auxMesh = App->rManager->CreateNewResource(relativePath,ResourceType::MESH);
+							ResourceMesh *auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath,ResourceType::MESH);
+							Mesh::ImportRMesh(newMesh, *auxMesh);
+							char* auxB = "y";
+							Mesh::SaveMesh(*auxMesh, &auxB); //Here we import the mesh portion of our model
+							LOG("debug");
 						}
 						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
 					}
-				}
 
+					App->rManager->ManageAssetUpdate(relativePath);//Here we import the non-mesh portion of our model
+				}
 			}
 
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			aiReleaseImport(scene);
 		}
 		else
@@ -438,21 +456,6 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	aiQuaternion rotation;
 	currNode->mTransformation.Decompose(scaling, rotation, translation);
 
-	/*mat4x4 transformMat = IdentityMatrix;
-	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
-	float3 vec;
-	float angle;
-
-	rot.ToAxisAngle(vec, angle);
-	angle = RadToDeg(angle);
-
-	transformMat.scale(scaling.x, scaling.y, scaling.z);
-	mat4x4 auxTransform = transformMat;
-
-	transformMat = auxTransform.rotate(angle, { vec.x,vec.y,vec.z }) * transformMat;
-	transformMat.translate(translation.x, translation.y, translation.z);*/
-
-
 	float3 newTranslation = float3(translation.x, translation.y, translation.z);
 
 	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -463,7 +466,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 
 	//creates new game object
 	GameObject* newObj = new GameObject(newParent, name, newTransform);
-
+	
 
 	//Mesh::ImportRMesh(newMesh,* auxMesh);
 
@@ -1075,10 +1078,12 @@ void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 				resToFill.normals.push_back(fbxMesh->mNormals[j].y);
 				resToFill.normals.push_back(fbxMesh->mNormals[j].z);
 			}
+			resToFill.GenerateSmoothedNormals();
 		}
 		else
 			LOG("[warning]Mesh has no normals!");
 
+		resToFill.GenerateBuffers();
 	}
 }
 
