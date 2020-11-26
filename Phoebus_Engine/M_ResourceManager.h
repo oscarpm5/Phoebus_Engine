@@ -42,6 +42,8 @@ public:
 
 	ActiveResources GetActiveResources();
 
+	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this for Import 
+	
 private:
 
 	void LoadAllAssets();
@@ -53,7 +55,7 @@ private:
 	void ManageAssetUpdate(const char* newAssetFile);
 
 
-	Resource* CreateNewResource(const char* assetsFile, ResourceType type);
+
 
 	std::string GenLibPath(Resource& res);
 

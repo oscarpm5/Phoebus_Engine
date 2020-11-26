@@ -35,6 +35,7 @@
 #include "C_Transform.h"
 #include "C_Camera.h"
 #include "Config.h"
+#include "M_ResourceManager.h"
 #include <map>
 
 bool Importer::InitializeDevIL()
@@ -491,18 +492,18 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	return 0;
 }
 
-unsigned int Importer::Mesh::SaveMesh(ResourceMesh mesh, char* buffer)
+unsigned int Importer::Mesh::SaveMesh(Resource & meshA, char** buffer)
 {
-	// amount of indices / vertices / colors / normals / texture_coords / AABB
-	//uint ranges[2] = { mesh.num_indices, mesh.num_vertices };
-	uint ranges[5] = { mesh.indices.size(), mesh.vertices.size(), mesh.normals.size(),mesh.smoothedNormals.size(), mesh.texCoords.size() };
-	uint size = 
+	ResourceMesh* mesh = (ResourceMesh*)&meshA;
+	
+	unsigned int ranges[5] = { mesh->indices.size(), mesh->vertices.size(), mesh->normals.size(),mesh->smoothedNormals.size(), mesh->texCoords.size() };
+	unsigned int  size =
 			sizeof(ranges) 
-			+ sizeof(uint) * mesh.indices.size() 
-			+ sizeof(float) * mesh.vertices.size() 
-			+ sizeof(float)* mesh.normals.size()
-			+ sizeof(float) * mesh.smoothedNormals.size()
-			+ sizeof(float)* mesh.texCoords.size();
+			+ sizeof(uint) * mesh->indices.size() 
+			+ sizeof(float) * mesh->vertices.size()
+			+ sizeof(float)* mesh->normals.size()
+			+ sizeof(float) * mesh->smoothedNormals.size()
+			+ sizeof(float)* mesh->texCoords.size();
 
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
@@ -512,37 +513,37 @@ unsigned int Importer::Mesh::SaveMesh(ResourceMesh mesh, char* buffer)
 	cursor += bytes;
 
 	// Store indices
-	bytes = sizeof(unsigned int) * mesh.indices.size();
-	memcpy(cursor, &mesh.indices[0], bytes);
+	bytes = sizeof(unsigned int) * mesh->indices.size();
+	memcpy(cursor, &mesh->indices[0], bytes);
 	cursor += bytes;
 
 	// Store vertex
-	bytes = sizeof(float) * mesh.vertices.size();
-	memcpy(cursor, &mesh.vertices[0], bytes);
+	bytes = sizeof(float) * mesh->vertices.size();
+	memcpy(cursor, &mesh->vertices[0], bytes);
 	cursor += bytes;
 
 	// Store normals
-	bytes = sizeof(float) * mesh.normals.size();
-	memcpy(cursor, &mesh.normals[0], bytes);
+	bytes = sizeof(float) * mesh->normals.size();
+	memcpy(cursor, &mesh->normals[0], bytes);
 	cursor += bytes;
 
 	// Store smooth normals
-	bytes = sizeof(float) * mesh.smoothedNormals.size();
-	memcpy(cursor, &mesh.smoothedNormals[0], bytes);
+	bytes = sizeof(float) * mesh->smoothedNormals.size();
+	memcpy(cursor, &mesh->smoothedNormals[0], bytes);
 	cursor += bytes;
 
 	// Store tex coords
-	bytes = sizeof(float) * mesh.texCoords.size();
-	memcpy(cursor, &mesh.texCoords[0], bytes);
+	bytes = sizeof(float) * mesh->texCoords.size();
+	memcpy(cursor, &mesh->texCoords[0], bytes);
 	cursor += bytes;
 
 	//aqui directorio X
-
+	
 	std::string fileName = MESH_PATH;
-	fileName += "testing.pho";
+	fileName += std::to_string(mesh->GetUID()); fileName += ".mesh";
 	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
-	buffer = fileBuffer;
-
+	* buffer = fileBuffer;
+	LOG(* buffer);
 	return size;
 }
 
@@ -636,8 +637,8 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, ResourceMesh& m
 {	
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> smoothedNormals; std::vector<float> texCoords;
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
-
-	// amount of indices / vertices / smoothed vertices / colors / normals / texture_coords
+	
+	// amount of indices / vertices / smoothed vertices  / normals / texture_coords
 	uint ranges[5]; //necessarily hardcoded
 	uint bytes = sizeof(ranges);
 	memcpy(ranges, cursor, bytes);
@@ -707,8 +708,15 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, ResourceMesh& m
 
 
 	//Remake the mesh
-	ResourceMesh ret(vertices, indices, normals,smoothedNormals, texCoords,0);//TODO for the moment we pass id 0 to the mesh
-	if (!ret.vertices.empty() && !ret.indices.empty()) { return true; }
+	
+	meshToFill.vertices = vertices;
+	meshToFill.indices = indices;
+	meshToFill.normals = normals;
+	meshToFill.texCoords = texCoords;
+	meshToFill.GenerateSmoothedNormals();
+	meshToFill.GenerateBuffers();
+	
+	if (!meshToFill.vertices.empty() && !meshToFill.indices.empty()) { return true; }
 	else {
 		LOG("Malformed mesh loaded from PHO");
 		return false;
@@ -922,6 +930,92 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 
 void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 {
+	//UID should already be in place from Import Model
+
+	LOG("----------Importing mesh '%s'----------", (char*)fbxMesh->mName.C_Str());
+
+
+	// copy vertices
+	//newMesh.numVertex = mesh->mNumVertices;
+
+	if (fbxMesh != nullptr && fbxMesh->mNumVertices > 0)
+	{
+		resToFill.vertices.reserve(fbxMesh->mNumVertices * 3);
+
+
+		for (int j = 0; j < fbxMesh->mNumVertices; j++)
+		{
+			resToFill.vertices.push_back(fbxMesh->mVertices[j].x);
+			resToFill.vertices.push_back(fbxMesh->mVertices[j].y);
+			resToFill.vertices.push_back(fbxMesh->mVertices[j].z);
+		}
+		// copy faces
+		if (fbxMesh->HasFaces())
+		{
+			//newMesh.numIndex = mesh->mNumFaces * 3;
+			//newMesh.index = new unsigned int[newMesh.numIndex]; // assume each face is a triangle
+			resToFill.indices.reserve(fbxMesh->mNumFaces * 3);
+			resToFill.indices.resize(fbxMesh->mNumFaces * 3);
+
+			for (int j = 0; j < fbxMesh->mNumFaces; j++)
+			{
+
+				if (fbxMesh->mFaces[j].mNumIndices != 3)
+				{
+					LOG("[waring] geometry face with != 3 indices!");
+				}
+				else
+				{
+					//indices.push_back(mesh->mFaces[j].mIndices[0]);
+					//indices.push_back(mesh->mFaces[j].mIndices[1]);
+					//indices.push_back(mesh->mFaces[j].mIndices[2]);
+
+					memcpy(&resToFill.indices[j * 3], fbxMesh->mFaces[j].mIndices, 3 * sizeof(unsigned int));
+
+
+				}
+
+			}
+		}
+
+
+		resToFill.texCoords.reserve(fbxMesh->mNumVertices * 2); //there are 2 floats for every index
+		LOG("Importing mesh texture coordinates");
+		for (int j = 0; j < fbxMesh->mNumVertices; j++)
+		{
+			//copy TextureCoords
+			if (fbxMesh->mTextureCoords[0])
+			{
+
+				resToFill.texCoords.push_back(fbxMesh->mTextureCoords[0][j].x);
+				resToFill.texCoords.push_back(fbxMesh->mTextureCoords[0][j].y);
+			}
+			else
+			{
+				LOG("[warning]No texture coordinates found");
+				resToFill.texCoords.push_back(0.0f);
+				resToFill.texCoords.push_back(0.0f);
+			}
+		}
+		
+
+		//copy normals
+		if (fbxMesh->HasNormals())
+		{
+			LOG("Importing normals");
+			resToFill.normals.reserve(fbxMesh->mNumVertices * 3);
+			for (int j = 0; j < fbxMesh->mNumVertices; j++)
+			{
+
+				resToFill.normals.push_back(fbxMesh->mNormals[j].x);
+				resToFill.normals.push_back(fbxMesh->mNormals[j].y);
+				resToFill.normals.push_back(fbxMesh->mNormals[j].z);
+			}
+		}
+		else
+			LOG("[warning]Mesh has no normals!");
+
+	}
 }
 
 
