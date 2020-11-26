@@ -6,20 +6,21 @@
 #include "Globals.h"
 #include <vector>
 #include "MathGeoLib/include/MathGeoLib.h"
+//#include "Json/parson.h"
 
 //http://kgabis.github.io/parson/
 
 
 //TODO FOR ADRI: For the love of God almighty, clean this shit. We have like 10x the amount of funcs we need
 
-//struct json_object_t;
+struct json_object_t;
 //typedef struct json_object_t JSON_Object;
 
 struct json_value_t;
-typedef struct json_value_t  JSON_Value;
+//typedef struct json_value_t  JSON_Value;
 
 struct json_array_t;
-typedef struct json_array_t  JSON_Array;
+//typedef struct json_array_t  JSON_Array;
 
 class Config_Array;
 class Config
@@ -36,7 +37,7 @@ class Config
 public:
 	Config();						//Contructor used for new files
 	Config(const char* buffer);		//Constructor used for data read
-	Config(JSON_Object* obj);		//Constructor used for node append
+	Config(json_object_t* obj);		//Constructor used for node append
 	~Config();						//Free data if initialized
 
 	uint Serialize(char** buffer);	//Returns a filled buffer
@@ -60,8 +61,8 @@ public:
 	//Endof Get attributes---------
 
 private:
-	JSON_Value* root_value = nullptr; //Only used for file root
-	JSON_Object* node = nullptr;
+	json_value_t* root_value = nullptr; //Only used for file root
+	json_object_t* node = nullptr;
 };
 
 class Config_Array
@@ -69,7 +70,7 @@ class Config_Array
 public:
 	//Contructor only to be called from Config, it would cause mem leak
 	Config_Array();
-	Config_Array(JSON_Array* arr);
+	Config_Array(json_array_t* arr);
 
 	//Append attributes ------------
 	void AddNumber(double number);
@@ -99,7 +100,7 @@ public:
 	//Endof Get attributes----------
 
 private:
-	JSON_Array* arr;
+	json_array_t* arr;
 	uint size = 0;
 };
 

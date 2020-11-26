@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Globals.h"
 class Module
 {
 private :

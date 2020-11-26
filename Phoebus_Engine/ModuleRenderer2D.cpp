@@ -299,7 +299,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			Resource auxTest(777, ResourceType::MESH);
 			auxTest.SetAssetPath("auxTestPath.mesh");
-			App->resourceManager->GenerateMetaFile(&auxTest);
+			App->rManager->GenerateMetaFile(&auxTest);
 
 			//Resource(unsigned int UID,ResourceType type);
 
@@ -989,7 +989,7 @@ bool ModuleRenderer2D::showQuitPopup()
 bool ModuleRenderer2D::ShowResourcesActive()
 {
 
-	ActiveResources act = App->resourceManager->GetActiveResources();
+	ActiveResources act = App->rManager->GetActiveResources();
 
 	if (ImGui::Begin("Active Resources", &showResourcesActive))		//this is how you add the cross button to a window
 	{

@@ -9,7 +9,8 @@ Application::Application() : debug(false), renderPrimitives(true), realDT(0.16f)
 	camera = new ModuleCamera3D();
 	editor3d = new ModuleEditor3D();
 	fileSystem = new ModuleFileSystem();
-	resourceManager = new ModuleResourceManager();
+	//resourceManager = new ModuleResourceManager();
+	rManager = new M_ResourceManager();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -19,9 +20,10 @@ Application::Application() : debug(false), renderPrimitives(true), realDT(0.16f)
 	AddModule(window);
 	AddModule(camera);
 	AddModule(fileSystem);
-	AddModule(resourceManager);
+	//AddModule(resourceManager);
 	AddModule(input);
 	AddModule(editor3d);
+	AddModule(rManager);
 	// Renderer last!
 	AddModule(renderer3D);
 	AddModule(renderer2D);

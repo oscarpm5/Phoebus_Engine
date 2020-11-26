@@ -39,7 +39,7 @@ bool ModuleEditor3D::Start()
 
 
 
-	App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx");
+	//App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx"); //TODO Deprecated, use resource manager instead
 
 
 	return ret;

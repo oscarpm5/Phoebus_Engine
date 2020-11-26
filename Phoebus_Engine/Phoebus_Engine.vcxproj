@@ -176,6 +176,7 @@
     <ClInclude Include="ModuleInput.h" />
     <ClInclude Include="ModuleResourceManager.h" />
     <ClInclude Include="ModuleWindow.h" />
+    <ClInclude Include="M_ResourceManager.h" />
     <ClInclude Include="PHO.h" />
     <ClInclude Include="PhysFS\include\physfs.h" />
     <ClInclude Include="Primitive.h" />
@@ -250,6 +251,7 @@
     <ClCompile Include="ModuleRenderer3D.cpp" />
     <ClCompile Include="ModuleResourceManager.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
+    <ClCompile Include="M_ResourceManager.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="RenderBox.cpp" />
     <ClCompile Include="RenderMesh.cpp" />

@@ -18,7 +18,7 @@ Config::Config(const char* buffer)
 	}
 }
 
-Config::Config(JSON_Object* obj) : node(obj)
+Config::Config(json_object_t* obj) : node(obj)
 {
 
 }
@@ -124,7 +124,7 @@ Config_Array::Config_Array()
 	arr = json_value_get_array(json_value_init_array());
 }
 
-Config_Array::Config_Array(JSON_Array * arr) : arr(arr)
+Config_Array::Config_Array(json_array_t* arr) : arr(arr)
 {
 	size = json_array_get_count(arr);
 }

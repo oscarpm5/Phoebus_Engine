@@ -184,53 +184,51 @@ std::string ModuleFileSystem::NormalizePath(const char* path)
 	return newPath;
 }
 
-void ModuleFileSystem::LoadAsset(char* path)
-{
-	char* buffer;
-	std::string newPath = NormalizePath(path);
-	//std::string newPath=path;
-
-	//TransformToRelPath(newPath);
-	//LOG("Loading Asset from path: %s", newPath.c_str());
-	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
-
-	FileFormats thisFormat = CheckFileFormat(newPath.c_str());
-
-	switch (thisFormat)
-	{
-	case FileFormats::FBX:
-		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str());
-		break;
-
-	case FileFormats::OBJ:
-		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str()); //this workas, deal with it
-		break;
-
-	case FileFormats::JSON:
-		//to be
-		break;
-
-	case FileFormats::PNG:
-	case FileFormats::JPG:
-	case FileFormats::JPEG:
-	case FileFormats::DDS:
-		Importer::LoadNewImageFromBuffer(buffer, size, newPath);
-		break;
-
-	case FileFormats::PHO:
-		Importer::LoadMeshFromPho(buffer, size, newPath);
-		//Importer::LoadMaterialFromPho(buffer, size, newPath);
-		//Importer::LoadTransformFromPho(buffer, size, newPath);
-		//Importer::LoadCameraFromPho(buffer, size, newPath);
-		break;
-	case FileFormats::UNDEFINED:
-		LOG("[error]asset from %s has no recognizable format", path);
-		break;
-	default:
-		break;
-	}
-	RELEASE_ARRAY(buffer);
-}
+//resource manager deals with this now
+//void ModuleFileSystem::LoadAsset(char* path)
+//{
+//	char* buffer;
+//	std::string newPath = NormalizePath(path);
+//	//std::string newPath=path;
+//
+//	//TransformToRelPath(newPath);
+//	//LOG("Loading Asset from path: %s", newPath.c_str());
+//	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
+//
+//	FileFormats thisFormat = CheckFileFormat(newPath.c_str());
+//
+//	switch (thisFormat)
+//	{
+//	case FileFormats::FBX://fbx and obj are the same, no need to call same method 2 times
+//	case FileFormats::OBJ:
+//		Importer::Model::ImportModel(buffer, size, newPath.c_str()); //this workas, deal with it
+//		break;
+//
+//	case FileFormats::JSON:
+//		//to be
+//		break;
+//
+//	case FileFormats::PNG:
+//	case FileFormats::JPG:
+//	case FileFormats::JPEG:
+//	case FileFormats::DDS:
+//		Importer::Texture::LoadNewImageFromBuffer(buffer, size, newPath);
+//		break;
+//
+//	case FileFormats::PHO:
+//		Importer::LoadMeshFromPho(buffer, size, newPath);
+//		//Importer::LoadMaterialFromPho(buffer, size, newPath);
+//		//Importer::LoadTransformFromPho(buffer, size, newPath);
+//		//Importer::LoadCameraFromPho(buffer, size, newPath);
+//		break;
+//	case FileFormats::UNDEFINED:
+//		LOG("[error]asset from %s has no recognizable format", path);
+//		break;
+//	default:
+//		break;
+//	}
+//	RELEASE_ARRAY(buffer);
+//}
 
 FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 {

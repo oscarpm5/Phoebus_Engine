@@ -30,6 +30,7 @@
 #include "Component.h"
 #include "C_Mesh.h"
 #include "Mesh.h"
+#include "Texture.h"
 #include "C_Material.h"
 #include "C_Transform.h"
 #include "C_Camera.h"
@@ -49,7 +50,7 @@ bool Importer::InitializeDevIL()
 	return true;
 }
 
-bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, std::string path)
+bool Importer::Texture::ImportImage(const char* Buffer, unsigned int Length, ResourceTexture& textureToFill)
 {
 
 
@@ -88,7 +89,7 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 				mat = App->editor3d->selectedGameObjs.back()->GetComponent<C_Material>();
 			}
 
-			//mat->GenTextureFromName(newImage, path);
+			//TODO this has to create an image: ResourceImage-> fill it with data or smth
 
 		}
 		ilDeleteImages(1, &newImage);
@@ -96,50 +97,78 @@ bool Importer::LoadNewImageFromBuffer(const char* Buffer, unsigned int Length, s
 	return ret;
 }
 
-bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, GameObject* target, std::string path)
+bool Importer::Texture::LoadNewImage(const char* libPath, ResourceTexture& textureToFill)
 {
-	ILuint newImage = 0;
-	ilGenImages(1, &newImage);
-	ilBindImage(newImage);
 
-	bool ret = ilLoadL(IL_TYPE_UNKNOWN, Buffer, Length);
+	//generate buffer from lib path before using
 
-	if (!ret)
-	{
-		ILenum error;
-		error = ilGetError();
-		LOG("\n[error]Could not load an image from buffer");
-		LOG("[error]Error %d :\n %s", error, iluErrorString(error));
-		ilDeleteImages(1, &newImage);
-	}
-	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
-	{
-		if (target != nullptr)
-		{
+	char* buffer;//TODO
 
-			C_Material* mat = target->GetComponent<C_Material>();
+	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
-			if (mat == nullptr)
-			{
-				target->CreateComponent(ComponentType::MATERIAL);
-				mat = target->GetComponent<C_Material>();
-			}
+	// path
+	unsigned int values[1]; //necessarily hardcoded
+	unsigned int bytes = sizeof(values);
+	memcpy(values, cursor, bytes);
+	cursor += bytes;
 
-			//mat->GenTextureFromName(newImage, path);
+	// Load path;
+	bytes = values[0];
+	std::string NewPath;
+	NewPath.resize(bytes);
+	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
+	cursor += bytes;
 
-		}
-		ilDeleteImages(1, &newImage);
-	}
+	//Remake the Material
+	// TODO: we have the path to the texture, now do all the Ilbind image stuff
 
-	if (Length != 0)
-		RELEASE_ARRAY(Buffer);
-
-	return ret;
-
+	return true;
 }
+//
+//bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, GameObject* target, std::string path)
+//{
+//	ILuint newImage = 0;
+//	ilGenImages(1, &newImage);
+//	ilBindImage(newImage);
+//
+//	bool ret = ilLoadL(IL_TYPE_UNKNOWN, Buffer, Length);
+//
+//	if (!ret)
+//	{
+//		ILenum error;
+//		error = ilGetError();
+//		LOG("\n[error]Could not load an image from buffer");
+//		LOG("[error]Error %d :\n %s", error, iluErrorString(error));
+//		ilDeleteImages(1, &newImage);
+//	}
+//	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+//	{
+//		if (target != nullptr)
+//		{
+//
+//			C_Material* mat = target->GetComponent<C_Material>();
+//
+//			if (mat == nullptr)
+//			{
+//				target->CreateComponent(ComponentType::MATERIAL);
+//				mat = target->GetComponent<C_Material>();
+//			}
+//
+//			//mat->GenTextureFromName(newImage, path);
+//
+//		}
+//		ilDeleteImages(1, &newImage);
+//	}
+//
+//	if (Length != 0)
+//		RELEASE_ARRAY(Buffer);
+//
+//	return ret;
+//
+//}
 
 
-bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const char* relativePath)
+bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const char* relativePath)
 {
 	bool ret = false;
 
@@ -204,7 +233,7 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 						if (parents.back()->mNumMeshes > 0)
 							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
-						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
+						//gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
 
 					}
 				}
@@ -226,184 +255,185 @@ bool Importer::LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const 
 	return ret;
 }
 
-GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
-{
-	std::vector<float> vertices;
-	std::vector<unsigned int> indices;
-	std::vector<float> normals;
-	std::vector<float>texCoords;
-
-	//creates a new mesh
-	aiMesh* mesh = _mesh;
-	//assigns game object name
-	std::string name = "Untitled";
-
-	if (currNode->mName.C_Str() != "")
-	{
-		name = currNode->mName.C_Str();
-	}
-	else if (mesh != nullptr)
-		name = mesh->mName.C_Str();
-
-	//assigns game object parent
-	GameObject* newParent = parent;
-	if (parent == nullptr)
-		newParent = App->editor3d->root;
-
-	//Transform importing TODO can be optimized ??
-	aiVector3D translation, scaling;
-	aiQuaternion rotation;
-	currNode->mTransformation.Decompose(scaling, rotation, translation);
-
-	/*mat4x4 transformMat = IdentityMatrix;
-	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
-	float3 vec;
-	float angle;
-
-	rot.ToAxisAngle(vec, angle);
-	angle = RadToDeg(angle);
-
-	transformMat.scale(scaling.x, scaling.y, scaling.z);
-	mat4x4 auxTransform = transformMat;
-
-	transformMat = auxTransform.rotate(angle, { vec.x,vec.y,vec.z }) * transformMat;
-	transformMat.translate(translation.x, translation.y, translation.z);*/
-
-
-
-	float3 newTranslation = float3(translation.x, translation.y, translation.z);
-
-	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
-
-	float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
-
-	//creates new game object
-	GameObject* newObj = new GameObject(newParent, name, newTransform);
-
-	LOG("----------Importing mesh '%s'----------", (char*)name.c_str());
-
-
-	// copy vertices
-	//newMesh.numVertex = mesh->mNumVertices;
-
-	if (mesh != nullptr && mesh->mNumVertices > 0)
-	{
-		vertices.reserve(mesh->mNumVertices * 3);
-
-
-		for (int j = 0; j < mesh->mNumVertices; j++)
-		{
-			vertices.push_back(mesh->mVertices[j].x);
-			vertices.push_back(mesh->mVertices[j].y);
-			vertices.push_back(mesh->mVertices[j].z);
-		}
-		//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
-		LOG("New mesh with %i vertices", (vertices.size() / 3));
-		// copy faces
-		if (mesh->HasFaces())
-		{
-			//newMesh.numIndex = mesh->mNumFaces * 3;
-			//newMesh.index = new unsigned int[newMesh.numIndex]; // assume each face is a triangle
-			indices.reserve(mesh->mNumFaces * 3);
-			indices.resize(mesh->mNumFaces * 3);
-
-			for (int j = 0; j < mesh->mNumFaces; j++)
-			{
-
-				if (mesh->mFaces[j].mNumIndices != 3)
-				{
-					LOG("[waring] geometry face with != 3 indices!");
-				}
-				else
-				{
-					//indices.push_back(mesh->mFaces[j].mIndices[0]);
-					//indices.push_back(mesh->mFaces[j].mIndices[1]);
-					//indices.push_back(mesh->mFaces[j].mIndices[2]);
-
-					memcpy(&indices[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(unsigned int));
-
-
-				}
-
-			}
-			LOG("New mesh with %i indices", (indices.size()));
-		}
-
-
-		texCoords.reserve(mesh->mNumVertices * 2); //there are 2 floats for every index
-		LOG("Importing mesh texture coordinates");
-		for (int j = 0; j < mesh->mNumVertices; j++)
-		{
-			//copy TextureCoords
-			if (mesh->mTextureCoords[0])
-			{
-
-				texCoords.push_back(mesh->mTextureCoords[0][j].x);
-				texCoords.push_back(mesh->mTextureCoords[0][j].y);
-			}
-			else
-			{
-				LOG("[warning]No texture coordinates found");
-				texCoords.push_back(0.0f);
-				texCoords.push_back(0.0f);
-			}
-		}
-		LOG("%i texture coordinates have been loaded", texCoords.size() / 2);
-
-		//copy normals
-		if (mesh->HasNormals())
-		{
-			LOG("Importing normals");
-			normals.reserve(mesh->mNumVertices * 3);
-			for (int j = 0; j < mesh->mNumVertices; j++)
-			{
-
-				normals.push_back(mesh->mNormals[j].x);
-				normals.push_back(mesh->mNormals[j].y);
-				normals.push_back(mesh->mNormals[j].z);
-			}
-			LOG("%i normals have been loaded", normals.size() / 3);
-		}
-		else
-			LOG("[warning]Mesh has no normals!");
-
-
-
-		newObj->CreateComponent(ComponentType::MESH);
-		newObj->GetComponent<C_Mesh>()->SetMesh(ResourceMesh(vertices, indices, normals, texCoords,0));//TODO for the moment we pass id 0 to the mesh
-
-
-		if (scene->HasMaterials())
-		{
-
-			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
-
-			if (numTextures > 0)
-			{
-				aiString path;
-				char* c = (char*)path.C_Str();
-				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-
-				path = App->fileSystem->NormalizePath(path.C_Str());
-				path = relPath + path.C_Str();
-				char* buffer;
-				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
-				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
-				LoadNewImageFromObj(buffer, buffLength, newObj, path.C_Str());
-
-
-			}
-		}
-		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
-		LOG("----------Mesh '%s' has been loaded----------", (char*)name.c_str());
-		vertices.clear();
-		indices.clear();
-		normals.clear();
-		mesh = nullptr;
-	}
-	return newObj;
-}
+//GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
+//{
+//	std::vector<float> vertices;
+//	std::vector<unsigned int> indices;
+//	std::vector<float> normals;
+//	std::vector<float>texCoords;
+//
+//	//creates a new mesh
+//	aiMesh* mesh = _mesh;
+//	//assigns game object name
+//	std::string name = "Untitled";
+//
+//	if (currNode->mName.C_Str() != "")
+//	{
+//		name = currNode->mName.C_Str();
+//	}
+//	else if (mesh != nullptr)
+//		name = mesh->mName.C_Str();
+//
+//	//assigns game object parent
+//	GameObject* newParent = parent;
+//	if (parent == nullptr)
+//		newParent = App->editor3d->root;
+//
+//	//Transform importing TODO can be optimized ??
+//	aiVector3D translation, scaling;
+//	aiQuaternion rotation;
+//	currNode->mTransformation.Decompose(scaling, rotation, translation);
+//
+//	/*mat4x4 transformMat = IdentityMatrix;
+//	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
+//	float3 vec;
+//	float angle;
+//
+//	rot.ToAxisAngle(vec, angle);
+//	angle = RadToDeg(angle);
+//
+//	transformMat.scale(scaling.x, scaling.y, scaling.z);
+//	mat4x4 auxTransform = transformMat;
+//
+//	transformMat = auxTransform.rotate(angle, { vec.x,vec.y,vec.z }) * transformMat;
+//	transformMat.translate(translation.x, translation.y, translation.z);*/
+//
+//
+//
+//	float3 newTranslation = float3(translation.x, translation.y, translation.z);
+//
+//	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+//
+//	float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
+//
+//	//creates new game object
+//	GameObject* newObj = new GameObject(newParent, name, newTransform);
+//
+//	LOG("----------Importing mesh '%s'----------", (char*)name.c_str());
+//
+//
+//	// copy vertices
+//	//newMesh.numVertex = mesh->mNumVertices;
+//
+//	if (mesh != nullptr && mesh->mNumVertices > 0)
+//	{
+//		vertices.reserve(mesh->mNumVertices * 3);
+//
+//
+//		for (int j = 0; j < mesh->mNumVertices; j++)
+//		{
+//			vertices.push_back(mesh->mVertices[j].x);
+//			vertices.push_back(mesh->mVertices[j].y);
+//			vertices.push_back(mesh->mVertices[j].z);
+//		}
+//		//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
+//		LOG("New mesh with %i vertices", (vertices.size() / 3));
+//		// copy faces
+//		if (mesh->HasFaces())
+//		{
+//			//newMesh.numIndex = mesh->mNumFaces * 3;
+//			//newMesh.index = new unsigned int[newMesh.numIndex]; // assume each face is a triangle
+//			indices.reserve(mesh->mNumFaces * 3);
+//			indices.resize(mesh->mNumFaces * 3);
+//
+//			for (int j = 0; j < mesh->mNumFaces; j++)
+//			{
+//
+//				if (mesh->mFaces[j].mNumIndices != 3)
+//				{
+//					LOG("[waring] geometry face with != 3 indices!");
+//				}
+//				else
+//				{
+//					//indices.push_back(mesh->mFaces[j].mIndices[0]);
+//					//indices.push_back(mesh->mFaces[j].mIndices[1]);
+//					//indices.push_back(mesh->mFaces[j].mIndices[2]);
+//
+//					memcpy(&indices[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(unsigned int));
+//
+//
+//				}
+//
+//			}
+//			LOG("New mesh with %i indices", (indices.size()));
+//		}
+//
+//
+//		texCoords.reserve(mesh->mNumVertices * 2); //there are 2 floats for every index
+//		LOG("Importing mesh texture coordinates");
+//		for (int j = 0; j < mesh->mNumVertices; j++)
+//		{
+//			//copy TextureCoords
+//			if (mesh->mTextureCoords[0])
+//			{
+//
+//				texCoords.push_back(mesh->mTextureCoords[0][j].x);
+//				texCoords.push_back(mesh->mTextureCoords[0][j].y);
+//			}
+//			else
+//			{
+//				LOG("[warning]No texture coordinates found");
+//				texCoords.push_back(0.0f);
+//				texCoords.push_back(0.0f);
+//			}
+//		}
+//		LOG("%i texture coordinates have been loaded", texCoords.size() / 2);
+//
+//		//copy normals
+//		if (mesh->HasNormals())
+//		{
+//			LOG("Importing normals");
+//			normals.reserve(mesh->mNumVertices * 3);
+//			for (int j = 0; j < mesh->mNumVertices; j++)
+//			{
+//
+//				normals.push_back(mesh->mNormals[j].x);
+//				normals.push_back(mesh->mNormals[j].y);
+//				normals.push_back(mesh->mNormals[j].z);
+//			}
+//			LOG("%i normals have been loaded", normals.size() / 3);
+//		}
+//		else
+//			LOG("[warning]Mesh has no normals!");
+//
+//
+//
+//		newObj->CreateComponent(ComponentType::MESH);
+//		newObj->GetComponent<C_Mesh>()->SetMesh(ResourceMesh(vertices, indices, normals, texCoords,0));//TODO for the moment we pass id 0 to the mesh
+//
+//
+//		if (scene->HasMaterials())
+//		{
+//
+//			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+//			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
+//
+//			if (numTextures > 0)
+//			{
+//				aiString path;
+//				char* c = (char*)path.C_Str();
+//				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+//
+//				path = App->fileSystem->NormalizePath(path.C_Str());
+//				path = relPath + path.C_Str();
+//				char* buffer;
+//				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
+//				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
+//				
+//				//LoadNewImageFromObj(buffer, buffLength, newObj, path.C_Str());
+//
+//
+//			}
+//		}
+//		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
+//		LOG("----------Mesh '%s' has been loaded----------", (char*)name.c_str());
+//		vertices.clear();
+//		indices.clear();
+//		normals.clear();
+//		mesh = nullptr;
+//	}
+//	return newObj;
+//}
 
 //returns 0 by default if something failed
 unsigned int Importer::LoadPureImageGL(const char* path)
@@ -461,7 +491,7 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	return 0;
 }
 
-char* Importer::SaveMesh(ResourceMesh mesh)
+unsigned int Importer::Mesh::SaveMesh(ResourceMesh mesh, char* buffer)
 {
 	// amount of indices / vertices / colors / normals / texture_coords / AABB
 	//uint ranges[2] = { mesh.num_indices, mesh.num_vertices };
@@ -511,57 +541,58 @@ char* Importer::SaveMesh(ResourceMesh mesh)
 	std::string fileName = MESH_PATH;
 	fileName += "testing.pho";
 	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
+	buffer = fileBuffer;
 
-	return fileBuffer;
+	return size;
 }
 
-char* Importer::SaveMaterial(C_Material* aux)
+unsigned int Importer::Texture::SaveMaterial(ResourceTexture* texture, char* buffer)
 {
-	unsigned int values[1] = { aux->path.length() };
-	std::string auxPath = aux->path;
+	//unsigned int values[1] = { aux->path.length() };
+	//std::string auxPath = aux->path;
 
 
-	unsigned int size = sizeof(values) + auxPath.length();
-	char* fileBuffer = new char[size]; // Allocate
-	char* cursor = fileBuffer;
+	//unsigned int size = sizeof(values) + auxPath.length();
+	//char* fileBuffer = new char[size]; // Allocate
+	//char* cursor = fileBuffer;
 
-	// First store values
-	unsigned int bytes = sizeof(values);
-	memcpy(cursor, values, bytes);
-	cursor += bytes;
+	//// First store values
+	//unsigned int bytes = sizeof(values);
+	//memcpy(cursor, values, bytes);
+	//cursor += bytes;
 
-	// Store path
-	bytes = auxPath.length();
-	memcpy(cursor, auxPath.c_str(), bytes);
-	cursor += bytes;
+	//// Store path
+	//bytes = auxPath.length();
+	//memcpy(cursor, auxPath.c_str(), bytes);
+	//cursor += bytes;
 
-	std::string fileName = MATERIAL_PATH;
-	fileName += "testingMaterial.pho";
-	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
-	
-	return fileBuffer;
-
+	//std::string fileName = MATERIAL_PATH;
+	//fileName += "testingMaterial.pho";
+	//App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
+	//buffer = fileBuffer;
+	//return size;
+	return 0;
 }
+//
+//char* Importer::SaveTransform(C_Transform* aux) //TODO DEPRECATED? should we use game object to store the transform?
+//{
+//	float4x4 values[1] = { aux->GetGlobalTransform() };
+//
+//	unsigned int size = sizeof(values);
+//	char* fileBuffer = new char[size]; // Allocate
+//	char* cursor = fileBuffer;
+//
+//	// First store values
+//	unsigned int bytes = sizeof(values);
+//	memcpy(cursor, values, bytes);
+//	cursor += bytes;
+//
+//	App->fileSystem->SavePHO("testingTransform.pho", fileBuffer, size);
+//
+//	return fileBuffer;
+//}
 
-char* Importer::SaveTransform(C_Transform* aux) //TODO DEPRECATED? should we use game object to store the transform?
-{
-	float4x4 values[1] = { aux->GetGlobalTransform() };
-
-	unsigned int size = sizeof(values);
-	char* fileBuffer = new char[size]; // Allocate
-	char* cursor = fileBuffer;
-
-	// First store values
-	unsigned int bytes = sizeof(values);
-	memcpy(cursor, values, bytes);
-	cursor += bytes;
-
-	App->fileSystem->SavePHO("testingTransform.pho", fileBuffer, size);
-
-	return fileBuffer;
-}
-
-char* Importer::SaveCamera(C_Camera* aux)
+unsigned int Importer::Camera::SaveCamera(C_Camera* aux,char*buffer)
 {
 	//float nearPlaneDist;
 	//float farPlaneDist;
@@ -580,11 +611,11 @@ char* Importer::SaveCamera(C_Camera* aux)
 	std::string fileName = SCENE_PATH;
 	fileName += "testingCamera.pho";
 	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
-
-	return fileBuffer;
+	buffer = fileBuffer;
+	return size;
 }
 
-void Importer::SaveComponentCamera(Config& config, Component* cam)
+void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 {
 	C_Camera * camera =  (C_Camera *)cam;
 
@@ -595,13 +626,13 @@ void Importer::SaveComponentCamera(Config& config, Component* cam)
 	//config.SetBool("MainCamera",camera->main);
 }
 
-void Importer::SaveComponentMaterial(Config& config, Component* auxMat)
+void Importer::Texture::SaveComponentMaterial(Config& config, Component* auxMat)
 {
 	C_Material* mat = (C_Material*)auxMat;
 	config.SetString("Path", mat->path.c_str());
 }
 
-bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string path)
+bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, ResourceMesh& meshToFill)
 {	
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> smoothedNormals; std::vector<float> texCoords;
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
@@ -684,48 +715,32 @@ bool Importer::LoadMeshFromPho(char* buffer, unsigned int Length, std::string pa
 	};
 
 }
+//
+//bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path)
+//{
+//
+//	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
+//
+//	// path
+//	unsigned int values[1]; //necessarily hardcoded
+//	unsigned int bytes = sizeof(values);
+//	memcpy(values, cursor, bytes);
+//	cursor += bytes;
+//
+//	// Load path;
+//	bytes = values[0];
+//	std::string NewPath;
+//	NewPath.resize(bytes);
+//	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
+//	cursor += bytes;
+//
+//	//Remake the Material
+//	// TODO: we have the path to the texture, now do all the Ilbind image stuff
+//
+//	return true;
+//}
 
-bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path)
-{
-
-	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
-
-	// path
-	unsigned int values[1]; //necessarily hardcoded
-	unsigned int bytes = sizeof(values);
-	memcpy(values, cursor, bytes);
-	cursor += bytes;
-
-	// Load path;
-	bytes = values[0];
-	std::string NewPath;
-	NewPath.resize(bytes);
-	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
-	cursor += bytes;
-
-	//Remake the Material
-	// TODO: we have the path to the texture, now do all the Ilbind image stuff
-
-	return true;
-}
-
-bool Importer::LoadTransformFromPho(char* buffer, unsigned int Lenght, std::string path)
-{
-	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
-
-	// global mat
-	float4x4 values[1]; //necessarily hardcoded
-	unsigned int bytes = sizeof(values);
-	memcpy(values, cursor, bytes);
-	cursor += bytes;
-
-	// Load global mat (float4x4);
-	float4x4 gMat = values[0];
-
-	return true;
-}
-
-bool Importer::LoadCameraFromPho(char* buffer, unsigned int Lenght, std::string path)
+bool Importer::Camera::LoadCameraFromPho(char* buffer, unsigned int Lenght)
 {
 	//float nearPlaneDist; float farPlaneDist; float FoV; float aspectRatio;
 
@@ -885,13 +900,13 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 	switch (component->GetType())
 	{
 	case ComponentType::CAMERA:
-		SaveComponentCamera(config,  component);
+		Camera::SaveComponentCamera(config,  component);
 		break;
 	case ComponentType::MESH:
 		//all you need is component type and ID, and you already have that
 		break;
 	case ComponentType::MATERIAL:
-		SaveComponentMaterial(config,  component);
+		Texture::SaveComponentMaterial(config,  component);
 		break;
 	case ComponentType::TRANSFORM:
 		//we're already saving it as an array
@@ -905,19 +920,8 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 	
 }
 
-void Importer::ImportResourceMeshFromBuffer(char* buffer, unsigned int buffersize, Resource& resToFill)
+void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 {
-	//Open the bufer you are going to be reading
-	Config meshInfo(buffer);
-
-	//Get the ID of the saved mesh
-	int MeshID = meshInfo.GetNumber("ID");
-	resToFill.SetUID(MeshID);
-
-
-
-
-
 }
 
 
