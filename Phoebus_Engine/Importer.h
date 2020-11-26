@@ -36,15 +36,15 @@ namespace Importer
 	namespace Texture
 	{
 		//path required for display in the inspector
-		bool ImportImage(const char* Buffer, unsigned int Length, ResourceTexture& textureToFill);//TODO needs completion
+		bool ImportImage(const char* Buffer, unsigned int Length, Resource& textureToFill);//TODO needs completion
 
-		bool LoadNewImage(const char* libPath, ResourceTexture& textureToFill);
+		bool LoadNewImage(const char* libPath, Resource& textureToFill);
 
 		//Used in GameObject serialization. Never call this "raw"
 		void SaveComponentMaterial(Config& config, Component* Mat);
 
 		//Testing own file format
-		unsigned int SaveMaterial(ResourceTexture* texture, char* buffer);//TODO all
+		unsigned int SaveTexture(Resource& texture);//TODO all
 
 	}
 

@@ -65,6 +65,8 @@ private:
 
 	bool ReleaseSingleResource(unsigned int uid);
 
+	void SaveResource(Resource& r);
+
 private:
 	float checkTimer;
 

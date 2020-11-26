@@ -24,9 +24,9 @@ public:
 	unsigned int GetUID()const;
 	void SetUID(int newUID);
 
-
-	const char* GetAssetFile() const;
-	const char* GetLibraryFile() const;
+	//TODO reminder GetAssetFile().c_str() has to be assigned to a string variable if you want to work with it, otherwise it gets deleted
+	std::string GetAssetFile() const;
+	std::string GetLibraryFile() const;
 
 	void SetAssetPath(std::string newPath);
 	void SetLibPath(std::string newPath);
