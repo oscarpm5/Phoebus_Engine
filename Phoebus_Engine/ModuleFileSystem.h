@@ -44,6 +44,8 @@ public:
 	void TransformToLowerCase(std::string& lowerCase);
 
 	void SeparatePath(std::string path, std::string* newPath, std::string* file);
+	void SeparateExtension(std::string file, std::string* ext);
+
 	std::string NormalizePath(const char* path);
 	void LoadAsset(char * path);//TODO this method will soon be deptrecated -> moving it to resource manager
 

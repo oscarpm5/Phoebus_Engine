@@ -139,7 +139,11 @@ void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir
 		const std::string& str = *it;
 		std::string absPath = currDir + str;
 
-		if (str == (uid + ".pho"))
+		std::string extension;
+
+		App->fileSystem->SeparateExtension(str, &extension);
+
+		if (str == (uid + extension))
 		{
 			foundFile = absPath;
 			return;
@@ -444,6 +448,8 @@ Resource* M_ResourceManager::TryToLoadResource(unsigned int uid)
 	if (result != "")
 	{
 		//TODO Load resource with path from lib (result) and assign it to "res" aka Importer::Load (not Import!!!)
+
+		
 	}
 
 

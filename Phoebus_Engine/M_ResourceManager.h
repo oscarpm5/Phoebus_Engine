@@ -59,7 +59,7 @@ private:
 
 
 	std::string GenLibPath(Resource& res);
-
+	//Returns resource type from assets path
 	ResourceType ResourceTypeFromPath(std::string path);
 
 	Resource* TryToLoadResource(unsigned int uid);
