@@ -20,13 +20,11 @@ public:
 	bool CleanUp();
 
 	//returns a resource ID given an assets file
-	unsigned int Find(const char* file_in_assets) const;
+	//unsigned int Find(const char* file_in_assets) const;
+	//returns the path of the lib asset given a uid, the path is empty if the asset is not found
+	void FindRecursively(std::string uid, std::string currdir, std::string& foundfile);
 	//Imports a file in assets into a new resource
-	unsigned int ImportFile(const char* newAssetFile);
-
-	void GenerateMetaFile(Resource* res);
-	//TODO Generate IDs here
-
+	unsigned int ImportFile(const char* newAssetFile);		void GenerateMetaFile(Resource* res);		Resource* RequestResource(unsigned int uid);	//TODO Generate IDs here	//returns true if success otherwise returns false	//bool ReleaseResource(unsigned int uid);
 private:
 	//creates a new resource given a file path from assets and a type (Factory method)
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type);
@@ -43,20 +41,16 @@ private:
 
 	ResourceType ResourceTypeFromPath(std::string path);
 
-	//This func does the serialization AND creates file via FileManager
-	
+	Resource* TryToLoadResource(unsigned int uid);
+
+	bool ReleaseResource(unsigned int uid);
 
 private:
 	//stores all resources that are loaded in memory
-	std::map<unsigned int, Resource*> resources; 
+	std::map<unsigned int, Resource*> resources;
 
 	float checkTimer;
 };
-
-
-
-
-
 
 #endif // !__RESOURCE_MANAGER_H__
 

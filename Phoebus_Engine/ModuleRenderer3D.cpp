@@ -633,7 +633,7 @@ void ModuleRenderer3D::DrawGrid()
 {
 	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
 
-	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
+	float cameraHeight = max(abs(roundf(App->camera->Position.y)),0.01f);
 
 	float sepLvl = logf(cameraHeight) / logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
 
