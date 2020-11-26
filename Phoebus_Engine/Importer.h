@@ -65,4 +65,8 @@ namespace Importer
 	void SeekChildrenRecurvisely(GameObject* root, std::vector<GameObject*> & vectorToFill);
 	//Dont use this directly: it's called from SerializeScene
 	void SaveComponentRaw(Config& config, Component* component);
+
+
+	//Importing Components once we have a loaded buffer
+	void ImportResourceMeshFromBuffer(char * buffer, unsigned int buffersize, Resource& meshToFill);
 }

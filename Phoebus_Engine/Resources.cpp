@@ -19,6 +19,11 @@ unsigned int Resource::GetUID() const
 	return uid;
 }
 
+void Resource::SetUID(int newUID)
+{
+	this->uid = newUID;
+}
+
 const char* Resource::GetAssetFile() const
 {
 	return assetsFile.c_str();
