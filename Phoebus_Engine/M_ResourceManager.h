@@ -44,6 +44,8 @@ public:
 
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this for Import 
 	
+	void ManageAssetUpdate(const char* newAssetFile);
+
 private:
 
 	void LoadAllAssets();
@@ -52,13 +54,12 @@ private:
 
 	void LoadAssetsFromDir(std::string dir);
 
-	void ManageAssetUpdate(const char* newAssetFile);
 
 
 
 
 	std::string GenLibPath(Resource& res);
-
+	//Returns resource type from assets path
 	ResourceType ResourceTypeFromPath(std::string path);
 
 	Resource* TryToLoadResource(unsigned int uid);

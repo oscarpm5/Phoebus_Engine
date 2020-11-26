@@ -172,6 +172,16 @@ void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std:
 	}
 }
 
+void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext)
+{
+	size_t filePos = file.find_last_of(".");
+
+	if (filePos < file.size())
+	{
+		*ext= file.substr(filePos);
+	}
+}
+
 //normalizes '//' paths
 std::string ModuleFileSystem::NormalizePath(const char* path)
 {
