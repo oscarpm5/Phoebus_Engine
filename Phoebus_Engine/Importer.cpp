@@ -80,30 +80,33 @@ bool Importer::Texture::ImportImage(const char* Buffer, unsigned int Length, Res
 
 bool Importer::Texture::LoadNewImage(const char* libPath, Resource& textureToFill)
 {
+	char* buffer;
+	unsigned int size= App->fileSystem->Load(libPath, &buffer);
+	ResourceTexture* t = (ResourceTexture*)& textureToFill;
 
-	//generate buffer from lib path before using
+	ILuint newImage = 0;
+	ilGenImages(1, &newImage);
+	ilBindImage(newImage);
 
-	char* buffer;//TODO
+	bool ret = ilLoadL(IL_TYPE_UNKNOWN, buffer, size);
 
-	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 
-	// path
-	unsigned int values[1]; //necessarily hardcoded
-	unsigned int bytes = sizeof(values);
-	memcpy(values, cursor, bytes);
-	cursor += bytes;
-
-	// Load path;
-	bytes = values[0];
-	std::string NewPath;
-	NewPath.resize(bytes);
-	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
-	cursor += bytes;
-
-	//Remake the Material
-	// TODO: we have the path to the texture, now do all the Ilbind image stuff
-
-	return true;
+	if (!ret)
+	{
+		ILenum error;
+		error = ilGetError();
+		LOG("\n[error]Could not load an miage from buffer: %s", buffer);
+		LOG("[error] %d :\n %s", error, iluErrorString(error));
+		ilDeleteImages(1, &newImage);
+	}
+	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
+	{
+		t->GenTextureFromName(newImage);
+		t->ilImageID = -1;
+		ilDeleteImages(1, &newImage);
+		RELEASE_ARRAY(buffer);
+	}
+	return ret;
 }
 //
 //bool Importer::LoadNewImageFromObj(const char* Buffer, unsigned int Length, GameObject* target, std::string path)

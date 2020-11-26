@@ -23,14 +23,18 @@ bool M_ResourceManager::Init()
 
 bool M_ResourceManager::Start()
 {
-	//Testing
+	//TODO TESTING CODE
 	/*char* buffer;
 	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/Baker_house.png",&buffer);
 	Resource* r = CreateNewResource("Assets/bakerHouse/Baker_house.png", ResourceType::TEXTURE);
 
 	Importer::Texture::ImportImage(buffer, size, *r);*/
 
-	ImportNewFile("Assets/bakerHouse/Baker_house.png");
+	unsigned int id= ImportNewFile("Assets/bakerHouse/Baker_house.png");
+	std::string path;
+	FindFileRecursively(std::to_string(id), LIB_PATH, path);
+	ResourceTexture res(id);
+	Importer::Texture::LoadNewImage(path.c_str(),res);
 	return true;
 }
 
