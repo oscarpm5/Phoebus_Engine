@@ -22,6 +22,7 @@ public:
 
 	ResourceType GetType()const;
 	unsigned int GetUID()const;
+	void SetUID(int newUID);
 
 
 	const char* GetAssetFile() const;

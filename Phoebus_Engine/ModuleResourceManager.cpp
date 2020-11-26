@@ -58,6 +58,7 @@ bool ModuleResourceManager::CleanUp()
 {
 	return true;
 }
+
 //TODO THIS ISNT WORKING YET
 unsigned int ModuleResourceManager::ImportFile(const char* newAssetFile)
 {

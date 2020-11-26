@@ -905,4 +905,19 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 	
 }
 
+void Importer::ImportResourceMeshFromBuffer(char* buffer, unsigned int buffersize, Resource& resToFill)
+{
+	//Open the bufer you are going to be reading
+	Config meshInfo(buffer);
+
+	//Get the ID of the saved mesh
+	int MeshID = meshInfo.GetNumber("ID");
+	resToFill.SetUID(MeshID);
+
+
+
+
+
+}
+
 

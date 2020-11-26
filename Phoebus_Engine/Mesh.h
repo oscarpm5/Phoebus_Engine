@@ -51,7 +51,9 @@ public:
 
 	unsigned int idNormals;// normals in VRAM
 	std::vector<float> normals;//normals array(note that normals are just 3 of the elements stored in this vector)
-	std::vector<float> smoothedNormals;//average of all faces
+
+	//ADRI: DO NOT IMPORT THIS; CALL THE FUNC GENERATESMOOTHNORMALS()
+	std::vector<float> smoothedNormals;//average of all faces 
 	unsigned int idTexCoords; //texture coordinates in VRAM
 	std::vector<float> texCoords;//texture coordinates array(note that texCoords are just 2 of the elements stored in this vector)
 
