@@ -42,7 +42,7 @@ public:
 
 	ActiveResources GetActiveResources();
 
-	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this public for Import 
+	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this for Import 
 	
 private:
 
@@ -64,6 +64,8 @@ private:
 	Resource* TryToLoadResource(unsigned int uid);
 
 	bool ReleaseSingleResource(unsigned int uid);
+
+	void SaveResource(Resource& r);
 
 private:
 	float checkTimer;

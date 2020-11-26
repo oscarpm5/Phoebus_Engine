@@ -5,10 +5,10 @@
 #include "Config.h"
 #include "Texture.h"
 #include "Mesh.h"
-#include "Importer.h"
 #include <string>
+#include "Importer.h"
 
-M_ResourceManager::M_ResourceManager(bool start_enabled) :Module(start_enabled),checkTimer(0.0f)
+M_ResourceManager::M_ResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
 {
 }
 
@@ -23,11 +23,19 @@ bool M_ResourceManager::Init()
 
 bool M_ResourceManager::Start()
 {
-	char* buffer;     
-	unsigned int size = App->fileSystem->Load("Assets/street/Streetenvironment_V01.FBX",&buffer);     
-	Importer::Model::ImportModel(buffer, size, "Assets/street/Streetenvironment_V01.FBX");
+	//TODO TESTING CODE
+	/*char* buffer;
+	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/Baker_house.png",&buffer);
+	Resource* r = CreateNewResource("Assets/bakerHouse/Baker_house.png", ResourceType::TEXTURE);
 
-	
+	Importer::Texture::ImportImage(buffer, size, *r);*/
+
+	/*unsigned int id= ImportNewFile("Assets/bakerHouse/Baker_house.png");
+	std::string path;
+	FindFileRecursively(std::to_string(id), LIB_PATH, path);
+	ResourceTexture res(id);
+	Importer::Texture::LoadNewImage(path.c_str(),res);*/
+
 	return true;
 }
 
@@ -80,7 +88,7 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	switch (resType)
 	{
 	case ResourceType::TEXTURE:
-		//Import texture
+		Importer::Texture::ImportImage(buffer, size, *res);
 		break;
 	case ResourceType::MESH:
 		break;
@@ -96,10 +104,15 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	}
 
 	//We then save the resource (TODO) -> create resource in lib + create . meta in assets
+	SaveResource(*res);
+
+	GenerateMetaFile(res);
 
 	ret = res->GetUID();
-	RELEASE_ARRAY(buffer);
-	//after we are done using it, we unload the resource TODO
+	RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
+
+
+						   //after we are done using it, we unload the resource TODO
 
 	return ret;
 }
@@ -142,9 +155,11 @@ void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir
 void M_ResourceManager::GenerateMetaFile(Resource* res)
 {
 	char* bufferToFill;
-	const char* assetPath = res->GetAssetFile();
+	std::string assetPathStr = res->GetAssetFile();
+	const char* assetPath = assetPathStr.c_str();
+
 	const char* metaExtension = ".meta";
-	
+
 	//fill the buffer with the necessary info
 	Config file;
 	file.SetNumber("ID", res->GetUID());
@@ -152,7 +167,7 @@ void M_ResourceManager::GenerateMetaFile(Resource* res)
 	file.SetNumber("ModDate", lastModDate);
 	//TODO: import configs go here, if we're adding that into the future
 	unsigned int size = file.Serialize(&bufferToFill);
-	
+
 	//TODO: less ghetto way to do this? -Adri
 	char* AuxPath = (char*)malloc(1 + strlen(assetPath) + strlen(metaExtension));
 	strcpy(AuxPath, assetPath);
@@ -367,25 +382,7 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 	if (path != "")
 	{
 		path += std::to_string(res.GetUID());
-		switch (restType)
-		{
-		case ResourceType::TEXTURE:
-			path += ".dds";
-			break;
-		case ResourceType::MESH:
-			path += ".mesh";
-			break;
-		case ResourceType::SCENE:
-			path += ".pho";
-			break;
-		case ResourceType::MODEL:
-			path += ".model";
-			break;
-		case ResourceType::UNKNOWN:
-		default:
-			LOG("[error] Error when Generating lib path for a resource: the resource has unknown type");
-			break;
-		}
+		path += ".pho";
 	}
 
 	return path;
@@ -447,7 +444,28 @@ bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
 		//release resource here TODO
 
 		ret = true;
+	}	return ret;
+}
+
+void M_ResourceManager::SaveResource(Resource& r)
+{
+	ResourceType type = r.GetType();
+
+	switch (type)
+	{
+	case ResourceType::TEXTURE:
+		Importer::Texture::SaveTexture(r);
+		break;
+	case ResourceType::SCENE:
+		break;
+	case ResourceType::MODEL:
+		break;
+	case ResourceType::UNKNOWN:
+		break;
+	default:
+		break;
 	}
 
-	return ret;
+	//save pho
+
 }

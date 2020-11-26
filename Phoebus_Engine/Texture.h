@@ -10,7 +10,7 @@ public:
 	ResourceTexture(unsigned int UID);
 	~ResourceTexture();
 
-	void GenTextureFromName(unsigned int ilImageName, std::string path = "");
+	void GenTextureFromName(unsigned int ilImageName);
 	void DestroyTexture();
 	unsigned int GetTextureID()const;
 
@@ -22,6 +22,7 @@ public:
 	unsigned int bpp;
 
 	unsigned int idTexture;
+	int ilImageID; //this is just for saving, after that this variable is deleted
 };
 
 #endif // !__TEXTURE_H__
