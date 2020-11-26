@@ -4,7 +4,7 @@
 #include "DevIL/include/IL/ilu.h"
 
 ResourceTexture::ResourceTexture(unsigned int UID): Resource(UID,ResourceType::TEXTURE),
-idTexture(0),width(0),height(0),format(0),depth(0),sizeInBytes(0),bpp(0)
+idTexture(0),width(0),height(0),format(0),depth(0),sizeInBytes(0),bpp(0),ilImageID(-1)
 {
 }
 
@@ -18,9 +18,10 @@ ResourceTexture::~ResourceTexture()
 	bpp = 0;
 }
 
-void ResourceTexture::GenTextureFromName(unsigned int ilImageName, std::string path)
+void ResourceTexture::GenTextureFromName(unsigned int ilImageName)
 {
 	DestroyTexture();
+	ilImageID = ilImageName;
 	ilBindImage(ilImageName);
 
 	//get properties
@@ -70,6 +71,12 @@ void ResourceTexture::DestroyTexture()
 	{
 		glDeleteTextures(1, &idTexture);
 		idTexture = 0;
+	}
+
+	if (ilImageID != -1)
+	{
+		ilDeleteImages(1, (unsigned int*)&ilImageID);
+		ilImageID = -1;
 	}
 }
 
