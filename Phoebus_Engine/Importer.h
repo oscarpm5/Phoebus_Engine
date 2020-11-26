@@ -22,16 +22,15 @@ namespace Importer
 	{
 		//Take a saved buffer in memory and loads it into a model resource, also imports dependencies if needed (aka meshes / textures) TODO
 		bool ImportModel(const char* Buffer, unsigned int Length, const char* relativePath);
-
 		bool LoadModel(const char* libPath, GameObject* root);//revise if needed
 		unsigned int SaveModel(GameObject* root, char* buffer);//returns buffer size
 	}
 
 	namespace Mesh
 	{
-		void ImportRMesh(aiMesh* fbxMesh, ResourceMesh& meshToFill);//TODO
+		void ImportRMesh(aiMesh* fbxMesh, Resource& meshToFill);
 		bool LoadMesh(char* Buffer, unsigned int Length, ResourceMesh& meshToFill);
-		unsigned int SaveMesh(Resource & aux, char** buffer);//returns buffer 
+		unsigned int SaveMesh(Resource & aux, char** buffer);//double pointer needed 
 	}
 
 	namespace Texture
@@ -60,6 +59,8 @@ namespace Importer
 		bool LoadCameraFromPho(char* buffer, unsigned int Lenght);
 
 	}
+	//Kill me already please
+	GameObject* LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath);
 
 
 	//Dont use this directly

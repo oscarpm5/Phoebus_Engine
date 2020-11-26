@@ -42,7 +42,7 @@ public:
 
 	ActiveResources GetActiveResources();
 
-	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this for Import 
+	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this public for Import 
 	
 private:
 

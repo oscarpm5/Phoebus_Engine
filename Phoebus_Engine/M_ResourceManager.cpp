@@ -5,6 +5,7 @@
 #include "Config.h"
 #include "Texture.h"
 #include "Mesh.h"
+#include "Importer.h"
 #include <string>
 
 M_ResourceManager::M_ResourceManager(bool start_enabled) :Module(start_enabled),checkTimer(0.0f)
@@ -22,6 +23,11 @@ bool M_ResourceManager::Init()
 
 bool M_ResourceManager::Start()
 {
+	char* buffer;     
+	unsigned int size = App->fileSystem->Load("Assets/street/Streetenvironment_V01.FBX",&buffer);     
+	Importer::Model::ImportModel(buffer, size, "Assets/street/Streetenvironment_V01.FBX");
+
+	
 	return true;
 }
 
@@ -361,7 +367,25 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 	if (path != "")
 	{
 		path += std::to_string(res.GetUID());
-		path += ".pho";
+		switch (restType)
+		{
+		case ResourceType::TEXTURE:
+			path += ".dds";
+			break;
+		case ResourceType::MESH:
+			path += ".mesh";
+			break;
+		case ResourceType::SCENE:
+			path += ".pho";
+			break;
+		case ResourceType::MODEL:
+			path += ".model";
+			break;
+		case ResourceType::UNKNOWN:
+		default:
+			LOG("[error] Error when Generating lib path for a resource: the resource has unknown type");
+			break;
+		}
 	}
 
 	return path;
@@ -423,5 +447,7 @@ bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
 		//release resource here TODO
 
 		ret = true;
-	}	return ret;
+	}
+
+	return ret;
 }
