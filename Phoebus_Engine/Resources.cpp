@@ -24,14 +24,14 @@ void Resource::SetUID(int newUID)
 	this->uid = newUID;
 }
 
-std::string Resource::GetAssetFile() const
+const char* Resource::GetAssetFile() const
 {
-	return assetsFile;
+	return assetsFile.c_str();
 }
 
-std::string Resource::GetLibraryFile() const
+const char* Resource::GetLibraryFile() const
 {
-	return libraryFile;
+	return libraryFile.c_str();
 }
 
 void Resource::SetAssetPath(std::string newPath)

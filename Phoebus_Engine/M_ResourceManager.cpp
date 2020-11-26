@@ -7,9 +7,8 @@
 #include "Mesh.h"
 #include "Importer.h"
 #include <string>
-#include "Importer.h"
 
-M_ResourceManager::M_ResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
+M_ResourceManager::M_ResourceManager(bool start_enabled) :Module(start_enabled),checkTimer(0.0f)
 {
 }
 
@@ -81,7 +80,7 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	switch (resType)
 	{
 	case ResourceType::TEXTURE:
-		Importer::Texture::ImportImage(buffer, size, *res);
+		//Import texture
 		break;
 	case ResourceType::MESH:
 		break;
@@ -97,15 +96,10 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	}
 
 	//We then save the resource (TODO) -> create resource in lib + create . meta in assets
-	SaveResource(*res);
-
-	GenerateMetaFile(res);
 
 	ret = res->GetUID();
-	RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
-
-
-						   //after we are done using it, we unload the resource TODO
+	RELEASE_ARRAY(buffer);
+	//after we are done using it, we unload the resource TODO
 
 	return ret;
 }
@@ -148,11 +142,9 @@ void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir
 void M_ResourceManager::GenerateMetaFile(Resource* res)
 {
 	char* bufferToFill;
-	std::string assetPathStr = res->GetAssetFile();
-	const char* assetPath = assetPathStr.c_str();
-
+	const char* assetPath = res->GetAssetFile();
 	const char* metaExtension = ".meta";
-
+	
 	//fill the buffer with the necessary info
 	Config file;
 	file.SetNumber("ID", res->GetUID());
@@ -160,7 +152,7 @@ void M_ResourceManager::GenerateMetaFile(Resource* res)
 	file.SetNumber("ModDate", lastModDate);
 	//TODO: import configs go here, if we're adding that into the future
 	unsigned int size = file.Serialize(&bufferToFill);
-
+	
 	//TODO: less ghetto way to do this? -Adri
 	char* AuxPath = (char*)malloc(1 + strlen(assetPath) + strlen(metaExtension));
 	strcpy(AuxPath, assetPath);
@@ -458,27 +450,4 @@ bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
 	}
 
 	return ret;
-}
-
-void M_ResourceManager::SaveResource(Resource& r)
-{
-	ResourceType type = r.GetType();
-
-	switch (type)
-	{
-	case ResourceType::TEXTURE:
-		Importer::Texture::SaveTexture(r);
-		break;
-	case ResourceType::SCENE:
-		break;
-	case ResourceType::MODEL:
-		break;
-	case ResourceType::UNKNOWN:
-		break;
-	default:
-		break;
-	}
-
-	//save pho
-
 }

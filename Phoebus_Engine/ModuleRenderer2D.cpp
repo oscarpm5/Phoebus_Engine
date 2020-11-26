@@ -1008,7 +1008,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.textures.size(); i++)
 			{
-				ImGui::Selectable(act.textures[i]->GetAssetFile().c_str());
+				ImGui::Selectable(act.textures[i]->GetAssetFile());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
@@ -1029,7 +1029,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.meshes.size(); i++)
 			{
-				ImGui::Selectable(act.meshes[i]->GetAssetFile().c_str());
+				ImGui::Selectable(act.meshes[i]->GetAssetFile());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
@@ -1050,7 +1050,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.scenes.size(); i++)
 			{
-				ImGui::Selectable(act.scenes[i]->GetAssetFile().c_str());
+				ImGui::Selectable(act.scenes[i]->GetAssetFile());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
@@ -1071,7 +1071,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.models.size(); i++)
 			{
-				ImGui::Selectable(act.models[i]->GetAssetFile().c_str());
+				ImGui::Selectable(act.models[i]->GetAssetFile());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
