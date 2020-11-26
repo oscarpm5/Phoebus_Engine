@@ -5,6 +5,7 @@ struct aiNode;
 struct aiScene;
 class GameObject;
 class ResourceMesh;
+class Resource;
 class C_Material;
 class C_Transform;
 class C_Camera;
