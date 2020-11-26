@@ -30,9 +30,8 @@ namespace Importer
 	namespace Mesh
 	{
 		void ImportRMesh(aiMesh* fbxMesh, ResourceMesh& meshToFill);//TODO
-		//Own file format
 		bool LoadMesh(char* Buffer, unsigned int Length, ResourceMesh& meshToFill);
-		unsigned int SaveMesh(ResourceMesh aux, char* buffer);//returns buffer 
+		unsigned int SaveMesh(Resource & aux, char** buffer);//returns buffer 
 	}
 
 	namespace Texture
