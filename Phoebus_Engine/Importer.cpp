@@ -72,6 +72,15 @@ bool Importer::Texture::ImportImage(const char* Buffer, unsigned int Length, Res
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 	{
+		ilBindImage(newImage);
+		ILinfo ImageInfo;
+		iluGetImageInfo(&ImageInfo);
+
+		if (ImageInfo.Origin == IL_ORIGIN_UPPER_LEFT)
+		{
+			iluFlipImage();
+		}
+
 		t->GenTextureFromName(newImage);
 		//ilDeleteImages(1, &newImage);
 	}
@@ -101,6 +110,7 @@ bool Importer::Texture::LoadNewImage(const char* libPath, Resource& textureToFil
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
 	{
+
 		t->GenTextureFromName(newImage);
 		t->ilImageID = -1;
 		ilDeleteImages(1, &newImage);
