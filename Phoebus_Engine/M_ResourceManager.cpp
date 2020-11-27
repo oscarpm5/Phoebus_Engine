@@ -93,37 +93,42 @@ Resource* M_ResourceManager::ImportNewFile(const char* newAssetFile)
 
 		char* buffer;
 		uint size = App->fileSystem->Load(newAssetFile, &buffer);
-		//Import here->TODO->  method is given a buffer + a resource and saves the imported resource into the given one
-		switch (resType)
+		if (size != 0)
 		{
-		case ResourceType::TEXTURE:
-			Importer::Texture::ImportImage(buffer, size, *res);
-			break;
-		case ResourceType::MESH:
-			//how tf did you get here
-			break;
-		case ResourceType::SCENE:
-			break;
-		case ResourceType::MODEL:
-			Importer::Model::ImportModel(buffer, size, newAssetFile, res);
-			break;
-		case ResourceType::UNKNOWN:
-		default:
-			break;
+
+
+			//Import here->TODO->  method is given a buffer + a resource and saves the imported resource into the given one
+			switch (resType)
+			{
+			case ResourceType::TEXTURE:
+				Importer::Texture::ImportImage(buffer, size, *res);
+				break;
+			case ResourceType::MESH:
+				//how tf did you get here
+				break;
+			case ResourceType::SCENE:
+				break;
+			case ResourceType::MODEL:
+				Importer::Model::ImportModel(buffer, size, newAssetFile, res);
+				break;
+			case ResourceType::UNKNOWN:
+			default:
+				break;
+			}
+
+			//We then save the resource (TODO) -> create resource in lib + create . meta in assets
+			SaveResource(*res);
+
+			GenerateMetaFile(res);
+
+			res->referenceCount = 0;
+			if (res->IsLoadedInMemory())
+			{
+				res->UnloadFromMemory();
+			}
+
+			RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
 		}
-
-		//We then save the resource (TODO) -> create resource in lib + create . meta in assets
-		SaveResource(*res);
-
-		GenerateMetaFile(res);
-
-		res->referenceCount = 0;
-		if (res->IsLoadedInMemory())
-		{
-			res->UnloadFromMemory();
-		}
-
-		RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
 	}
 
 
@@ -157,7 +162,7 @@ Resource* M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsi
 		case ResourceType::SCENE:
 			break;
 		case ResourceType::MODEL:
-			Importer::Model::ImportModel(buffer, size, newAssetFile,res);
+			Importer::Model::ImportModel(buffer, size, newAssetFile, res);
 			break;
 		case ResourceType::UNKNOWN:
 		default:
@@ -247,7 +252,7 @@ void M_ResourceManager::GenerateMetaFile(Resource* res)
 	//make physfs save the file
 	App->fileSystem->SavePHO(AuxPath.c_str(), bufferToFill, size);
 	RELEASE_ARRAY(bufferToFill);
-	
+
 	//LOG("Testing save scene:");
 			//char*  file;
 			//int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
@@ -272,8 +277,8 @@ Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
 		it->second->referenceCount++;
 		return it->second;
 	}
-	LOG("[error] The requested resource with ID: %i, doesn't exist",uid)
-	return nullptr;//the file doesn't exist in lib :c
+	LOG("[error] The requested resource with ID: %i, doesn't exist", uid)
+		return nullptr;//the file doesn't exist in lib :c
 }
 
 Resource* M_ResourceManager::RequestExistingResource(unsigned int uid)
@@ -363,7 +368,7 @@ void M_ResourceManager::LoadAssetsRecursively(std::string dir)
 		const std::string& str = *it;
 		std::string absPath = dir + str;
 		std::string extension;
-		App->fileSystem->SeparateExtension(absPath,&extension);
+		App->fileSystem->SeparateExtension(absPath, &extension);
 
 		if (extension != ".meta")
 		{
@@ -451,13 +456,13 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	std::string metaPath = "Assets/" + newPath + ".meta";
 
 
-	
+
 
 	//First, we check if the asset has a .meta associated with it
 	if (App->fileSystem->DoesFileExist(metaPath.c_str()))
 	{
 		//if it exists we check if the file has changed recently
-		
+
 		unsigned long ModNew = App->fileSystem->GetLastModTimeFromPath(newAssetFile);
 
 		char* metaBuffer;
@@ -479,7 +484,7 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 		else
 		{
 			//if asset exists in lib but is not loaded in the database, load it
- 			std::string found = "";
+			std::string found = "";
 			FindFileRecursively(std::to_string(AssID), LIB_PATH, found);
 			if (found != "")//found in lib?
 			{

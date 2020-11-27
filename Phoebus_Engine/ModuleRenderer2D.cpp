@@ -486,6 +486,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				//TODO Call load asset here??
 				showLoadFileWindow = false;
+				std::string selected = selectedFile;
 				selectedFile[0] = '\0';
 			}
 	

@@ -66,8 +66,8 @@ bool Importer::Texture::ImportImage(const char* Buffer, unsigned int Length, Res
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\n[error]Could not load an miage from buffer: %s", Buffer);
-		LOG("[error] %d :\n %s", error, iluErrorString(error));
+		LOG("\n[error]Could not load an miage from buffer");
+		//LOG("[error] %d :\n %s", error, iluErrorString(error));
 		ilDeleteImages(1, &newImage);
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
@@ -90,7 +90,7 @@ bool Importer::Texture::ImportImage(const char* Buffer, unsigned int Length, Res
 bool Importer::Texture::LoadNewImage(const char* libPath, Resource& textureToFill)
 {
 	char* buffer;
-	unsigned int size= App->fileSystem->Load(libPath, &buffer);
+	unsigned int size = App->fileSystem->Load(libPath, &buffer);
 	ResourceTexture* t = (ResourceTexture*)& textureToFill;
 
 	ILuint newImage = 0;
@@ -222,26 +222,26 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 					for (int j = 0; j < currentParent->mNumChildren; j++)
 					{
-						ResourceMesh* auxMesh=nullptr;
+						ResourceMesh* auxMesh = nullptr;
 						parents.push_back(currentParent->mChildren[j]);
 						aiMesh* newMesh = nullptr;
 						if (parents.back()->mNumMeshes > 0) {
 							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
-							auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath,ResourceType::MESH);
+							auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
 							Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
 							char* auxB = "y";
 							Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
 							LOG("debug");
 						}
-						gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh,newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
+						gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh, newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
 					}
 				}
 			}
 
-		
+
 			Model::SaveModel(root, res);//take the model resource and plop it into lib. It has info such as ID, GO list, Components array...
-			
+
 			delete root;
 			aiReleaseImport(scene);
 		}
@@ -300,7 +300,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 		{
 			Config comp = components.GetNode(i);
 			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
-			if (Component* component = gameObject->CreateComponent(type, comp.GetNumber("ID")))
+			if (Component * component = gameObject->CreateComponent(type, comp.GetNumber("ID")))
 			{
 				//Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
 				unsigned int newUID = comp.GetNumber("ResourceID");
@@ -311,18 +311,18 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					//Hold your horses
 					break;
 				case ComponentType::MESH:
-					
-					
-						//component.chutame_la_mesh
-						component->SetNewResource(newUID);
-					
-						
+
+
+					//component.chutame_la_mesh
+					component->SetNewResource(newUID);
+
+
 					break;
 				case ComponentType::MATERIAL:
-					
-						//component.chutame_la_tex
-						component->SetNewResource(newUID);
-										
+
+					//component.chutame_la_tex
+					component->SetNewResource(newUID);
+
 					break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
@@ -348,7 +348,7 @@ unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 	std::vector<GameObject*> gameObjects;
 	SeekChildrenRecurvisely(root, gameObjects);
 	//We want so save root!!
-	
+
 	for (unsigned int i = 0; i < gameObjects.size(); ++i)
 	{
 		SerializeGameObject(ArrayGameObjects.AddNode(), gameObjects[i]);
@@ -358,7 +358,7 @@ unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 
 	std::string name = ret->GetLibraryFile();
 
-	App->fileSystem->SavePHO(name.c_str(), buffer,size);
+	App->fileSystem->SavePHO(name.c_str(), buffer, size);
 
 
 	return size;
@@ -544,7 +544,7 @@ unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 //	return newObj;
 //}
 
-GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
+GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m, aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
 {
 	//assigns game object name
 	std::string name = "Untitled";
@@ -573,36 +573,39 @@ GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const
 
 	//creates new game object
 	GameObject* newObj = new GameObject(newParent, name, newTransform);
-	
-	if (m != nullptr)
+
+	if (_mesh != nullptr || m != nullptr)
 	{
-		C_Mesh*com= (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
+		C_Mesh* com = (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
 		com->SetNewResource(m->GetUID());
 
-	}
 
-	//Mesh::ImportRMesh(newMesh,* auxMesh);
+		//Mesh::ImportRMesh(newMesh,* auxMesh);
 
-	if (scene->HasMaterials())
-	{
-
-		aiMaterial* material = scene->mMaterials[_mesh->mMaterialIndex];
-		unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
-
-		if (numTextures > 0)
+		if (scene->HasMaterials())
 		{
-			aiString path;
-			char* c = (char*)path.C_Str();
-			material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
-			path = App->fileSystem->NormalizePath(path.C_Str());
-			path = relPath + path.C_Str();
+			aiMaterial* material = scene->mMaterials[_mesh->mMaterialIndex];
+			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
 
-			Resource* r=App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
+			if (numTextures > 0)
+			{
+				aiString path;
+				char* c = (char*)path.C_Str();
+				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
+				path = App->fileSystem->NormalizePath(path.C_Str());
+				path = relPath + path.C_Str();
 
-			C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
-			com->SetNewResource(r->GetUID());
+				Resource* r = App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
+
+				if (r != nullptr)
+				{
+
+					C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
+					com->SetNewResource(r->GetUID());
+				}
+			}
 		}
 	}
 
@@ -664,18 +667,18 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	return 0;
 }
 
-unsigned int Importer::Mesh::SaveMesh(Resource & meshA, char** buffer)
+unsigned int Importer::Mesh::SaveMesh(Resource& meshA, char** buffer)
 {
-	ResourceMesh* mesh = (ResourceMesh*)&meshA;
-	
+	ResourceMesh* mesh = (ResourceMesh*)& meshA;
+
 	unsigned int ranges[5] = { mesh->indices.size(), mesh->vertices.size(), mesh->normals.size(),mesh->smoothedNormals.size(), mesh->texCoords.size() };
 	unsigned int  size =
-			sizeof(ranges) 
-			+ sizeof(uint) * mesh->indices.size() 
-			+ sizeof(float) * mesh->vertices.size()
-			+ sizeof(float)* mesh->normals.size()
-			+ sizeof(float) * mesh->smoothedNormals.size()
-			+ sizeof(float)* mesh->texCoords.size();
+		sizeof(ranges)
+		+ sizeof(uint) * mesh->indices.size()
+		+ sizeof(float) * mesh->vertices.size()
+		+ sizeof(float) * mesh->normals.size()
+		+ sizeof(float) * mesh->smoothedNormals.size()
+		+ sizeof(float) * mesh->texCoords.size();
 
 	char* fileBuffer = new char[size]; // Allocate
 	char* cursor = fileBuffer;
@@ -710,8 +713,8 @@ unsigned int Importer::Mesh::SaveMesh(Resource & meshA, char** buffer)
 	cursor += bytes;
 
 	App->fileSystem->SavePHO(meshA.GetLibraryFile().c_str(), fileBuffer, size);
-	* buffer = fileBuffer;
-	LOG(* buffer);
+	*buffer = fileBuffer;
+	LOG(*buffer);
 	return size;
 }
 
@@ -795,7 +798,7 @@ unsigned int Importer::Texture::SaveTexture(Resource& texture)
 unsigned int Importer::Camera::SaveCamera(C_Camera* aux, char* buffer)
 {
 	//TODO: this is jurassic code
-	
+
 	//float nearPlaneDist;
 	//float farPlaneDist;
 	//float FoV;
@@ -836,10 +839,10 @@ void Importer::Texture::SaveComponentMaterial(Config& config, Component* auxMat)
 
 bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshToFillA)
 {
-	ResourceMesh* meshToFill = (ResourceMesh*)&meshToFillA;
+	ResourceMesh* meshToFill = (ResourceMesh*)& meshToFillA;
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> smoothedNormals; std::vector<float> texCoords;
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
-	
+
 	// amount of indices / vertices / smoothed vertices  / normals / texture_coords
 	uint ranges[5]; //necessarily hardcoded
 	uint bytes = sizeof(ranges);
@@ -910,14 +913,14 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 
 
 	//Remake the mesh
-	
+
 	meshToFill->vertices = vertices;
 	meshToFill->indices = indices;
 	meshToFill->normals = normals;
 	meshToFill->texCoords = texCoords;
 	meshToFill->GenerateSmoothedNormals();
 	meshToFill->GenerateBuffers();
-	
+
 	if (!meshToFill->vertices.empty() && !meshToFill->indices.empty()) { return true; }
 	else {
 		LOG("Malformed mesh loaded from PHO");
@@ -1198,7 +1201,7 @@ void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 				resToFill.texCoords.push_back(0.0f);
 			}
 		}
-		
+
 
 		//copy normals
 		if (fbxMesh->HasNormals())
