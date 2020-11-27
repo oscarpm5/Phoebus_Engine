@@ -133,6 +133,58 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	return ret;
 }
 
+void M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned int uid)
+{
+
+	//if it has no meta, import normally (create resource in lib + create . meta in assets)
+
+	ResourceType resType = ResourceTypeFromPath(newAssetFile);
+	if (resType != ResourceType::UNKNOWN)
+	{
+
+		Resource* res = CreateNewResource(newAssetFile, resType, uid);
+
+		char* buffer;
+		uint size = App->fileSystem->Load(newAssetFile, &buffer);
+		//Import here->TODO->  method is given a buffer + a resource and saves the imported resource into the given one
+		switch (resType)
+		{
+		case ResourceType::TEXTURE:
+			Importer::Texture::ImportImage(buffer, size, *res);
+			break;
+		case ResourceType::MESH:
+			//how tf did you get here
+			break;
+		case ResourceType::SCENE:
+			break;
+		case ResourceType::MODEL:
+			Importer::Model::ImportModel(buffer, size, newAssetFile);
+			break;
+		case ResourceType::UNKNOWN:
+		default:
+			break;
+		}
+
+		//We then save the resource (TODO) -> create resource in lib + create . meta in assets
+		SaveResource(*res);
+
+		GenerateMetaFile(res);
+
+		res->referenceCount = 0;
+		if (res->IsLoadedInMemory())
+		{
+			res->UnloadFromMemory();
+		}
+
+		RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
+	}
+
+
+	//after we are done using it, we unload the resource TODO
+
+
+}
+
 void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile)
 {
 	std::vector<std::string>files;
@@ -394,12 +446,45 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 		Config metaFile(metaBuffer);
 
 		unsigned long ModOld = metaFile.GetNumber("ModDate");
+		unsigned int AssID = metaFile.GetNumber("ID");
 
-		if (ModNew != ModOld)
+
+
+		if (ModNew != ModOld)//if it has changed re-import, else try load the resource
 		{
-			//if it has not, do nothing, else re-import the resource
-			ImportNewFile(newPath.c_str());
+
+			ReImportExistingFile(newPath.c_str(), AssID);
+			//ImportNewFile(newPath.c_str());
 		}
+		else
+		{
+			//if asset exists in lib but is not loaded in the database, load it
+			std::string found = "";
+			FindFileRecursively(std::to_string(AssID), LIB_PATH, found);
+			if (found != "")//found in lib?
+			{
+				std::map<unsigned int, Resource*>::iterator it = resources.find(AssID);
+				if (it == resources.end())//if not loaded
+				{
+					//Add resource into the map
+					//aka load it in memory
+					ResourceType resType = ResourceTypeFromPath(newAssetFile);
+					if (resType != ResourceType::UNKNOWN)
+					{
+						Resource* res = CreateNewResource(newAssetFile, resType);
+					}
+				}
+			}
+			else
+			{
+				//else if asset doesn't exist in lib regenerate it
+				ReImportExistingFile(newPath.c_str(), AssID);
+
+			}
+
+
+		}
+
 	}
 	else
 	{
@@ -407,10 +492,12 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	}
 }
 
-Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceType type)
+Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceType type, unsigned int existingID)
 {
 	Resource* ret = nullptr;
-	unsigned int newUID = App->renderer3D->seed.Int();
+	unsigned int newUID = existingID;
+	if (newUID == 0)
+		newUID = App->renderer3D->seed.Int();
 
 	//TODO create the different types of resource
 	switch (type)
@@ -432,7 +519,17 @@ Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceT
 	//adds the resource to the map
 	if (ret != nullptr)
 	{
-		resources[newUID] = ret;
+		std::map<unsigned int, Resource*>::iterator it = resources.find(ret->GetUID());
+		if (it != resources.end())//if already found in mem delete it and regenerate it
+		{
+			delete it->second;
+			it->second = ret;
+		}
+		else
+		{
+			resources[newUID] = ret;
+		}
+
 		ret->SetAssetPath(assetsFile);
 		ret->SetLibPath(GenLibPath(*ret));
 	}
@@ -444,20 +541,25 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 {
 	ResourceType restType = res.GetType();
 	std::string path = "";
+	std::string extension = "";
 
 	switch (restType)
 	{
 	case ResourceType::TEXTURE:
 		path = TEXTURE_PATH;
+		extension = ".dds";
 		break;
 	case ResourceType::MESH:
 		path = MESH_PATH;
+		extension = ".mesh";
 		break;
 	case ResourceType::SCENE:
 		path = SCENE_PATH;
+		extension = ".pho";
 		break;
 	case ResourceType::MODEL:
 		path = MODEL_PATH;
+		extension = ".model";
 		break;
 	case ResourceType::UNKNOWN:
 	default:
@@ -468,7 +570,7 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 	if (path != "")
 	{
 		path += std::to_string(res.GetUID());
-		path += ".pho";
+		path += extension;
 	}
 
 	return path;
@@ -561,3 +663,4 @@ void M_ResourceManager::SaveResource(Resource& r)
 	//save pho
 
 }
+

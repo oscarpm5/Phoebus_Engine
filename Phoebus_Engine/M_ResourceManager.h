@@ -33,6 +33,7 @@ public:
 	bool CleanUp();
 
 	unsigned int ImportNewFile(const char* newAssetFile);
+	void ReImportExistingFile(const char* newAssetFile,unsigned int uid);
 	//given a uid the system checks for any lib file with that uid
 	void FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile);//Deprecated??
 
@@ -43,8 +44,8 @@ public:
 	void StopUsingResource(unsigned int uid);
 
 	ActiveResources GetActiveResources();
-
-	Resource* CreateNewResource(const char* assetsFile, ResourceType type);//we need this for Import 
+	//if creatinga  new resource do not use the last parameter, it is only used when loading resources
+	Resource* CreateNewResource(const char* assetsFile, ResourceType type,unsigned int existingID=0);//we need this for Import 
 	
 	void ManageAssetUpdate(const char* newAssetFile);
 
