@@ -73,6 +73,8 @@ public:
 	
 	//Returns true if a flie exists, otherwise returns false
 	bool DoesFileExist(const char* file);
+
+	bool DeleteFromAssetsAndLibs(const char* assetPath);
 };
 
 #endif // __MODULEFILESYSTEModuleH__

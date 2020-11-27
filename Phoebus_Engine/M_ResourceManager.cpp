@@ -509,6 +509,22 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	}
 }
 
+bool M_ResourceManager::DeleteItemFromResourcesMap(unsigned int UID)
+{
+	bool ret = false;
+	std::map<unsigned int, Resource*>::iterator it = resources.find(UID);
+	if (it != resources.end())
+	{
+		delete (it->second);
+		it->second = nullptr;
+		resources.erase(UID);
+		ret = true;
+	}
+
+
+	return ret;
+}
+
 Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceType type, unsigned int existingID)
 {
 	Resource* ret = nullptr;

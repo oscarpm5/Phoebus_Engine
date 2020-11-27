@@ -49,6 +49,8 @@ public:
 	//Manages importing of an asset file (whether it has to import, create lib file, update from meta, etc)
 	void ManageAssetUpdate(const char* newAssetFile);
 
+	bool DeleteItemFromResourcesMap(unsigned int UID);
+
 private:
 
 	void LoadAllAssets();
