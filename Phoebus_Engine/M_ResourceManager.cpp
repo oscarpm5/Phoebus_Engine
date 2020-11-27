@@ -37,10 +37,10 @@ bool M_ResourceManager::Start()
 	Importer::Texture::LoadNewImage(path.c_str(),res);*/
 
 
-	char* buffer;
+	/*char* buffer;
 	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/BakerHouse.fbx", &buffer);
 	Resource* r=ManageAssetUpdate("Assets/bakerHouse/BakerHouse.fbx");
-	LoadResourceIntoMem(r);
+	LoadResourceIntoMem(r);*/
 	//Importer::Model::ImportModel(buffer, size, "Assets/bakerHouse/BakerHouse.fbx");
 
 	return true;
@@ -54,7 +54,7 @@ update_status M_ResourceManager::PreUpdate(float dt)
 		checkTimer = 0.0f;
 		//TODO check all asset files here
 
-
+		LoadAllAssets();
 		//Testing code
 	/*	CreateNewResource("emptyMesh", ResourceType::MESH);
 		CreateNewResource("emptyTexture", ResourceType::TEXTURE);
@@ -225,11 +225,12 @@ void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir
 
 void M_ResourceManager::GenerateMetaFile(Resource* res)
 {
-	char* bufferToFill;
-	std::string assetPathStr = res->GetAssetFile();
-	const char* assetPath = assetPathStr.c_str();
+	char* bufferToFill = "";
+	std::string auxP = (res->GetAssetFile());
+	App->fileSystem->TransformToRelPath(auxP);
+	const char* assetPath = auxP.c_str();
 
-	const char* metaExtension = ".meta";
+	std::string metaExtension = ".meta";
 
 	//fill the buffer with the necessary info
 	Config file;
@@ -240,16 +241,20 @@ void M_ResourceManager::GenerateMetaFile(Resource* res)
 	unsigned int size = file.Serialize(&bufferToFill);
 
 	//TODO: less ghetto way to do this? -Adri
-	char* AuxPath = (char*)malloc(1 + strlen(assetPath) + strlen(metaExtension));
-	strcpy(AuxPath, assetPath);
-	strcat(AuxPath, metaExtension);
+	std::string assets = "Assets/";
+	std::string AuxPath = assets + assetPath + metaExtension;
 
 	//make physfs save the file
-	App->fileSystem->SavePHO(AuxPath, bufferToFill, size);
-
-	//clear buffer to avoid leaks (maybe it's automatic due to scope? Better safe than sorry)
-	delete bufferToFill;
-	bufferToFill = nullptr;
+	App->fileSystem->SavePHO(AuxPath.c_str(), bufferToFill, size);
+	RELEASE_ARRAY(bufferToFill);
+	
+	//LOG("Testing save scene:");
+			//char*  file;
+			//int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
+			//App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
+			//Importer::LoadScene("TestingSaveScene.pho", App->editor3d->root);
+			//delete file;
+			//file = nullptr;
 }
 
 Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
@@ -357,19 +362,13 @@ void M_ResourceManager::LoadAssetsRecursively(std::string dir)
 	{
 		const std::string& str = *it;
 		std::string absPath = dir + str;
-		//std::string extension;
-		//unsigned int index = str.find_last_of(".");
+		std::string extension;
+		App->fileSystem->SeparateExtension(absPath,&extension);
 
-		//if (index < str.size())
-		//{
-		//	extension = str.substr(index); //look for the last instance of a point. Format should be next
-		//}
-
-		//if (extension != ".meta")
-		//{
-		//	ManageAssetUpdate(absPath.c_str()); //manages the file
-		//}
-		ManageAssetUpdate(absPath.c_str());//manages the file
+		if (extension != ".meta")
+		{
+			ManageAssetUpdate(absPath.c_str()); //manages the file
+		}
 	}
 
 	//for every directory in the current directory, load their assets
@@ -434,7 +433,7 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 		LOG("[error] Trying to load resource with unknown type");
 		break;
 	}
-	res->isLoaded = true;
+	res->SetIsLoadedTo(true);
 	RELEASE_ARRAY(buffer);
 
 }
@@ -444,15 +443,17 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	Resource* ret = nullptr;
 
 	std::string newPath = App->fileSystem->NormalizePath(newAssetFile);
-	std::string metaPath = newPath + ".meta";
+	App->fileSystem->TransformToRelPath(newPath);
+	std::string metaPath = "Assets/" + newPath + ".meta";
 
-	LOG("Loading Asset from path: %s", newPath.c_str());
+
+	
 
 	//First, we check if the asset has a .meta associated with it
 	if (App->fileSystem->DoesFileExist(metaPath.c_str()))
 	{
 		//if it exists we check if the file has changed recently
-
+		
 		unsigned long ModNew = App->fileSystem->GetLastModTimeFromPath(newAssetFile);
 
 		char* metaBuffer;
@@ -467,14 +468,14 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 
 		if (ModNew != ModOld)//if it has changed re-import, else try load the resource
 		{
-
+			LOG("Loading Asset from path: %s", newPath.c_str());
 			ret = ReImportExistingFile(newPath.c_str(), AssID);
 			//ImportNewFile(newPath.c_str());
 		}
 		else
 		{
 			//if asset exists in lib but is not loaded in the database, load it
-			std::string found = "";
+ 			std::string found = "";
 			FindFileRecursively(std::to_string(AssID), LIB_PATH, found);
 			if (found != "")//found in lib?
 			{
@@ -490,6 +491,7 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 						if (res->IsLoadedInMemory())
 						{
 							res->UnloadFromMemory();
+							LOG("Unloading %i from memory", res->GetLibraryFile());
 						}
 						ret = res;
 					}
@@ -503,6 +505,7 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 			{
 				//else if asset doesn't exist in lib regenerate it
 				ret = ReImportExistingFile(newPath.c_str(), AssID);
+				LOG("Loading Asset from path: %s", newPath.c_str());
 
 			}
 
@@ -513,6 +516,7 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	else
 	{
 		ret = ImportNewFile(newPath.c_str());
+		LOG("Loading Asset from path: %s", newPath.c_str());
 	}
 	return ret;
 }

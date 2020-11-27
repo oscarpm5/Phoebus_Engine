@@ -54,3 +54,8 @@ bool Resource::IsLoadedInMemory() const
 {
 	return isLoaded;
 }
+
+void Resource::SetIsLoadedTo(bool state)
+{
+	this->isLoaded = state;
+}

@@ -98,7 +98,6 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 			// Get total length of a file in bytes
 			uint lenght = PHYSFS_fileLength(file);
 			*buffer = new char[lenght];
-			LOG("Loading buffer from path: %s", path);
 			// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
 			uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
 
@@ -144,7 +143,15 @@ SDL_RWops* ModuleFileSystem::Load(const char* path)
 void ModuleFileSystem::TransformToRelPath(std::string& path)
 {
 	unsigned int splitPos = path.find("Assets"); //file must be inside Assets directory
-	path = path.substr(splitPos, path.length());
+	if (splitPos < path.size()) 
+	{ 
+		path = path.substr(splitPos, path.length()); 
+	}
+	else
+	{
+		//don't
+	}
+
 }
 
 void ModuleFileSystem::TransformToLowerCase(std::string& lowerCase)
@@ -311,7 +318,13 @@ unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, uns
 
 	bool overwrite = PHYSFS_exists(file) != 0;
 
+
 	PHYSFS_file* fs_file = PHYSFS_openWrite(file);
+
+	if (!overwrite) 
+	{
+		//uint written = (uint)PHYSFS_write(fs_file, (const void*)buffer, 1, size);
+	}
 
 	if (fs_file != nullptr)
 	{

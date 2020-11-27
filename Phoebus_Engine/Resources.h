@@ -38,7 +38,7 @@ public:
 	virtual bool UnloadFromMemory();
 
 	bool IsLoadedInMemory()const;
-
+	void SetIsLoadedTo(bool state);
 public:
 	unsigned int referenceCount;
 
