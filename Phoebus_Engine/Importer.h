@@ -21,9 +21,9 @@ namespace Importer
 	namespace Model
 	{
 		//Take a saved buffer in memory and loads it into a model resource, also imports dependencies if needed (aka meshes / textures) TODO
-		bool ImportModel(const char* Buffer, unsigned int Length, const char* relativePath);
+		bool ImportModel(const char* Buffer, unsigned int Length, const char* relativePath, Resource * res);
 		bool LoadModel(const char* libPath, GameObject* root);//revise if needed
-		unsigned int SaveModel(GameObject* root, char* buffer);//returns buffer size
+		unsigned int SaveModel(GameObject* root, Resource* ret);//returns buffer size; it cals upon SavePHO on its own
 	}
 
 	namespace Mesh
@@ -35,15 +35,17 @@ namespace Importer
 
 	namespace Texture
 	{
-		//path required for display in the inspector
+		//path required for display in the inspector. froma ssets to lib
 		bool ImportImage(const char* Buffer, unsigned int Length, Resource& textureToFill);//TODO needs completion
 
+
+		//from lib to engine
 		bool LoadNewImage(const char* libPath, Resource& textureToFill);
 
-		//Used in GameObject serialization. Never call this "raw"
+		//Used in GameObject serialization. Never call this "raw". from engine to lib
 		void SaveComponentMaterial(Config& config, Component* Mat);
 
-		//Testing own file format
+		//Testing own file format. from engine to lib
 		unsigned int SaveTexture(Resource& texture);//TODO all
 
 	}

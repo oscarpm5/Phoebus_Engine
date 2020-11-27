@@ -105,7 +105,7 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 		case ResourceType::SCENE:
 			break;
 		case ResourceType::MODEL:
-			Importer::Model::ImportModel(buffer, size, newAssetFile);
+			Importer::Model::ImportModel(buffer, size, newAssetFile, res);
 			break;
 		case ResourceType::UNKNOWN:
 		default:
@@ -425,7 +425,7 @@ Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceT
 		//TODO
 		break;
 	case ResourceType::MODEL:
-		ret = new Resource(newUID, ResourceType::MODEL); //model is a bundle of resources, not a resource itself
+		ret = new Resource(newUID, ResourceType::MODEL); //model is a bundle of resources, we save it a json
 		break;
 	}
 
@@ -444,20 +444,25 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 {
 	ResourceType restType = res.GetType();
 	std::string path = "";
+	std::string extension = "";
 
 	switch (restType)
 	{
 	case ResourceType::TEXTURE:
 		path = TEXTURE_PATH;
+		extension = ".dds";
 		break;
 	case ResourceType::MESH:
 		path = MESH_PATH;
+		extension = ".mesh";
 		break;
 	case ResourceType::SCENE:
 		path = SCENE_PATH;
+		extension = ".pho";
 		break;
 	case ResourceType::MODEL:
 		path = MODEL_PATH;
+		extension = ".model";
 		break;
 	case ResourceType::UNKNOWN:
 	default:
@@ -468,7 +473,7 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 	if (path != "")
 	{
 		path += std::to_string(res.GetUID());
-		path += ".pho";
+		path += extension;
 	}
 
 	return path;
