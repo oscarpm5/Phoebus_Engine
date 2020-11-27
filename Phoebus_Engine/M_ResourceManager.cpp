@@ -419,13 +419,17 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 	{
 	case ResourceType::TEXTURE:
 		Importer::Texture::LoadNewImage(res->GetLibraryFile().c_str(), *res);
+		res->isLoaded = true;
 		break;
 	case ResourceType::MESH:
 		Importer::Mesh::LoadMesh(buffer, size, *res); //TODO meshes should load general resource
+		res->isLoaded = true;
 		break;
 	case ResourceType::SCENE:
+		//Scenes are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
 		break;
 	case ResourceType::MODEL:
+		//Models are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
 		Importer::Model::LoadModel(res->GetLibraryFile().c_str(), App->editor3d->root);
 		break;
 	case ResourceType::UNKNOWN:

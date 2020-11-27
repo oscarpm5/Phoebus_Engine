@@ -7,6 +7,7 @@
 
 class C_Mesh;
 class C_Material;
+class ResourceMesh;
 enum class MeshDrawMode;
 
 class RenderMesh
@@ -17,9 +18,9 @@ public:
 	void Draw(MeshDrawMode sceneMaxDrawMode);
 
 private:
-	void DrawVertexNormals();
-	void DrawFacesNormals();
-	void DrawBuffers();
+	void DrawVertexNormals(ResourceMesh*m);
+	void DrawFacesNormals(ResourceMesh* m);
+	void DrawBuffers(ResourceMesh* m);
 
 private:
 	C_Mesh* mesh;

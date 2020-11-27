@@ -216,6 +216,11 @@ void C_Mesh::SetTemporalMesh(ResourceMesh* newTempMesh)
 	temporalRMesh = newTempMesh;
 }
 
+ResourceMesh* C_Mesh::GetTemporalMesh()
+{
+	return temporalRMesh;
+}
+
 void C_Mesh::DeleteTemporalMesh()
 {
 	if (temporalRMesh != nullptr)
