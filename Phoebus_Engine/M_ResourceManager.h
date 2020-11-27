@@ -51,6 +51,9 @@ public:
 
 	bool DeleteItemFromResourcesMap(unsigned int UID);
 
+	Resource* FindResInMemory(unsigned int UID);
+
+	void LoadResourceIntoMem(Resource* res);
 private:
 
 	void LoadAllAssets();
@@ -59,7 +62,6 @@ private:
 
 	void LoadAssetsFromDir(std::string dir);
 
-	void LoadResourceIntoMem(Resource* res);
 
 
 

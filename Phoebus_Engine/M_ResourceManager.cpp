@@ -277,8 +277,8 @@ Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
 		it->second->referenceCount++;
 		return it->second;
 	}
-	LOG("[error] The requested resource with ID: %i, doesn't exist", uid)
-		return nullptr;//the file doesn't exist in lib :c
+	LOG("[error] The requested resource with ID: %i, doesn't exist", uid);
+	return nullptr;//the file doesn't exist in lib :c
 }
 
 Resource* M_ResourceManager::RequestExistingResource(unsigned int uid)
@@ -424,11 +424,11 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 	{
 	case ResourceType::TEXTURE:
 		Importer::Texture::LoadNewImage(res->GetLibraryFile().c_str(), *res);
-		res->isLoaded = true;
+		res->SetIsLoadedTo(true);
 		break;
 	case ResourceType::MESH:
 		Importer::Mesh::LoadMesh(buffer, size, *res); //TODO meshes should load general resource
-		res->isLoaded = true;
+		res->SetIsLoadedTo(true);
 		break;
 	case ResourceType::SCENE:
 		//Scenes are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
@@ -442,7 +442,6 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 		LOG("[error] Trying to load resource with unknown type");
 		break;
 	}
-	res->SetIsLoadedTo(true);
 	RELEASE_ARRAY(buffer);
 
 }
@@ -543,6 +542,18 @@ bool M_ResourceManager::DeleteItemFromResourcesMap(unsigned int UID)
 	}
 
 
+	return ret;
+}
+
+//Substitute code for this function every time we want to know if a res is in memory TODO
+Resource* M_ResourceManager::FindResInMemory(unsigned int UID)
+{
+	Resource* ret = nullptr;
+	std::map<unsigned int, Resource*>::iterator it = resources.find(UID);
+	if (it != resources.end())
+	{
+		ret = it->second;
+	}
 	return ret;
 }
 
@@ -670,8 +681,6 @@ Resource* M_ResourceManager::TryToLoadResource(unsigned int uid)
 	if (result != "")
 	{
 		//TODO Load resource with path from lib (result) and assign it to "res" aka Importer::Load (not Import!!!)
-
-
 	}
 
 

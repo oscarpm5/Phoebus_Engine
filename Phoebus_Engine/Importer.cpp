@@ -258,6 +258,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 	return ret;
 }
 
+//TODO IMPORTANT take model name as a parameter here and assign that name to their childs (every resource should have a name)
 bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 {
 	bool ret = false;
@@ -304,7 +305,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			{
 				//Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
 				unsigned int newUID = comp.GetNumber("ResourceID");
-
+				Resource* r = nullptr;
 				switch (type)
 				{
 				case ComponentType::CAMERA:
@@ -312,13 +313,26 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					break;
 				case ComponentType::MESH:
 
-
+					r= App->rManager->FindResInMemory(newUID);
+					if (r == nullptr)//if not found in memory find it in lib
+					{
+						r=App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+						App->rManager->LoadResourceIntoMem(r);
+					}
+					
 					//component.chutame_la_mesh
 					component->SetNewResource(newUID);
 
 
 					break;
 				case ComponentType::MATERIAL:
+					
+					r = App->rManager->FindResInMemory(newUID);
+					if (r == nullptr)//if not found in memory find it in lib
+					{
+						r=App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+						App->rManager->LoadResourceIntoMem(r);
+					}
 
 					//component.chutame_la_tex
 					component->SetNewResource(newUID);
@@ -627,7 +641,7 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\n[error]Could not load an miage from buffer: %s", new_buffer);
+		LOG("\n[error]Could not load an image from buffer");
 		LOG("[error] %d :\n %s", error, iluErrorString(error));
 		RELEASE_ARRAY(new_buffer);
 		ilDeleteImages(1, &ID);

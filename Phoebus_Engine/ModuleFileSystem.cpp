@@ -142,10 +142,11 @@ SDL_RWops* ModuleFileSystem::Load(const char* path)
 //TODO provisional solution until we copy files into the directory
 void ModuleFileSystem::TransformToRelPath(std::string& path)
 {
-	unsigned int splitPos = path.find("Assets"); //file must be inside Assets directory
+	std::string s = "Assets";
+	unsigned int splitPos = path.find(s); //file must be inside Assets directory
 	if (splitPos < path.size()) 
 	{ 
-		path = path.substr(splitPos, path.length()); 
+		path = path.substr(splitPos+s.size()+1, path.length()); 
 	}
 	else
 	{

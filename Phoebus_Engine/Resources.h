@@ -42,9 +42,9 @@ public:
 public:
 	unsigned int referenceCount;
 
-	bool isLoaded;
 
 protected:
+	bool isLoaded;
 	unsigned int uid;
 	ResourceType type;
 
