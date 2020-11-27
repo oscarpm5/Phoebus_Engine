@@ -105,7 +105,7 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 		case ResourceType::SCENE:
 			break;
 		case ResourceType::MODEL:
-			Importer::Model::ImportModel(buffer, size, newAssetFile);
+			Importer::Model::ImportModel(buffer, size, newAssetFile, res);
 			break;
 		case ResourceType::UNKNOWN:
 		default:
@@ -512,7 +512,7 @@ Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceT
 		//TODO
 		break;
 	case ResourceType::MODEL:
-		ret = new Resource(newUID, ResourceType::MODEL); //model is a bundle of resources, not a resource itself
+		ret = new Resource(newUID, ResourceType::MODEL); //model is a bundle of resources, we save it a json
 		break;
 	}
 

@@ -152,7 +152,7 @@ bool Importer::Texture::LoadNewImage(const char* libPath, Resource& textureToFil
 //}
 
 
-bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const char* relativePath)
+bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const char* relativePath, Resource* res)
 {
 	bool ret = false;
 
@@ -218,27 +218,18 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
 							ResourceMesh *auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath,ResourceType::MESH);
-							Mesh::ImportRMesh(newMesh, *auxMesh);
+							Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
 							char* auxB = "y";
-							Mesh::SaveMesh(*auxMesh, &auxB); //Here we import the mesh portion of our model
+							Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
 							LOG("debug");
 						}
-						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
+						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
 					}
 				}
 			}
 
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
-			
+		
+			Model::SaveModel(root, res);//take the model resource and plop it into lib. It has info such as ID, GO list, Components array...
 			
 			delete root;
 			aiReleaseImport(scene);
@@ -254,6 +245,30 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 		LOG("[error]Error scene with path '%s' doesnt exist", relativePath);
 	}
 	return ret;
+}
+
+unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
+{
+	char* buffer = ""; //we dont save this. If you want to recuperate this buffer, go to filesistem and Load the path of the JSON file; then Config auxname(bufferGotFromLoad); -Adri
+	Config file;
+	Config_Array ArrayGameObjects = file.SetArray("GameObjects");
+	std::vector<GameObject*> gameObjects;
+	SeekChildrenRecurvisely(root, gameObjects);
+	//We want so save root!!
+	
+	for (unsigned int i = 0; i < gameObjects.size(); ++i)
+	{
+		SerializeGameObject(ArrayGameObjects.AddNode(), gameObjects[i]);
+	}
+
+	unsigned int size = file.Serialize(&buffer);
+
+	std::string name = ret->GetLibraryFile();
+
+	App->fileSystem->SavePHO(name.c_str(), buffer,size);
+
+
+	return size;
 }
 
 //GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
@@ -484,14 +499,10 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 			path = App->fileSystem->NormalizePath(path.C_Str());
 			path = relPath + path.C_Str();
 
-			App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model
+			App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
 
 		}
 	}
-
-
-
-
 
 	return newObj;
 }
@@ -596,11 +607,7 @@ unsigned int Importer::Mesh::SaveMesh(Resource & meshA, char** buffer)
 	memcpy(cursor, &mesh->texCoords[0], bytes);
 	cursor += bytes;
 
-	//aqui directorio X
-	
-	std::string fileName = MESH_PATH;
-	fileName += std::to_string(mesh->GetUID()); fileName += ".mesh";
-	App->fileSystem->SavePHO(fileName.c_str(), fileBuffer, size);
+	App->fileSystem->SavePHO(meshA.GetLibraryFile().c_str(), fileBuffer, size);
 	* buffer = fileBuffer;
 	LOG(* buffer);
 	return size;
@@ -685,6 +692,8 @@ unsigned int Importer::Texture::SaveTexture(Resource& texture)
 
 unsigned int Importer::Camera::SaveCamera(C_Camera* aux, char* buffer)
 {
+	//TODO: this is jurassic code
+	
 	//float nearPlaneDist;
 	//float farPlaneDist;
 	//float FoV;
