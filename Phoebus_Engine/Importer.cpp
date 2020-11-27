@@ -224,8 +224,6 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 						}
 						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile));
 					}
-
-					App->rManager->ManageAssetUpdate(relativePath);//Here we import the non-mesh portion of our model
 				}
 			}
 
@@ -469,6 +467,30 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	
 
 	//Mesh::ImportRMesh(newMesh,* auxMesh);
+
+	if (scene->HasMaterials())
+	{
+
+		aiMaterial* material = scene->mMaterials[_mesh->mMaterialIndex];
+		unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
+
+		if (numTextures > 0)
+		{
+			aiString path;
+			char* c = (char*)path.C_Str();
+			material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+
+			path = App->fileSystem->NormalizePath(path.C_Str());
+			path = relPath + path.C_Str();
+
+			App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model
+
+		}
+	}
+
+
+
+
 
 	return newObj;
 }

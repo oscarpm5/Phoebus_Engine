@@ -85,45 +85,49 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	//if it has no meta, import normally (create resource in lib + create . meta in assets)
 
 	ResourceType resType = ResourceTypeFromPath(newAssetFile);
-	Resource* res = CreateNewResource(newAssetFile, resType);
-
-	char* buffer;
-	uint size = App->fileSystem->Load(newAssetFile, &buffer);
-	//Import here->TODO->  method is given a buffer + a resource and saves the imported resource into the given one
-	switch (resType)
+	if (resType != ResourceType::UNKNOWN)
 	{
-	case ResourceType::TEXTURE:
-		Importer::Texture::ImportImage(buffer, size, *res);
-		break;
-	case ResourceType::MESH:
-		//how tf did you get here
-		break;
-	case ResourceType::SCENE:
-		break;
-	case ResourceType::MODEL:
-		Importer::Model::ImportModel(buffer, size, newAssetFile);
-		break;
-	case ResourceType::UNKNOWN:
-	default:
-		break;
+
+		Resource* res = CreateNewResource(newAssetFile, resType);
+
+		char* buffer;
+		uint size = App->fileSystem->Load(newAssetFile, &buffer);
+		//Import here->TODO->  method is given a buffer + a resource and saves the imported resource into the given one
+		switch (resType)
+		{
+		case ResourceType::TEXTURE:
+			Importer::Texture::ImportImage(buffer, size, *res);
+			break;
+		case ResourceType::MESH:
+			//how tf did you get here
+			break;
+		case ResourceType::SCENE:
+			break;
+		case ResourceType::MODEL:
+			Importer::Model::ImportModel(buffer, size, newAssetFile);
+			break;
+		case ResourceType::UNKNOWN:
+		default:
+			break;
+		}
+
+		//We then save the resource (TODO) -> create resource in lib + create . meta in assets
+		SaveResource(*res);
+
+		GenerateMetaFile(res);
+
+		res->referenceCount = 0;
+		if (res->IsLoadedInMemory())
+		{
+			res->UnloadFromMemory();
+		}
+
+		ret = res->GetUID();
+		RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
 	}
 
-	//We then save the resource (TODO) -> create resource in lib + create . meta in assets
-	SaveResource(*res);
 
-	GenerateMetaFile(res);
-	
-	res->referenceCount = 0;
-	if (res->IsLoadedInMemory())
-	{
-	res->UnloadFromMemory();
-	}
-
-	ret = res->GetUID();
-	RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
-
-
-						   //after we are done using it, we unload the resource TODO
+	//after we are done using it, we unload the resource TODO
 
 	return ret;
 }
@@ -380,9 +384,9 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	if (App->fileSystem->DoesFileExist(metaPath.c_str()))
 	{
 		//if it exists we check if the file has changed recently
-		
+
 		unsigned long ModNew = App->fileSystem->GetLastModTimeFromPath(newAssetFile);
-		
+
 		char* metaBuffer;
 		App->fileSystem->Load(metaPath.c_str(), &metaBuffer);
 
@@ -394,7 +398,7 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 		{
 			//if it has not, do nothing, else re-import the resource
 			ImportNewFile(newPath.c_str());
-		}		
+		}
 	}
 	else
 	{
@@ -420,7 +424,7 @@ Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceT
 		//TODO
 		break;
 	case ResourceType::MODEL:
-		ret = new Resource(newUID,ResourceType::MODEL); //model is a bundle of resources, not a resource itself
+		ret = new Resource(newUID, ResourceType::MODEL); //model is a bundle of resources, not a resource itself
 		break;
 	}
 
@@ -492,6 +496,7 @@ ResourceType M_ResourceManager::ResourceTypeFromPath(std::string path)
 	case FileFormats::UNDEFINED:
 	default:
 		LOG("[error]asset from %s has no recognizable format", path);
+		ret = ResourceType::UNKNOWN;
 		break;
 	}
 
