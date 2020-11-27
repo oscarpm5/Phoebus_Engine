@@ -37,6 +37,10 @@ bool M_ResourceManager::Start()
 	Importer::Texture::LoadNewImage(path.c_str(),res);*/
 
 
+	char* buffer;
+	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/BakerHouse.fbx", &buffer);
+	Importer::Model::ImportModel(buffer, size, "Assets/bakerHouse/BakerHouse.fbx");
+
 	return true;
 }
 
@@ -92,6 +96,7 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 		Importer::Texture::ImportImage(buffer, size, *res);
 		break;
 	case ResourceType::MESH:
+		//how tf did you get here
 		break;
 	case ResourceType::SCENE:
 		break;
@@ -375,10 +380,21 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	if (App->fileSystem->DoesFileExist(metaPath.c_str()))
 	{
 		//if it exists we check if the file has changed recently
+		
+		unsigned long ModNew = App->fileSystem->GetLastModTimeFromPath(newAssetFile);
+		
+		char* metaBuffer;
+		App->fileSystem->Load(metaPath.c_str(), &metaBuffer);
 
-		//TODO code to check if file has changed 
+		Config metaFile(metaBuffer);
 
-		//if it has not, do nothing, else re-import the resource
+		unsigned long ModOld = metaFile.GetNumber("ModDate");
+
+		if (ModNew != ModOld)
+		{
+			//if it has not, do nothing, else re-import the resource
+			ImportNewFile(newPath.c_str());
+		}		
 	}
 	else
 	{
@@ -404,7 +420,7 @@ Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceT
 		//TODO
 		break;
 	case ResourceType::MODEL:
-		//ret = (Resource*) new ResourceModel(newUID);
+		ret = new Resource(newUID,ResourceType::MODEL); //model is a bundle of resources, not a resource itself
 		break;
 	}
 
@@ -514,8 +530,6 @@ bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
 		//release resource here TODO
 
 		ret = true;
-
-
 	}	return ret;
 }
 
