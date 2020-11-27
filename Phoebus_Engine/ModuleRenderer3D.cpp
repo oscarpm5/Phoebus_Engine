@@ -496,37 +496,37 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::DrawOutline()
 {
-	//const float3 outlineColorMain = float3(1.0f, 0.5f, 0.0f);
-	//const float3 outlineColorSecond = float3(0.75f, 0.25f, 0.0f);
+	const float3 outlineColorMain = float3(1.0f, 0.5f, 0.0f);
+	const float3 outlineColorSecond = float3(0.75f, 0.25f, 0.0f);
 
-	//for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
-	//{
-	//	C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
-	//	std::vector<C_Mesh*> meshes = App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
+	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
+	{
+		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
+		std::vector<C_Mesh*> meshes = App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
 
 
-	//	float4x4 transfMat = transf->GetGlobalTransform();
-	//	for (int j = 0; j < meshes.size(); j++)
-	//	{
-	//		ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
-	//		ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
-	//		m->FreeBuffers();
-	//		m->GenerateBuffers();
+		float4x4 transfMat = transf->GetGlobalTransform();
+		for (int j = 0; j < meshes.size(); j++)
+		{
+			ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
+			ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
+			m->FreeBuffers();
+			m->GenerateBuffers();
 
-	//		C_Mesh* currMesh = new C_Mesh(nullptr,0);
-	//		currMesh->SetTemporalMesh(m);
-	//		stencilMeshes.push_back(currMesh);
+			C_Mesh* currMesh = new C_Mesh(nullptr,0);
+			currMesh->SetTemporalMesh(m);
+			stencilMeshes.push_back(currMesh);
 
-	//		float3 currentOutlineCol = outlineColorMain;
-	//		if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
-	//		{
-	//			currentOutlineCol = outlineColorSecond;
-	//		}
+			float3 currentOutlineCol = outlineColorMain;
+			if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+			{
+				currentOutlineCol = outlineColorSecond;
+			}
 
-	//		AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
-	//	}
+			AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
+		}
 
-	//}
+	}
 
 
 	glEnable(GL_STENCIL_TEST);

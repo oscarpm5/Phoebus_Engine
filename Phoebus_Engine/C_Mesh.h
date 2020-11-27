@@ -24,6 +24,7 @@ public:
 
 	//used only for temporalResources(aka outline)
 	void SetTemporalMesh(ResourceMesh* newTempMesh);
+	ResourceMesh* GetTemporalMesh();
 	void DeleteTemporalMesh();
 
 public:

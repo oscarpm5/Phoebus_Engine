@@ -6,7 +6,7 @@
 #include "Glew/include/glew.h"
 
 RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform, float3 color) :
-	mesh(mesh), material(material),transform(gTransform),color(color)
+	mesh(mesh), material(material), transform(gTransform), color(color)
 {}
 
 RenderMesh::~RenderMesh()
@@ -20,7 +20,13 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	float4x4 newTrans = transform;
 	newTrans.Transpose();
 
-	ResourceMesh* m = mesh->GetMesh();
+	ResourceMesh* m = mesh->GetTemporalMesh();
+	
+	if (m == nullptr)
+	{
+		m = mesh->GetMesh();
+	}
+
 
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 	glEnableClientState(GL_NORMAL_ARRAY);
@@ -28,18 +34,18 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 	glPushMatrix();
 	glMultMatrixf(newTrans.v[0]);
-	
+
 
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_VERTEX || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
-		DrawVertexNormals();
+		DrawVertexNormals(m);
 
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_FACES || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
-		DrawFacesNormals();
+		DrawFacesNormals(m);
 
 
-	glColor3f(color.x,color.y,color.z);//TODO change this for the default mesh color
+	glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
-	int localDrawMode=(int)sceneMaxDrawMode;
+	int localDrawMode = (int)sceneMaxDrawMode;
 
 	if (mesh->meshDrawMode > localDrawMode)
 		localDrawMode = mesh->meshDrawMode;
@@ -60,7 +66,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 
-		DrawBuffers();
+		DrawBuffers(m);
 
 		glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
@@ -68,8 +74,8 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 	}
 
-	DrawBuffers();
-	
+	DrawBuffers(m);
+
 
 	glPopMatrix();
 
@@ -84,7 +90,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 }
 
-void RenderMesh::DrawVertexNormals()
+void RenderMesh::DrawVertexNormals(ResourceMesh* m)
 {
 	float magnitude = mesh->normalVertexSize;
 	glColor3f(1.0f, 0.5f, 0.0f);
@@ -94,7 +100,6 @@ void RenderMesh::DrawVertexNormals()
 
 	for (int i = 0; i < mesh->GetMesh()->normals.size() / 3; i++)
 	{
-		ResourceMesh* m = mesh->GetMesh();
 		float3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
 		float3 vertex1 =
 		{
@@ -115,9 +120,8 @@ void RenderMesh::DrawVertexNormals()
 	glLineWidth(2.0f);
 }
 
-void RenderMesh::DrawFacesNormals()
+void RenderMesh::DrawFacesNormals(ResourceMesh* m)
 {
-	ResourceMesh* m = mesh->GetMesh();
 
 	float magnitude = mesh->normalFaceSize;
 	glColor3f(0.0f, 0.25f, 1.0f);
@@ -157,9 +161,8 @@ void RenderMesh::DrawFacesNormals()
 	glLineWidth(2.0f);
 }
 
-void RenderMesh::DrawBuffers()
+void RenderMesh::DrawBuffers(ResourceMesh* m)
 {
-	ResourceMesh* m = mesh->GetMesh();
 	unsigned int texIDtoBind = 0;
 	glBindBuffer(GL_ARRAY_BUFFER, m->idVertex);			//this is for printing the index
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
