@@ -249,6 +249,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 {
+	bool ret = false;
 	char* buffer = "";
 	App->fileSystem->Load(libPath, &buffer);
 	Config file(buffer);
@@ -272,6 +273,8 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 
 		//Create the GO
 		GameObject* gameObject = new GameObject(parent ? parent : root, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
+		ret = true;
+
 
 		//Set properties of GO
 		gameObject->ID = gameObject_node.GetNumber("ID");
@@ -290,6 +293,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			if (Component* component = gameObject->CreateComponent(type))
 			{
 				component->ID = comp.GetNumber("ID");
+				Resource* newR = App->rManager->RequestNewResource(component->ID);
 
 				switch (type)
 				{
@@ -297,7 +301,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					//Hold your horses
 					break;
 				case ComponentType::MESH:
-					Resource* newR = App->rManager->RequestNewResource(component->ID);
+					
 					if (newR != nullptr)
 					{
 						//component.chutame_la_mesh
@@ -310,7 +314,6 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 						
 					break;
 				case ComponentType::MATERIAL:
-					Resource* newR = App->rManager->RequestNewResource(component->ID);
 					if (newR != nullptr)
 					{
 						//component.chutame_la_tex
@@ -333,6 +336,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 		}
 		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
 	}
+	return ret;
 }
 
 unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
