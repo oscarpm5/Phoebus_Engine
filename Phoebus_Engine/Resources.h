@@ -34,7 +34,10 @@ public:
 	//TODO should we save/load here or in the importer?
 	//virtual void Save(Config& config) const;
 	//virtual void Load(const Config& config);
-	//virtual bool LoadInMemory() = 0;
+
+	virtual bool UnloadFromMemory();
+
+	bool IsLoadedInMemory()const;
 
 public:
 	unsigned int referenceCount;
@@ -45,6 +48,8 @@ protected:
 
 	std::string assetsFile;
 	std::string libraryFile;
+
+	bool isLoaded;
 
 };
 

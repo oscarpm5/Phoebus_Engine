@@ -1,7 +1,7 @@
 #include "Resources.h"
 //#include "Config.h"
 
-Resource::Resource(unsigned int UID, ResourceType type):uid(UID),type(type),referenceCount(0)
+Resource::Resource(unsigned int UID, ResourceType type):uid(UID),type(type),referenceCount(0),isLoaded(false)
 {
 }
 
@@ -44,10 +44,12 @@ void Resource::SetLibPath(std::string newPath)
 	libraryFile = newPath;
 }
 
-//void Resource::Save(Config& config) const
-//{
-//}
-//
-//void Resource::Load(const Config& config)
-//{
-//}
+bool Resource::UnloadFromMemory()
+{
+	return false;
+}
+
+bool Resource::IsLoadedInMemory() const
+{
+	return isLoaded;
+}

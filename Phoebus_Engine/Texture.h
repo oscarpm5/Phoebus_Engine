@@ -13,6 +13,7 @@ public:
 	void GenTextureFromName(unsigned int ilImageName);
 	void DestroyTexture();
 	unsigned int GetTextureID()const;
+	bool UnloadFromMemory()override;
 
 public:
 	unsigned int width, height;

@@ -30,6 +30,7 @@ public:
 	void GenerateSmoothedNormals();
 	void GenerateBuffers();
 	void FreeBuffers();
+	bool UnloadFromMemory()override;
 private:
 	//void DrawVertexNormals();
 	//void DrawFacesNormals();

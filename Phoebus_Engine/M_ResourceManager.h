@@ -33,12 +33,14 @@ public:
 	bool CleanUp();
 
 	unsigned int ImportNewFile(const char* newAssetFile);
-
-	void FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile);
+	//given a uid the system checks for any lib file with that uid
+	void FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile);//Deprecated??
 
 	void GenerateMetaFile(Resource* res);
 
 	Resource* RequestNewResource(unsigned int uid);
+
+	void StopUsingResource(unsigned int uid);
 
 	ActiveResources GetActiveResources();
 
@@ -55,14 +57,14 @@ private:
 	void LoadAssetsFromDir(std::string dir);
 
 
-
+	void LoadResourceIntoMem(Resource* res);
 
 
 	std::string GenLibPath(Resource& res);
 	//Returns resource type from assets path
 	ResourceType ResourceTypeFromPath(std::string path);
 
-	Resource* TryToLoadResource(unsigned int uid);
+	Resource* TryToLoadResource(unsigned int uid);//TODO deprecated?
 
 	bool ReleaseSingleResource(unsigned int uid);
 

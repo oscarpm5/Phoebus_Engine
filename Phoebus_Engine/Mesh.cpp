@@ -55,13 +55,7 @@ ResourceMesh::ResourceMesh(const ResourceMesh& other):Resource(other.GetUID(),Re
 
 ResourceMesh::~ResourceMesh()
 {
-	FreeBuffers();
-
-	indices.clear();
-	vertices.clear();
-	normals.clear();
-	texCoords.clear();
-	smoothedNormals.clear();
+	UnloadFromMemory();
 
 }
 
@@ -242,6 +236,20 @@ void ResourceMesh::FreeBuffers()
 		idTexCoords = 0;
 	}
 
+}
+
+bool ResourceMesh::UnloadFromMemory()
+{
+	FreeBuffers();
+	indices.clear();
+	vertices.clear();
+	normals.clear();
+	texCoords.clear();
+	smoothedNormals.clear();
+
+	isLoaded = false;
+
+	return false;
 }
 
 //void Mesh::DrawVertexNormals()

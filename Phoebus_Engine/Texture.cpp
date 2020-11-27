@@ -10,12 +10,7 @@ idTexture(0),width(0),height(0),format(0),depth(0),sizeInBytes(0),bpp(0),ilImage
 
 ResourceTexture::~ResourceTexture()
 {
-	width = 0;
-	height = 0;
-	format = 0;
-	depth = 0;
-	sizeInBytes = 0;
-	bpp = 0;
+	UnloadFromMemory();
 }
 
 void ResourceTexture::GenTextureFromName(unsigned int ilImageName)
@@ -83,4 +78,19 @@ void ResourceTexture::DestroyTexture()
 unsigned int ResourceTexture::GetTextureID() const
 {
 	return idTexture;
+}
+
+bool ResourceTexture::UnloadFromMemory()
+{
+	DestroyTexture();
+	width = 0;
+	height = 0;
+	format = 0;
+	depth = 0;
+	sizeInBytes = 0;
+	bpp = 0;
+
+	isLoaded = false;
+
+	return true;
 }

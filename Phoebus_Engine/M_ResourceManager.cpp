@@ -96,10 +96,9 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	case ResourceType::SCENE:
 		break;
 	case ResourceType::MODEL:
-		//Import model
+		Importer::Model::ImportModel(buffer, size, newAssetFile);
 		break;
 	case ResourceType::UNKNOWN:
-		break;
 	default:
 		break;
 	}
@@ -108,6 +107,12 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	SaveResource(*res);
 
 	GenerateMetaFile(res);
+	
+	res->referenceCount = 0;
+	if (res->IsLoadedInMemory())
+	{
+	res->UnloadFromMemory();
+	}
 
 	ret = res->GetUID();
 	RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
@@ -188,15 +193,36 @@ void M_ResourceManager::GenerateMetaFile(Resource* res)
 
 Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
 {
-	//Find if the resource is already loaded
+	//Find if the resource is already loaded or imported
 	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
 	if (it != resources.end())
 	{
+		if (!it->second->IsLoadedInMemory())//if it is not loaded
+		{
+			//Find the library file and load the custom file format
+			LoadResourceIntoMem(it->second);
+
+		}
 		it->second->referenceCount++;
 		return it->second;
 	}
-	//Find the library file (if exists) and load the custom file format
-	return TryToLoadResource(uid);
+	return nullptr;//the file doesn't exist in lib :c
+}
+
+void M_ResourceManager::StopUsingResource(unsigned int uid)
+{
+	//Find if the resource is already loaded or imported
+	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+	if (it != resources.end() && it->second->IsLoadedInMemory())
+	{
+		it->second->referenceCount--;
+		if (it->second <= 0)
+		{
+			it->second = 0;
+			it->second->UnloadFromMemory();
+		}
+
+	}
 }
 
 ActiveResources M_ResourceManager::GetActiveResources()
@@ -207,25 +233,29 @@ ActiveResources M_ResourceManager::GetActiveResources()
 
 	for (it; it != resources.end(); it++)
 	{
-		ResourceType type = it->second->GetType();
-		switch (type)
+		if (it->second->IsLoadedInMemory())
 		{
-		case ResourceType::TEXTURE:
-			res.textures.push_back(it->second);
-			break;
-		case ResourceType::MESH:
-			res.meshes.push_back(it->second);
-			break;
-		case ResourceType::SCENE:
-			res.scenes.push_back(it->second);
-			break;
-		case ResourceType::MODEL:
-			res.models.push_back(it->second);
-			break;
-		case ResourceType::UNKNOWN:
-		default:
-			LOG("Unknown active resource with id: %i", it->second->GetUID());
-			break;
+
+			ResourceType type = it->second->GetType();
+			switch (type)
+			{
+			case ResourceType::TEXTURE:
+				res.textures.push_back(it->second);
+				break;
+			case ResourceType::MESH:
+				res.meshes.push_back(it->second);
+				break;
+			case ResourceType::SCENE:
+				res.scenes.push_back(it->second);
+				break;
+			case ResourceType::MODEL:
+				res.models.push_back(it->second);
+				break;
+			case ResourceType::UNKNOWN:
+			default:
+				LOG("Unknown active resource with id: %i", it->second->GetUID());
+				break;
+			}
 		}
 	}
 
@@ -302,6 +332,36 @@ void M_ResourceManager::LoadAssetsFromDir(std::string dir)
 			ImportNewFile(str.c_str());
 		}
 	}
+}
+
+void M_ResourceManager::LoadResourceIntoMem(Resource* res)
+{
+	ResourceType type = res->GetType();
+
+	char* buffer;
+	unsigned int size = App->fileSystem->Load(res->GetLibraryFile().c_str(), &buffer);
+
+
+	switch (type)
+	{
+	case ResourceType::TEXTURE:
+		Importer::Texture::LoadNewImage(res->GetLibraryFile().c_str(), *res);
+		break;
+	case ResourceType::MESH:
+		//Importer::Mesh::LoadMesh(buffer,size,) //TODO meshes should load general resource
+		break;
+	case ResourceType::SCENE:
+		break;
+	case ResourceType::MODEL:
+		break;
+	case ResourceType::UNKNOWN:
+	default:
+		LOG("[error] Trying to load resource with unknown type");
+		break;
+	}
+
+	RELEASE_ARRAY(buffer);
+
 }
 
 void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
@@ -433,7 +493,7 @@ Resource* M_ResourceManager::TryToLoadResource(unsigned int uid)
 	{
 		//TODO Load resource with path from lib (result) and assign it to "res" aka Importer::Load (not Import!!!)
 
-		
+
 	}
 
 
@@ -446,11 +506,16 @@ bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
 	bool ret = false;
 	//Find if the resource is loaded
 	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+
 	if (it != resources.end())
 	{
+
+		it->second->UnloadFromMemory();
 		//release resource here TODO
 
 		ret = true;
+
+
 	}	return ret;
 }
 
