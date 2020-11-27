@@ -49,6 +49,8 @@ public:
 	
 	void ManageAssetUpdate(const char* newAssetFile);
 
+	bool DeleteItemFromResourcesMap(unsigned int UID);
+
 private:
 
 	void LoadAllAssets();

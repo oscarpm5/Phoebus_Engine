@@ -465,7 +465,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 	if (showLoadFileWindow)
 	{
-		if (ImGui::Begin("Load File", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse))
+		if (ImGui::Begin("File Explorer", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("File Browser", ImVec2(0, 300), true);
@@ -481,13 +481,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
+			
 			if (ImGui::Button("Ok", ImVec2(50, 20)))
 			{
 				//TODO Call load asset here??
 				showLoadFileWindow = false;
 				selectedFile[0] = '\0';
 			}
-
+	
 			ImGui::SameLine();
 
 			if (ImGui::Button("Cancel", ImVec2(50, 20)))
@@ -495,10 +496,41 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				showLoadFileWindow = false;
 				selectedFile[0] = '\0';
 			}
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
+			if (ImGui::Button("Delete", ImVec2(50, 20)))
+			{
+				ImGui::OpenPopup("Delete Asset?");
+			}
 
+			int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+			if (ImGui::BeginPopupModal("Delete Asset?", NULL, flags))
+			{
+				ImGui::Text("This will deleta asset and meta from Asset folders and lib \n");
+				ImGui::Text("It will also remove itself from loaded memory. Are you sure ? \n");
+				ImGui::Separator();
+
+				if (ImGui::Button("Delete", ImVec2(120, 0))) 
+				{ 
+					App->fileSystem->DeleteFromAssetsAndLibs(selectedFile); 
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SetItemDefaultFocus();
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)) || (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+			ImGui::PopStyleColor();
 		}
 		ImGui::End();
 	}
+
+
+	
+	
 
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP)
 		showQuit = true;

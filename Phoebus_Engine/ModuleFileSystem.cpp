@@ -9,7 +9,7 @@
 
 #include "Assimp/include/cfileio.h"
 #include "Assimp/include/types.h"
-
+#include "Config.h"
 #include "Importer.h"
 
 #include "PhysFS/include/physfs.h"
@@ -163,12 +163,12 @@ void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std:
 
 	if (filePos < path.size())
 	{
-		if (newPath)* newPath = path.substr(0, filePos + 1);
-		if (file)* file = path.substr(filePos + 1);
+		if (newPath)*newPath = path.substr(0, filePos + 1);
+		if (file)*file = path.substr(filePos + 1);
 	}
 	else if (path.size() > 0)
 	{
-		if (file)* file = path;
+		if (file)*file = path;
 	}
 }
 
@@ -178,7 +178,7 @@ void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext)
 
 	if (filePos < file.size())
 	{
-		*ext= file.substr(filePos);
+		*ext = file.substr(filePos);
 	}
 }
 
@@ -260,7 +260,7 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	}
 	else
 	{
-		format = FileFormats::UNDEFINED; 
+		format = FileFormats::UNDEFINED;
 
 		if (!strcmp(strFormat.c_str(), ".fbx"))
 		{
@@ -418,6 +418,100 @@ bool ModuleFileSystem::GetDirFiles(const char* dir, std::vector<std::string>& fi
 bool ModuleFileSystem::DoesFileExist(const char* file)
 {
 	return PHYSFS_exists(file) != 0;
+}
+
+bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
+{
+	bool ret = false;
+
+	//Deleting all info regarding the asset:
+
+	LOG("DELETING %s", assetPath);
+
+	//Does the asset exist?
+
+	if (PHYSFS_exists(assetPath))
+	{
+		//Delete it
+
+		if (PHYSFS_delete(assetPath) == 0) //zero on error. success in everything else
+		{
+			LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", assetPath);
+			LOG("%s", PHYSFS_getLastError());
+		}
+		else
+		{
+			LOG("%s DELETED from assets", assetPath);
+		}
+
+		//Does the asset have a meta file?
+
+		std::string metaPath = assetPath; metaPath += ".meta";
+		if (PHYSFS_exists(metaPath.c_str()))
+		{
+			//Store some info from meta to delete the lib file later
+			char* auxB = "";
+			unsigned int size = Load(metaPath.c_str(), &auxB);
+			Config metaFile(auxB);
+			int UID = metaFile.GetNumber("ID");
+
+			//Delete the meta
+			if (PHYSFS_delete(metaPath.c_str()) == 0)
+			{
+				LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", metaPath.c_str());
+				LOG("%s", PHYSFS_getLastError());
+			}
+			else
+			{
+				LOG("%s DELETED from assets", metaPath);
+			}
+
+
+			//Is the asset imported in lib?
+			std::string libPath = "";
+			App->rManager->FindFileRecursively(std::to_string(UID), LIB_PATH, libPath); //try to find the asset in lib searching its UID we got from the meta
+
+
+			if (PHYSFS_exists(libPath.c_str()))
+			{
+				//Delete it
+
+				if (PHYSFS_delete(libPath.c_str()) == 0) //zero on error. success in everything else
+				{
+					LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", libPath.c_str());
+					LOG("%s", PHYSFS_getLastError());
+				}
+				else
+				{
+					LOG("%s DELETED from lib", libPath);
+				}
+
+				//Do we have it in memory?
+				
+				if (App->rManager->DeleteItemFromResourcesMap(UID))
+				{
+					LOG("DELETED %s from memory", libPath);
+				}
+				else
+				{
+					LOG("Could not delete %s from memory because it was never loaded in the first place", libPath);
+				}
+			}
+			else
+			{
+				LOG("[error] Tried to delete the lib file %s but it was not found", libPath.c_str());
+			}
+		}
+		else
+		{
+			LOG("[error] Tried to delete the meta file %s but it was not found", metaPath);
+		}
+	}
+	else
+	{
+		LOG("[error] Tried to delete %s but was unable to find such file", assetPath);
+	}
+	return ret;
 }
 
 
