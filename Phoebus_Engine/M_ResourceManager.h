@@ -32,8 +32,8 @@ public:
 	//update_status PostUpdate(float dt)override;
 	bool CleanUp();
 
-	unsigned int ImportNewFile(const char* newAssetFile);
-	void ReImportExistingFile(const char* newAssetFile,unsigned int uid);
+	Resource* ImportNewFile(const char* newAssetFile);
+	Resource* ReImportExistingFile(const char* newAssetFile,unsigned int uid);
 	//given a uid the system checks for any lib file with that uid
 	void FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile);//Deprecated??
 
@@ -47,7 +47,7 @@ public:
 	//if creatinga  new resource do not use the last parameter, it is only used when loading resources
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type,unsigned int existingID=0);//we need this for Import 
 	//Manages importing of an asset file (whether it has to import, create lib file, update from meta, etc)
-	void ManageAssetUpdate(const char* newAssetFile);
+	Resource* ManageAssetUpdate(const char* newAssetFile);
 
 	bool DeleteItemFromResourcesMap(unsigned int UID);
 

@@ -38,14 +38,20 @@ void C_Mesh::SetNewResource(unsigned int resourceUID)
 		App->rManager->StopUsingResource(resourceID);
 	}
 
-	ResourceMesh* r = (ResourceMesh*)App->rManager->RequestNewResource(resourceID);
+	ResourceMesh* r = (ResourceMesh*)App->rManager->RequestNewResource(resourceUID);
 	if (r != nullptr)
-		resourceID = resourceUID;
-	else
-		resourceID = 0;
+	{
 
+		resourceID = resourceUID;
 	localAABB.SetNegativeInfinity();//this is like setting the AABB to null
 	localAABB.Enclose((float3*)r->vertices.data(), r->vertices.size() / 3); //generates an AABB on local space from a set of vertices
+	}
+	else
+	{
+		resourceID = 0;
+		LOG("[error] the resource with ID:%i, given to this component doesn't exist", resourceUID);
+	}
+
 
 
 }
@@ -66,6 +72,11 @@ ResourceMesh* C_Mesh::GetMesh()
 	}
 
 	return nullptr;
+}
+
+unsigned int C_Mesh::GetResourceID()
+{
+	return resourceID;
 }
 
 void C_Mesh::OnEditor()

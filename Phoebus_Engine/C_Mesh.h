@@ -17,7 +17,7 @@ public:
 	void SetNewResource(unsigned int resourceUID)override;
 	//void SetMesh(ResourceMesh mesh);
 	ResourceMesh* GetMesh();
-
+	unsigned int GetResourceID()override;
 	void OnEditor();
 
 	AABB GetAABB()const;

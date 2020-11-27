@@ -51,11 +51,21 @@ void C_Material::SetNewResource(unsigned int resourceUID)
 		App->rManager->StopUsingResource(resourceID);
 	}
 
-	Resource* r = App->rManager->RequestNewResource(resourceID);
+	Resource* r = App->rManager->RequestNewResource(resourceUID);
 	if (r != nullptr)
+	{
 		resourceID = resourceUID;
+	}
 	else
+	{
 		resourceID = 0;
+		LOG("[error] the resource with ID:%i, given to this component doesn't exist", resourceUID);
+	}
+}
+
+unsigned int C_Material::GetResourceID()
+{
+	return resourceID;
 }
 
 bool C_Material::HasTexture()

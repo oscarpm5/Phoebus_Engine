@@ -14,6 +14,7 @@ public:
 	~C_Material();
 
 	void SetNewResource(unsigned int resourceUID)override;
+	unsigned int GetResourceID()override;
 
 	bool HasTexture();
 	bool HasCheckers()const;

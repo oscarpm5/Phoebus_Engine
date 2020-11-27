@@ -294,7 +294,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			if (Component* component = gameObject->CreateComponent(type))
 			{
 				component->ID = comp.GetNumber("ID");
-				Resource* newR = App->rManager->RequestNewResource(component->ID);
+				Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
 
 				switch (type)
 				{
@@ -578,6 +578,7 @@ GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const
 	if (m != nullptr)
 	{
 		C_Mesh*com= (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
+		com->SetNewResource(m->GetUID());
 
 	}
 
@@ -598,8 +599,11 @@ GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const
 			path = App->fileSystem->NormalizePath(path.C_Str());
 			path = relPath + path.C_Str();
 
-			App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
+			Resource* r=App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
 
+
+			C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
+			com->SetNewResource(r->GetUID());
 		}
 	}
 
@@ -827,8 +831,8 @@ void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 
 void Importer::Texture::SaveComponentMaterial(Config& config, Component* auxMat)
 {
-	C_Material* mat = (C_Material*)auxMat;
-	config.SetString("Path", mat->path.c_str());
+	//C_Material* mat = (C_Material*)auxMat;
+	//config.SetString("Path", mat->path.c_str());
 }
 
 bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, ResourceMesh& meshToFill)
@@ -1101,8 +1105,7 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 {
 	config.SetNumber("ComponentType", (int)component->GetType());
 	config.SetNumber("ID", (int)component->ID);
-
-
+	config.SetNumber("ResourceID", component->GetResourceID());
 	switch (component->GetType())
 	{
 	case ComponentType::CAMERA:

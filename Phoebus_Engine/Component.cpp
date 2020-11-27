@@ -66,3 +66,8 @@ bool Component::IsActive() const
 void Component::SetNewResource(unsigned int resourceID)
 {
 }
+
+unsigned int Component::GetResourceID()
+{
+	return 0;
+}

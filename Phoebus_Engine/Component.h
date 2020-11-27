@@ -28,6 +28,8 @@ public:
 	bool IsActive()const;
 
 	virtual void SetNewResource(unsigned int resourceID);
+	//gets resource ID for saving: WARNING use the dedicated component methods to get the ID for everythign else as this function doesn't reset the ID
+	virtual unsigned int GetResourceID();
 
 public:
 	GameObject* owner;

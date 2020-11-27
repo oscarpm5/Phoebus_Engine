@@ -80,16 +80,15 @@ bool M_ResourceManager::CleanUp()
 	return true;
 }
 
-unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
+Resource* M_ResourceManager::ImportNewFile(const char* newAssetFile)
 {
-	unsigned int ret = 0;
 	//if it has no meta, import normally (create resource in lib + create . meta in assets)
-
+	Resource* res = nullptr;
 	ResourceType resType = ResourceTypeFromPath(newAssetFile);
 	if (resType != ResourceType::UNKNOWN)
 	{
 
-		Resource* res = CreateNewResource(newAssetFile, resType);
+		res = CreateNewResource(newAssetFile, resType);
 
 		char* buffer;
 		uint size = App->fileSystem->Load(newAssetFile, &buffer);
@@ -123,26 +122,25 @@ unsigned int M_ResourceManager::ImportNewFile(const char* newAssetFile)
 			res->UnloadFromMemory();
 		}
 
-		ret = res->GetUID();
 		RELEASE_ARRAY(buffer); //TODO ask adri if its correct, because for example texture uses double buffer to save itself, is this a mem leak?
 	}
 
 
 	//after we are done using it, we unload the resource TODO
 
-	return ret;
+	return res;
 }
 
-void M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned int uid)
+Resource* M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned int uid)
 {
-
+	Resource* res = nullptr;
 	//if it has no meta, import normally (create resource in lib + create . meta in assets)
 
 	ResourceType resType = ResourceTypeFromPath(newAssetFile);
 	if (resType != ResourceType::UNKNOWN)
 	{
 
-		Resource* res = CreateNewResource(newAssetFile, resType, uid);
+		res = CreateNewResource(newAssetFile, resType, uid);
 
 		char* buffer;
 		uint size = App->fileSystem->Load(newAssetFile, &buffer);
@@ -182,7 +180,7 @@ void M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned 
 
 	//after we are done using it, we unload the resource TODO
 
-
+	return res;
 }
 
 void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile)
@@ -439,8 +437,10 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 
 }
 
-void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
+Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 {
+	Resource* ret = nullptr;
+
 	std::string newPath = App->fileSystem->NormalizePath(newAssetFile);
 	std::string metaPath = newPath + ".meta";
 
@@ -466,7 +466,7 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 		if (ModNew != ModOld)//if it has changed re-import, else try load the resource
 		{
 
-			ReImportExistingFile(newPath.c_str(), AssID);
+			ret = ReImportExistingFile(newPath.c_str(), AssID);
 			//ImportNewFile(newPath.c_str());
 		}
 		else
@@ -489,13 +489,18 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 						{
 							res->UnloadFromMemory();
 						}
+						ret = res;
 					}
+				}
+				else
+				{
+					ret = it->second;
 				}
 			}
 			else
 			{
 				//else if asset doesn't exist in lib regenerate it
-				ReImportExistingFile(newPath.c_str(), AssID);
+				ret = ReImportExistingFile(newPath.c_str(), AssID);
 
 			}
 
@@ -505,8 +510,9 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	}
 	else
 	{
-		ImportNewFile(newPath.c_str());
+		ret = ImportNewFile(newPath.c_str());
 	}
+	return ret;
 }
 
 bool M_ResourceManager::DeleteItemFromResourcesMap(unsigned int UID)
