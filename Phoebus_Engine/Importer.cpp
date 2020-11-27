@@ -194,6 +194,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 			}
 
 			GameObject* pObj = new GameObject(App->editor3d->root, name, float4x4::identity);
+			GameObject* root = pObj;
 			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh
 
 			while (parents.size() > 0)
@@ -239,7 +240,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 			
 			
 			
-			
+			delete root;
 			aiReleaseImport(scene);
 		}
 		else

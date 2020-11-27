@@ -1,7 +1,7 @@
 #include "Resources.h"
 //#include "Config.h"
 
-Resource::Resource(unsigned int UID, ResourceType type):uid(UID),type(type),referenceCount(0),isLoaded(false)
+Resource::Resource(unsigned int UID, ResourceType type):uid(UID),type(type),referenceCount(0),isLoaded(true)
 {
 }
 

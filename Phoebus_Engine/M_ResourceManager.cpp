@@ -39,7 +39,8 @@ bool M_ResourceManager::Start()
 
 	char* buffer;
 	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/BakerHouse.fbx", &buffer);
-	Importer::Model::ImportModel(buffer, size, "Assets/bakerHouse/BakerHouse.fbx");
+	ManageAssetUpdate("Assets/bakerHouse/BakerHouse.fbx");
+	//Importer::Model::ImportModel(buffer, size, "Assets/bakerHouse/BakerHouse.fbx");
 
 	return true;
 }
