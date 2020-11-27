@@ -158,7 +158,7 @@ void M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned 
 		case ResourceType::SCENE:
 			break;
 		case ResourceType::MODEL:
-			Importer::Model::ImportModel(buffer, size, newAssetFile);
+			Importer::Model::ImportModel(buffer, size, newAssetFile,res);
 			break;
 		case ResourceType::UNKNOWN:
 		default:
