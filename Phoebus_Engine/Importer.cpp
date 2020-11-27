@@ -290,10 +290,8 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 		{
 			Config comp = components.GetNode(i);
 			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
-
-			if (Component* component = gameObject->CreateComponent(type))
+			if (Component* component = gameObject->CreateComponent(type, comp.GetNumber("ID")))
 			{
-				component->ID = comp.GetNumber("ID");
 				Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
 
 				switch (type)
@@ -835,8 +833,9 @@ void Importer::Texture::SaveComponentMaterial(Config& config, Component* auxMat)
 	//config.SetString("Path", mat->path.c_str());
 }
 
-bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, ResourceMesh& meshToFill)
+bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshToFillA)
 {
+	ResourceMesh* meshToFill = (ResourceMesh*)&meshToFillA;
 	std::vector<float> vertices; std::vector<unsigned int> indices; std::vector<float> normals; std::vector<float> smoothedNormals; std::vector<float> texCoords;
 	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
 	
@@ -911,14 +910,14 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, ResourceMesh& m
 
 	//Remake the mesh
 	
-	meshToFill.vertices = vertices;
-	meshToFill.indices = indices;
-	meshToFill.normals = normals;
-	meshToFill.texCoords = texCoords;
-	meshToFill.GenerateSmoothedNormals();
-	meshToFill.GenerateBuffers();
+	meshToFill->vertices = vertices;
+	meshToFill->indices = indices;
+	meshToFill->normals = normals;
+	meshToFill->texCoords = texCoords;
+	meshToFill->GenerateSmoothedNormals();
+	meshToFill->GenerateBuffers();
 	
-	if (!meshToFill.vertices.empty() && !meshToFill.indices.empty()) { return true; }
+	if (!meshToFill->vertices.empty() && !meshToFill->indices.empty()) { return true; }
 	else {
 		LOG("Malformed mesh loaded from PHO");
 		return false;

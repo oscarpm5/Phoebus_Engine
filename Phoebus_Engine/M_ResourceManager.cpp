@@ -39,7 +39,8 @@ bool M_ResourceManager::Start()
 
 	char* buffer;
 	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/BakerHouse.fbx", &buffer);
-	ManageAssetUpdate("Assets/bakerHouse/BakerHouse.fbx");
+	Resource* r=ManageAssetUpdate("Assets/bakerHouse/BakerHouse.fbx");
+	LoadResourceIntoMem(r);
 	//Importer::Model::ImportModel(buffer, size, "Assets/bakerHouse/BakerHouse.fbx");
 
 	return true;
@@ -266,7 +267,7 @@ Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
 		it->second->referenceCount++;
 		return it->second;
 	}
-	LOG("[error] The requested resource with ID: %s, doesn't exist")
+	LOG("[error] The requested resource with ID: %i, doesn't exist",uid)
 	return nullptr;//the file doesn't exist in lib :c
 }
 
@@ -421,18 +422,19 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 		Importer::Texture::LoadNewImage(res->GetLibraryFile().c_str(), *res);
 		break;
 	case ResourceType::MESH:
-		//Importer::Mesh::LoadMesh(buffer,size,) //TODO meshes should load general resource
+		Importer::Mesh::LoadMesh(buffer, size, *res); //TODO meshes should load general resource
 		break;
 	case ResourceType::SCENE:
 		break;
 	case ResourceType::MODEL:
+		Importer::Model::LoadModel(res->GetLibraryFile().c_str(), App->editor3d->root);
 		break;
 	case ResourceType::UNKNOWN:
 	default:
 		LOG("[error] Trying to load resource with unknown type");
 		break;
 	}
-
+	res->isLoaded = true;
 	RELEASE_ARRAY(buffer);
 
 }

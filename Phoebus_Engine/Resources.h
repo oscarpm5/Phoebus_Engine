@@ -42,6 +42,8 @@ public:
 public:
 	unsigned int referenceCount;
 
+	bool isLoaded;
+
 protected:
 	unsigned int uid;
 	ResourceType type;
@@ -49,7 +51,6 @@ protected:
 	std::string assetsFile;
 	std::string libraryFile;
 
-	bool isLoaded;
 
 };
 

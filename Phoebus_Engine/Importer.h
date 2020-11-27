@@ -29,7 +29,7 @@ namespace Importer
 	namespace Mesh
 	{
 		void ImportRMesh(aiMesh* fbxMesh, ResourceMesh& meshToFill);//TODO
-		bool LoadMesh(char* Buffer, unsigned int Length, ResourceMesh& meshToFill);
+		bool LoadMesh(char* Buffer, unsigned int Length, Resource& meshToFill);
 		unsigned int SaveMesh(Resource & aux, char** buffer);//returns buffer 
 	}
 
