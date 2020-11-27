@@ -59,8 +59,8 @@ private:
 
 	void LoadAssetsFromDir(std::string dir);
 
-
 	void LoadResourceIntoMem(Resource* res);
+
 
 
 	std::string GenLibPath(Resource& res);

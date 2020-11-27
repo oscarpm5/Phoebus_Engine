@@ -487,6 +487,13 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				//TODO Call load asset here??
 				showLoadFileWindow = false;
 				std::string selected = selectedFile;
+
+				Resource* r= App->rManager->ManageAssetUpdate(selected.c_str());
+				if (r != nullptr)
+				{
+				App->rManager->RequestNewResource(r->GetUID());
+				}
+
 				selectedFile[0] = '\0';
 			}
 	
