@@ -289,28 +289,13 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		}
 		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
 		{
-			//LOG("Testing save scene:");
-			//char*  file;
-			//int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
-			//App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
-			//Importer::LoadScene("TestingSaveScene.pho", App->editor3d->root);
-			//delete file;
-			//file = nullptr;
-
-			char* whatev = "whatev,rly";
-
-			std::vector<unsigned int> indices; std::vector<float> vertices; std::vector<float> normals; std::vector<float> texCoords; unsigned int UID = 12321;
-			indices.push_back(0); indices.push_back(0); indices.push_back(0);
-			vertices.push_back(1); vertices.push_back(1); vertices.push_back(1);
-			normals.push_back(2); normals.push_back(2); normals.push_back(2);
-			texCoords.push_back(3); texCoords.push_back(3); texCoords.push_back(3);
-			
-			ResourceMesh auxM(vertices, indices,  normals,  texCoords,  UID);
-			LOG(whatev);
-			unsigned int sizeMesh = Importer::Mesh::SaveMesh(auxM, &whatev);
-			LOG(whatev);
-			ResourceMesh MeshToFill(12321);
-			Importer::Mesh::LoadMesh(whatev, sizeMesh, MeshToFill);
+			LOG("Testing save scene:");
+			char*  file;
+			int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
+			App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
+			Importer::LoadScene(file, App->editor3d->root);
+			delete file;
+			file = nullptr;
 		}
 
 		//testing code for button disable
