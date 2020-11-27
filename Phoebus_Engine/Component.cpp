@@ -4,12 +4,26 @@
 
 
 
-Component::Component(ComponentType type, GameObject* owner) :type(type)
+Component::Component(ComponentType type, GameObject* owner, unsigned int ID) :type(type)
 {
 	this->owner = owner;
 	active = true;
 	toDelete = false;
-	this->ID = -1;
+	if (ID == 0)
+	{
+		if (App != nullptr)
+		{
+			this->ID = App->renderer3D->seed.Int();
+		}
+		else
+		{
+			this->ID = 1;
+		}
+	}
+	else
+	{
+		this->ID = ID;
+	}
 }
 
 Component::~Component()
@@ -47,4 +61,8 @@ void Component::SetActive(bool active)
 bool Component::IsActive() const
 {
 	return active;
+}
+
+void Component::SetNewResource(unsigned int resourceID)
+{
 }

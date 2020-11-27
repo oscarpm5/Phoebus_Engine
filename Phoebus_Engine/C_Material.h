@@ -9,14 +9,16 @@ class ResourceTexture;
 class C_Material:public Component
 {
 public:
-	C_Material(GameObject* owner);
+	C_Material(GameObject* owner,unsigned int ID);
 	C_Material(GameObject* owner,unsigned int ilImageName, const char * name);
 	~C_Material();
 
+	void SetNewResource(unsigned int resourceUID)override;
 
-	bool HasTexture() const;
+	bool HasTexture();
 	bool HasCheckers()const;
-	unsigned int GetTextureID()const;
+	unsigned int GetTextureID();
+	ResourceTexture* GetTexture();
 	unsigned int GetCheckersID()const;
 
 	void OnEditor();
@@ -43,7 +45,7 @@ private:
 	unsigned int idCheckers;
 	//unsigned int idTexture;
 	int size = 200; //preview
-	ResourceTexture* texture;
+	unsigned int resourceID;
 
 };
 #endif // !__C_MATERIAL__

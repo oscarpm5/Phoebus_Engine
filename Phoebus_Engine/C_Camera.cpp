@@ -5,7 +5,7 @@
 
 #include "Application.h"
 
-C_Camera::C_Camera(GameObject* owner) :Component(ComponentType::CAMERA, owner),
+C_Camera::C_Camera(GameObject* owner,unsigned int ID) :Component(ComponentType::CAMERA, owner,ID),
 nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRatio(0),
 projectionMatrix(float4x4::identity)
 {

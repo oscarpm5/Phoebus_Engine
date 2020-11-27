@@ -212,18 +212,19 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 					for (int j = 0; j < currentParent->mNumChildren; j++)
 					{
+						ResourceMesh* auxMesh=nullptr;
 						parents.push_back(currentParent->mChildren[j]);
 						aiMesh* newMesh = nullptr;
 						if (parents.back()->mNumMeshes > 0) {
 							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
-							ResourceMesh *auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath,ResourceType::MESH);
+							auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath,ResourceType::MESH);
 							Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
 							char* auxB = "y";
 							Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
 							LOG("debug");
 						}
-						gameObjParents.push_back(LoadGameObjFromAiMesh(newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
+						gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh,newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
 					}
 				}
 			}
@@ -305,7 +306,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					if (newR != nullptr)
 					{
 						//component.chutame_la_mesh
-
+						component->SetNewResource(newR->GetUID());
 					}
 					else 
 					{
@@ -317,6 +318,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					if (newR != nullptr)
 					{
 						//component.chutame_la_tex
+						component->SetNewResource(newR->GetUID());
 					}
 					else
 					{
@@ -543,7 +545,7 @@ unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 //	return newObj;
 //}
 
-GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
+GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
 {
 	//assigns game object name
 	std::string name = "Untitled";
@@ -573,6 +575,11 @@ GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene,
 	//creates new game object
 	GameObject* newObj = new GameObject(newParent, name, newTransform);
 	
+	if (m != nullptr)
+	{
+		C_Mesh*com= (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
+
+	}
 
 	//Mesh::ImportRMesh(newMesh,* auxMesh);
 

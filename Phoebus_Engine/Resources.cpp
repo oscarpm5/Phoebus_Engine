@@ -46,6 +46,7 @@ void Resource::SetLibPath(std::string newPath)
 
 bool Resource::UnloadFromMemory()
 {
+	isLoaded = false;
 	return false;
 }
 

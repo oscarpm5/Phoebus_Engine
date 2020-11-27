@@ -32,7 +32,7 @@ public:
 
 	void RemoveMyselfFromParent();
 
-	Component* CreateComponent(ComponentType type);
+	Component* CreateComponent(ComponentType type,unsigned int compID=0);
 
 	std::string GetName();
 

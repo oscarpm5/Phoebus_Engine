@@ -24,7 +24,7 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 	{
 		parent->children.push_back(this);
 	}
-	this->transform = new C_Transform(this, transform);
+	this->transform = new C_Transform(this, transform,0);
 	components.push_back(this->transform);
 
 	numberOfObjects++;
@@ -165,24 +165,24 @@ void GameObject::RemoveMyselfFromParent()
 	}
 }
 
-Component* GameObject::CreateComponent(ComponentType type)
+Component* GameObject::CreateComponent(ComponentType type,unsigned int compID)
 {
 	Component* ret = nullptr;
 	//TODO add diferent components here
 	switch (type)
 	{
 	case ComponentType::MESH:
-		ret = new C_Mesh(this);
+		ret = new C_Mesh(this, compID);
 		break;
 	case ComponentType::MATERIAL:
 		//only one instance of material for a certain gameObj
 		if (GetComponent<C_Material>() == nullptr)
-			ret = new C_Material(this);
+			ret = new C_Material(this, compID);
 		break;
 	case ComponentType::CAMERA:
 		//only one instance of camera for a certain gameObj
 		if (GetComponent<C_Camera>() == nullptr)
-			ret = new C_Camera(this);
+			ret = new C_Camera(this, compID);
 		break;
 	default:
 		break;

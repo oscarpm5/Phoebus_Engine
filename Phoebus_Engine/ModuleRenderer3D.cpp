@@ -508,13 +508,13 @@ void ModuleRenderer3D::DrawOutline()
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			ResourceMesh m = ResourceMesh(*meshes[i]->GetMesh());
-			ExpandMeshVerticesByScale(m, outlineScale);//TODO make the user adjust this from the config panel
-			m.FreeBuffers();
-			m.GenerateBuffers();
+			ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
+			ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
+			m->FreeBuffers();
+			m->GenerateBuffers();
 
-			C_Mesh* currMesh = new C_Mesh(nullptr);
-			currMesh->SetMesh(m);
+			C_Mesh* currMesh = new C_Mesh(nullptr,0);
+			currMesh->SetTemporalMesh(m);
 			stencilMeshes.push_back(currMesh);
 
 			float3 currentOutlineCol = outlineColorMain;

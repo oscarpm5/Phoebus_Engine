@@ -63,7 +63,7 @@ namespace Importer
 	}
 
 	//Kill me already please
-	GameObject* LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath);
+	GameObject* LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath);
 
 
 

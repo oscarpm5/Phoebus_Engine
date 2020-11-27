@@ -3,19 +3,25 @@
 #include "Mesh.h"
 #include <string>
 #include "MathGeoLib/include/Geometry/AABB.h"
+#include "Application.h"
+#include "M_ResourceManager.h"
 
-C_Mesh::C_Mesh(GameObject* owner) :Component(ComponentType::MESH, owner), m(nullptr),
-normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0)
+C_Mesh::C_Mesh(GameObject* owner,unsigned int ID) :Component(ComponentType::MESH, owner,ID),resourceID(0),
+normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0),temporalRMesh(nullptr)
 {
 }
 
 C_Mesh::~C_Mesh()
 {
-	if (m != nullptr)
+
+	if (resourceID != 0)
 	{
-		delete m;
-		m = nullptr;
+		App->rManager->StopUsingResource(resourceID);
+		resourceID = 0;
 	}
+
+	DeleteTemporalMesh();
+
 	normalVertexSize = 0;
 	normalFaceSize = 0;
 	normalDrawMode = 0;
@@ -24,32 +30,50 @@ C_Mesh::~C_Mesh()
 	localAABB.SetNegativeInfinity();
 }
 
-
-
-void C_Mesh::SetMesh(ResourceMesh mesh)
+void C_Mesh::SetNewResource(unsigned int resourceUID)
 {
-	if (m != nullptr)
+
+	if (resourceID != 0)
 	{
-		delete m;
-		m = nullptr;
+		App->rManager->StopUsingResource(resourceID);
 	}
 
-	m = new ResourceMesh(mesh);
+	ResourceMesh* r = (ResourceMesh*)App->rManager->RequestNewResource(resourceID);
+	if (r != nullptr)
+		resourceID = resourceUID;
+	else
+		resourceID = 0;
 
 	localAABB.SetNegativeInfinity();//this is like setting the AABB to null
-	localAABB.Enclose((float3*)m->vertices.data(), m->vertices.size() / 3); //generates an AABB on local space from a set of vertices
+	localAABB.Enclose((float3*)r->vertices.data(), r->vertices.size() / 3); //generates an AABB on local space from a set of vertices
 
 
 }
 
-ResourceMesh* C_Mesh::GetMesh() const
+ResourceMesh* C_Mesh::GetMesh()
 {
-	return m;
+	if (resourceID != 0)
+	{
+		ResourceMesh* m = (ResourceMesh*)App->rManager->RequestExistingResource(resourceID);
+		if (m == nullptr)
+		{
+			resourceID = 0;
+		}
+		else
+		{
+			return m;
+		}
+	}
+
+	return nullptr;
 }
 
 void C_Mesh::OnEditor()
 {
-	if (m == nullptr) return;
+	ResourceMesh* m= GetMesh();
+	if (m == nullptr) return; //TODO the component should be supported in the editor even without a mesh
+
+
 	bool activeAux = active;
 
 	std::string headerName = "Mesh";
@@ -174,4 +198,18 @@ void C_Mesh::OnEditor()
 AABB C_Mesh::GetAABB() const
 {
 	return localAABB;
+}
+
+void C_Mesh::SetTemporalMesh(ResourceMesh* newTempMesh)
+{
+	temporalRMesh = newTempMesh;
+}
+
+void C_Mesh::DeleteTemporalMesh()
+{
+	if (temporalRMesh != nullptr)
+	{
+		delete temporalRMesh;
+		temporalRMesh = nullptr;
+	}
 }

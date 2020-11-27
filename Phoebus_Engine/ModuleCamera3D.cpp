@@ -23,7 +23,7 @@ ModuleCamera3D::ModuleCamera3D(bool start_enabled) : Module(start_enabled)
 	//nearPlaneDist = 0.125f;
 	//farPlaneDist = 512.0f;
 
-	editorCam = new C_Camera(nullptr);
+	editorCam = new C_Camera(nullptr,0);
 	editorCam->SetNewFoV(60.0f);
 	editorCam->SetNearPlane(0.125f);
 	editorCam->SetFarPlane(500.0f);

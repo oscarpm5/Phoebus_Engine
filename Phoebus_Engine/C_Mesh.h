@@ -12,15 +12,19 @@ class ResourceMesh;
 class C_Mesh:public Component
 {
 public:
-	C_Mesh(GameObject* owner);
+	C_Mesh(GameObject* owner,unsigned int ID);
 	~C_Mesh();
-
-	void SetMesh(ResourceMesh mesh);
-	ResourceMesh* GetMesh()const;
+	void SetNewResource(unsigned int resourceUID)override;
+	//void SetMesh(ResourceMesh mesh);
+	ResourceMesh* GetMesh();
 
 	void OnEditor();
 
 	AABB GetAABB()const;
+
+	//used only for temporalResources(aka outline)
+	void SetTemporalMesh(ResourceMesh* newTempMesh);
+	void DeleteTemporalMesh();
 
 public:
 	float normalVertexSize;
@@ -28,9 +32,11 @@ public:
 	int normalDrawMode;
 	int meshDrawMode;
 private:
-	ResourceMesh* m;
+	unsigned int resourceID;
 	AABB localAABB;
 	//WILL store bounding box here in the future
+
+	ResourceMesh* temporalRMesh;//used only for outline, do NOT use it for anythig else
 };
 
 

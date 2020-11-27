@@ -9,7 +9,7 @@
 #include "Globals.h" //for testing purposes temporal
 
 
-C_Transform::C_Transform(GameObject* owner, float4x4 lTransform) :Component(ComponentType::TRANSFORM, owner),
+C_Transform::C_Transform(GameObject* owner, float4x4 lTransform,unsigned int ID) :Component(ComponentType::TRANSFORM, owner,ID),
 lTransformMat(lTransform), gTransformMat(float4x4::identity), localMode(true)
 {
 

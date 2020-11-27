@@ -4,17 +4,20 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "Texture.h"
+#include "Application.h"
+#include "M_ResourceManager.h"
 
-C_Material::C_Material(GameObject* owner) :Component(ComponentType::MATERIAL, owner),
+C_Material::C_Material(GameObject* owner,unsigned int ID) :Component(ComponentType::MATERIAL, owner,ID),
 idCheckers(0), //width(0), height(0), format(0), depth(0),idTexture(0),sizeInBytes(0), bpp(0), 
-usingCkeckers(false),texture(nullptr)
+usingCkeckers(false), resourceID(0)
 {
 	GenDefaultTexture();
 }
 
+//TODO deprecated constructor???
 C_Material::C_Material(GameObject* owner, unsigned int ilImageName, const char* path) :Component(ComponentType::MATERIAL, owner),
 idCheckers(0),//idTexture(0),  width(0), height(0), format(0), depth(0),sizeInBytes(0), bpp(0), 
-usingCkeckers(false), texture(nullptr)
+usingCkeckers(false), resourceID(0)
 {
 	//GenTextureFromName(ilImageName);
 	GenDefaultTexture();
@@ -32,12 +35,41 @@ C_Material::~C_Material()
 	//bpp = 0;
 	usingCkeckers = 0;
 	path = "";
+
+	if (resourceID != 0)
+	{
+		App->rManager->StopUsingResource(resourceID);
+		resourceID = 0;
+	}
 }
 
-bool C_Material::HasTexture() const
+//DO NOT use RequestNewResource() method when calling this method, it does it for you
+void C_Material::SetNewResource(unsigned int resourceUID)
 {
-	if (texture != nullptr && texture->idTexture != 0)
-		return true;
+	if (resourceID != 0)
+	{
+		App->rManager->StopUsingResource(resourceID);
+	}
+
+	Resource* r = App->rManager->RequestNewResource(resourceID);
+	if (r != nullptr)
+		resourceID = resourceUID;
+	else
+		resourceID = 0;
+}
+
+bool C_Material::HasTexture()
+{
+	if (resourceID != 0)
+	{
+		ResourceTexture* t = (ResourceTexture*)App->rManager->RequestExistingResource(resourceID);
+		if (t == nullptr)
+		{
+			resourceID = 0;
+		}
+		if (t != nullptr && t->idTexture != 0)
+			return true;
+	}
 	return false;
 }
 
@@ -48,12 +80,40 @@ bool C_Material::HasCheckers() const
 	return false;
 }
 
-unsigned int C_Material::GetTextureID() const
+unsigned int C_Material::GetTextureID() //if 0 then failed to load resource (aka the component ahs no resource associated)
 {
-	if (texture != nullptr)
-		return texture->idTexture;
-	else
-		return 0;
+	if (resourceID != 0)
+	{
+		ResourceTexture* t = (ResourceTexture*)App->rManager->RequestExistingResource(resourceID);
+		if (t == nullptr)
+		{
+			resourceID = 0;
+		}
+		else
+		{
+			return t->GetTextureID();
+		}
+	}
+
+	return 0;
+}
+
+ResourceTexture* C_Material::GetTexture()
+{
+	if (resourceID != 0)
+	{
+		ResourceTexture* t = (ResourceTexture*)App->rManager->RequestExistingResource(resourceID);
+		if (t == nullptr)
+		{
+			resourceID = 0;
+		}
+		else
+		{
+			return t;
+		}
+	}
+
+	return nullptr;
 }
 
 unsigned int C_Material::GetCheckersID() const
@@ -75,6 +135,8 @@ void C_Material::OnEditor()
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		ImGui::Checkbox("IS ACTIVE##MaterialCheckbox", &active); //##adds more to the label id without displaying so we can have 2 checkbox with the same text
 
+		ResourceTexture* texture =  nullptr;
+		texture = GetTexture();
 
 		ImGui::Indent();
 		ImGui::Separator();

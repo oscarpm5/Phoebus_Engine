@@ -8,7 +8,7 @@ class C_Camera:public Component
 {
 public:
 
-	C_Camera(GameObject* owner);
+	C_Camera(GameObject* owner,unsigned int ID);
 	C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV,float aspectRatio=0.0f);
 	~C_Camera();
 

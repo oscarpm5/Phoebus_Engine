@@ -15,7 +15,7 @@ class Component
 {
 public:
 
-	Component(ComponentType type,GameObject* owner);
+	Component(ComponentType type,GameObject* owner,unsigned int ID=0);
 	virtual ~Component();
 	virtual bool Update(float dt);
 	virtual bool GameUpdate(float dt);
@@ -27,10 +27,12 @@ public:
 	void SetActive(bool active);
 	bool IsActive()const;
 
+	virtual void SetNewResource(unsigned int resourceID);
+
 public:
 	GameObject* owner;
 	bool toDelete;
-	int ID;
+	unsigned int ID;
 
 private:
 	ComponentType type;

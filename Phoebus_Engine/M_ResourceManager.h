@@ -40,13 +40,13 @@ public:
 	void GenerateMetaFile(Resource* res);
 
 	Resource* RequestNewResource(unsigned int uid);
-
+	Resource* RequestExistingResource(unsigned int uid);//This doesn't add to the resource count, we use it during the execution
 	void StopUsingResource(unsigned int uid);
 
 	ActiveResources GetActiveResources();
 	//if creatinga  new resource do not use the last parameter, it is only used when loading resources
 	Resource* CreateNewResource(const char* assetsFile, ResourceType type,unsigned int existingID=0);//we need this for Import 
-	
+	//Manages importing of an asset file (whether it has to import, create lib file, update from meta, etc)
 	void ManageAssetUpdate(const char* newAssetFile);
 
 private:

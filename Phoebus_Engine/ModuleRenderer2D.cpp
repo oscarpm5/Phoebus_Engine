@@ -1245,25 +1245,28 @@ bool ModuleRenderer2D::CreateBasicForm(PrimitiveTypes type, float ar1, float ar2
 
 void ModuleRenderer2D::CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices, std::string name)
 {
-	std::vector<float> fakeNormals;
-	for (int i = 0; i < vertices.size(); i++) { //openGL works in misterous ways
-		fakeNormals.push_back(0);
-	}
-	std::vector<float> fakeTex;
-	for (int i = 0; i < indices.size(); i++) {
-		fakeTex.push_back(0);
-		fakeTex.push_back(0);
-	}
-	ResourceMesh newMesh = ResourceMesh(vertices, indices, fakeNormals, fakeTex, 0);//TODO for the moment we pass id 0 to the mesh
-	//AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
-	//App->editor3d->meshes.push_back(AuxM);
-	std::string newName = "Primitive";
-	if (name != "")
-		newName = name;
+	//TODO this doesn't work for the moment due to a lack of mesh geenration from code, fix it
 
-	GameObject* newObj = new GameObject(App->editor3d->root, newName, float4x4::identity);
-	newObj->CreateComponent(ComponentType::MESH);
-	newObj->GetComponent<C_Mesh>()->SetMesh(newMesh);
+
+	//std::vector<float> fakeNormals;
+	//for (int i = 0; i < vertices.size(); i++) { //openGL works in misterous ways
+	//	fakeNormals.push_back(0);
+	//}
+	//std::vector<float> fakeTex;
+	//for (int i = 0; i < indices.size(); i++) {
+	//	fakeTex.push_back(0);
+	//	fakeTex.push_back(0);
+	//}
+	//ResourceMesh newMesh = ResourceMesh(vertices, indices, fakeNormals, fakeTex, 0);//TODO for the moment we pass id 0 to the mesh
+	////AuxM.drawMode = MeshDrawMode::DRAW_MODE_BOTH;
+	////App->editor3d->meshes.push_back(AuxM);
+	//std::string newName = "Primitive";
+	//if (name != "")
+	//	newName = name;
+
+	//GameObject* newObj = new GameObject(App->editor3d->root, newName, float4x4::identity);
+	//newObj->CreateComponent(ComponentType::MESH);
+	//newObj->GetComponent<C_Mesh>()->SetMesh(newMesh);
 }
 
 //Deprecated function

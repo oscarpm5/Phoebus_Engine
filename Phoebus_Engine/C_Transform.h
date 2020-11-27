@@ -9,7 +9,7 @@ class C_Transform : public Component
 {
 public:
 
-	C_Transform(GameObject* owner, float4x4 lTransform);
+	C_Transform(GameObject* owner, float4x4 lTransform,unsigned int ID);
 	~C_Transform();
 
 	float4x4 GetGlobalTransform()const;

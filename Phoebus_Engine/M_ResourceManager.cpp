@@ -268,7 +268,20 @@ Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
 		it->second->referenceCount++;
 		return it->second;
 	}
+	LOG("[error] The requested resource with ID: %s, doesn't exist")
 	return nullptr;//the file doesn't exist in lib :c
+}
+
+Resource* M_ResourceManager::RequestExistingResource(unsigned int uid)
+{
+	Resource* ret = nullptr;
+	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+	if (it != resources.end() && it->second->IsLoadedInMemory())
+	{
+		ret = it->second;
+
+	}
+	return ret;
 }
 
 void M_ResourceManager::StopUsingResource(unsigned int uid)
@@ -278,9 +291,9 @@ void M_ResourceManager::StopUsingResource(unsigned int uid)
 	if (it != resources.end() && it->second->IsLoadedInMemory())
 	{
 		it->second->referenceCount--;
-		if (it->second <= 0)
+		if (it->second->referenceCount <= 0)
 		{
-			it->second = 0;
+			it->second->referenceCount = 0;
 			it->second->UnloadFromMemory();
 		}
 
@@ -471,7 +484,11 @@ void M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 					ResourceType resType = ResourceTypeFromPath(newAssetFile);
 					if (resType != ResourceType::UNKNOWN)
 					{
-						Resource* res = CreateNewResource(newAssetFile, resType);
+						Resource* res = CreateNewResource(newAssetFile, resType, AssID);
+						if (res->IsLoadedInMemory())
+						{
+							res->UnloadFromMemory();
+						}
 					}
 				}
 			}

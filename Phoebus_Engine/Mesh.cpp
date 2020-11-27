@@ -10,6 +10,7 @@
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
 #include "MathGeoLib/include/MathGeoLib.h"
+#include "Application.h"
 
 
 ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords, unsigned int UID) :
@@ -38,7 +39,7 @@ ResourceMesh::ResourceMesh(unsigned int UID) :Resource(UID,ResourceType::MESH), 
 {
 }
 
-ResourceMesh::ResourceMesh(const ResourceMesh& other):Resource(other.GetUID(),ResourceType::MESH)
+ResourceMesh::ResourceMesh(const ResourceMesh& other):Resource(App->renderer3D->seed.Int() ,ResourceType::MESH)
 {
 	this->vertices = other.vertices;
 	this->indices = other.indices;
