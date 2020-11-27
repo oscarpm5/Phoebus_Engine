@@ -247,6 +247,94 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 	return ret;
 }
 
+bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
+{
+	char* buffer = "";
+	App->fileSystem->Load(libPath, &buffer);
+	Config file(buffer);
+
+	//the map is a correlation between ID nad GO. It comes useful later. Thanks Marc!
+	std::map<int, GameObject*> createdGameObjects;
+	Config_Array gameObjects_array = file.GetArray("GameObjects");
+	for (uint i = 0; i < gameObjects_array.GetSize(); ++i)
+	{
+		//Pinpoint the GO 
+		Config gameObject_node = gameObjects_array.GetNode(i);
+
+		//Get its Global mat needed to call constructor
+		float4x4 auxGlobalMat = gameObject_node.GetArray("Transform").GetMatTransform(0); //they shouldnt have more than 1 Global transform...
+
+		//Parent setup
+		GameObject* parent = nullptr;
+		std::map<int, GameObject*>::iterator it = createdGameObjects.find(gameObject_node.GetNumber("ParentUID"));
+		if (it != createdGameObjects.end())
+			parent = it->second;
+
+		//Create the GO
+		GameObject* gameObject = new GameObject(parent ? parent : root, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
+
+		//Set properties of GO
+		gameObject->ID = gameObject_node.GetNumber("ID");
+		createdGameObjects[gameObject->ID] = gameObject;
+		gameObject->isActive = gameObject_node.GetBool("Active");
+		gameObject->focused = gameObject_node.GetBool("Focused");
+
+		//get the components
+		Config_Array components = gameObject_node.GetArray("Components");
+
+		for (uint i = 0; i < components.GetSize(); i++)
+		{
+			Config comp = components.GetNode(i);
+			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
+
+			if (Component* component = gameObject->CreateComponent(type))
+			{
+				component->ID = comp.GetNumber("ID");
+
+				switch (type)
+				{
+				case ComponentType::CAMERA:
+					//Hold your horses
+					break;
+				case ComponentType::MESH:
+					Resource* newR = App->rManager->RequestNewResource(component->ID);
+					if (newR != nullptr)
+					{
+						//component.chutame_la_mesh
+
+					}
+					else 
+					{
+						LOG("[error] Expected to find mesh %i loading model %i but the mesh was not found", component->ID, gameObject->ID);
+					}
+						
+					break;
+				case ComponentType::MATERIAL:
+					Resource* newR = App->rManager->RequestNewResource(component->ID);
+					if (newR != nullptr)
+					{
+						//component.chutame_la_tex
+					}
+					else
+					{
+						LOG("[error] Expected to find texture %i loading model %i but the texture was not found", component->ID, gameObject->ID);
+					}
+					break;
+				case ComponentType::TRANSFORM:
+					//Nothing: this is already done in constructor
+					break;
+				default:
+					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
+					break;
+				}
+
+				//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
+			}
+		}
+		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
+	}
+}
+
 unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 {
 	char* buffer = ""; //we dont save this. If you want to recuperate this buffer, go to filesistem and Load the path of the JSON file; then Config auxname(bufferGotFromLoad); -Adri
