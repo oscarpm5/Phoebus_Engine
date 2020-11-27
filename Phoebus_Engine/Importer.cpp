@@ -302,7 +302,8 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
 			if (Component* component = gameObject->CreateComponent(type, comp.GetNumber("ID")))
 			{
-				Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
+				//Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
+				unsigned int newUID = comp.GetNumber("ResourceID");
 
 				switch (type)
 				{
@@ -311,27 +312,17 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					break;
 				case ComponentType::MESH:
 					
-					if (newR != nullptr)
-					{
+					
 						//component.chutame_la_mesh
-						component->SetNewResource(newR->GetUID());
-					}
-					else 
-					{
-						LOG("[error] Expected to find mesh %i loading model %i but the mesh was not found", component->ID, gameObject->ID);
-					}
+						component->SetNewResource(newUID);
+					
 						
 					break;
 				case ComponentType::MATERIAL:
-					if (newR != nullptr)
-					{
+					
 						//component.chutame_la_tex
-						component->SetNewResource(newR->GetUID());
-					}
-					else
-					{
-						LOG("[error] Expected to find texture %i loading model %i but the texture was not found", component->ID, gameObject->ID);
-					}
+						component->SetNewResource(newUID);
+										
 					break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
