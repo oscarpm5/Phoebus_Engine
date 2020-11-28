@@ -14,7 +14,7 @@
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB) :name(name), transform(nullptr), focused(false), displayBoundingBox(showAABB)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false), displayBoundingBox(showAABB)
 {
 	App->editor3d->AddObjName(this->name);
 	this->parent = parent;
@@ -24,7 +24,7 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 	{
 		parent->children.push_back(this);
 	}
-	this->transform = new C_Transform(this, transform,0);
+	this->transform = new C_Transform(this, transform,0,isLocalTrans);
 	components.push_back(this->transform);
 
 	numberOfObjects++;

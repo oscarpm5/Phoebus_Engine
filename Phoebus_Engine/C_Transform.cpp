@@ -9,11 +9,21 @@
 #include "Globals.h" //for testing purposes temporal
 
 
-C_Transform::C_Transform(GameObject* owner, float4x4 lTransform,unsigned int ID) :Component(ComponentType::TRANSFORM, owner,ID),
-lTransformMat(lTransform), gTransformMat(float4x4::identity), localMode(true)
+C_Transform::C_Transform(GameObject* owner, float4x4 lTransform, unsigned int ID, bool isLocalTrans) :Component(ComponentType::TRANSFORM, owner, ID), localMode(true)
 {
+	if (isLocalTrans)
+	{
+		lTransformMat = lTransform;
+		gTransformMat = float4x4::identity;
+		UpdateGlobalMat();
 
-	UpdateGlobalMat();
+	}
+	else
+	{
+		lTransformMat = float4x4::identity;
+		gTransformMat = lTransform;
+		UpdateLocalMat();
+	}
 }
 
 C_Transform::~C_Transform()
@@ -66,7 +76,7 @@ void C_Transform::OnEditor()
 		float v[3];
 		float3 vAux;
 		//Show me the things
-		if (localMode==true)
+		if (localMode == true)
 		{
 
 			vAux = lTransformMat.TranslatePart();
@@ -320,7 +330,7 @@ void C_Transform::UpdateLocalMat()
 {
 	if (owner->parent != nullptr)
 	{
-		lTransformMat =  owner->parent->GetComponent<C_Transform>()->GetGlobalTransform().Inverted()* gTransformMat;
+		lTransformMat = owner->parent->GetComponent<C_Transform>()->GetGlobalTransform().Inverted() * gTransformMat;
 	}
 	else
 		lTransformMat = gTransformMat;

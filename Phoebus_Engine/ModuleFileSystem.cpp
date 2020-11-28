@@ -528,4 +528,9 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 	return ret;
 }
 
+bool ModuleFileSystem::DeleteTemporalScene(char* sceneBuffer)
+{
+	return false;
+}
+
 

@@ -16,7 +16,7 @@ class GameObject
 public:
 	unsigned int ID; //save / load func
 
-	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true);
+	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true, bool isLocalTrans = true);
 	
 	void Awake();
 

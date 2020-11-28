@@ -74,7 +74,13 @@ public:
 	//Returns true if a flie exists, otherwise returns false
 	bool DoesFileExist(const char* file);
 
+	//deleting all references from file inspector on "delete" button
 	bool DeleteFromAssetsAndLibs(const char* assetPath);
+
+	//deleting temporal scenes
+	bool DeleteTemporalScene(char * sceneBuffer);
+
+
 };
 
 #endif // __MODULEFILESYSTEModuleH__
