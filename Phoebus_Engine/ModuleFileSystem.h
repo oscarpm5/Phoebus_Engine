@@ -46,6 +46,7 @@ public:
 
 	void SeparatePath(std::string path, std::string* newPath, std::string* file);
 	void SeparateExtension(std::string file, std::string* ext);
+	void SeparateExtension(std::string file, std::string* ext,std::string* filePathWithoutExt);
 
 	std::string NormalizePath(const char* path);
 	void LoadAsset(char * path);//TODO this method will soon be deptrecated -> moving it to resource manager
@@ -76,7 +77,7 @@ public:
 	bool DoesFileExist(const char* file);
 
 	//deleting all references from file inspector on "delete" button
-	bool DeleteFromAssetsAndLibs(const char* assetPath);
+	bool DeleteFromAssetsAndLibs(const char* assetPath,bool isMeta=false);//TODO shouldn't this function be on rManager?
 
 	//deleting temporal scenes
 	bool DeleteTemporalScene(char * sceneBuffer);

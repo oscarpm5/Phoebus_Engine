@@ -128,14 +128,14 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * You can load any saved scene un Menu->Load
 
+* The resource manager has an automatic garbage collector which deletes ".meta" & lib files when their asset is missing.
+
  
 ## Aditional comments for the teacher:
 
 ### First Assigment
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
-* The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)
-* Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
 ### Second Assigment
 * Street has been imported with Blender, which causes the fbx folder to have a ".fbm" extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
@@ -148,6 +148,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
 * Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
 * You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
+* In the exceptional case of an ".fbx" missing in assets, the garbage collector will handle the deletion of ".meta" & model files but won't delete ".mesh" & ".dds" files which originated from that asset as they are independent resources. The garbage collector will handle other asset types correctly. It executes once every minute or if "refresh" button is pressed. 
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

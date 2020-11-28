@@ -52,7 +52,7 @@ bool M_ResourceManager::Start()
 update_status M_ResourceManager::PreUpdate(float dt)
 {
 	checkTimer += dt;
-	if (App->GetGameState() == GameStateEnum::STOPPED && (checkTimer >= 60.0f||haveToReload==true))//we only check assets when the engine is not in runtime
+	if (App->GetGameState() == GameStateEnum::STOPPED && (checkTimer >= 60.0f || haveToReload == true))//we only check assets when the engine is not in runtime
 	{
 		haveToReload = false;
 		checkTimer = 0.0f;
@@ -321,7 +321,7 @@ ActiveResources M_ResourceManager::GetActiveResources(bool getAll)
 
 	for (it; it != resources.end(); it++)
 	{
-		if (getAll||it->second->IsLoadedInMemory())
+		if (getAll || it->second->IsLoadedInMemory())
 		{
 
 			ResourceType type = it->second->GetType();
@@ -371,8 +371,9 @@ void M_ResourceManager::LoadAssetsRecursively(std::string dir)
 	{
 		const std::string& str = *it;
 		std::string absPath = dir + str;
+		std::string absPathWithoutExt;
 		std::string extension;
-		App->fileSystem->SeparateExtension(absPath, &extension);
+		App->fileSystem->SeparateExtension(absPath, &extension, &absPathWithoutExt);
 
 		if (extension != ".meta")
 		{
@@ -380,7 +381,18 @@ void M_ResourceManager::LoadAssetsRecursively(std::string dir)
 		}
 		else
 		{
-			//Garbage collector-> check if metta has asset associated, if not delete form lib & memory
+			std::string assetMissing = "Assets/";
+			assetMissing += absPathWithoutExt;
+			if (!App->fileSystem->DoesFileExist(assetMissing.c_str()))
+			{
+				assetMissing.clear();
+				assetMissing = "Assets/";
+				assetMissing += absPath;
+				LOG("[warning] Meta file: '%s' is not linked to any asset.\nProceding to delete all unused resources...",absPath.c_str());
+				//Garbage collector-> check if meta has asset associated, if not delete form lib & memory
+				App->fileSystem->DeleteFromAssetsAndLibs(assetMissing.c_str(), true);
+			}
+
 		}
 	}
 
