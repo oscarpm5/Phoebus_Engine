@@ -120,7 +120,13 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Object Translate/Rotate/Scale can be done in both local & global space.
 
-* Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]
+* Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]. 
+
+* Automated saved scenes are made on play/pause. This scene is saved in Library/Scenes
+
+* You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with a automatic name which you can later change
+
+* You can load any saved scene un Menu->Load
 
  
 ## Aditional comments for the teacher:
@@ -138,6 +144,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
 * Resource Manager will check the Assets folder every 30 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
+* You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
