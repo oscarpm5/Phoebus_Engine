@@ -38,6 +38,7 @@ public:
 	bool ShowResourcesActive();
 
 	void DrawDirectoryTree(const char* dir);
+	void DrawDirectoryTreeLoadScene(const char* dir);
 
 private:
 	
@@ -50,6 +51,7 @@ public:
 	bool showConsoleWindow;
 	bool showHierarchy;
 	bool showLoadFileWindow;
+	bool showLoadScenes;
 	bool showInspector;
 	bool show3DWindow;
 	bool showAboutWindowbool;
@@ -87,6 +89,7 @@ private:
 
 	//File explorer selected file  
 	char selectedFile[250];
+	char selectedScene[250];
 
 }; 
 #endif // !__MODULE_RENDER_2D__
