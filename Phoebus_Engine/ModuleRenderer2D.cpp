@@ -753,8 +753,16 @@ bool ModuleRenderer2D::showAboutWindow()
 	ImGui::Indent();
 	ImGui::TextColored(ImVec4(153, 153, 000, 250), aux); //(0, 100, 130, 150)
 	ImVec2 vecaux = ImGui::GetCursorPos();
-	ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y - 20);
-	ImGui::Image((ImTextureID)PhoebusIcon, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0));
+	if (PhoebusIcon != 0)
+	{
+
+		ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y - 20);
+		ImGui::Image((ImTextureID)PhoebusIcon, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0));
+	}
+	else
+	{
+		ImGui::Text("Missing PHOEBUS ICON image...");
+	}
 	ImGui::Unindent();
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -784,9 +792,24 @@ bool ModuleRenderer2D::showAboutWindow()
 		//autohors
 		ImGui::Text("This Engine was made by these two brave souls: Adria Serrano Lopez & Oscar Perez Martin");
 		ImGui::Spacing();
-		ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		if (AdriID != 0)
+		{
+
+			ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		}
+		else
+		{
+			ImGui::Text("Missing ASL image...");
+		}
 		ImGui::SameLine();
-		ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		if (OscarID != 0)
+		{
+			ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		}
+		else
+		{
+			ImGui::Text("Missing OPM image...");
+		}
 		ImGui::Spacing();
 		ImGui::Text("Check us out in Github:"); ImGui::SameLine();
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);

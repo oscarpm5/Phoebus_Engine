@@ -138,7 +138,6 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
 ### Second Assigment
-* DO NOT delete the contents of the folder "our_pics" from the "Assets" folder. Doing so would cause a crash(intended, since they contain engine-related critical resources, ex:the engine icon).
 * Street has been imported with Blender, which causes the fbx folder to have a ".fbm" extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
 * Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back with the prefabs
 * Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".

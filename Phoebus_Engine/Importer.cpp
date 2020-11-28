@@ -642,7 +642,8 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 		ILenum error;
 		error = ilGetError();
 		LOG("\n[error]Could not load an image from buffer");
-		LOG("[error] %d :\n %s", error, iluErrorString(error));
+		//LOG("[error] %d :\n %s", error, iluErrorString(error));
+		if(length!=0)
 		RELEASE_ARRAY(new_buffer);
 		ilDeleteImages(1, &ID);
 	}
