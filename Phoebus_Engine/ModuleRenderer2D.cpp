@@ -48,7 +48,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	showDemoWindow = false;
 	showConsoleWindow = true;
 	showHierarchy = true;
-	showLoadFileWindow = false;
+	showLoadFileWindow = true;
 	showLoadScenes = false;
 	showInspector = true;
 	show3DWindow = true;
@@ -301,6 +301,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Inspector", NULL, &showInspector);
 			ImGui::MenuItem("Active Resurces", NULL, &showResourcesActive);
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
+			ImGui::MenuItem("Assets Explorer", NULL, &showLoadFileWindow);
 			ImGui::EndMenu();
 		}
 		//if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
@@ -409,11 +410,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		{
 			ImGui::PopItemFlag();
 			ImGui::PopStyleVar();
-		}
-
-		if (ImGui::Button("ShowLoadPopup"))
-		{
-			showLoadFileWindow = true;
 		}
 
 		//end of testing code
@@ -532,9 +528,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		}
 		ImGui::End();
 	}
-	if (showLoadFileWindow)
+
+	if (showLoadFileWindow)		
 	{
-		if (ImGui::Begin("File Explorer", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse))
+		if (ImGui::Begin("File Explorer", &showLoadFileWindow))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("File Browser", ImVec2(0, 300), true);
@@ -549,7 +546,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 
 			ImGui::PopItemWidth();
-			ImGui::SameLine();
+			
 
 			if (ImGui::Button("Ok", ImVec2(50, 20)))
 			{
@@ -573,6 +570,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				showLoadFileWindow = false;
 				selectedFile[0] = '\0';
 			}
+			ImGui::SameLine();
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
 			if (ImGui::Button("Delete", ImVec2(50, 20)))
 			{
