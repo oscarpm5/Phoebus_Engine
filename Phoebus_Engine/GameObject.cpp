@@ -346,7 +346,7 @@ void GameObject::DrawGameObject()
 		std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
 		C_Material* mat = GetComponent<C_Material>();
-		if (mat != nullptr && (!mat->IsActive() || mat->GetTexture() == nullptr))
+		if (mat != nullptr && !mat->IsActive())
 		{
 			mat = nullptr;
 		}

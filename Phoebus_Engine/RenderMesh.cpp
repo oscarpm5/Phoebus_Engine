@@ -21,7 +21,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	newTrans.Transpose();
 
 	ResourceMesh* m = mesh->GetTemporalMesh();
-	
+
 	if (m == nullptr)
 	{
 		m = mesh->GetMesh();
@@ -191,17 +191,21 @@ void RenderMesh::DrawBuffers(ResourceMesh* m)
 		{
 			texIDtoBind = material->GetTextureID();
 		}
-		else
-		{
-			texIDtoBind = material->GetCheckersID();//when texture is not existing we draw checkers for the moment TODO make this better
-		}
+		//else
+		//{
+		//	texIDtoBind = material->GetCheckersID();//when texture is not existing we draw checkers for the moment TODO make this better
+		//}
+	}
+	if (texIDtoBind != 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, texIDtoBind);
 	}
 
-	glBindTexture(GL_TEXTURE_2D, texIDtoBind);
-
 	glDrawElements(GL_TRIANGLES, m->indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
-
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (texIDtoBind != 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
