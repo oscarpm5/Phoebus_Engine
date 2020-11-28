@@ -160,6 +160,46 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 		if (ImGui::BeginMenu("Menu", true))
 		{
+			if (ImGui::MenuItem("Save", "Scene")) {
+
+				LOG("Saving absolute scene"); char* buff = "";
+				unsigned int size = Importer::SerializeScene(App->editor3d->root, &buff);
+				std::string auxPath = LIB_PATH; auxPath += "Scenes/AbsoluteScene.pho";
+				App->fileSystem->SavePHO(auxPath.c_str(), buff, size);
+				RELEASE_ARRAY(buff);
+				buff = nullptr;
+				
+			}
+			/*
+			int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
+
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopup("Name?", flags))
+			{
+				char* text = " ";
+				ImGui::InputText("SceneName", text, 20);
+
+				if (ImGui::Button("Save", ImVec2(120, 0)))
+				{
+					LOG("Saving scene");
+					char* auxBuffer = "";
+					unsigned int size = Importer::SerializeScene(App->editor3d->root, &auxBuffer);
+					std::string auxPath = LIB_PATH; auxPath += "Scenes/";
+					App->fileSystem->SavePHO(auxPath.c_str(), auxBuffer, size);
+					RELEASE_ARRAY(auxBuffer);
+					auxBuffer = nullptr;
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SetItemDefaultFocus();
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)) || (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}*/
+
 
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
@@ -174,9 +214,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				showQuit = true;
 			}
-
+			
 			ImGui::EndMenu();
 		}
+
 
 		if (ImGui::BeginMenu("GameObjects##menu", true))
 		{
@@ -325,7 +366,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				delete App->editor3d->root; App->editor3d->root = nullptr;
 				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
 				
-				App->fileSystem->Load("TemporalScene.pho", &temporalScene);
+				std::string auxPath = LIB_PATH; auxPath +="Scenes/TemporalScene.pho";
+				App->fileSystem->Load(auxPath.c_str(), &temporalScene);
 				Importer::LoadScene(temporalScene, App->editor3d->root);
 			}
 			else
@@ -333,7 +375,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				App->SetNewGameState(GameStateEnum::PLAYED);
 				LOG("Saving tempooral scene");
 				unsigned int size = Importer::SerializeScene(App->editor3d->root, &temporalScene);
-				App->fileSystem->SavePHO("TemporalScene.pho",temporalScene,size);
+				std::string auxPath = LIB_PATH; auxPath += "Scenes/TemporalScene.pho";
+				App->fileSystem->SavePHO(auxPath.c_str(),temporalScene,size);
 			}
 		}
 		if (isGamePlaying)
