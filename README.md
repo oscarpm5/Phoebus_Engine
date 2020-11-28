@@ -139,13 +139,14 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 ### Second Assigment
 * DO NOT delete the contents of the folder "our_pics" from the "Assets" folder. Doing so would cause a crash(intended, since they contain engine-related critical resources, ex:the engine icon).
-* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources.
+* Street has been imported with Blender, which couses the fbx folder to have a .fbm extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
+* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back with the frefabs
 * Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
 * Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
 * Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
-* Resource Manager will check the Assets folder every 30 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
+* Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
 * You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
 
 ## Licenses

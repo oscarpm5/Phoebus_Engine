@@ -52,7 +52,7 @@ bool M_ResourceManager::Start()
 update_status M_ResourceManager::PreUpdate(float dt)
 {
 	checkTimer += dt;
-	if (App->GetGameState() == GameStateEnum::STOPPED && (checkTimer >= 30.0f||haveToReload==true))//we only check assets when the engine is not in runtime
+	if (App->GetGameState() == GameStateEnum::STOPPED && (checkTimer >= 60.0f||haveToReload==true))//we only check assets when the engine is not in runtime
 	{
 		haveToReload = false;
 		checkTimer = 0.0f;
