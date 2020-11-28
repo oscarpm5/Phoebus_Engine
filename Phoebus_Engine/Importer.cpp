@@ -361,8 +361,17 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 }
 
 //TODO IMPORTANT take model name as a parameter here and assign that name to their childs (every resource should have a name)
-bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
+bool Importer::Model::LoadModel(const char* libPath, GameObject* root,bool onlyBase)
 {
+	GameObject* newRoot = nullptr;
+	if (!onlyBase)
+	{
+		newRoot = root;
+	}
+	else//if we are only going to load the objects for the preview of the resources, we will create a root GO and delete it before exiting the method
+	{
+		newRoot = new GameObject(nullptr, "", float4x4::identity);
+	}
 	bool ret = false;
 	char* buffer = "";
 	App->fileSystem->Load(libPath, &buffer);
@@ -386,7 +395,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			parent = it->second;
 
 		//Create the GO
-		GameObject* gameObject = new GameObject(parent ? parent : root, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
+		GameObject* gameObject = new GameObject(parent ? parent : newRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
 		ret = true;
 
 
@@ -452,6 +461,11 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			}
 		}
 		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
+	}
+	if (onlyBase)
+	{
+		delete newRoot;
+		newRoot = nullptr;
 	}
 	return ret;
 }

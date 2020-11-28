@@ -558,11 +558,18 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				//TODO Call load asset here??
 				std::string selected = selectedFile;
-
-				Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
-				if (r != nullptr)
+				if (selected != "")
 				{
-					App->rManager->RequestNewResource(r->GetUID());
+
+					Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
+					if (r != nullptr)
+					{
+						App->rManager->RequestNewResource(r->GetUID());
+					}
+				}
+				else
+				{
+					LOG("[warning]We are sorry but we are afraid we may not be able to load a blank space into memory");
 				}
 
 				selectedFile[0] = '\0';

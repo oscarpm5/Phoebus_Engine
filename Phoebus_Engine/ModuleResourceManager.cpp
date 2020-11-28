@@ -278,7 +278,10 @@ Resource* ModuleResourceManager::RequestNewResource(unsigned int uid)
 			LoadResourceIntoMem(it->second);
 
 		}
-		it->second->referenceCount++;
+		if (it->second->GetType() != ResourceType::MODEL)//we do not consider models to be loaded into mem (only its dependencies) and so it has no reference count
+		{
+			it->second->referenceCount++;
+		}
 		return it->second;
 	}
 	LOG("[error] The requested resource with ID: %i, doesn't exist", uid);
@@ -432,13 +435,12 @@ void ModuleResourceManager::LoadAssetsFromDir(std::string dir)
 	}
 }
 
-void ModuleResourceManager::LoadResourceIntoMem(Resource* res)
+void ModuleResourceManager::LoadResourceIntoMem(Resource* res, bool onlyBase)
 {
 	ResourceType type = res->GetType();
 
 	char* buffer;
 	unsigned int size = App->fileSystem->Load(res->GetLibraryFile().c_str(), &buffer);
-
 
 	switch (type)
 	{
@@ -455,7 +457,16 @@ void ModuleResourceManager::LoadResourceIntoMem(Resource* res)
 		break;
 	case ResourceType::MODEL:
 		//Models are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
+		
+		if (onlyBase)
+		{
+			Importer::Model::LoadModel(res->GetLibraryFile().c_str(), nullptr,true);
+		}
+		else
+		{
 		Importer::Model::LoadModel(res->GetLibraryFile().c_str(), App->editor3d->root);
+		}
+
 		break;
 	case ResourceType::UNKNOWN:
 	default:
@@ -532,6 +543,7 @@ Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 					if (resType != ResourceType::UNKNOWN)
 					{
 						Resource* res = CreateNewResource(newAssetFile, resType, AssID);
+						if (resType == ResourceType::MODEL) LoadResourceIntoMem(res,true);
 						if (res->IsLoadedInMemory())
 						{
 							res->UnloadFromMemory();

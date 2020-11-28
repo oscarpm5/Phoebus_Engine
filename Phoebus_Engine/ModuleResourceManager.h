@@ -52,8 +52,8 @@ public:
 	bool DeleteItemFromResourcesMap(unsigned int UID);
 
 	Resource* FindResInMemory(unsigned int UID);
-
-	void LoadResourceIntoMem(Resource* res);
+	//only base paremeters is only used for the moldels, as they have other resource dependencies, use this bool as true when you only want to load the base resources into memory and not the actual Model
+	void LoadResourceIntoMem(Resource* res, bool onlyBase = false);
 
 
 	void GetAllResourcesOfType(ResourceType type, std::vector<Resource*>& ret);
