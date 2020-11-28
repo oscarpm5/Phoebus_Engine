@@ -174,6 +174,9 @@ void C_Material::OnEditor()
 				{
 					App->rManager->StopUsingResource(resourceID);
 					resourceID = 0;
+					myResourceID = 0;
+					texture == nullptr;
+
 				}
 			}
 

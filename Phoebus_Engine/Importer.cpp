@@ -313,24 +313,24 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					break;
 				case ComponentType::MESH:
 
-					r= App->rManager->FindResInMemory(newUID);
+					r = App->rManager->FindResInMemory(newUID);
 					if (r == nullptr)//if not found in memory find it in lib
 					{
-						r=App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
 						App->rManager->LoadResourceIntoMem(r);
 					}
-					
+
 					//component.chutame_la_mesh
 					component->SetNewResource(newUID);
 
 
 					break;
 				case ComponentType::MATERIAL:
-					
+
 					r = App->rManager->FindResInMemory(newUID);
 					if (r == nullptr)//if not found in memory find it in lib
 					{
-						r=App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
 						App->rManager->LoadResourceIntoMem(r);
 					}
 
@@ -1063,7 +1063,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		//Create the GO
 
 
-		GameObject* gameObject = new GameObject(parent ? parent : sceneRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat,true, false);
+		GameObject* gameObject = new GameObject(parent ? parent : sceneRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat, true, false);
 
 		//Set properties of GO
 		gameObject->ID = gameObject_node.GetNumber("ID");
@@ -1083,51 +1083,54 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			{
 				component->ID = comp.GetNumber("ID");
 				unsigned int newUID = comp.GetNumber("ResourceID");
-				
-				Resource* r = nullptr;
-
-				switch (type)
+				if (newUID != 0)
 				{
-				case ComponentType::CAMERA:
-					//Hold your horses
-					break;
-				case ComponentType::MESH:
 
-					r = App->rManager->FindResInMemory(newUID);
-					if (r == nullptr)//if not found in memory find it in lib
+					Resource* r = nullptr;
+
+					switch (type)
 					{
-						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
-						App->rManager->LoadResourceIntoMem(r);
+					case ComponentType::CAMERA:
+						//Hold your horses
+						break;
+					case ComponentType::MESH:
+
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							App->rManager->LoadResourceIntoMem(r);
+						}
+
+						//component.chutame_la_mesh
+						component->SetNewResource(newUID);
+
+
+						break;
+					case ComponentType::MATERIAL:
+
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+							App->rManager->LoadResourceIntoMem(r);
+						}
+
+						//component.chutame_la_tex
+						component->SetNewResource(newUID);
+
+						break;
+					case ComponentType::TRANSFORM:
+						//Nothing: this is already done in constructor
+						break;
+					default:
+						LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
+						break;
 					}
 
-					//component.chutame_la_mesh
-					component->SetNewResource(newUID);
 
-
-					break;
-				case ComponentType::MATERIAL:
-
-					r = App->rManager->FindResInMemory(newUID);
-					if (r == nullptr)//if not found in memory find it in lib
-					{
-						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
-						App->rManager->LoadResourceIntoMem(r);
-					}
-
-					//component.chutame_la_tex
-					component->SetNewResource(newUID);
-
-					break;
-				case ComponentType::TRANSFORM:
-					//Nothing: this is already done in constructor
-					break;
-				default:
-					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
-					break;
+					//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
 				}
-
-
-				//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
 
 			}
 
