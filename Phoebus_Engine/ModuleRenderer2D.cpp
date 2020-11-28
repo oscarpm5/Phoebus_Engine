@@ -532,7 +532,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 	if (showLoadFileWindow)
 	{
-		if (ImGui::Begin("File Explorer##window", &showLoadFileWindow))
+		if (ImGui::Begin("Asset Explorer##window", &showLoadFileWindow))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("File Browser##window", ImVec2(0, 300), true);
