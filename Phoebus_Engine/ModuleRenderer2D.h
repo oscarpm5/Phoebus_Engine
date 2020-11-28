@@ -88,9 +88,5 @@ private:
 	//File explorer selected file  
 	char selectedFile[250];
 
-	//Managing scene in play/pause and saving scenes, We keep the buffer lmao
-	char* temporalScene;
-	//char* absoluteScene;
-
 }; 
 #endif // !__MODULE_RENDER_2D__

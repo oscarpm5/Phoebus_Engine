@@ -76,9 +76,6 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	gizmoSize = 0.5f;
 
 	selectedFile[0] = '\0';
-
-	temporalScene = "";
-	//absoluteScene = "";
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -367,16 +364,23 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
 				
 				std::string auxPath = LIB_PATH; auxPath +="Scenes/TemporalScene.pho";
-				App->fileSystem->Load(auxPath.c_str(), &temporalScene);
-				Importer::LoadScene(temporalScene, App->editor3d->root);
+				char* auxB = "";
+				App->fileSystem->Load(auxPath.c_str(), &auxB);
+				Importer::LoadScene(auxB, App->editor3d->root);
+				RELEASE_ARRAY(auxB);
+				auxB = nullptr;
+				
 			}
 			else
 			{
+				char* auxB = "";
 				App->SetNewGameState(GameStateEnum::PLAYED);
 				LOG("Saving tempooral scene");
-				unsigned int size = Importer::SerializeScene(App->editor3d->root, &temporalScene);
+				unsigned int size = Importer::SerializeScene(App->editor3d->root, &auxB);
 				std::string auxPath = LIB_PATH; auxPath += "Scenes/TemporalScene.pho";
-				App->fileSystem->SavePHO(auxPath.c_str(),temporalScene,size);
+				App->fileSystem->SavePHO(auxPath.c_str(), auxB,size);
+				RELEASE_ARRAY(auxB);
+				auxB = nullptr;
 			}
 		}
 		if (isGamePlaying)
@@ -608,11 +612,6 @@ bool ModuleRenderer2D::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
-	if (temporalScene != nullptr)
-	{
-		RELEASE_ARRAY(temporalScene);
-		temporalScene = nullptr;
-	}
 
 	return ret;
 }
