@@ -137,6 +137,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
 * Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
+* Resource Manager will check the Assets folder every 30 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

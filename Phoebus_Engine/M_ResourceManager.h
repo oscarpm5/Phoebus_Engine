@@ -59,8 +59,8 @@ public:
 	void GetAllResourcesOfType(ResourceType type, std::vector<Resource*>& ret);
 
 private:
-
 	void LoadAllAssets();
+
 	
 	void LoadAssetsRecursively(std::string dir);
 
@@ -81,6 +81,8 @@ private:
 
 private:
 	float checkTimer;
+public:
+	bool haveToReload;
 
 	std::map<unsigned int, Resource*> resources;
 };

@@ -428,7 +428,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::BeginDragDropTarget())
 			{
-				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJ_ID"))
+				if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("OBJ_ID"))
 				{
 					IM_ASSERT(payload->DataSize == sizeof(unsigned int));
 
@@ -508,7 +508,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				char* aux = "";
 				std::string selected = selectedScene;
 				int size = App->fileSystem->Load(selected.c_str(), &aux);
-				
+
 				if (size != 0)
 				{
 					Importer::LoadScene(aux, App->editor3d->root);
@@ -530,12 +530,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 		ImGui::End();
 	}
 
-	if (showLoadFileWindow)		
+	if (showLoadFileWindow)
 	{
-		if (ImGui::Begin("File Explorer", &showLoadFileWindow))
+		if (ImGui::Begin("File Explorer##window", &showLoadFileWindow))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
-			ImGui::BeginChild("File Browser", ImVec2(0, 300), true);
+			ImGui::BeginChild("File Browser##window", ImVec2(0, 300), true);
 
 			DrawDirectoryTree("Assets");
 
@@ -547,12 +547,11 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 
 			ImGui::PopItemWidth();
-			
 
-			if (ImGui::Button("Ok", ImVec2(50, 20)))
+
+			if (ImGui::Button("Load##fileExplorer", ImVec2(50, 20)))
 			{
 				//TODO Call load asset here??
-				showLoadFileWindow = false;
 				std::string selected = selectedFile;
 
 				Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
@@ -566,14 +565,20 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			ImGui::SameLine();
 
-			if (ImGui::Button("Cancel", ImVec2(50, 20)))
+			if (ImGui::Button("Cancel##fileExplorer", ImVec2(50, 20)))
 			{
-				showLoadFileWindow = false;
 				selectedFile[0] = '\0';
 			}
 			ImGui::SameLine();
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 1.0f, 0.5f, 0.25f));
+			if (ImGui::Button("Refresh##fileExplorer", ImVec2(60, 20)))
+			{
+				App->rManager->haveToReload = true;
+			}
+			ImGui::SameLine();
+
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
-			if (ImGui::Button("Delete", ImVec2(50, 20)))
+			if (ImGui::Button("Delete##fileExplorer", ImVec2(55, 20)))
 			{
 				ImGui::OpenPopup("Delete Asset?");
 			}
@@ -599,7 +604,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				}
 				ImGui::EndPopup();
 			}
-			ImGui::PopStyleColor();
+			ImGui::PopStyleColor(2);
 		}
 		ImGui::End();
 	}
@@ -1310,13 +1315,23 @@ void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
 			extension = str.substr(index); //look for the last instance of a point. Format should be next
 		}
 
-		if (extension != ".meta" && ImGui::TreeNodeEx(str.c_str(), ImGuiTreeNodeFlags_Leaf))
+		if (extension != ".meta")
 		{
-			if (ImGui::IsItemClicked()) {
-				sprintf_s(selectedFile, 250, "%s%s", dir.c_str(), str.c_str());
-			}
+			//TODO if it has no meta don't bother drawing it
+			std::string directory = newDir;
+			std::string metapath = directory + "/" + str + ".meta";
+			if (App->fileSystem->DoesFileExist(metapath.c_str()))
+			{
 
-			ImGui::TreePop();
+				if (ImGui::TreeNodeEx(str.c_str(), ImGuiTreeNodeFlags_Leaf))
+				{
+					if (ImGui::IsItemClicked()) {
+						sprintf_s(selectedFile, 250, "%s%s", dir.c_str(), str.c_str());
+					}
+				}
+
+				ImGui::TreePop();
+			}
 		}
 	}
 }
