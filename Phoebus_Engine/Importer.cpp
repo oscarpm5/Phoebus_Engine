@@ -174,11 +174,51 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 											//aiImportFileFromMemory										
 		LOG("Importing 3D asset from buffer: %s", Buffer);
 
-		if (scene != nullptr && scene->HasMeshes())
+		if (scene != nullptr)
 		{
 			std::string pathWithoutFile;
 			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
 			// Use scene->mNumMeshes to iterate on scene->mMeshes array
+
+			std::vector<ResourceMesh*> meshesToAssign;
+			//load each mesh here
+			for (int i = 0; i < scene->mNumMeshes; i++)
+			{
+				//scene->mMeshes[i]->mName; TODO GET MESH NAME TO ASSIGN IT TO THE RESOURCE
+				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+				Mesh::ImportRMesh(scene->mMeshes[i], *currMesh); //Take the mesh out of the fbx in assets and plop it into engine
+				char* auxB;
+				if (Mesh::SaveMesh(*currMesh, &auxB) > 0) //Here we save to lib the mesh portion of our model (from engine to lib)
+				{
+					RELEASE_ARRAY(auxB);
+				}
+				if (currMesh != nullptr)
+					meshesToAssign.push_back(currMesh);
+
+			}
+
+			std::map<unsigned int, ResourceTexture*> texturesToAssign;
+			//load every material here
+			for (int i = 0; i < scene->mNumMaterials; i++)
+			{
+				aiMaterial* material = scene->mMaterials[i];
+				aiString path;
+				unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
+				if (numTextures > 0)
+				{
+					material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+
+					path = App->fileSystem->NormalizePath(path.C_Str());
+					path = pathWithoutFile + path.C_Str();
+
+					Resource* r = App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
+
+					if (r != nullptr)
+					{
+						texturesToAssign[i] = (ResourceTexture*)r;
+					}
+				}
+			}
 
 			aiNode* node = scene->mRootNode;
 
@@ -205,7 +245,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 			GameObject* pObj = new GameObject(App->editor3d->root, name, float4x4::identity);
 			GameObject* root = pObj;
-			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh
+			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh nor material
 
 			while (parents.size() > 0)
 			{
@@ -222,34 +262,96 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 					for (int j = 0; j < currentParent->mNumChildren; j++)
 					{
-						ResourceMesh* auxMesh = nullptr;
+						//ResourceMesh* auxMesh = nullptr;
 						parents.push_back(currentParent->mChildren[j]);
-						aiMesh* newMesh = nullptr;
-						if (parents.back()->mNumMeshes > 0) {
-							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
+						//aiMesh* newMesh = nullptr;
+						//if (parents.back()->mNumMeshes > 0) {
+							//newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
-							auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
-							Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
-							char* auxB = "y";
-							Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
-							LOG("debug");
+							//auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+							//Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
+							//char* auxB = "y";
+							//Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
+							//LOG("debug");
+						//}
+						//gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh, newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
+
+
+						//here we create the game objects (children) from their node (parents.back()) and a parent (currObjParent)
+						//assigns game object name
+						std::string name = "Untitled";
+						if (parents.back()->mName.C_Str() != "")
+						{
+							name = parents.back()->mName.C_Str();
 						}
-						gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh, newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
+
+						//assigns game object parent
+						GameObject* newParent = currObjParent;
+						if (currObjParent == nullptr)
+							newParent = App->editor3d->root;
+
+						//transform calculations
+						aiVector3D translation, scaling;
+						aiQuaternion rotation;
+						parents.back()->mTransformation.Decompose(scaling, rotation, translation);
+
+						float3 newTranslation = float3(translation.x, translation.y, translation.z);
+
+						Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+						float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
+
+
+
+						//creates new game object
+						GameObject* newObj = new GameObject(newParent, name, newTransform);
+						ResourceMesh* myMesh = nullptr;
+						ResourceTexture* myTexture = nullptr;
+						if (parents.back()->mNumMeshes > 0)
+						{
+							myMesh = meshesToAssign[parents.back()->mMeshes[0]];
+						}
+
+						if (myMesh != nullptr)//assign mesh
+						{
+							C_Mesh* com = (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
+							com->SetNewResource(myMesh->GetUID());
+
+
+
+							std::map<unsigned int, ResourceTexture*>::iterator it = texturesToAssign.find(scene->mMeshes[parents.back()->mMeshes[0]]->mMaterialIndex);
+							if (it != texturesToAssign.end())
+							{
+								if (it->second != nullptr)
+								{
+									C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
+									com->SetNewResource(it->second->GetUID());
+								}
+							}
+
+						}
+
+						gameObjParents.push_back(newObj);
+
 					}
+
+
+
 				}
 			}
-
-
 			Model::SaveModel(root, res);//take the model resource and plop it into lib. It has info such as ID, GO list, Components array...
-
 			delete root;
 			aiReleaseImport(scene);
+			texturesToAssign.clear();
+			meshesToAssign.clear();
 		}
 		else
 		{
-			LOG("[error]Error loading scene % s", Buffer);
+			LOG("[error]Error loading scene %s", Buffer);
 			ret = false;
 		}
+
+
 	}
 	else
 	{
@@ -558,6 +660,7 @@ unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 //	return newObj;
 //}
 
+//curr node represents the child & parent the parent, note that curr node its not a game object, just a node and we have to create the game object that will hold it
 GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m, aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
 {
 	//assigns game object name
@@ -643,8 +746,8 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 		error = ilGetError();
 		LOG("\n[error]Could not load an image from buffer");
 		//LOG("[error] %d :\n %s", error, iluErrorString(error));
-		if(length!=0)
-		RELEASE_ARRAY(new_buffer);
+		if (length != 0)
+			RELEASE_ARRAY(new_buffer);
 		ilDeleteImages(1, &ID);
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
