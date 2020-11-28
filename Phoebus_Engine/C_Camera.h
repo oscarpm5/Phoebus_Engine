@@ -40,7 +40,7 @@ public:
 private:
 	void UpdateProjectionMat();
 private:
-
+	bool isCulling;
 	float nearPlaneDist;
 	float farPlaneDist;
 	float FoVx;//This is the horizontal FoV which the user changes

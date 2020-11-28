@@ -24,7 +24,7 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 	{
 		parent->children.push_back(this);
 	}
-	this->transform = new C_Transform(this, transform,0,isLocalTrans);
+	this->transform = new C_Transform(this, transform, 0, isLocalTrans);
 	components.push_back(this->transform);
 
 	numberOfObjects++;
@@ -139,7 +139,7 @@ void GameObject::ChangeParent(GameObject* newParent)
 {
 	RemoveMyselfFromParent();
 	//newParent->children
-	
+
 	if (newParent == nullptr)
 	{
 		parent = App->editor3d->root;
@@ -165,7 +165,7 @@ void GameObject::RemoveMyselfFromParent()
 	}
 }
 
-Component* GameObject::CreateComponent(ComponentType type,unsigned int compID)
+Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 {
 	Component* ret = nullptr;
 	//TODO add diferent components here
@@ -346,32 +346,34 @@ void GameObject::DrawGameObject()
 		std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
 		C_Material* mat = GetComponent<C_Material>();
-		if (mat != nullptr && (!mat->IsActive()|| mat->GetTexture() == nullptr))
+		if (mat != nullptr && (!mat->IsActive() || mat->GetTexture() == nullptr))
 		{
 			mat = nullptr;
 		}
 
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			if (meshes[i]->IsActive()&&meshes[i]->GetMesh()!=nullptr)
+			if (meshes[i]->IsActive() && meshes[i]->GetMesh() != nullptr)
 			{
-				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(),focused);//TODO change focused for selected in the future when we have more than 1 selection
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(), focused);//TODO change focused for selected in the future when we have more than 1 selection
 			}
 
 		}
 
-		if (App->renderer3D->displayAABBs||(displayBoundingBox && focused))
-		{
-			App->renderer3D->AddBoxToDraw(aabbVec);
-		}
 
-		C_Camera* cam = GetComponent<C_Camera>();
-		if (cam)
-		{
-			std::vector<float3> vec;
-			cam->GetFrustumPoints(vec);
-			App->renderer3D->AddBoxToDraw(vec);
-		}
+	}
+
+	if (App->renderer3D->displayAABBs || (displayBoundingBox && focused))
+	{
+		App->renderer3D->AddBoxToDraw(aabbVec);
+	}
+
+	C_Camera* cam = GetComponent<C_Camera>();
+	if (cam&&cam->IsActive())
+	{
+		std::vector<float3> vec;
+		cam->GetFrustumPoints(vec);
+		App->renderer3D->AddBoxToDraw(vec);
 	}
 }
 
