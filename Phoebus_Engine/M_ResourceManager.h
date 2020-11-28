@@ -54,6 +54,10 @@ public:
 	Resource* FindResInMemory(unsigned int UID);
 
 	void LoadResourceIntoMem(Resource* res);
+
+
+	void GetAllResourcesOfType(ResourceType type, std::vector<Resource*>& ret);
+
 private:
 
 	void LoadAllAssets();

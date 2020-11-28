@@ -23,6 +23,8 @@ bool M_ResourceManager::Init()
 
 bool M_ResourceManager::Start()
 {
+
+	LoadAllAssets();
 	//TODO TESTING CODE
 	/*char* buffer;
 	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/Baker_house.png",&buffer);
@@ -49,7 +51,7 @@ bool M_ResourceManager::Start()
 update_status M_ResourceManager::PreUpdate(float dt)
 {
 	checkTimer += dt;
-	if (App->GetGameState() == GameStateEnum::STOPPED && checkTimer >= 1.0f)//we only check assets when the engine is not in runtime
+	if (App->GetGameState() == GameStateEnum::STOPPED && checkTimer >= 30.0f)//we only check assets when the engine is not in runtime
 	{
 		checkTimer = 0.0f;
 		//TODO check all asset files here
@@ -444,6 +446,22 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 	}
 	RELEASE_ARRAY(buffer);
 
+}
+
+void M_ResourceManager::GetAllResourcesOfType(ResourceType rtype, std::vector<Resource*>& ret)
+{
+	ret.clear();
+
+	std::map<unsigned int, Resource*>::iterator it = resources.begin();
+
+	for (it; it != resources.end(); it++)
+	{
+		ResourceType type = it->second->GetType();
+		if (type == rtype)
+		{
+			ret.push_back(it->second);
+		}
+	}
 }
 
 Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)

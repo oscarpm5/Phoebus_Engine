@@ -508,22 +508,26 @@ void ModuleRenderer3D::DrawOutline()
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
-			ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
-			m->FreeBuffers();
-			m->GenerateBuffers();
-
-			C_Mesh* currMesh = new C_Mesh(nullptr,0);
-			currMesh->SetTemporalMesh(m);
-			stencilMeshes.push_back(currMesh);
-
-			float3 currentOutlineCol = outlineColorMain;
-			if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+			if (meshes[i]->GetMesh() != nullptr)
 			{
-				currentOutlineCol = outlineColorSecond;
-			}
 
-			AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
+				ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
+				ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
+				m->FreeBuffers();
+				m->GenerateBuffers();
+
+				C_Mesh* currMesh = new C_Mesh(nullptr, 0);
+				currMesh->SetTemporalMesh(m);
+				stencilMeshes.push_back(currMesh);
+
+				float3 currentOutlineCol = outlineColorMain;
+				if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+				{
+					currentOutlineCol = outlineColorSecond;
+				}
+
+				AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
+			}
 		}
 
 	}
@@ -633,7 +637,7 @@ void ModuleRenderer3D::DrawGrid()
 {
 	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
 
-	float cameraHeight = max(abs(roundf(App->camera->Position.y)),0.01f);
+	float cameraHeight = max(abs(roundf(App->camera->Position.y)), 0.01f);
 
 	float sepLvl = logf(cameraHeight) / logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
 

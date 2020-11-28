@@ -346,14 +346,14 @@ void GameObject::DrawGameObject()
 		std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
 		C_Material* mat = GetComponent<C_Material>();
-		if (mat != nullptr && !mat->IsActive())
+		if (mat != nullptr && (!mat->IsActive()|| mat->GetTexture() == nullptr))
 		{
 			mat = nullptr;
 		}
 
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			if (meshes[i]->IsActive())
+			if (meshes[i]->IsActive()&&meshes[i]->GetMesh()!=nullptr)
 			{
 				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(),focused);//TODO change focused for selected in the future when we have more than 1 selection
 			}
