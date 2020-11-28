@@ -138,6 +138,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
 ### Second Assigment
+* DO NOT delete the contents of the folder "our_pics" from the "Assets" folder. Doing so would cause a crash(intended, since they contain engine-related critical resources, ex:the engine icon).
+* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources.
 * Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
 * Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
