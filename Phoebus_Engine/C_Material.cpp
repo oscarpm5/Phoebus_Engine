@@ -7,7 +7,7 @@
 #include "Application.h"
 #include "M_ResourceManager.h"
 
-C_Material::C_Material(GameObject* owner,unsigned int ID) :Component(ComponentType::MATERIAL, owner,ID),
+C_Material::C_Material(GameObject* owner, unsigned int ID) :Component(ComponentType::MATERIAL, owner, ID),
 idCheckers(0), //width(0), height(0), format(0), depth(0),idTexture(0),sizeInBytes(0), bpp(0), 
 usingCkeckers(false), resourceID(0)
 {
@@ -145,8 +145,69 @@ void C_Material::OnEditor()
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		ImGui::Checkbox("IS ACTIVE##MaterialCheckbox", &active); //##adds more to the label id without displaying so we can have 2 checkbox with the same text
 
-		ResourceTexture* texture =  nullptr;
+		ResourceTexture* texture = nullptr;
 		texture = GetTexture();
+
+		//===========================================
+
+		//get the items here
+
+		std::string textNameDisplay = "No Selected Texture";
+		unsigned int myResourceID = 0;
+		if (texture != nullptr)
+		{
+			textNameDisplay = texture->GetAssetFile();
+			myResourceID = texture->GetTextureID();
+		}
+
+		std::vector<Resource*> allLoadedTextures;
+		App->rManager->GetAllResourcesOfType(ResourceType::TEXTURE, allLoadedTextures);
+		//const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
+		//static int item_current_idx = 0;                    // Here our selection data is an index.
+		//const char* combo_label = textNameDisplay.c_str();  // Label to preview before opening the combo (technically it could be anything)
+		if (ImGui::BeginCombo("Used Texture##texture", textNameDisplay.c_str(), ImGuiComboFlags_PopupAlignLeft))
+		{
+			const bool noneSelected = (texture == nullptr);
+			if (ImGui::Selectable("NONE##texture", noneSelected))
+			{
+				if (texture != nullptr)
+				{
+					App->rManager->StopUsingResource(resourceID);
+					resourceID = 0;
+				}
+			}
+
+			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+			if (noneSelected)
+				ImGui::SetItemDefaultFocus();
+
+			//================================
+			for (int n = 0; n < allLoadedTextures.size(); n++)
+			{
+				std::string name = allLoadedTextures[n]->GetAssetFile();
+				name += "##";
+				name += "textureList";
+				name += std::to_string(n);
+				const bool is_selected = (myResourceID == allLoadedTextures[n]->GetUID());
+				if (ImGui::Selectable(name.c_str(), is_selected))
+				{
+					SetNewResource(allLoadedTextures[n]->GetUID());
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+		//===========================================
+
+
+
+
+
+
+
 
 		ImGui::Indent();
 		ImGui::Separator();
@@ -181,7 +242,7 @@ void C_Material::OnEditor()
 		ImGui::Separator();
 		ImGui::Unindent();
 
-		if (ImGui::BeginPopup("Delete Material", ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopup("Delete Material Component", ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text("you are about to delete\n this component");
 
@@ -206,7 +267,7 @@ void C_Material::OnEditor()
 
 		if (ImGui::Button("Delete##Material"))
 		{
-			ImGui::OpenPopup("Delete Material");
+			ImGui::OpenPopup("Delete Material Component");
 		}
 
 

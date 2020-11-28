@@ -319,10 +319,12 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			if (isGamePlaying)
 			{
 				App->SetNewGameState(GameStateEnum::STOPPED);
+				//aqui loadeado de escena temporal
 			}
 			else
 			{
 				App->SetNewGameState(GameStateEnum::PLAYED);
+				//aqui save de escena temporal
 			}
 		}
 		if (isGamePlaying)

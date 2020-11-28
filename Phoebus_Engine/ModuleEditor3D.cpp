@@ -62,7 +62,7 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 update_status ModuleEditor3D::Update(float dt)
 {
-	
+
 	if (root)
 		root->Update(dt);
 
@@ -230,54 +230,58 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 			for (int i = 0; i < meshes.size(); i++)
 			{
 				ResourceMesh* currMesh = meshes[i]->GetMesh();
-				//Test mesh triangles here
-				std::pair<float, float3>lastBestHit = std::pair<float, float3>(floatMax, float3(floatMax, floatMax, floatMax));
-
-				for (int v = 0; v < currMesh->indices.size(); v += 3)
+				if (currMesh != nullptr)
 				{
-					Triangle tri;
-					//construct triangle
-					//index 1
-					float3 vertex1;
-					vertex1.x = currMesh->vertices[(currMesh->indices[v] * 3)];
-					vertex1.y = currMesh->vertices[(currMesh->indices[v] * 3) + 1];
-					vertex1.z = currMesh->vertices[(currMesh->indices[v] * 3) + 2];
-					tri.a = vertex1;
 
-					//index 2
-					float3 vertex2;
-					vertex2.x = currMesh->vertices[(currMesh->indices[v + 1] * 3)];
-					vertex2.y = currMesh->vertices[(currMesh->indices[v + 1] * 3) + 1];
-					vertex2.z = currMesh->vertices[(currMesh->indices[v + 1] * 3) + 2];
-					tri.b = vertex2;
+					//Test mesh triangles here
+					std::pair<float, float3>lastBestHit = std::pair<float, float3>(floatMax, float3(floatMax, floatMax, floatMax));
 
-					//index 3
-					float3 vertex3;
-					vertex3.x = currMesh->vertices[(currMesh->indices[v + 2] * 3)];
-					vertex3.y = currMesh->vertices[(currMesh->indices[v + 2] * 3) + 1];
-					vertex3.z = currMesh->vertices[(currMesh->indices[v + 2] * 3) + 2];
-					tri.c = vertex3;
-
-					//test triangle
-					float nearHit = -1;
-					float3 intersectionP;
-
-					hit = (hit | localRay.Intersects(tri, &nearHit, &intersectionP));
-
-					if (nearHit < lastBestHit.first)
+					for (int v = 0; v < currMesh->indices.size(); v += 3)
 					{
-						//TODO this is not needed for now but marc says it might be useful in the future to know where an intersection has ocurred
-						lastBestHit = std::pair<float, float3>(nearHit, intersectionP);
+						Triangle tri;
+						//construct triangle
+						//index 1
+						float3 vertex1;
+						vertex1.x = currMesh->vertices[(currMesh->indices[v] * 3)];
+						vertex1.y = currMesh->vertices[(currMesh->indices[v] * 3) + 1];
+						vertex1.z = currMesh->vertices[(currMesh->indices[v] * 3) + 2];
+						tri.a = vertex1;
+
+						//index 2
+						float3 vertex2;
+						vertex2.x = currMesh->vertices[(currMesh->indices[v + 1] * 3)];
+						vertex2.y = currMesh->vertices[(currMesh->indices[v + 1] * 3) + 1];
+						vertex2.z = currMesh->vertices[(currMesh->indices[v + 1] * 3) + 2];
+						tri.b = vertex2;
+
+						//index 3
+						float3 vertex3;
+						vertex3.x = currMesh->vertices[(currMesh->indices[v + 2] * 3)];
+						vertex3.y = currMesh->vertices[(currMesh->indices[v + 2] * 3) + 1];
+						vertex3.z = currMesh->vertices[(currMesh->indices[v + 2] * 3) + 2];
+						tri.c = vertex3;
+
+						//test triangle
+						float nearHit = -1;
+						float3 intersectionP;
+
+						hit = (hit | localRay.Intersects(tri, &nearHit, &intersectionP));
+
+						if (nearHit < lastBestHit.first)
+						{
+							//TODO this is not needed for now but marc says it might be useful in the future to know where an intersection has ocurred
+							lastBestHit = std::pair<float, float3>(nearHit, intersectionP);
+						}
+
+
 					}
 
 
+
+
+
+					currMesh = nullptr;
 				}
-
-
-
-
-
-				currMesh = nullptr;
 			}
 
 			if (hit)//TODO duplicated code from the "else" just below, consider grouping it into a method

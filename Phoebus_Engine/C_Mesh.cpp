@@ -6,8 +6,8 @@
 #include "Application.h"
 #include "M_ResourceManager.h"
 
-C_Mesh::C_Mesh(GameObject* owner,unsigned int ID) :Component(ComponentType::MESH, owner,ID),resourceID(0),
-normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0),temporalRMesh(nullptr)
+C_Mesh::C_Mesh(GameObject* owner, unsigned int ID) :Component(ComponentType::MESH, owner, ID), resourceID(0),
+normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0), temporalRMesh(nullptr)
 {
 }
 
@@ -43,8 +43,8 @@ void C_Mesh::SetNewResource(unsigned int resourceUID)
 	{
 
 		resourceID = resourceUID;
-	localAABB.SetNegativeInfinity();//this is like setting the AABB to null
-	localAABB.Enclose((float3*)r->vertices.data(), r->vertices.size() / 3); //generates an AABB on local space from a set of vertices
+		localAABB.SetNegativeInfinity();//this is like setting the AABB to null
+		localAABB.Enclose((float3*)r->vertices.data(), r->vertices.size() / 3); //generates an AABB on local space from a set of vertices
 	}
 	else
 	{
@@ -81,8 +81,8 @@ unsigned int C_Mesh::GetResourceID()
 
 void C_Mesh::OnEditor()
 {
-	ResourceMesh* m= GetMesh();
-	if (m == nullptr) return; //TODO the component should be supported in the editor even without a mesh
+	//ResourceMesh* m= GetMesh();
+	//if (m == nullptr) return; //TODO the component should be supported in the editor even without a mesh
 
 
 	bool activeAux = active;
@@ -102,6 +102,75 @@ void C_Mesh::OnEditor()
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20);*/
 		ImGui::Checkbox("IS ACTIVE##MeshCheckbox", &active);
+
+		ResourceMesh* mesh = nullptr;
+		mesh = GetMesh();
+
+		//===========================================
+
+		//get the items here
+
+		std::string meshNameDisplay = "No Selected Mesh";
+		unsigned int myResourceID = 0;
+		if (mesh != nullptr)
+		{
+			meshNameDisplay = mesh->GetAssetFile();
+			myResourceID = mesh->GetUID();
+		}
+		std::vector<Resource*> allLoadedMeshes;
+		App->rManager->GetAllResourcesOfType(ResourceType::MESH, allLoadedMeshes);
+
+		//const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
+		//static int item_current_idx = 0;                    // Here our selection data is an index.
+		//const char* combo_label = textNameDisplay.c_str();  // Label to preview before opening the combo (technically it could be anything)
+		if (ImGui::BeginCombo("Used Mesh##mesh", meshNameDisplay.c_str(), ImGuiComboFlags_PopupAlignLeft))
+		{
+			const bool noneSelected = (mesh == nullptr);
+			if (ImGui::Selectable("NONE##mesh", noneSelected))
+			{
+				if (mesh != nullptr)
+				{
+					App->rManager->StopUsingResource(resourceID);
+					resourceID = 0;
+				}
+			}
+
+			// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+			if (noneSelected)
+				ImGui::SetItemDefaultFocus();
+
+			//================================
+
+
+
+
+
+
+			for (int n = 0; n < allLoadedMeshes.size(); n++)
+			{
+				std::string name = allLoadedMeshes[n]->GetAssetFile();
+				name += "##";
+				name += "meshList";
+				name += std::to_string(n);
+				const bool is_selected = (myResourceID == allLoadedMeshes[n]->GetUID());
+				if (ImGui::Selectable(name.c_str(), is_selected))
+				{
+					SetNewResource(allLoadedMeshes[n]->GetUID());
+				}
+
+				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();
+			}
+			ImGui::EndCombo();
+		}
+		//===========================================
+
+
+
+
+
+
 
 		ImGui::Separator();
 		ImGui::Indent();
@@ -156,19 +225,27 @@ void C_Mesh::OnEditor()
 		}
 
 		//End of normal & draw
+		if (mesh != nullptr)
+		{
+			ImGui::Text("ID_Index: %i", mesh->idIndex);
+			ImGui::Text("ID_Vertex: %i", mesh->idVertex);
+			ImGui::Text("ID_Normals: %i", mesh->idNormals);
+			ImGui::Text("N of vertices: %i", mesh->vertices.size() / 3);
 
-		ImGui::Text("ID_Index: %i", m->idIndex);
-		ImGui::Text("ID_Vertex: %i", m->idVertex);
-		ImGui::Text("ID_Normals: %i", m->idNormals);									
-		ImGui::Text("N of vertices: %i", m->vertices.size() / 3);
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Text("Here I would show a bounding box... IF I HAD ONE!");//TODO bruh we have one already
+		}
+		else
+		{
+			ImGui::Text("Select a Mesh to show its properties");
+		}
 
-		ImGui::Spacing();
-		ImGui::Separator();
-		ImGui::Text("Here I would show a bounding box... IF I HAD ONE!");
+
 		ImGui::Separator();
 		ImGui::Unindent();
 
-		if (ImGui::BeginPopup("Delete Mesh", ImGuiWindowFlags_AlwaysAutoResize))
+		if (ImGui::BeginPopup("Delete Mesh Component", ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text("you are about to delete\n this component");
 
@@ -193,7 +270,7 @@ void C_Mesh::OnEditor()
 
 		if (ImGui::Button("Delete##Mesh"))
 		{
-			ImGui::OpenPopup("Delete Mesh");
+			ImGui::OpenPopup("Delete Mesh Component");
 
 
 		}
