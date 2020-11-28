@@ -76,9 +76,6 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	gizmoSize = 0.5f;
 
 	selectedFile[0] = '\0';
-
-	temporalScene = "";
-	//absoluteScene = "";
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -160,6 +157,46 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 		if (ImGui::BeginMenu("Menu", true))
 		{
+			if (ImGui::MenuItem("Save", "Scene")) {
+
+				LOG("Saving absolute scene"); char* buff = "";
+				unsigned int size = Importer::SerializeScene(App->editor3d->root, &buff);
+				std::string auxPath = LIB_PATH; auxPath += "Scenes/AbsoluteScene.pho";
+				App->fileSystem->SavePHO(auxPath.c_str(), buff, size);
+				RELEASE_ARRAY(buff);
+				buff = nullptr;
+				
+			}
+			/*
+			int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
+
+			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+
+			if (ImGui::BeginPopup("Name?", flags))
+			{
+				char* text = " ";
+				ImGui::InputText("SceneName", text, 20);
+
+				if (ImGui::Button("Save", ImVec2(120, 0)))
+				{
+					LOG("Saving scene");
+					char* auxBuffer = "";
+					unsigned int size = Importer::SerializeScene(App->editor3d->root, &auxBuffer);
+					std::string auxPath = LIB_PATH; auxPath += "Scenes/";
+					App->fileSystem->SavePHO(auxPath.c_str(), auxBuffer, size);
+					RELEASE_ARRAY(auxBuffer);
+					auxBuffer = nullptr;
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SetItemDefaultFocus();
+				ImGui::SameLine();
+				if (ImGui::Button("Cancel", ImVec2(120, 0)) || (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP))
+				{
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}*/
+
 
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
@@ -174,9 +211,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				showQuit = true;
 			}
-
+			
 			ImGui::EndMenu();
 		}
+
 
 		if (ImGui::BeginMenu("GameObjects##menu", true))
 		{
@@ -325,15 +363,24 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				delete App->editor3d->root; App->editor3d->root = nullptr;
 				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
 				
-				App->fileSystem->Load("TemporalScene.pho", &temporalScene);
-				Importer::LoadScene(temporalScene, App->editor3d->root);
+				std::string auxPath = LIB_PATH; auxPath +="Scenes/TemporalScene.pho";
+				char* auxB = "";
+				App->fileSystem->Load(auxPath.c_str(), &auxB);
+				Importer::LoadScene(auxB, App->editor3d->root);
+				RELEASE_ARRAY(auxB);
+				auxB = nullptr;
+				
 			}
 			else
 			{
+				char* auxB = "";
 				App->SetNewGameState(GameStateEnum::PLAYED);
 				LOG("Saving tempooral scene");
-				unsigned int size = Importer::SerializeScene(App->editor3d->root, &temporalScene);
-				App->fileSystem->SavePHO("TemporalScene.pho",temporalScene,size);
+				unsigned int size = Importer::SerializeScene(App->editor3d->root, &auxB);
+				std::string auxPath = LIB_PATH; auxPath += "Scenes/TemporalScene.pho";
+				App->fileSystem->SavePHO(auxPath.c_str(), auxB,size);
+				RELEASE_ARRAY(auxB);
+				auxB = nullptr;
 			}
 		}
 		if (isGamePlaying)
@@ -565,11 +612,6 @@ bool ModuleRenderer2D::CleanUp()
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
 
-	if (temporalScene != nullptr)
-	{
-		RELEASE_ARRAY(temporalScene);
-		temporalScene = nullptr;
-	}
 
 	return ret;
 }
