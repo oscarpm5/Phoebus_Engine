@@ -210,8 +210,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			}
 			ImGui::EndMenu();
 		}
-		//Basic forms menu
-		if (ImGui::BeginMenu("Basic Forms Generator", true))
+		//Basic forms menu (TODO it is disabled for the moment)
+		if (ImGui::BeginMenu("Basic Forms Generator", false))
 		{
 
 			//Spheres

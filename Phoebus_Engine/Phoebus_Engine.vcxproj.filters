@@ -367,9 +367,6 @@
     <ClInclude Include="Resources.h">
       <Filter>Sources\Resources</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleResourceManager.h">
-      <Filter>Sources\Modules</Filter>
-    </ClInclude>
     <ClInclude Include="M_ResourceManager.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
@@ -578,9 +575,6 @@
     </ClCompile>
     <ClCompile Include="Resources.cpp">
       <Filter>Sources\Resources</Filter>
-    </ClCompile>
-    <ClCompile Include="ModuleResourceManager.cpp">
-      <Filter>Sources\Modules</Filter>
     </ClCompile>
     <ClCompile Include="M_ResourceManager.cpp">
       <Filter>Sources\Modules</Filter>
