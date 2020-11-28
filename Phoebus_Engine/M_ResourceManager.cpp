@@ -683,6 +683,7 @@ ResourceType M_ResourceManager::ResourceTypeFromPath(std::string path)
 	case FileFormats::JPG:
 	case FileFormats::JPEG:
 	case FileFormats::DDS:
+	case FileFormats::TGA:
 		ret = ResourceType::TEXTURE;
 		break;
 	case FileFormats::UNDEFINED:

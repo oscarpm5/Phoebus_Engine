@@ -298,6 +298,10 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 		{
 			format = FileFormats::JSON;
 		}
+		else if (!strcmp(strFormat.c_str(), ".tga"))
+		{
+			format = FileFormats::TGA;
+		}
 		else if (!strcmp(strFormat.c_str(), ".pho"))
 		{
 			format = FileFormats::PHO;

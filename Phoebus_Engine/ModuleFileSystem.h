@@ -17,6 +17,7 @@ enum class FileFormats
 	JPG,
 	JPEG,
 	DDS,
+	TGA,
 	PHO //<3
 };
 
