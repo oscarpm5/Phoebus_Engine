@@ -548,6 +548,11 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			ImGui::PopItemWidth();
 
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			}
 
 			if (ImGui::Button("Load##fileExplorer", ImVec2(50, 20)))
 			{
@@ -563,26 +568,64 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				selectedFile[0] = '\0';
 			}
 
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+			}
+
 			ImGui::SameLine();
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			}
 
 			if (ImGui::Button("Cancel##fileExplorer", ImVec2(50, 20)))
 			{
 				selectedFile[0] = '\0';
 			}
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+			}
+
 			ImGui::SameLine();
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			}
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.5f, 1.0f, 0.5f, 0.25f));
 			if (ImGui::Button("Refresh##fileExplorer", ImVec2(60, 20)))
 			{
 				App->rManager->haveToReload = true;
 			}
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+			}
+
+
 			ImGui::SameLine();
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+				ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+			}
 
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
 			if (ImGui::Button("Delete##fileExplorer", ImVec2(55, 20)))
 			{
 				ImGui::OpenPopup("Delete Asset?");
 			}
-
+			if (App->GetGameState() != GameStateEnum::STOPPED)
+			{
+				ImGui::PopItemFlag();
+				ImGui::PopStyleVar();
+			}
 			int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
 			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
 			if (ImGui::BeginPopupModal("Delete Asset?", NULL, flags))

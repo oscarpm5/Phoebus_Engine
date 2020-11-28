@@ -104,8 +104,8 @@ bool Importer::Texture::LoadNewImage(const char* libPath, Resource& textureToFil
 	{
 		ILenum error;
 		error = ilGetError();
-		LOG("\n[error]Could not load an miage from buffer: %s", buffer);
-		LOG("[error] %d :\n %s", error, iluErrorString(error));
+		LOG("\n[error]Could not load an miage from buffer");
+		//LOG("[error] %d :\n %s", error, iluErrorString(error));
 		ilDeleteImages(1, &newImage);
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
