@@ -998,7 +998,7 @@ void Importer::SerializeGameObject(Config& config, GameObject* gameObject) //ser
 
 	//Global transform
 	const C_Transform* transform = gameObject->GetComponent<C_Transform>();
-	config.SetArray("Transform").Add4x4Mat(transform->GetGlobalTransform()); //yeah, we save it raw. Deal with it, Marc
+	config.SetArray("Transform").Add4x4Mat(transform->GetGlobalTransform()); //yeah, we save it raw. Deal with it
 
 
 	Config_Array compConfig = config.SetArray("Components");
@@ -1043,7 +1043,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	//Open the bufer you are going to be reading
 	Config file(buffer);
 	//set the root of the new scene
-	App->editor3d->root = sceneRoot;
+	//App->editor3d->root = sceneRoot;
 	//the map is a correlation between ID nad GO. It comes useful later. Thanks Marc!
 	std::map<int, GameObject*> createdGameObjects;
 	Config_Array gameObjects_array = file.GetArray("GameObjects");
@@ -1061,7 +1061,9 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		if (it != createdGameObjects.end())
 			parent = it->second;
 		//Create the GO
-		GameObject* gameObject = new GameObject(parent ? parent : sceneRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
+
+
+		GameObject* gameObject = new GameObject(parent ? parent : sceneRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat,true, false);
 
 		//Set properties of GO
 		gameObject->ID = gameObject_node.GetNumber("ID");
@@ -1080,20 +1082,47 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			if (Component * component = gameObject->CreateComponent(type))
 			{
 				component->ID = comp.GetNumber("ID");
+				unsigned int newUID = comp.GetNumber("ResourceID");
+				
+				Resource* r = nullptr;
 
 				switch (type)
 				{
 				case ComponentType::CAMERA:
+					//Hold your horses
 					break;
 				case ComponentType::MESH:
+
+					r = App->rManager->FindResInMemory(newUID);
+					if (r == nullptr)//if not found in memory find it in lib
+					{
+						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+						App->rManager->LoadResourceIntoMem(r);
+					}
+
+					//component.chutame_la_mesh
+					component->SetNewResource(newUID);
+
+
 					break;
 				case ComponentType::MATERIAL:
+
+					r = App->rManager->FindResInMemory(newUID);
+					if (r == nullptr)//if not found in memory find it in lib
+					{
+						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+						App->rManager->LoadResourceIntoMem(r);
+					}
+
+					//component.chutame_la_tex
+					component->SetNewResource(newUID);
+
 					break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
 					break;
 				default:
-					LOG("[error] Tried to load a scene, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
+					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
 					break;
 				}
 

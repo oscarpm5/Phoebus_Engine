@@ -77,6 +77,8 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 
 	selectedFile[0] = '\0';
 
+	temporalScene = "";
+	//absoluteScene = "";
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -287,16 +289,16 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
 			ImGui::EndMenu();
 		}
-		if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
-		{
-			LOG("Testing save scene:");
-			char*  file;
-			int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
-			App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
-			Importer::LoadScene(file, App->editor3d->root);
-			delete file;
-			file = nullptr;
-		}
+		//if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
+		//{
+		//	LOG("Testing save scene:");
+		//	char*  file;
+		//	int size = Importer::SerializeScene(App->editor3d->root, &file );			//DONT DELETE THIS!
+		//	App->fileSystem->SavePHO("TestingSaveScene.pho",file,size);
+		//	Importer::LoadScene(file, App->editor3d->root);
+		//	delete file;
+		//	file = nullptr;
+		//}
 
 		//testing code for button disable
 		GameStateEnum state = App->GetGameState();
@@ -319,10 +321,19 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			if (isGamePlaying)
 			{
 				App->SetNewGameState(GameStateEnum::STOPPED);
+				LOG("Loading temporal scene");
+				delete App->editor3d->root; App->editor3d->root = nullptr;
+				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
+				
+				App->fileSystem->Load("TemporalScene.pho", &temporalScene);
+				Importer::LoadScene(temporalScene, App->editor3d->root);
 			}
 			else
 			{
 				App->SetNewGameState(GameStateEnum::PLAYED);
+				LOG("Saving tempooral scene");
+				unsigned int size = Importer::SerializeScene(App->editor3d->root, &temporalScene);
+				App->fileSystem->SavePHO("TemporalScene.pho",temporalScene,size);
 			}
 		}
 		if (isGamePlaying)
@@ -553,6 +564,13 @@ bool ModuleRenderer2D::CleanUp()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
+
+	if (temporalScene != nullptr)
+	{
+		RELEASE_ARRAY(temporalScene);
+		temporalScene = nullptr;
+	}
+
 	return ret;
 }
 
