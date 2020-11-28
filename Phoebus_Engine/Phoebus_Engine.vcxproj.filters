@@ -52,6 +52,15 @@
     <Filter Include="Sources\Game Object\Components">
       <UniqueIdentifier>{a661a412-5c45-46c4-b255-b9d18e9a5c4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\PhoebusFormat">
+      <UniqueIdentifier>{87be89a4-9b57-4c45-a897-520c470a430b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Tools\ImGuizmo">
+      <UniqueIdentifier>{dde9239c-a20c-459f-b74e-422e13726d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sources\Resources">
+      <UniqueIdentifier>{cce82c1b-3d08-40aa-9999-2a2aab80c211}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -65,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="ModuleWindow.h">
       <Filter>Sources\Modules</Filter>
-    </ClInclude>
-    <ClInclude Include="glmath.h">
-      <Filter>Sources\Containers</Filter>
     </ClInclude>
     <ClInclude Include="Application.h">
       <Filter>Sources</Filter>
@@ -315,9 +321,6 @@
     <ClInclude Include="Importer.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Sources\Helpers</Filter>
-    </ClInclude>
     <ClInclude Include="PhysFS\include\physfs.h">
       <Filter>Sources\Tools\PhysFS</Filter>
     </ClInclude>
@@ -346,6 +349,33 @@
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="PHO.h">
+      <Filter>Sources\PhoebusFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="C_Camera.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderBox.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGuizmo\ImGuizmo.h">
+      <Filter>Sources\Tools\ImGuizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="Resources.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="M_ResourceManager.h">
+      <Filter>Sources\Modules</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Sources\Resources</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -368,9 +398,6 @@
     </ClCompile>
     <ClCompile Include="Main.cpp">
       <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="glmath.cpp">
-      <Filter>Sources\Containers</Filter>
     </ClCompile>
     <ClCompile Include="Color.cpp">
       <Filter>Sources\Containers</Filter>
@@ -510,9 +537,6 @@
     <ClCompile Include="Importer.cpp">
       <Filter>Sources\Tools</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Sources\Helpers</Filter>
-    </ClCompile>
     <ClCompile Include="ModuleFileSystem.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
@@ -536,6 +560,30 @@
     </ClCompile>
     <ClCompile Include="C_Material.cpp">
       <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Camera.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderBox.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ImGuizmo\ImGuizmo.cpp">
+      <Filter>Sources\Tools\ImGuizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Sources\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="Resources.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="M_ResourceManager.cpp">
+      <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Sources\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Sources\Resources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -7,16 +7,18 @@ class GameObject;
 	{
 		TRANSFORM,
 		MESH,
-		MATERIAL
+		MATERIAL,
+		CAMERA
 	};
 
 class Component
 {
 public:
 
-	Component(ComponentType type,GameObject* owner);
+	Component(ComponentType type,GameObject* owner,unsigned int ID=0);
 	virtual ~Component();
 	virtual bool Update(float dt);
+	virtual bool GameUpdate(float dt);
 
 	virtual void OnEditor();//component drawing itself on the window
 	
@@ -25,10 +27,15 @@ public:
 	void SetActive(bool active);
 	bool IsActive()const;
 
+	virtual void SetNewResource(unsigned int resourceID);
+	//gets resource ID for saving: WARNING use the dedicated component methods to get the ID for everythign else as this function doesn't reset the ID
+	virtual unsigned int GetResourceID();
+
 public:
 	GameObject* owner;
-
 	bool toDelete;
+	unsigned int ID;
+
 private:
 	ComponentType type;
 protected:

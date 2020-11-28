@@ -1,21 +1,90 @@
 #include <string>
+#include <vector>
 struct aiMesh;
 struct aiNode;
 struct aiScene;
 class GameObject;
+class ResourceMesh;
+class Resource;
+class ResourceTexture;
+class C_Material;
+class C_Transform;
+class C_Camera;
+struct JSON_Object;
+class Config;
+class Component;
 
 namespace Importer
 {
-	//bool LoadFBX(const char* path);
 	bool InitializeDevIL();
-	//bool LoadNewImage(const char* path);
-	bool LoadNewImageFromBuffer(const char* Buffer,unsigned int Length, std::string path = ""); //path for display
-	bool LoadNewImageFromObj(const char* Buffer, unsigned int Length,GameObject*target, std::string path = ""); //path for display
 
-	//Take a saved buffer in memory and load it
-	bool LoadFBXfromBuffer(const char* Buffer, unsigned int Length, const char* relativePath); //lenght of the buffer, in bytes
+	namespace Model
+	{
+		//Take a saved buffer in memory and loads it into a model resource, also imports dependencies if needed (aka meshes / textures) TODO
+		bool ImportModel(const char* Buffer, unsigned int Length, const char* relativePath, Resource * res);
+		bool LoadModel(const char* libPath, GameObject* root);//revise if needed
+		unsigned int SaveModel(GameObject* root, Resource* ret);//returns buffer size; it cals upon SavePHO on its own
+	}
 
-	GameObject* LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent,std::string relPath);//optName lets the node name to be sent to the gameobj
+	namespace Mesh
+	{
+		void ImportRMesh(aiMesh* fbxMesh, ResourceMesh& meshToFill);//TODO
+		bool LoadMesh(char* Buffer, unsigned int Length, Resource& meshToFill);
+		unsigned int SaveMesh(Resource & aux, char** buffer);//returns buffer 
+	}
 
+	namespace Texture
+	{
+		//path required for display in the inspector. froma ssets to lib
+		bool ImportImage(const char* Buffer, unsigned int Length, Resource& textureToFill);//TODO needs completion
+
+
+		//from lib to engine
+		bool LoadNewImage(const char* libPath, Resource& textureToFill);
+
+		//Used in GameObject serialization. Never call this "raw". from engine to lib
+		void SaveComponentMaterial(Config& config, Component* Mat);
+
+		//Testing own file format. from engine to lib
+		unsigned int SaveTexture(Resource& texture);//TODO all
+
+	}
+
+	namespace Camera
+	{
+		//Import camera will exist when we load Cameras from Fbx, NOT NOW
+		//Own file format
+		unsigned int SaveCamera(C_Camera* aux, char* buffer);
+		//Used in GameObject serialization. Never call this "raw"
+		void SaveComponentCamera(Config& config, Component* camera);
+		//Own file format
+		bool LoadCameraFromPho(char* buffer, unsigned int Lenght);
+
+	}
+
+	//Kill me already please
+	GameObject* LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath);
+
+
+
+	//Dont use this directly
 	unsigned int LoadPureImageGL(const char* path);
+
+
+	//returns size of buffer. Caution! this does not create file, it only fills buffer. Create file usinsg SavePHO from FliseSystem.
+	unsigned int SerializeScene(GameObject* root, char** TrueBuffer);
+
+	//takes a buffer from a JSON and creates all the GO hierarchy starting from root
+	void LoadScene(char* buffer, GameObject* sceneRoot);
+
+	//Dont use this directly: it's called from SerializeScene
+	void SerializeGameObject(Config& config, GameObject* gameObject);
+	//Fill a vector with a GO and the childs tree
+	void SeekChildrenRecurvisely(GameObject* root, std::vector<GameObject*>& vectorToFill);
+	//Dont use this directly: it's called from SerializeScene
+	void SaveComponentRaw(Config& config, Component* component);
+
+
+	//Importing Components once we have a loaded buffer
+	//void ImportResourceMeshFromBuffer(char* buffer, unsigned int buffersize, Resource& meshToFill);
 }

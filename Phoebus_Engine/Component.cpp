@@ -1,12 +1,29 @@
 #include "Component.h"
+#include "Application.h"
+#include "ModuleRenderer3D.h"
 
 
 
-Component::Component(ComponentType type, GameObject* owner) :type(type)
+Component::Component(ComponentType type, GameObject* owner, unsigned int ID) :type(type)
 {
 	this->owner = owner;
 	active = true;
 	toDelete = false;
+	if (ID == 0)
+	{
+		if (App != nullptr)
+		{
+			this->ID = App->renderer3D->seed.Int();
+		}
+		else
+		{
+			this->ID = 1;
+		}
+	}
+	else
+	{
+		this->ID = ID;
+	}
 }
 
 Component::~Component()
@@ -14,6 +31,14 @@ Component::~Component()
 }
 
 bool Component::Update(float dt)
+{
+	if (ID == -1) {
+		this->ID = App->renderer3D->seed.Int(); //TODO ADRI: absolute garbage, fix this
+	}
+	return true;
+}
+
+bool Component::GameUpdate(float dt)
 {
 	return true;
 }
@@ -36,4 +61,13 @@ void Component::SetActive(bool active)
 bool Component::IsActive() const
 {
 	return active;
+}
+
+void Component::SetNewResource(unsigned int resourceID)
+{
+}
+
+unsigned int Component::GetResourceID()
+{
+	return 0;
 }

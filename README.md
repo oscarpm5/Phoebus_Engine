@@ -70,7 +70,25 @@ Note that objects with children in the hierarchy will have to be deployed before
 Holding Shift when dragging the Far/Near plane buttons in the config/camera panels allows extra precision.
 
 
+
+* Q key
+	- Hide Gizmos
+
+* W key
+	- Use Move Gizmo
+
+* E key
+	- Use Rotate Gizmo
+
+* R key
+	- Use Scale Gizmo
+
+
+
+
 ## Aditional functionality:
+
+### First Assigment
 
 * Unique Naming system that prevents two objects from having the same name by renaming them when needed. 
 
@@ -93,13 +111,43 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Game objects can be moved, scaled & rotated (simple implementation just to avoid all the objects getting crammed in the world origin).
 
 * Components & game objects can now be activated/ deactivated independently.
+
+### Second Assigment
+
+* Objects have an outline when selected, outline size can be configured via the config panel. A filled outline from the seleted object can be seen through other objects if they are in front of it.
+
+* Depth buffer can be displayed in the editor cam. To enable this go to Menu -> config -> rendering and check "Depth display"
+
+* Object Translate/Rotate/Scale can be done in both local & global space.
+
+* Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]. 
+
+* Automated saved scenes are made on play/pause. This scene is saved in Library/Scenes
+
+* You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with a automatic name which you can later change
+
+* You can load any saved scene un Menu->Load
+
  
 ## Aditional comments for the teacher:
+
+### First Assigment
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
 * The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)
 * Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
+### Second Assigment
+* DO NOT delete the contents of the folder "our_pics" from the "Assets" folder. Doing so would cause a crash(intended, since they contain engine-related critical resources, ex:the engine icon).
+* Street has been imported with Blender, which couses the fbx folder to have a .fbm extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
+* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back with the frefabs
+* Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
+* If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
+* Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
+* Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
+* Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
+* Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
+* You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

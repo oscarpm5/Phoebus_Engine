@@ -1,27 +1,45 @@
 #include<iostream>
 
 #include "Mesh.h"
+#include "Resources.h"
 
 #include "Glew/include/glew.h" //order matters
-#include "glmath.h"
+//#include "glmath.h"
 
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "DevIL/include/IL/ilut.h"
+#include "MathGeoLib/include/MathGeoLib.h"
+#include "Application.h"
 
 
-Mesh::Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords) :
-	/*drawMode(MeshDrawMode::DRAW_MODE_FILL), normalMode(NormalDrawMode::NORMAL_MODE_NONE),*/
-	idVertex(0), idIndex(0), idNormals(0), idTexCoords(0) /*,shadingFlat(true), texture(texture)*/
+ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords, unsigned int UID) :
+	Resource(UID, ResourceType::MESH),idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
 	this->normals = normals;
 	this->texCoords = texCoords;
+	GenerateSmoothedNormals();
 	GenerateBuffers();
 }
 
-Mesh::Mesh(const Mesh& other)
+ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords, unsigned int UID):
+	Resource(UID, ResourceType::MESH),idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+{
+	this->vertices = vertices;
+	this->indices = indices;
+	this->normals = normals;
+	this->smoothedNormals = smoothedNormals;
+	this->texCoords = texCoords;
+	GenerateBuffers();
+}
+
+ResourceMesh::ResourceMesh(unsigned int UID) :Resource(UID,ResourceType::MESH), idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+{
+}
+
+ResourceMesh::ResourceMesh(const ResourceMesh& other):Resource(App->renderer3D->seed.Int() ,ResourceType::MESH)
 {
 	this->vertices = other.vertices;
 	this->indices = other.indices;
@@ -31,39 +49,146 @@ Mesh::Mesh(const Mesh& other)
 	//this->normalMode = other.normalMode;
 	//this->shadingFlat = other.shadingFlat;
 	//this->texture = other.texture;
-	
+
+	this->smoothedNormals = other.smoothedNormals;
 	GenerateBuffers();
 }
 
-Mesh::~Mesh()
+ResourceMesh::~ResourceMesh()
 {
-	FreeBuffers();
-
-	indices.clear();
-	vertices.clear();
-	normals.clear();
-	texCoords.clear();
+	UnloadFromMemory();
 
 }
 
 
-void Mesh::GenerateBuffers()
+void ResourceMesh::GenerateSmoothedNormals()
+{
+	std::vector<float3> faceNormals;//1 normal for every 3 indices
+	//first we calculate the mesh face normals
+	for (int i = 0; i < indices.size(); i += 3)
+	{
+		unsigned int vertex0id = indices[i];
+		unsigned int vertex1id = indices[i + 1];
+		unsigned int vertex2id = indices[i + 2];
+
+
+		float3 vertex0 = { vertices[vertex0id * 3],vertices[(vertex0id * 3) + 1], vertices[(vertex0id * 3) + 2] };
+		float3 vertex1 = { vertices[vertex1id * 3],vertices[(vertex1id * 3) + 1], vertices[(vertex1id * 3) + 2] };
+		float3 vertex2 = { vertices[vertex2id * 3], vertices[(vertex2id * 3) + 1], vertices[(vertex2id * 3) + 2] };
+
+		float3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
+		float3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
+		float3 normal = Cross(vector01, vector02);
+		normal.Normalize();
+		faceNormals.push_back(normal);
+
+	}
+
+	//then we calculate the smoothed averaged normals for each vertex
+	smoothedNormals.resize(normals.size());
+	for (int i = 0; i < smoothedNormals.size(); i += 3)
+	{
+		float3 averagedNormal = { 0.0f,0.0f,0.0f };
+		std::vector<float3>normalsToAverage;
+
+		for (int j = 0; j < indices.size(); j++)//we iterate every index and save the ones that point to the vertex for which we want to calculate teh normal 
+		{
+			if (indices[j] == i / 3)
+			{
+				float3 currFaceNormal = faceNormals[j / 3];
+
+				bool alreadyStored = false;
+				for (int l = 0; l < normalsToAverage.size(); l++)
+				{
+					if (normalsToAverage[l].x == currFaceNormal.x && normalsToAverage[l].y == currFaceNormal.y && normalsToAverage[l].z == currFaceNormal.z)
+					{
+						alreadyStored = true;
+						break;
+					}
+				}
+
+				if (alreadyStored == false)
+					normalsToAverage.push_back(faceNormals[j / 3]);
+			}
+		}
+
+		//average the normals
+		for (int k = 0; k < normalsToAverage.size(); k++)
+		{
+			averagedNormal += normalsToAverage[k];
+		}
+		//averagedNormal = averagedNormal / normalsToAverage.size();
+		averagedNormal.Normalize();
+
+		smoothedNormals[i] = averagedNormal.x;
+		smoothedNormals[i + 1] = averagedNormal.y;
+		smoothedNormals[i + 2] = averagedNormal.z;
+
+	}
+
+
+	//TODO FOR OSCAR still need to check if 2 vertices are in the same place and merge normals accordingly
+	//TODO FOR OSCAR this code can be optimized, don't check already visited indices
+	for (int i = 0; i < vertices.size(); i += 3)//if 2 vertices are in the same place merge their normals
+	{
+		std::vector<int> normalsToChange;//this is the id of the normals that need to be changed
+		std::vector<float3> averagedNormal;
+
+		normalsToChange.push_back(i);
+		averagedNormal.push_back({ smoothedNormals[i],smoothedNormals[i + 1],smoothedNormals[i + 2] });
+
+		for (int j = 0; j < vertices.size(); j += 3)
+		{
+			if (i == j)
+				continue;
+
+			if (vertices[i] == vertices[j] && vertices[i + 1] == vertices[j + 1] && vertices[i + 2] == vertices[j + 2])
+			{
+				normalsToChange.push_back(j);
+				averagedNormal.push_back({ smoothedNormals[j],smoothedNormals[j + 1],smoothedNormals[j + 2] });
+			}
+
+
+		}
+
+		if (averagedNormal.size() > 1) //if there is more than one normal to average, average them
+		{
+			float3 newAverage = {0.0f,0.0f,0.0f};
+
+			for (int i = 0; i < averagedNormal.size(); i++)
+			{
+				newAverage += averagedNormal[i];
+			}
+			newAverage.Normalize();
+
+			for (int i = 0; i < normalsToChange.size(); i++)
+			{
+				smoothedNormals[normalsToChange[i]] = newAverage.x;
+				smoothedNormals[normalsToChange[i]+1] = newAverage.y;
+				smoothedNormals[normalsToChange[i]+2] = newAverage.z;
+			}
+		}
+
+	}
+}
+
+void ResourceMesh::GenerateBuffers()
 {
 
 	//gen buffers=========================================
-	 
+
 	//vertex buffer
 	glGenBuffers(1, &idVertex);
 	glBindBuffer(GL_ARRAY_BUFFER, idVertex);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
-	
 
-	
+
+
 	//index buffer
 	glGenBuffers(1, &idIndex);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-	
+
 
 	if (!this->normals.empty())
 	{
@@ -89,7 +214,7 @@ void Mesh::GenerateBuffers()
 
 }
 
-void Mesh::FreeBuffers()
+void ResourceMesh::FreeBuffers()
 {
 	if (idVertex != 0)
 	{
@@ -112,6 +237,20 @@ void Mesh::FreeBuffers()
 		idTexCoords = 0;
 	}
 
+}
+
+bool ResourceMesh::UnloadFromMemory()
+{
+	FreeBuffers();
+	indices.clear();
+	vertices.clear();
+	normals.clear();
+	texCoords.clear();
+	smoothedNormals.clear();
+
+	isLoaded = false;
+
+	return false;
 }
 
 //void Mesh::DrawVertexNormals()

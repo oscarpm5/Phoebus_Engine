@@ -4,9 +4,12 @@
 //#include "Light.h"
 
 #include "ModuleEditor3D.h"
+#include "GameObject.h"
 #include "RenderMesh.h"
+#include "Mesh.h"
 #include "C_Mesh.h"
 #include "C_Material.h"
+#include "C_Transform.h"
 //include & lib of glew
 
 #include "Glew/include/glew.h"
@@ -19,12 +22,16 @@
 
 
 //#include "glmath.h"
-
+#include "MathGeoLib/include/MathGeoLib.h"
 #include"Color.h"
 
 #include <math.h>
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
+
+
+
+//TODO make a bool that tells whether we are on editor mode or play mode and changes camera accordingly
 
 
 float vertexArray[] = {
@@ -82,20 +89,29 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
-
+	drawDebugRay = false;
+	showDepth = false;
+	activeCam = nullptr;
+	displayAABBs = false;
 	//Just making sure this is initialized
 	gridLength = 500.f;
+	outlineScale = 1.1f;
 }
 
 // Destructor
 ModuleRenderer3D::~ModuleRenderer3D()
-{}
+{
+	activeCam = nullptr;
+}
 
 // Called before render is available
 bool ModuleRenderer3D::Init()
 {
 	LOG("Creating 3D Renderer context");
 	bool ret = true;
+
+	//Start number generator seed
+	seed = LCG::LCG();
 
 	//Create context
 	context = SDL_GL_CreateContext(App->window->window);
@@ -147,7 +163,14 @@ bool ModuleRenderer3D::Init()
 
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
+
+		//TODO ADDED from class this enables alpha clip at 0.5 alpha
+		//glEnable(GL_ALPHA_TEST);
+		//glAlphaFunc(GL_GREATER, 0.5f);
+		//TODO ADDED from class this enables alpha blend
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		//Check for error
 		error = glGetError();
 		if (error != GL_NO_ERROR)
@@ -198,18 +221,20 @@ bool ModuleRenderer3D::Init()
 	//SAux = PSphere(0.5, 1);
 	//SAux.SetPos(0, 1, 1);
 
+
 	return ret;
 }
 
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glLoadIdentity();
 
 	glMatrixMode(GL_MODELVIEW);
 
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	//glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	// light 0 on cam pos
 	lights[0].SetPos(App->camera->Position.x, App->camera->Position.y, App->camera->Position.z);
@@ -245,6 +270,22 @@ bool ModuleRenderer3D::CleanUp()
 
 	SDL_GL_DeleteContext(context);
 
+	drawMeshes.clear();
+	drawSelectedMeshes.clear();
+	drawStencil.clear();
+	drawAABBs.clear();
+	while (!stencilMeshes.empty())//clear stencil meshes
+	{
+
+		C_Mesh* currMesh = stencilMeshes.back();
+		delete currMesh;
+		currMesh = nullptr;
+
+		stencilMeshes.pop_back();
+	}
+	stencilMeshes.clear();
+	stencilMeshes.shrink_to_fit();
+
 	return true;
 }
 
@@ -255,11 +296,15 @@ void ModuleRenderer3D::OnResize(int width, int height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
-	glLoadMatrixf(&ProjectionMatrix);
+	//ProjectionMatrix = perspective(App->camera->foV, (float)width / (float)height, App->camera->nearPlaneDist, App->camera->farPlaneDist);
+	//glLoadMatrixf(&ProjectionMatrix);
+
+	App->camera->editorCam->SetNewAspectRatio(width, height);
+	glLoadMatrixf(&App->camera->editorCam->GetProjMat().v[0][0]);
 
 	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->GetRawViewMatrix());
+	//glLoadMatrixf(App->camera->GetRawViewMatrix());
+	glLoadMatrixf(&App->camera->editorCam->GetViewMat().v[0][0]);
 
 	GenerateBuffers(width, height);
 }
@@ -376,23 +421,52 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 	glGenTextures(1, &renderTex);
 	glBindTexture(GL_TEXTURE_2D, renderTex);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	if (showDepth)
+	{
 
-	glBindTexture(GL_TEXTURE_2D, 0); //unbind texture
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, 0);
 
-	//Generate the depth buffer
-	glGenRenderbuffers(1, &depthBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
+		glBindTexture(GL_TEXTURE_2D, 0); //unbind texture
 
-	//attaching the image to the frame buffer
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+		//Generate the depth buffer
+		glGenRenderbuffers(1, &depthBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH, width, height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
 
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
+
+		//attaching the image to the frame buffer
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, renderTex, 0);
+	}
+	else
+	{
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0); //unbind texture
+
+		//Generate the depth buffer
+		glGenRenderbuffers(1, &depthBuffer);
+		glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+		glBindRenderbuffer(GL_RENDERBUFFER, 0);//unbind renderbuffer
+
+		//attaching the image to the frame buffer
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, renderTex, 0);
+
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);//unbind framebuffer
 }
@@ -401,24 +475,104 @@ void ModuleRenderer3D::Draw3D()
 {
 
 
-	//Set a color here TODO from the camera ??
+	//TODO Set a color here  from the camera ?? on editor mode take it from the editor cam on game take it from the main cam
 	Color c = Color(0.05f, 0.05f, 0.1f);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	if (drawGrid)
-	{
-		DrawGrid();
-	}
-	RenderMeshes();
+
+	DrawOutline();
+	//RenderMeshes();
+	RenderAABBs();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(c.r, c.g, c.b, c.a);
 
 
 
+}
+
+void ModuleRenderer3D::DrawOutline()
+{
+	const float3 outlineColorMain = float3(1.0f, 0.5f, 0.0f);
+	const float3 outlineColorSecond = float3(0.75f, 0.25f, 0.0f);
+
+	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
+	{
+		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
+		std::vector<C_Mesh*> meshes = App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
+
+
+		float4x4 transfMat = transf->GetGlobalTransform();
+		for (int j = 0; j < meshes.size(); j++)
+		{
+			if (meshes[i]->GetMesh() != nullptr)
+			{
+
+				ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
+				ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
+				m->FreeBuffers();
+				m->GenerateBuffers();
+
+				C_Mesh* currMesh = new C_Mesh(nullptr, 0);
+				currMesh->SetTemporalMesh(m);
+				stencilMeshes.push_back(currMesh);
+
+				float3 currentOutlineCol = outlineColorMain;
+				if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+				{
+					currentOutlineCol = outlineColorSecond;
+				}
+
+				AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
+			}
+		}
+
+	}
+
+
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	glStencilMask(0xFF);
+	if (drawGrid)
+	{
+		DrawGrid();
+	}
+	if (drawDebugRay)
+	{
+		DrawDebugRay();
+	}
+	RenderMeshes();
+
+	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glStencilMask(0xFF);
+	RenderSelectedMeshes();
+
+	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+	glStencilMask(0x00);
+
+	if (depthTesting)
+		glDisable(GL_DEPTH_TEST);
+	if (lighting)
+		glDisable(GL_LIGHTING);
+	//glDisable(GL_CULL_FACE);
+	RenderStencil();
+	glStencilMask(0xFF);
+	glStencilFunc(GL_ALWAYS, 0, 0xFF);
+
+	if (depthTesting)
+		glEnable(GL_DEPTH_TEST);
+	if (lighting)
+		glEnable(GL_LIGHTING);
+	//glEnable(GL_CULL_FACE);
+
+	//TODO for the moment we harcode enable/ disable of the depth/lighting here and that causes depth 6 lightning display to have stopped working
+	//TODO make objects scale from their bounding box center when on outline mode or ideally scale from vertex normal
+
+	glDisable(GL_STENCIL_TEST);
 }
 
 void ModuleRenderer3D::RenderMeshes()
@@ -431,15 +585,63 @@ void ModuleRenderer3D::RenderMeshes()
 	drawMeshes.shrink_to_fit();
 }
 
+void ModuleRenderer3D::RenderSelectedMeshes()
+{
+	for (int i = 0; i < drawSelectedMeshes.size(); i++)
+	{
+		drawSelectedMeshes[i].Draw(App->editor3d->maxSceneDrawMode);
+	}
+	drawSelectedMeshes.clear();
+	drawSelectedMeshes.shrink_to_fit();
+}
+
+void ModuleRenderer3D::RenderStencil()
+{
+	for (int i = 0; i < drawStencil.size(); i++)
+	{
+		drawStencil[i].Draw(MeshDrawMode::DRAW_MODE_BOTH);
+	}
+	drawStencil.clear();
+	drawStencil.shrink_to_fit();
+
+	while (!stencilMeshes.empty())//clear stencil meshes
+	{
+
+		C_Mesh* currMesh = stencilMeshes.back();
+		delete currMesh;
+		currMesh = nullptr;
+
+		stencilMeshes.pop_back();
+	}
+	stencilMeshes.clear();
+	stencilMeshes.shrink_to_fit();
+
+}
+
+void ModuleRenderer3D::RenderAABBs()
+{
+	if (lighting)
+		glDisable(GL_LIGHTING);
+	for (int i = 0; i < drawAABBs.size(); i++)
+	{
+		drawAABBs[i].Draw();
+	}
+	drawAABBs.clear();
+	drawAABBs.shrink_to_fit();
+
+	if (lighting)
+		glEnable(GL_LIGHTING);
+}
+
 void ModuleRenderer3D::DrawGrid()
 {
 	int nQuadsInAQuad = 4; //ex. 4 quads: 4 lines + 1 extra line for the next quad aka: number of small quads in a giant quad
-	
-	float cameraHeight = abs(App->camera->Position.y - fmod(App->camera->Position.y, 1));
 
-	float sepLvl = logf(cameraHeight)/ logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
-	
-	float transparency = 1-fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
+	float cameraHeight = max(abs(roundf(App->camera->Position.y)), 0.01f);
+
+	float sepLvl = logf(cameraHeight) / logf(nQuadsInAQuad);//log(x)/log(b)=log_baseb(x)
+
+	float transparency = 1 - fmod(sepLvl, 1.0f); //value between 1 and 0 being 0 the most transparent
 
 	sepLvl = max(sepLvl, 0);
 
@@ -447,7 +649,7 @@ void ModuleRenderer3D::DrawGrid()
 	float newSep = pow(nQuadsInAQuad, (int)floor(sepLvl)); //what is the new separation compared to the original one (4 times bigger?,..)
 	//float realGridLength = gridLength- (fmod(gridLength, newSep));
 	//float lineCount = realGridLength / newSep;
-	
+
 
 	float realGridLength = gridLength / (newSep * nQuadsInAQuad);
 	realGridLength = ceil(realGridLength);
@@ -457,41 +659,41 @@ void ModuleRenderer3D::DrawGrid()
 
 	for (float i = -realGridLength; i <= realGridLength; i += newSep)
 	{
-		float greatLines = fmod(i+realGridLength,newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
+		float greatLines = fmod(i + realGridLength, newSep * nQuadsInAQuad);//i+realgridlength makes the number positive
 
 		bool isCenterLine = false;
 		bool isGreatLine = false;
 		if (i >= -newSep * 0.5f && i <= newSep * 0.5f)isCenterLine = true;
 		if (greatLines == 0)isGreatLine = true;
-		
-		vec4 color1=vec4(transparency, transparency, transparency, transparency);
-		vec4 color2=vec4(transparency, transparency, transparency, transparency);;
+
+		float4 color1 = float4(transparency, transparency, transparency, transparency);
+		float4 color2 = float4(transparency, transparency, transparency, transparency);;
 
 		if (isGreatLine)
 		{
-			glLineWidth(3.0f);
-			color1 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-			color2 = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+			glLineWidth(1.0f);
+			color1 = float4(1.0f, 1.0f, 1.0f, 1.0f);
+			color2 = float4(1.0f, 1.0f, 1.0f, 1.0f);
 		}
 		if (isCenterLine)
 		{
-			glLineWidth(6.0f);
-			color1 = vec4(0.0f, 0.0f, 1.0f, 1.0f);
-			color2 = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			glLineWidth(1.0f);
+			color1 = float4(0.0f, 0.0f, 1.0f, 1.0f);
+			color2 = float4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
-		
+
 		glLineWidth(1.0f);
 
 		glColor4f(color1.x, color1.y, color1.z, color1.w);
 
 		glVertex3f(i, 0.0f, -gridLength);
 		glVertex3f(i, 0.0f, gridLength);
-		
+
 		glColor4f(color2.x, color2.y, color2.z, color2.w);
-		
+
 		glVertex3f(-gridLength, 0.0f, i);
 		glVertex3f(gridLength, 0.0f, i);
-		
+
 		glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
 
@@ -499,6 +701,30 @@ void ModuleRenderer3D::DrawGrid()
 
 	glEnd();
 
+}
+
+void ModuleRenderer3D::DrawDebugRay()
+{
+	float4 rayColor = float4(0.5f, 0.0f, 1.0f, 1.0f);
+
+	if (lighting)
+	{
+		glDisable(GL_LIGHTING);
+	}
+
+	glBegin(GL_LINES);
+	glColor4f(rayColor.x, rayColor.y, rayColor.z, rayColor.w);
+
+	glVertex3f(rayLine.a.x, rayLine.a.y, rayLine.a.z);
+	glVertex3f(rayLine.b.x, rayLine.b.y, rayLine.b.z);
+
+	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+	glEnd();
+
+	if (lighting)
+	{
+		glEnable(GL_LIGHTING);
+	}
 }
 
 void ModuleRenderer3D::SetGLRenderingOptions()
@@ -517,8 +743,93 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	//wireframe here too?
 }
 
-
-void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform)
+bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale)//TODO consider creating an expanded mesh when the mesh is created instead of doing it every frame
 {
-	drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
+	if (m.normals.empty())//TODO in the future if scaling cannot be done by vertex normals, use generated face normals or normal scaling instead
+		return false;
+
+
+	for (int i = 0; i < m.vertices.size(); i += 3)
+	{
+		float3 currVertex = float3(m.vertices[i], m.vertices[i + 1], m.vertices[i + 2]);
+
+		//if newScale is 1 it means the scale should remain the same
+		currVertex.x += (m.smoothedNormals[i] * (newScale - 1.0f));
+		currVertex.y += (m.smoothedNormals[i + 1] * (newScale - 1.0f));
+		currVertex.z += (m.smoothedNormals[i + 2] * (newScale - 1.0f));
+		m.vertices[i] = currVertex.x;
+		m.vertices[i + 1] = currVertex.y;
+		m.vertices[i + 2] = currVertex.z;
+
+	}
+
+
+}
+
+
+void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform, bool isSelected)
+{
+	if (isSelected)
+		drawSelectedMeshes.push_back(RenderMesh(mesh, material, gTransform));
+	else
+		drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
+}
+
+void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, float3 color)
+{
+	float scale = 1.05f;
+	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/, color));
+}
+
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
+{
+	drawAABBs.push_back(RenderBox(corners));//TODO change Box color here (global config var?)
+}
+
+bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
+{
+	//if inside frustum ret true
+
+	int iTotalIn = 0;
+
+	//for each camera plane
+	for (int p = 0; p < 6; p++) {
+		int iInCount = 8;
+		int iPtIn = 1;
+		//for each corner of the AABB box
+		for (int i = 0; i < 8; i++) {
+			// test this point against the planes
+
+			Frustum f;
+			Plane planes[6];
+			if (activeCam != nullptr && activeCam->IsActive())
+			{
+				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted
+			}
+			else
+			{
+				f = App->camera->editorCam->GetFrustum();
+			}
+			f.GetPlanes(planes);
+
+			if (planes[p].IsOnPositiveSide(points[i])) //<-- “IsOnPositiveSide” from MathGeoLib
+			{
+				iPtIn = 0;
+				--iInCount;
+			}
+		}
+		// were all the points outside of plane p?
+		if (iInCount == 0)
+			return false;
+		// check if they were all on the right side of the plane
+		iTotalIn += iPtIn;
+	}
+	// so if iTotalIn is 6, then all are inside the view
+	if (iTotalIn > 0)
+		return true;
+}
+
+void ModuleRenderer3D::SetCamRay(LineSegment line)
+{
+	rayLine = line;
 }

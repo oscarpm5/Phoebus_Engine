@@ -5,28 +5,34 @@
 #include <string>
 //#include "glmath.h"
 
+#include "MathGeoLib/include/MathGeoLib.h"
 
 class Component;
 class C_Transform;
 enum class ComponentType;
 
-class mat4x4;
-
 class GameObject
 {
 public:
+	unsigned int ID; //save / load func
 
-	GameObject(GameObject* parent, std::string name, mat4x4 transform);
+	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true, bool isLocalTrans = true);
+	
+	void Awake();
 
 	void Update(float dt);
 
 	~GameObject();
 
+
+
 	void RemoveChildren(GameObject* toRemove);
+
+	void ChangeParent(GameObject* newParent);//TODO
 
 	void RemoveMyselfFromParent();
 
-	Component* CreateComponent(ComponentType type);
+	Component* CreateComponent(ComponentType type,unsigned int compID=0);
 
 	std::string GetName();
 
@@ -49,14 +55,17 @@ public:
 		return compVec;
 	}
 
+	void GetChildWithID(unsigned int ID, GameObject*& childOut);
 
 	void UpdateChildTransforms();
-
-
-
+	void UpdateBoundingBox();
+	void GetObjAndAllChilds(std::vector<GameObject*>&childs);
+	AABB GetWorldAABB()const;
 	void DrawOnEditorAllComponents();
+	std::vector<Component*> GetAllComponents();
 private:
 	void DrawGameObject();
+	void GetPointsFromAABB(AABB&aabb,std::vector<float3>& emptyVector);
 private:
 	std::vector<Component*> components;
 	C_Transform* transform;
@@ -65,9 +74,14 @@ private:
 
 	std::string name;
 
+	AABB globalAABB;
+	OBB globalOBB;
+
 public:
 	bool isActive;
 	bool focused;
+	bool displayBoundingBox;
+	bool bbHasToUpdate;
 	std::vector<GameObject*> children; //we need them public for hierarchy
 
 	static int numberOfObjects;

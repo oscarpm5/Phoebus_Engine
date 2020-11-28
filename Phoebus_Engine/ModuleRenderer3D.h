@@ -7,14 +7,16 @@
 #include "Light.h" //incuded due to an array declared here
 #include <vector>
 #include "RenderMesh.h"
+#include "RenderBox.h"
+#include "MathGeoLib/include/Algorithm/Random/LCG.h"
+#include "C_Camera.h" //TODO forward declare this
 
 
 
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
 
-class mat3x3;
-class mat4x4;
+class ResourceMesh;
 
 class ModuleRenderer3D : public Module
 {
@@ -32,16 +34,29 @@ public:
 	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
+	void DrawOutline();
 
-	void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, mat4x4 gTransform);
 
+	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform,bool isSelected);
+	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform,float3 color=float3(1.0f,1.0f,1.0f));
+	void AddBoxToDraw(std::vector<float3> corners);
+
+	bool IsInsideFrustum(std::vector<float3>& points);
+
+	void SetCamRay(LineSegment line);
 
 private:
 	void RenderMeshes();
+	void RenderSelectedMeshes();
+	void RenderStencil();
+	void RenderAABBs();
 	void DrawGrid();
+	void DrawDebugRay();
 
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
+
+	bool ExpandMeshVerticesByScale(ResourceMesh& m, float newScale);//returns false if scaling cannot be done
 
 private:
 	unsigned int exampleMeshIdentifier;
@@ -50,21 +65,25 @@ private:
 	int nVertex;
 	int indexSize;
 	std::vector<RenderMesh> drawMeshes;
-
-
+	std::vector<RenderMesh> drawSelectedMeshes;
+	std::vector<RenderMesh> drawStencil;
+	std::vector<RenderBox> drawAABBs;
+	std::vector<C_Mesh*> stencilMeshes;
+	LineSegment rayLine;
 
 public:
 	Light lights[MAX_LIGHTS];
 
 	SDL_GLContext context;
-	mat3x3 NormalMatrix;
-	mat4x4 ProjectionMatrix;
+	
 
 	unsigned int frameBuffer;
 	unsigned int renderTex;
 	unsigned int depthBuffer;
 
 	float gridLength;
+	float outlineScale;
+	LCG seed;
 
 	//rendering config bools
 	bool depthTesting;
@@ -73,5 +92,9 @@ public:
 	bool colorMaterial;
 	bool texture2D;
 	bool drawGrid;
+	bool drawDebugRay;
+	bool showDepth;
+	bool displayAABBs;
+	C_Camera* activeCam;//culling camera
 };
 #endif // !__MODULE_RENDERER__

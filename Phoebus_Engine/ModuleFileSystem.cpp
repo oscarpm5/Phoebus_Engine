@@ -9,7 +9,7 @@
 
 #include "Assimp/include/cfileio.h"
 #include "Assimp/include/types.h"
-
+#include "Config.h"
 #include "Importer.h"
 
 #include "PhysFS/include/physfs.h"
@@ -19,6 +19,20 @@
 //linea 102 module input Importer:: load fbx -> llamaar el filesysatem y pasarle el path (dropfiledyr) para probarlo rapido
 
 
+ModuleFileSystem::ModuleFileSystem(bool start_enabled)
+{
+	// Initialize the PhysicsFS library
+	// This must be called before any other PhysicsFS function
+	// This should be called prior to any attempts to change your process's current working directory
+	PHYSFS_init(nullptr);
+
+	// We only need this when compiling in debug. In Release we don't need it.
+	AddNewPath(".");
+	PHYSFS_setWriteDir("."); //necessary to save in own file format (working directory aka Game)
+	AddNewPath("Assets");
+
+	CreateAllLibDirectories();
+}
 
 ModuleFileSystem::~ModuleFileSystem()
 {
@@ -43,11 +57,7 @@ bool ModuleFileSystem::Start()
 		LOG("[error]Failed loading Asset Manager");
 
 
-	// Add an archive or directory to the search path.
-	// If this is a duplicate, the entry is not added again, even though the function succeeds.
-	// When you mount an archive, it is added to a virtual file system...
-	// all files in all of the archives are interpolated into a single hierachical file tree.
-	PHYSFS_mount("Assets", nullptr, 1);
+	//PHYSFS_mount("Assets", nullptr, 1); //TODO why is that here?
 	return ret;
 }
 
@@ -88,7 +98,6 @@ uint ModuleFileSystem::Load(const char* path, char** buffer) const
 			// Get total length of a file in bytes
 			uint lenght = PHYSFS_fileLength(file);
 			*buffer = new char[lenght];
-			LOG("Loading buffer from path: %s", path);
 			// Read data from a PhysicsFS firehandle. Returns a number of bytes read.
 			uint bytes = PHYSFS_readBytes(file, *buffer, lenght);
 
@@ -133,8 +142,17 @@ SDL_RWops* ModuleFileSystem::Load(const char* path)
 //TODO provisional solution until we copy files into the directory
 void ModuleFileSystem::TransformToRelPath(std::string& path)
 {
-	unsigned int splitPos = path.find("Assets"); //file must be inside Assets directory
-	path = path.substr(splitPos, path.length());
+	std::string s = "Assets";
+	unsigned int splitPos = path.find(s); //file must be inside Assets directory
+	if (splitPos < path.size()) 
+	{ 
+		path = path.substr(splitPos+s.size()+1, path.length()); 
+	}
+	else
+	{
+		//don't
+	}
+
 }
 
 void ModuleFileSystem::TransformToLowerCase(std::string& lowerCase)
@@ -153,12 +171,22 @@ void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std:
 
 	if (filePos < path.size())
 	{
-		if (newPath)* newPath = path.substr(0, filePos + 1);
-		if (file)* file = path.substr(filePos + 1);
+		if (newPath)*newPath = path.substr(0, filePos + 1);
+		if (file)*file = path.substr(filePos + 1);
 	}
 	else if (path.size() > 0)
 	{
-		if (file)* file = path;
+		if (file)*file = path;
+	}
+}
+
+void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext)
+{
+	size_t filePos = file.find_last_of(".");
+
+	if (filePos < file.size())
+	{
+		*ext = file.substr(filePos);
 	}
 }
 
@@ -174,48 +202,51 @@ std::string ModuleFileSystem::NormalizePath(const char* path)
 	return newPath;
 }
 
-void ModuleFileSystem::LoadAsset(char* path)
-{
-	char* buffer;
-	std::string newPath = NormalizePath(path);
-	//std::string newPath=path;
-
-	TransformToRelPath(newPath);
-	//LOG("Loading Asset from path: %s", newPath.c_str());
-	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
-
-	FileFormats thisFormat = CheckFileFormat(newPath.c_str());
-
-	switch (thisFormat)
-	{
-	case FileFormats::FBX:
-		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str());
-		break;
-
-	case FileFormats::OBJ:
-		Importer::LoadFBXfromBuffer(buffer, size, newPath.c_str()); //this workas, deal with it
-		break;
-
-	case FileFormats::JSON:
-		//to be
-		break;
-
-	case FileFormats::PNG:
-	case FileFormats::JPG:
-	case FileFormats::JPEG:
-	case FileFormats::DDS:
-		Importer::LoadNewImageFromBuffer(buffer, size, newPath);
-		break;
-
-
-	case FileFormats::UNDEFINED:
-		LOG("[error]asset from %s has no recognizable format", path);
-		break;
-	default:
-		break;
-	}
-	RELEASE_ARRAY(buffer);
-}
+//resource manager deals with this now
+//void ModuleFileSystem::LoadAsset(char* path)
+//{
+//	char* buffer;
+//	std::string newPath = NormalizePath(path);
+//	//std::string newPath=path;
+//
+//	//TransformToRelPath(newPath);
+//	//LOG("Loading Asset from path: %s", newPath.c_str());
+//	uint size = App->fileSystem->Load((char*)newPath.c_str(), &buffer);
+//
+//	FileFormats thisFormat = CheckFileFormat(newPath.c_str());
+//
+//	switch (thisFormat)
+//	{
+//	case FileFormats::FBX://fbx and obj are the same, no need to call same method 2 times
+//	case FileFormats::OBJ:
+//		Importer::Model::ImportModel(buffer, size, newPath.c_str()); //this workas, deal with it
+//		break;
+//
+//	case FileFormats::JSON:
+//		//to be
+//		break;
+//
+//	case FileFormats::PNG:
+//	case FileFormats::JPG:
+//	case FileFormats::JPEG:
+//	case FileFormats::DDS:
+//		Importer::Texture::LoadNewImageFromBuffer(buffer, size, newPath);
+//		break;
+//
+//	case FileFormats::PHO:
+//		Importer::LoadMeshFromPho(buffer, size, newPath);
+//		//Importer::LoadMaterialFromPho(buffer, size, newPath);
+//		//Importer::LoadTransformFromPho(buffer, size, newPath);
+//		//Importer::LoadCameraFromPho(buffer, size, newPath);
+//		break;
+//	case FileFormats::UNDEFINED:
+//		LOG("[error]asset from %s has no recognizable format", path);
+//		break;
+//	default:
+//		break;
+//	}
+//	RELEASE_ARRAY(buffer);
+//}
 
 FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 {
@@ -237,7 +268,7 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 	}
 	else
 	{
-		format = FileFormats::UNDEFINED; 
+		format = FileFormats::UNDEFINED;
 
 		if (!strcmp(strFormat.c_str(), ".fbx"))
 		{
@@ -267,19 +298,243 @@ FileFormats ModuleFileSystem::CheckFileFormat(const char* path)
 		{
 			format = FileFormats::JSON;
 		}
+		else if (!strcmp(strFormat.c_str(), ".tga"))
+		{
+			format = FileFormats::TGA;
+		}
+		else if (!strcmp(strFormat.c_str(), ".pho"))
+		{
+			format = FileFormats::PHO;
+		}
 	}
 	return format;
 }
 
-ModuleFileSystem::ModuleFileSystem(bool start_enabled)
+unsigned long ModuleFileSystem::GetLastModTimeFromPath(const char* file)
 {
-	// Initialize the PhysicsFS library
-	// This must be called before any other PhysicsFS function
-	// This should be called prior to any attempts to change your process's current working directory
-	PHYSFS_init(nullptr);
+	return PHYSFS_getLastModTime(file);
+}
 
-	// We only need this when compiling in debug. In Release we don't need it.
-	PHYSFS_mount(".", nullptr, 1);
+
+// Save a whole buffer to disk
+unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, unsigned int size)
+{
+	unsigned int ret = 0;
+
+	bool overwrite = PHYSFS_exists(file) != 0;
+
+
+	PHYSFS_file* fs_file = PHYSFS_openWrite(file);
+
+	if (!overwrite) 
+	{
+		//uint written = (uint)PHYSFS_write(fs_file, (const void*)buffer, 1, size);
+	}
+
+	if (fs_file != nullptr)
+	{
+		uint written = (uint)PHYSFS_write(fs_file, (const void*)buffer, 1, size);
+		if (written != size)
+		{
+			LOG("[error] File System error while writing to file %s: %s", file, PHYSFS_getLastError());
+		}
+		else
+		{
+			if (overwrite == true)
+			{
+				LOG("File [%s] overwritten with %u bytes", file, size);
+			}
+			else
+			{
+				LOG("New file created [%s] of %u bytes", file, size);
+			}
+			ret = written;
+		}
+
+		if (PHYSFS_close(fs_file) == 0)
+			LOG("[error] File System error while closing file %s: %s", file, PHYSFS_getLastError());
+	}
+	else
+		LOG("[error] File System error while opening file %s: %s", file, PHYSFS_getLastError());
+
+	return ret;
+}
+
+bool ModuleFileSystem::IsFileDirectory(const char* file) const
+{
+	return PHYSFS_isDirectory(file) != 0;//TODO, deprecated funct? use PHYSFS_stat()?
+}
+
+bool ModuleFileSystem::CreateNewDirectory(const char* directory)
+{
+	bool ret = false;
+
+	if (!IsFileDirectory(directory))
+	{
+		PHYSFS_mkdir(directory);
+		ret = true;
+	}
+
+	return ret;
+}
+
+void ModuleFileSystem::CreateAllLibDirectories()
+{
+	CreateNewDirectory(LIB_PATH);
+	CreateNewDirectory(MESH_PATH);
+	CreateNewDirectory(MATERIAL_PATH);
+	CreateNewDirectory(TEXTURE_PATH);
+	CreateNewDirectory(SCENE_PATH);
+	CreateNewDirectory(MODEL_PATH);
 
 }
+
+bool ModuleFileSystem::AddNewPath(const char* newPath)
+{
+	bool ret = false;
+
+	if (PHYSFS_mount(newPath, nullptr, 1) == 0)
+	{
+		LOG("[error] Path could not be added to the file system: %s", PHYSFS_getLastError());
+	}
+	else
+	{
+		ret = true;
+	}
+
+	return ret;
+}
+
+bool ModuleFileSystem::GetDirFiles(const char* dir, std::vector<std::string>& fileList, std::vector<std::string>& dirList)
+{
+	bool ret = false;
+
+	if (DoesFileExist(dir))
+	{
+		char** rc = PHYSFS_enumerateFiles(dir);
+		char** iter;
+
+		std::string directory = dir;
+
+		for (iter = rc; *iter != nullptr; iter++)
+		{
+			if (PHYSFS_isDirectory((directory + *iter).c_str()))
+				dirList.push_back(*iter);
+			else
+				fileList.push_back(*iter);
+		}
+
+		PHYSFS_freeList(rc);
+
+
+		ret = true;
+	}
+
+	return ret;
+}
+
+bool ModuleFileSystem::DoesFileExist(const char* file)
+{
+	return PHYSFS_exists(file) != 0;
+}
+
+bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
+{
+	bool ret = false;
+
+	//Deleting all info regarding the asset:
+
+	LOG("DELETING %s", assetPath);
+
+	//Does the asset exist?
+
+	if (PHYSFS_exists(assetPath))
+	{
+		//Delete it
+
+		if (PHYSFS_delete(assetPath) == 0) //zero on error. success in everything else
+		{
+			LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", assetPath);
+			LOG("%s", PHYSFS_getLastError());
+		}
+		else
+		{
+			LOG("%s DELETED from assets", assetPath);
+		}
+
+		//Does the asset have a meta file?
+
+		std::string metaPath = assetPath; metaPath += ".meta";
+		if (PHYSFS_exists(metaPath.c_str()))
+		{
+			//Store some info from meta to delete the lib file later
+			char* auxB = "";
+			unsigned int size = Load(metaPath.c_str(), &auxB);
+			Config metaFile(auxB);
+			int UID = metaFile.GetNumber("ID");
+
+			//Delete the meta
+			if (PHYSFS_delete(metaPath.c_str()) == 0)
+			{
+				LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", metaPath.c_str());
+				LOG("%s", PHYSFS_getLastError());
+			}
+			else
+			{
+				LOG("%s DELETED from assets", metaPath);
+			}
+
+
+			//Is the asset imported in lib?
+			std::string libPath = "";
+			App->rManager->FindFileRecursively(std::to_string(UID), LIB_PATH, libPath); //try to find the asset in lib searching its UID we got from the meta
+
+
+			if (PHYSFS_exists(libPath.c_str()))
+			{
+				//Delete it
+
+				if (PHYSFS_delete(libPath.c_str()) == 0) //zero on error. success in everything else
+				{
+					LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", libPath.c_str());
+					LOG("%s", PHYSFS_getLastError());
+				}
+				else
+				{
+					LOG("%s DELETED from lib", libPath);
+				}
+
+				//Do we have it in memory?
+				
+				if (App->rManager->DeleteItemFromResourcesMap(UID))
+				{
+					LOG("DELETED %s from memory", libPath);
+				}
+				else
+				{
+					LOG("Could not delete %s from memory because it was never loaded in the first place", libPath);
+				}
+			}
+			else
+			{
+				LOG("[error] Tried to delete the lib file %s but it was not found", libPath.c_str());
+			}
+		}
+		else
+		{
+			LOG("[error] Tried to delete the meta file %s but it was not found", metaPath);
+		}
+	}
+	else
+	{
+		LOG("[error] Tried to delete %s but was unable to find such file", assetPath);
+	}
+	return ret;
+}
+
+bool ModuleFileSystem::DeleteTemporalScene(char* sceneBuffer)
+{
+	return false;
+}
+
 

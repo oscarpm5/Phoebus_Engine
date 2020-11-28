@@ -5,8 +5,8 @@
 #include "C_Material.h"
 #include "Glew/include/glew.h"
 
-RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, mat4x4 gTransform) :
-	mesh(mesh), material(material),transform(gTransform)
+RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform, float3 color) :
+	mesh(mesh), material(material), transform(gTransform), color(color)
 {}
 
 RenderMesh::~RenderMesh()
@@ -17,28 +17,35 @@ RenderMesh::~RenderMesh()
 
 void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 {
+	float4x4 newTrans = transform;
+	newTrans.Transpose();
 
+	ResourceMesh* m = mesh->GetTemporalMesh();
+	
+	if (m == nullptr)
+	{
+		m = mesh->GetMesh();
+	}
 
-	Mesh* m = mesh->GetMesh();
 
 	glEnableClientState(GL_VERTEX_ARRAY);	//... TODO (1) Put this on start of render postupdate
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glPushMatrix();
-	glMultMatrixf(transform.M);
-	
+	glMultMatrixf(newTrans.v[0]);
+
 
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_VERTEX || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
-		DrawVertexNormals();
+		DrawVertexNormals(m);
 
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_FACES || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
-		DrawFacesNormals();
+		DrawFacesNormals(m);
 
 
-	glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
+	glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
-	int localDrawMode=(int)sceneMaxDrawMode;
+	int localDrawMode = (int)sceneMaxDrawMode;
 
 	if (mesh->meshDrawMode > localDrawMode)
 		localDrawMode = mesh->meshDrawMode;
@@ -59,16 +66,16 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 
-		DrawBuffers();
+		DrawBuffers(m);
 
-		glColor3f(1.0f, 1.0f, 1.0f);//TODO change this for the default mesh color
+		glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 	}
 
-	DrawBuffers();
-	
+	DrawBuffers(m);
+
 
 	glPopMatrix();
 
@@ -83,7 +90,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 }
 
-void RenderMesh::DrawVertexNormals()
+void RenderMesh::DrawVertexNormals(ResourceMesh* m)
 {
 	float magnitude = mesh->normalVertexSize;
 	glColor3f(1.0f, 0.5f, 0.0f);
@@ -93,13 +100,12 @@ void RenderMesh::DrawVertexNormals()
 
 	for (int i = 0; i < mesh->GetMesh()->normals.size() / 3; i++)
 	{
-		Mesh* m = mesh->GetMesh();
-		vec3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
-		vec3 vertex1 =
+		float3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
+		float3 vertex1 =
 		{
-			m->vertices[i * 3] + (m->normals[i * 3] * magnitude),
-			m->vertices[(i * 3) + 1] + (m->normals[(i * 3) + 1] * magnitude),
-			m->vertices[(i * 3) + 2] + (m->normals[(i * 3) + 2] * magnitude)
+			m->vertices[i * 3] + (m->smoothedNormals[i * 3] * magnitude),//TODO FOR OSCAR i changed normals for smoothed normals here for testing purposes, change this back
+			m->vertices[(i * 3) + 1] + (m->smoothedNormals[(i * 3) + 1] * magnitude),
+			m->vertices[(i * 3) + 2] + (m->smoothedNormals[(i * 3) + 2] * magnitude)
 		};
 
 
@@ -114,9 +120,8 @@ void RenderMesh::DrawVertexNormals()
 	glLineWidth(2.0f);
 }
 
-void RenderMesh::DrawFacesNormals()
+void RenderMesh::DrawFacesNormals(ResourceMesh* m)
 {
-	Mesh* m = mesh->GetMesh();
 
 	float magnitude = mesh->normalFaceSize;
 	glColor3f(0.0f, 0.25f, 1.0f);
@@ -132,17 +137,19 @@ void RenderMesh::DrawFacesNormals()
 		unsigned int vertex2id = m->indices[i + 2];
 
 
-		vec3 vertex0 = { m->vertices[vertex0id * 3],m->vertices[(vertex0id * 3) + 1], m->vertices[(vertex0id * 3) + 2] };
-		vec3 vertex1 = { m->vertices[vertex1id * 3], m->vertices[(vertex1id * 3) + 1], m->vertices[(vertex1id * 3) + 2] };
-		vec3 vertex2 = { m->vertices[vertex2id * 3], m->vertices[(vertex2id * 3) + 1], m->vertices[(vertex2id * 3) + 2] };
+		float3 vertex0 = { m->vertices[vertex0id * 3],m->vertices[(vertex0id * 3) + 1], m->vertices[(vertex0id * 3) + 2] };
+		float3 vertex1 = { m->vertices[vertex1id * 3], m->vertices[(vertex1id * 3) + 1], m->vertices[(vertex1id * 3) + 2] };
+		float3 vertex2 = { m->vertices[vertex2id * 3], m->vertices[(vertex2id * 3) + 1], m->vertices[(vertex2id * 3) + 2] };
 
-		vec3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
-		vec3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
-		vec3 normal = normalize(cross(vector01, vector02));
+		float3 vector01 = vertex1 - vertex0;//vector from point 0 to point 1
+		float3 vector02 = vertex2 - vertex0;//vector from point 0 to point 2
+		float3 normal = Cross(vector01, vector02);
+		normal.Normalize();
+
 		normal *= magnitude;
 
 
-		vec3 center = (vertex0 + vertex1 + vertex2) / 3;
+		float3 center = (vertex0 + vertex1 + vertex2) / 3;
 		//Provisional placement (it displays the normal in the first vertex)
 		glVertex3f(center.x, center.y, center.z);
 		glVertex3f((center.x + normal.x), (center.y + normal.y), (center.z + normal.z));
@@ -154,9 +161,8 @@ void RenderMesh::DrawFacesNormals()
 	glLineWidth(2.0f);
 }
 
-void RenderMesh::DrawBuffers()
+void RenderMesh::DrawBuffers(ResourceMesh* m)
 {
-	Mesh* m = mesh->GetMesh();
 	unsigned int texIDtoBind = 0;
 	glBindBuffer(GL_ARRAY_BUFFER, m->idVertex);			//this is for printing the index
 	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about

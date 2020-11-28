@@ -1,5 +1,6 @@
 #pragma once
 #include<vector>
+#include "Resources.h"
 
 enum class MeshDrawMode
 {
@@ -15,18 +16,21 @@ enum class NormalDrawMode
 	NORMAL_MODE_BOTH
 };
 
-class Mesh
+class ResourceMesh : public Resource
 {
 public:
 
-	Mesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords);
-	Mesh(const Mesh& other);
-	~Mesh();
+	ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords,unsigned int UID);
+	ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords, unsigned int UID);
+	ResourceMesh(unsigned int UID);
+	ResourceMesh(const ResourceMesh& other);
+	~ResourceMesh();
 
 	//void Draw();
-
+	void GenerateSmoothedNormals();
 	void GenerateBuffers();
 	void FreeBuffers();
+	bool UnloadFromMemory()override;
 private:
 	//void DrawVertexNormals();
 	//void DrawFacesNormals();
@@ -38,6 +42,8 @@ public:
 	//MeshDrawMode drawMode;
 	//NormalDrawMode normalMode;
 
+
+
 	unsigned int idIndex; // index in VRAM
 	std::vector<unsigned int> indices;//index array
 
@@ -47,6 +53,8 @@ public:
 	unsigned int idNormals;// normals in VRAM
 	std::vector<float> normals;//normals array(note that normals are just 3 of the elements stored in this vector)
 
+	//ADRI: DO NOT IMPORT THIS; CALL THE FUNC GENERATESMOOTHNORMALS()
+	std::vector<float> smoothedNormals;//average of all faces 
 	unsigned int idTexCoords; //texture coordinates in VRAM
 	std::vector<float> texCoords;//texture coordinates array(note that texCoords are just 2 of the elements stored in this vector)
 

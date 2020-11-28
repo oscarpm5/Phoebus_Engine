@@ -5,7 +5,6 @@
 #include "Module.h"
 //#include "Globals.h"
 //#include "glmath.h"
-//#include "MathGeoLib/include/Algorithm/Random/LCG.h"
 #include "imgui/imgui.h" //ImVec2 cannot be forward declared
 //#include "Primitive.h" //wtf
 //#include <iostream> 
@@ -32,16 +31,17 @@ public:
 
 	void ShowExampleAppConsole(bool* p_open);
 	bool Show3DWindow();
+	void GuizmoEditTransform();
 	bool showAboutWindow();
 	bool showConfigFunc();
 	bool showQuitPopup();
+	bool ShowResourcesActive();
 
+	void DrawDirectoryTree(const char* dir);
+	void DrawDirectoryTreeLoadScene(const char* dir);
 
-
-	
 private:
-
-		
+	
 	bool CreateBasicForm(PrimitiveTypes type, float ar1 = 0, float ar2 = 0, float ar3 = 0, float ar4 = 0, float ar = 5); //arX meaning depends on type. This saves massive amounts of code. Deal with it.
 	void CreateMeshfromPrimAndSendToScene(std::vector<float> vertices, std::vector<unsigned int> indices,std::string name="");
 	void OpenGLOnResize(int w, int h);
@@ -50,14 +50,18 @@ public:
 	bool showDemoWindow;
 	bool showConsoleWindow;
 	bool showHierarchy;
+	bool showLoadFileWindow;
+	bool showLoadScenes;
 	bool showInspector;
 	bool show3DWindow;
 	bool showAboutWindowbool;
 	bool showConfig;
 	bool showQuit;
 	bool quitAlreadyOpened;
-
+	bool showResourcesActive;
 	Cnsl* console;
+
+	void GetViewportRectUI(float2& screenPos, float2& size)const;
 
 private:
 	//arguments for the primitive functions (TODO this could be changed in the future, find a way to have multiple args)
@@ -68,23 +72,25 @@ private:
 	float ar5;
 
 	//fps related business
-	//ImVector<float> fps_log[60];
 	std::vector<float> fps_log;
 	int maxFPShown;
 	
 	//flags
 	bool Vsync;
 	bool resizable; 
+	bool showOnlyLoadedRes;
 	ImVec2 imgSize;
+	ImVec2 imgPos;
+	float gizmoSize;
 
 	//this is for displaying our portraits in the About
-private:
 	unsigned int AdriID;
 	unsigned int OscarID;
 	unsigned int PhoebusIcon;
-	
 
-
+	//File explorer selected file  
+	char selectedFile[250];
+	char selectedScene[250];
 
 }; 
 #endif // !__MODULE_RENDER_2D__

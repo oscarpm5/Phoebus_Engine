@@ -2,39 +2,46 @@
 #define __C_TRANSFORM__
 #include "Component.h"
 #include "Assimp/include/matrix4x4.h" //we cant do forward declaration. Thanks, assimp
-#include "glmath.h"//we cant do forward declaration.
+//#include "glmath.h"//we cant do forward declaration.
 #include "MathGeoLib/include/MathGeoLib.h"
 
 class C_Transform : public Component
 {
 public:
 
-	C_Transform(GameObject* owner, mat4x4 lTransform);
+	C_Transform(GameObject* owner, float4x4 lTransform,unsigned int ID, bool islocalTrans = true);
 	~C_Transform();
 
-	mat4x4 GetGlobalTransform()const;
-	mat4x4 GetLocalTransform()const;
+	float4x4 GetGlobalTransform()const;
+	float4x4 GetLocalTransform()const;
+	void SetGlobalTransform(float4x4 newGTransform);
+	void SetLocalTransform(float4x4 newLTransform);
+
 	void OnEditor();
 
-	vec3 GetLocalPosition();
-	vec3 GetGlobalPosition();
-	vec3 GetLocalScale();
-	float3x3 GetRotationMat();
+	float3 GetLocalPosition();
+	float3 GetGlobalPosition();
+	float3 GetLocalScale();
+	float3 GetGlobalScale();
 
-	void SetLocalPosition(vec3 newPos);
-	void SetLocalScale(vec3 newScale);
-	void SetLocalRot(float3x3 newRot);
+
+	void SetLocalPosition(float3 newPos);
+	void SetLocalScale(float3 newScale);
+	void SetLocalRot(Quat newRot);
+	void SetGlobalPosition(float3 newPos);
+	void SetGlobalScale(float3 newScale);
+	void SetGlobalRot(Quat newRot);
+
 
 	void UpdateGlobalMat();//updates the global matrix according to the local matrix
+	void UpdateLocalMat();//updates the local matrix according to the global matrix
 
-private:
-	aiMatrix4x4 lTraansIntoAssimpMatrix();
-	vec3 GetEulerFromQuat(aiQuaterniont<float> rotation);
-	mat4x4 RottoTrans(float3x3 rot);
+public:
+	bool localMode;
 private:
 
-	mat4x4 lTransformMat;//local transform mat
-	mat4x4 gTransformMat;//global transform mat
+	float4x4 lTransformMat;//local transform mat
+	float4x4 gTransformMat;//global transform mat
 };
 
 

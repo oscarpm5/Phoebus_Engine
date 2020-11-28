@@ -17,13 +17,13 @@ void SphereFillVectorsVertexAndIndex(std::vector<float> &vertices, std::vector<u
 
 		// vertex position
 
-		float sectorStep = 2 * M_PI / sectors;
-		float stackStep = M_PI / stacks;
+		float sectorStep = 2 * pi / sectors;
+		float stackStep = pi / stacks;
 		float sectorAngle, stackAngle;
 
 		for (int i = 0; i <= stacks; ++i)
 		{
-			stackAngle = M_PI / 2 - i * stackStep;        // starting from pi/2 to -pi/2
+			stackAngle = pi / 2 - i * stackStep;        // starting from pi/2 to -pi/2
 			xy = radius * cosf(stackAngle);             // r * cos(u)
 			z = radius * sinf(stackAngle);              // r * sin(u)
 
@@ -75,8 +75,8 @@ void CylinderFillVectorsVertexAndIndex(std::vector<float>& vertices, std::vector
 {
 	std::vector<float> unitCircleVertices; // this will be used in filling the vertices for the base and top
 
-	float sectorStep = 2 * M_PI / sectorCount;
-	float stackStep = M_PI / stacks;
+	float sectorStep = 2 * pi / sectorCount;
+	float stackStep = pi / stacks;
 	float sectorAngle, stackAngle;
 	float radius;                     // radius for each stack
 	float x, y, z;                     // vertex position
