@@ -126,10 +126,11 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with a automatic name which you can later change
 
-* You can load any saved scene un Menu->Load
+* You can load any saved scene in Menu->Load
 
 * The resource manager has an automatic garbage collector which deletes ".meta" & lib files when their asset is missing.
 
+* Components can be added to an existing object through the "Add Component" button at the bottom part of the Inspector when a game object is selected.
  
 ## Aditional comments for the teacher:
 
@@ -143,7 +144,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
 * AABBs & Camera are visible even outside frustum of the culling cam to let the user know where they are.
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
-* Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
+* Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay". IF you don't see anythingafter clicking move the camera as the ray is pointing straight through the camera and is represented as just a pixel.
 * Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
 * Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.

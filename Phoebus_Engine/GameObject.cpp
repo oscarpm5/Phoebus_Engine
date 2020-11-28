@@ -325,6 +325,52 @@ void GameObject::DrawOnEditorAllComponents()
 	for (int i = 0; i < this->components.size(); i++)
 	{
 		components[i]->OnEditor();
+
+	}
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Separator();
+
+	int buttonWidth = 150;
+	float wWidth=ImGui::GetWindowWidth();
+	ImVec2 cursPos = ImGui::GetCursorPos();
+	cursPos.x = cursPos.x + (wWidth * 0.5f)-(buttonWidth*0.5f); //60 is half button width
+	ImGui::SetCursorPos(cursPos);
+
+	if (ImGui::Button("Add Component##objComponent", ImVec2(buttonWidth, 20)))
+	{
+		ImGui::OpenPopup("AddComponent##Popup");
+
+	}
+	ImGui::SameLine();
+	if (ImGui::BeginPopup("AddComponent##Popup"))
+	{
+		ImGui::Text("Select New Component to Add");
+		ImGui::Separator();
+
+		//TODO this can be made pretty in the future
+		if (GetComponent<C_Mesh>() == nullptr)//support multiple meshes in the future?
+		{
+			if(ImGui::Selectable("Mesh Component##addComponent"))
+			CreateComponent(ComponentType::MESH);
+		}
+		if (GetComponent<C_Material>() == nullptr)
+		{
+			if(ImGui::Selectable("Material Component##addComponent"))
+			CreateComponent(ComponentType::MATERIAL);
+		}
+		if (GetComponent<C_Camera>() == nullptr)
+		{
+			if(ImGui::Selectable("Camera Component##addComponent"))
+			CreateComponent(ComponentType::CAMERA);
+		}
+
+
+
+		ImGui::EndPopup();
 	}
 }
 
