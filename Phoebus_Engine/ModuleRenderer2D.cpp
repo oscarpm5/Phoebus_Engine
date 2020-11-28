@@ -74,6 +74,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	imgSize = ImVec2(0.0f, 0.0f);
 
 	gizmoSize = 0.5f;
+	showOnlyLoadedRes = true;
 
 	selectedFile[0] = '\0';
 }
@@ -167,7 +168,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				LOG("Scene (%i size) saved in %s", size, auxPath);
 				RELEASE_ARRAY(buff);
 				buff = nullptr;
-				
+
 			}
 			/*
 			int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
@@ -213,7 +214,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				showQuit = true;
 			}
-			
+
 			ImGui::EndMenu();
 		}
 
@@ -364,14 +365,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				LOG("Loading temporal scene");
 				delete App->editor3d->root; App->editor3d->root = nullptr;
 				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
-				
-				std::string auxPath = LIB_PATH; auxPath +="Scenes/TemporalScene.pho";
+
+				std::string auxPath = LIB_PATH; auxPath += "Scenes/TemporalScene.pho";
 				char* auxB = "";
 				App->fileSystem->Load(auxPath.c_str(), &auxB);
 				Importer::LoadScene(auxB, App->editor3d->root);
 				RELEASE_ARRAY(auxB);
 				auxB = nullptr;
-				
+
 			}
 			else
 			{
@@ -380,7 +381,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				LOG("Saving tempooral scene");
 				unsigned int size = Importer::SerializeScene(App->editor3d->root, &auxB);
 				std::string auxPath = LIB_PATH; auxPath += "Scenes/TemporalScene.pho";
-				App->fileSystem->SavePHO(auxPath.c_str(), auxB,size);
+				App->fileSystem->SavePHO(auxPath.c_str(), auxB, size);
 				RELEASE_ARRAY(auxB);
 				auxB = nullptr;
 			}
@@ -526,22 +527,22 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			ImGui::PopItemWidth();
 			ImGui::SameLine();
-			
+
 			if (ImGui::Button("Ok", ImVec2(50, 20)))
 			{
 				//TODO Call load asset here??
 				showLoadFileWindow = false;
 				std::string selected = selectedFile;
 
-				Resource* r= App->rManager->ManageAssetUpdate(selected.c_str());
+				Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
 				if (r != nullptr)
 				{
-				App->rManager->RequestNewResource(r->GetUID());
+					App->rManager->RequestNewResource(r->GetUID());
 				}
 
 				selectedFile[0] = '\0';
 			}
-	
+
 			ImGui::SameLine();
 
 			if (ImGui::Button("Cancel", ImVec2(50, 20)))
@@ -563,9 +564,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				ImGui::Text("It will also remove itself from loaded memory. Are you sure ? \n");
 				ImGui::Separator();
 
-				if (ImGui::Button("Delete", ImVec2(120, 0))) 
-				{ 
-					App->fileSystem->DeleteFromAssetsAndLibs(selectedFile); 
+				if (ImGui::Button("Delete", ImVec2(120, 0)))
+				{
+					App->fileSystem->DeleteFromAssetsAndLibs(selectedFile);
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::SetItemDefaultFocus();
@@ -582,8 +583,8 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	}
 
 
-	
-	
+
+
 
 	if (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP)
 		showQuit = true;
@@ -1084,39 +1085,98 @@ bool ModuleRenderer2D::showQuitPopup()
 bool ModuleRenderer2D::ShowResourcesActive()
 {
 
-	ActiveResources act = App->rManager->GetActiveResources();
+	ActiveResources act;
 
 	if (ImGui::Begin("Active Resources", &showResourcesActive))		//this is how you add the cross button to a window
 	{
+		ImGui::Checkbox("ShowOnlyLoaded##resources", &showOnlyLoadedRes);
 		//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
+		if (showOnlyLoadedRes)
+		{
+			act = App->rManager->GetActiveResources();
+		}
+		else
+		{
+			act = App->rManager->GetActiveResources(true);
+		}
+
+		//std::sort(act.meshes.begin(), act.meshes.end());
+		//std::sort(act.models.begin(), act.models.end());
+		//std::sort(act.textures.begin(), act.textures.end());
+		//std::sort(act.scenes.begin(), act.scenes.end());
+
 
 		if (ImGui::CollapsingHeader("Textures##resources"))
 		{
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.textures.size(); i++)
 			{
-				ImGui::Selectable(act.textures[i]->GetAssetFile().c_str());
+				if (!act.textures[i]->IsLoadedInMemory())
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+
+				ImGui::Selectable(act.textures[i]->GetLibraryFile().c_str());
+
+				//DragDropSource Begin
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+				{
+					// Set payload to carry the object pointer
+					unsigned int payloadID = act.textures[i]->GetUID();
+					ImGui::SetDragDropPayload("ResourceTex##dragdropSource", &payloadID, sizeof(unsigned int));
+
+					// Display preview (could be anything, e.g. when dragging an image we could decide to display
+					// the filename and a small preview of the image, etc.)
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4 FOCUSED_COLOR);
+					ImGui::Text("%s", act.textures[i]->GetAssetFile().c_str());
+					ImGui::PopStyleColor();
+
+					ImGui::EndDragDropSource();
+				}
+				//DragDropSource End
+
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
-					
+
 					std::string count = std::to_string(act.textures[i]->referenceCount);
 					std::string ID = std::to_string(act.textures[i]->GetUID());
 
-					ImGui::Text("ID: %s",ID.c_str());
+					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
 
 					ImGui::EndTooltip();
 				}
+				if (!act.textures[i]->IsLoadedInMemory())
+					ImGui::PopStyleColor();
 			}
 			//ImGui::PopStyleColor();
 		}
-		if (ImGui::CollapsingHeader("Meshes##resources"))
+		if (ImGui::CollapsingHeader("Meshes##resourcesm"))
 		{
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.meshes.size(); i++)
 			{
-				ImGui::Selectable(act.meshes[i]->GetAssetFile().c_str());
+				if (!act.meshes[i]->IsLoadedInMemory())
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+
+				ImGui::Selectable(act.meshes[i]->GetLibraryFile().c_str());
+
+				//DragDropSource Begin
+				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+				{
+					// Set payload to carry the object pointer
+					unsigned int payloadID = act.meshes[i]->GetUID();
+					ImGui::SetDragDropPayload("ResourceMesh##dragdropSource", &payloadID, sizeof(unsigned int));
+
+					// Display preview (could be anything, e.g. when dragging an image we could decide to display
+					// the filename and a small preview of the image, etc.)
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4 FOCUSED_COLOR);
+					ImGui::Text("%s", act.meshes[i]->GetAssetFile().c_str());
+					ImGui::PopStyleColor();
+
+					ImGui::EndDragDropSource();
+				}
+				//DragDropSource End
+
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
@@ -1129,6 +1189,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 
 					ImGui::EndTooltip();
 				}
+				if (!act.meshes[i]->IsLoadedInMemory())
+					ImGui::PopStyleColor();
 			}
 			//ImGui::PopStyleColor();
 		}
@@ -1137,7 +1199,10 @@ bool ModuleRenderer2D::ShowResourcesActive()
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.scenes.size(); i++)
 			{
-				ImGui::Selectable(act.scenes[i]->GetAssetFile().c_str());
+				if (!act.scenes[i]->IsLoadedInMemory())
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+
+				ImGui::Selectable(act.scenes[i]->GetLibraryFile().c_str());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
@@ -1150,6 +1215,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 
 					ImGui::EndTooltip();
 				}
+				if (!act.scenes[i]->IsLoadedInMemory())
+					ImGui::PopStyleColor();
 			}
 			//ImGui::PopStyleColor();
 		}
@@ -1158,7 +1225,10 @@ bool ModuleRenderer2D::ShowResourcesActive()
 			//ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
 			for (int i = 0; i < act.models.size(); i++)
 			{
-				ImGui::Selectable(act.models[i]->GetAssetFile().c_str());
+				if (!act.models[i]->IsLoadedInMemory())
+					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
+
+				ImGui::Selectable(act.models[i]->GetLibraryFile().c_str());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
@@ -1171,6 +1241,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 
 					ImGui::EndTooltip();
 				}
+				if (!act.models[i]->IsLoadedInMemory())
+					ImGui::PopStyleColor();
 			}
 			//ImGui::PopStyleColor();
 		}

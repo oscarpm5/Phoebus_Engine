@@ -114,7 +114,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 ### Second Assigment
 
-* Objects have an outline when selected, outline size can be configured via the config panel.
+* Objects have an outline when selected, outline size can be configured via the config panel. A filled outline from the seleted object can be seen through other objects if they are in front of it.
 
 * Depth buffer can be displayed in the editor cam. To enable this go to Menu -> config -> rendering and check "Depth display"
 
@@ -136,6 +136,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
 * Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
 * Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
+* Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

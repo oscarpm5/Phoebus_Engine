@@ -76,6 +76,7 @@ private:
 	//flags
 	bool Vsync;
 	bool resizable; 
+	bool showOnlyLoadedRes;
 	ImVec2 imgSize;
 	ImVec2 imgPos;
 	float gizmoSize;

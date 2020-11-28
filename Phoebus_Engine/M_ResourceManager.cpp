@@ -311,7 +311,7 @@ void M_ResourceManager::StopUsingResource(unsigned int uid)
 	}
 }
 
-ActiveResources M_ResourceManager::GetActiveResources()
+ActiveResources M_ResourceManager::GetActiveResources(bool getAll)
 {
 	ActiveResources res;
 
@@ -319,7 +319,7 @@ ActiveResources M_ResourceManager::GetActiveResources()
 
 	for (it; it != resources.end(); it++)
 	{
-		if (it->second->IsLoadedInMemory())
+		if (getAll||it->second->IsLoadedInMemory())
 		{
 
 			ResourceType type = it->second->GetType();
@@ -375,6 +375,10 @@ void M_ResourceManager::LoadAssetsRecursively(std::string dir)
 		if (extension != ".meta")
 		{
 			ManageAssetUpdate(absPath.c_str()); //manages the file
+		}
+		else
+		{
+			//Garbage collector-> check if metta has asset associated, if not delete form lib & memory
 		}
 	}
 

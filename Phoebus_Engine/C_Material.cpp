@@ -167,6 +167,8 @@ void C_Material::OnEditor()
 		//const char* combo_label = textNameDisplay.c_str();  // Label to preview before opening the combo (technically it could be anything)
 		if (ImGui::BeginCombo("Used Texture##texture", textNameDisplay.c_str(), ImGuiComboFlags_PopupAlignLeft))
 		{
+
+
 			const bool noneSelected = (texture == nullptr);
 			if (ImGui::Selectable("NONE##texture", noneSelected))
 			{
@@ -201,17 +203,30 @@ void C_Material::OnEditor()
 				if (is_selected)
 					ImGui::SetItemDefaultFocus();
 			}
+
 			ImGui::EndCombo();
 		}
 		//===========================================
 
+//begin drag drop target
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("ResourceTex##dragdropSource"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(unsigned int));
+				unsigned int payloadID = *(const int*)payload->Data;
 
 
+				if (payloadID != 0&& payloadID!=resourceID)
+				{
+					SetNewResource(payloadID);
+				}
+			}
+			ImGui::EndDragDropTarget();
 
-
-
-
-
+		}
+		//end drag drop target
+			   		 	  	  	 
 		ImGui::Indent();
 		ImGui::Separator();
 		if (texture != nullptr)

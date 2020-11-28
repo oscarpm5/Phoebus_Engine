@@ -170,7 +170,25 @@ void C_Mesh::OnEditor()
 
 
 
+		//begin drag drop target
+		if (ImGui::BeginDragDropTarget())
+		{
+			if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("ResourceMesh##dragdropSource"))
+			{
+				IM_ASSERT(payload->DataSize == sizeof(unsigned int));
+				unsigned int payloadID = *(const int*)payload->Data;
 
+
+				if (payloadID != 0 && payloadID != resourceID)
+				{
+					SetNewResource(payloadID);
+				}
+				
+			}
+			ImGui::EndDragDropTarget();
+
+		}
+		//end drag drop target
 
 
 
