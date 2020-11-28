@@ -20,11 +20,11 @@ struct ActiveResources
 
 
 
-class M_ResourceManager : public Module
+class ModuleResourceManager : public Module
 {
 public:
-	M_ResourceManager(bool start_enabled = true);
-	~M_ResourceManager();
+	ModuleResourceManager(bool start_enabled = true);
+	~ModuleResourceManager();
 	bool Init();
 	bool Start();
 	update_status PreUpdate(float dt)override;

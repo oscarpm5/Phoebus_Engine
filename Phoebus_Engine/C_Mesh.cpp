@@ -4,7 +4,7 @@
 #include <string>
 #include "MathGeoLib/include/Geometry/AABB.h"
 #include "Application.h"
-#include "M_ResourceManager.h"
+#include "ModuleResourceManager.h"
 
 C_Mesh::C_Mesh(GameObject* owner, unsigned int ID) :Component(ComponentType::MESH, owner, ID), resourceID(0),
 normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0), temporalRMesh(nullptr)

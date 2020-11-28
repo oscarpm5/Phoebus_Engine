@@ -5,7 +5,7 @@
 #include "DevIL/include/IL/ilu.h"
 #include "Texture.h"
 #include "Application.h"
-#include "M_ResourceManager.h"
+#include "ModuleResourceManager.h"
 
 C_Material::C_Material(GameObject* owner, unsigned int ID) :Component(ComponentType::MATERIAL, owner, ID),
 idCheckers(0), //width(0), height(0), format(0), depth(0),idTexture(0),sizeInBytes(0), bpp(0), 

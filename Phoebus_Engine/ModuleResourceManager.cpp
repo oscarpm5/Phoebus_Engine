@@ -1,4 +1,4 @@
-#include "M_ResourceManager.h"
+#include "ModuleResourceManager.h"
 #include "Globals.h"
 #include "Application.h"
 #include "Resources.h"
@@ -8,21 +8,21 @@
 #include <string>
 #include "Importer.h"
 
-M_ResourceManager::M_ResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
+ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
 {
 }
 
-M_ResourceManager::~M_ResourceManager()
+ModuleResourceManager::~ModuleResourceManager()
 {
 }
 
-bool M_ResourceManager::Init()
+bool ModuleResourceManager::Init()
 {
 	haveToReload = false;
 	return true;
 }
 
-bool M_ResourceManager::Start()
+bool ModuleResourceManager::Start()
 {
 
 	LoadAllAssets();
@@ -49,7 +49,7 @@ bool M_ResourceManager::Start()
 	return true;
 }
 
-update_status M_ResourceManager::PreUpdate(float dt)
+update_status ModuleResourceManager::PreUpdate(float dt)
 {
 	checkTimer += dt;
 	if (App->GetGameState() == GameStateEnum::STOPPED && (checkTimer >= 60.0f || haveToReload == true))//we only check assets when the engine is not in runtime
@@ -80,12 +80,12 @@ update_status M_ResourceManager::PreUpdate(float dt)
 //	return update_status::UPDATE_CONTINUE;
 //}
 
-bool M_ResourceManager::CleanUp()
+bool ModuleResourceManager::CleanUp()
 {
 	return true;
 }
 
-Resource* M_ResourceManager::ImportNewFile(const char* newAssetFile)
+Resource* ModuleResourceManager::ImportNewFile(const char* newAssetFile)
 {
 	//if it has no meta, import normally (create resource in lib + create . meta in assets)
 	Resource* res = nullptr;
@@ -141,7 +141,7 @@ Resource* M_ResourceManager::ImportNewFile(const char* newAssetFile)
 	return res;
 }
 
-Resource* M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned int uid)
+Resource* ModuleResourceManager::ReImportExistingFile(const char* newAssetFile, unsigned int uid)
 {
 	Resource* res = nullptr;
 	//if it has no meta, import normally (create resource in lib + create . meta in assets)
@@ -193,7 +193,7 @@ Resource* M_ResourceManager::ReImportExistingFile(const char* newAssetFile, unsi
 	return res;
 }
 
-void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile)
+void ModuleResourceManager::FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile)
 {
 	std::vector<std::string>files;
 	std::vector<std::string>dirs;
@@ -232,7 +232,7 @@ void M_ResourceManager::FindFileRecursively(std::string uid, std::string currDir
 	}
 }
 
-void M_ResourceManager::GenerateMetaFile(Resource* res)
+void ModuleResourceManager::GenerateMetaFile(Resource* res)
 {
 	char* bufferToFill = "";
 	std::string auxP = (res->GetAssetFile());
@@ -266,7 +266,7 @@ void M_ResourceManager::GenerateMetaFile(Resource* res)
 			//file = nullptr;
 }
 
-Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
+Resource* ModuleResourceManager::RequestNewResource(unsigned int uid)
 {
 	//Find if the resource is already loaded or imported
 	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
@@ -285,7 +285,7 @@ Resource* M_ResourceManager::RequestNewResource(unsigned int uid)
 	return nullptr;//the file doesn't exist in lib :c
 }
 
-Resource* M_ResourceManager::RequestExistingResource(unsigned int uid)
+Resource* ModuleResourceManager::RequestExistingResource(unsigned int uid)
 {
 	Resource* ret = nullptr;
 	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
@@ -297,7 +297,7 @@ Resource* M_ResourceManager::RequestExistingResource(unsigned int uid)
 	return ret;
 }
 
-void M_ResourceManager::StopUsingResource(unsigned int uid)
+void ModuleResourceManager::StopUsingResource(unsigned int uid)
 {
 	//Find if the resource is already loaded or imported
 	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
@@ -313,7 +313,7 @@ void M_ResourceManager::StopUsingResource(unsigned int uid)
 	}
 }
 
-ActiveResources M_ResourceManager::GetActiveResources(bool getAll)
+ActiveResources ModuleResourceManager::GetActiveResources(bool getAll)
 {
 	ActiveResources res;
 
@@ -351,12 +351,12 @@ ActiveResources M_ResourceManager::GetActiveResources(bool getAll)
 	return res;
 }
 
-void M_ResourceManager::LoadAllAssets()
+void ModuleResourceManager::LoadAllAssets()
 {
 	LoadAssetsRecursively("Assets/");
 }
 
-void M_ResourceManager::LoadAssetsRecursively(std::string dir)
+void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 {
 	std::vector<std::string>files;
 	std::vector<std::string>dirs;
@@ -404,7 +404,7 @@ void M_ResourceManager::LoadAssetsRecursively(std::string dir)
 	}
 }
 
-void M_ResourceManager::LoadAssetsFromDir(std::string dir)
+void ModuleResourceManager::LoadAssetsFromDir(std::string dir)
 {
 	std::vector<std::string>files;
 	std::vector<std::string>dirs;
@@ -432,7 +432,7 @@ void M_ResourceManager::LoadAssetsFromDir(std::string dir)
 	}
 }
 
-void M_ResourceManager::LoadResourceIntoMem(Resource* res)
+void ModuleResourceManager::LoadResourceIntoMem(Resource* res)
 {
 	ResourceType type = res->GetType();
 
@@ -466,7 +466,7 @@ void M_ResourceManager::LoadResourceIntoMem(Resource* res)
 
 }
 
-void M_ResourceManager::GetAllResourcesOfType(ResourceType rtype, std::vector<Resource*>& ret)
+void ModuleResourceManager::GetAllResourcesOfType(ResourceType rtype, std::vector<Resource*>& ret)
 {
 	ret.clear();
 
@@ -482,7 +482,7 @@ void M_ResourceManager::GetAllResourcesOfType(ResourceType rtype, std::vector<Re
 	}
 }
 
-Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
+Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 {
 	Resource* ret = nullptr;
 
@@ -565,7 +565,7 @@ Resource* M_ResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	return ret;
 }
 
-bool M_ResourceManager::DeleteItemFromResourcesMap(unsigned int UID)
+bool ModuleResourceManager::DeleteItemFromResourcesMap(unsigned int UID)
 {
 	bool ret = false;
 	std::map<unsigned int, Resource*>::iterator it = resources.find(UID);
@@ -582,7 +582,7 @@ bool M_ResourceManager::DeleteItemFromResourcesMap(unsigned int UID)
 }
 
 //Substitute code for this function every time we want to know if a res is in memory TODO
-Resource* M_ResourceManager::FindResInMemory(unsigned int UID)
+Resource* ModuleResourceManager::FindResInMemory(unsigned int UID)
 {
 	Resource* ret = nullptr;
 	std::map<unsigned int, Resource*>::iterator it = resources.find(UID);
@@ -593,7 +593,7 @@ Resource* M_ResourceManager::FindResInMemory(unsigned int UID)
 	return ret;
 }
 
-Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceType type, unsigned int existingID)
+Resource* ModuleResourceManager::CreateNewResource(const char* assetsFile, ResourceType type, unsigned int existingID)
 {
 	Resource* ret = nullptr;
 	unsigned int newUID = existingID;
@@ -638,7 +638,7 @@ Resource* M_ResourceManager::CreateNewResource(const char* assetsFile, ResourceT
 	return ret;
 }
 
-std::string M_ResourceManager::GenLibPath(Resource& res)
+std::string ModuleResourceManager::GenLibPath(Resource& res)
 {
 	ResourceType restType = res.GetType();
 	std::string path = "";
@@ -677,7 +677,7 @@ std::string M_ResourceManager::GenLibPath(Resource& res)
 	return path;
 }
 
-ResourceType M_ResourceManager::ResourceTypeFromPath(std::string path)
+ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 {
 	ResourceType ret = ResourceType::UNKNOWN;
 	FileFormats thisFormat = App->fileSystem->CheckFileFormat(path.c_str());
@@ -709,7 +709,7 @@ ResourceType M_ResourceManager::ResourceTypeFromPath(std::string path)
 	return ret;
 }
 
-Resource* M_ResourceManager::TryToLoadResource(unsigned int uid)
+Resource* ModuleResourceManager::TryToLoadResource(unsigned int uid)
 {
 	Resource* res = nullptr;
 	//find resource path and load resource into the engine here
@@ -725,7 +725,7 @@ Resource* M_ResourceManager::TryToLoadResource(unsigned int uid)
 	return res;
 }
 
-bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
+bool ModuleResourceManager::ReleaseSingleResource(unsigned int uid)
 {
 	bool ret = false;
 	//Find if the resource is loaded
@@ -741,7 +741,7 @@ bool M_ResourceManager::ReleaseSingleResource(unsigned int uid)
 	}	return ret;
 }
 
-void M_ResourceManager::SaveResource(Resource& r)
+void ModuleResourceManager::SaveResource(Resource& r)
 {
 	ResourceType type = r.GetType();
 
