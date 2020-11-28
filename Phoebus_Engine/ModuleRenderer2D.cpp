@@ -48,7 +48,8 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	showDemoWindow = false;
 	showConsoleWindow = true;
 	showHierarchy = true;
-	showLoadFileWindow = false;
+	showLoadFileWindow = true;
+	showLoadScenes = false;
 	showInspector = true;
 	show3DWindow = true;
 	showAboutWindowbool = false;
@@ -77,6 +78,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	showOnlyLoadedRes = true;
 
 	selectedFile[0] = '\0';
+	selectedScene[0] = '\0';
 }
 
 ModuleRenderer2D::~ModuleRenderer2D()
@@ -164,42 +166,14 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				unsigned int size = Importer::SerializeScene(App->editor3d->root, &buff);
 				std::string auxPath = LIB_PATH; auxPath += "Scenes/AbsoluteScene"; auxPath += std::to_string(App->renderer3D->seed.Int()); auxPath += ".pho";
 				App->fileSystem->SavePHO(auxPath.c_str(), buff, size);
-
-				LOG("Scene (%i size) saved in %s", size, auxPath);
 				RELEASE_ARRAY(buff);
 				buff = nullptr;
 
 			}
-			/*
-			int flags = ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysUseWindowPadding;
-
-			ImGui::SetNextWindowPos(ImGui::GetMainViewport()->GetCenter(), ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
-
-			if (ImGui::BeginPopup("Name?", flags))
+			if (ImGui::MenuItem("Load", "Scene"))
 			{
-				char* text = " ";
-				ImGui::InputText("SceneName", text, 20);
-
-				if (ImGui::Button("Save", ImVec2(120, 0)))
-				{
-					LOG("Saving scene");
-					char* auxBuffer = "";
-					unsigned int size = Importer::SerializeScene(App->editor3d->root, &auxBuffer);
-					std::string auxPath = LIB_PATH; auxPath += "Scenes/";
-					App->fileSystem->SavePHO(auxPath.c_str(), auxBuffer, size);
-					RELEASE_ARRAY(auxBuffer);
-					auxBuffer = nullptr;
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::SetItemDefaultFocus();
-				ImGui::SameLine();
-				if (ImGui::Button("Cancel", ImVec2(120, 0)) || (App->input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_UP))
-				{
-					ImGui::CloseCurrentPopup();
-				}
-				ImGui::EndPopup();
-			}*/
-
+				showLoadScenes = true;
+			}
 
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
@@ -328,6 +302,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::MenuItem("Inspector", NULL, &showInspector);
 			ImGui::MenuItem("Active Resurces", NULL, &showResourcesActive);
 			ImGui::MenuItem("Example Window", NULL, &showDemoWindow);
+			ImGui::MenuItem("Assets Explorer", NULL, &showLoadFileWindow);
 			ImGui::EndMenu();
 		}
 		//if (ImGui::Button("TEST BUTTON", ImVec2(125, 20)))
@@ -438,11 +413,6 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::PopStyleVar();
 		}
 
-		if (ImGui::Button("ShowLoadPopup"))
-		{
-			showLoadFileWindow = true;
-		}
-
 		//end of testing code
 	}
 	ImGui::EndMainMenuBar();
@@ -458,7 +428,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::BeginDragDropTarget())
 			{
-				if (const ImGuiPayload * payload = ImGui::AcceptDragDropPayload("OBJ_ID"))
+				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("OBJ_ID"))
 				{
 					IM_ASSERT(payload->DataSize == sizeof(unsigned int));
 
@@ -509,9 +479,60 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 	{
 		ShowResourcesActive();
 	}
-	if (showLoadFileWindow)
+	if (showLoadScenes)
 	{
-		if (ImGui::Begin("File Explorer", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse))
+		if (ImGui::Begin("Scene Explorer", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoCollapse))
+		{
+			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
+			ImGui::BeginChild("Scene Browser", ImVec2(0, 300), true);
+
+			DrawDirectoryTreeLoadScene("Library/Scenes");
+
+			ImGui::EndChild();
+			ImGui::PopStyleVar();
+
+
+			ImGui::PushItemWidth(250.f);
+			ImGui::InputText("##scene_selector", selectedScene, 250, ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_AutoSelectAll);
+
+
+			ImGui::PopItemWidth();
+			ImGui::SameLine();
+
+			if (ImGui::Button("OK", ImVec2(50, 20)))
+			{
+				LOG("Loading absolute scene");
+				delete App->editor3d->root; App->editor3d->root = nullptr;
+				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
+
+				char* aux = "";
+				std::string selected = selectedScene;
+				int size = App->fileSystem->Load(selected.c_str(), &aux);
+				
+				if (size != 0)
+				{
+					Importer::LoadScene(aux, App->editor3d->root);
+					RELEASE_ARRAY(aux);
+					aux = nullptr;
+				}
+				selectedScene[0] = '\0';
+				showLoadScenes = false;
+			}
+
+			ImGui::SameLine();
+
+			if (ImGui::Button("Back", ImVec2(50, 20)))
+			{
+				showLoadScenes = false;
+				selectedScene[0] = '\0';
+			}
+		}
+		ImGui::End();
+	}
+
+	if (showLoadFileWindow)		
+	{
+		if (ImGui::Begin("File Explorer", &showLoadFileWindow))
 		{
 			ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 5.0f);
 			ImGui::BeginChild("File Browser", ImVec2(0, 300), true);
@@ -526,7 +547,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 
 			ImGui::PopItemWidth();
-			ImGui::SameLine();
+			
 
 			if (ImGui::Button("Ok", ImVec2(50, 20)))
 			{
@@ -550,6 +571,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				showLoadFileWindow = false;
 				selectedFile[0] = '\0';
 			}
+			ImGui::SameLine();
 			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
 			if (ImGui::Button("Delete", ImVec2(50, 20)))
 			{
@@ -614,6 +636,8 @@ bool ModuleRenderer2D::CleanUp()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
+
+	selectedScene[0] = '\0';
 
 
 	return ret;
@@ -1290,6 +1314,50 @@ void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
 		{
 			if (ImGui::IsItemClicked()) {
 				sprintf_s(selectedFile, 250, "%s%s", dir.c_str(), str.c_str());
+			}
+
+			ImGui::TreePop();
+		}
+	}
+}
+
+void ModuleRenderer2D::DrawDirectoryTreeLoadScene(const char* newDir)
+{
+	std::vector<std::string> files;
+	std::vector<std::string> dirs;
+
+	std::string dir((newDir) ? newDir : "");
+	dir += "/";
+
+	App->fileSystem->GetDirFiles(dir.c_str(), files, dirs);
+
+	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
+	{
+		if (ImGui::TreeNodeEx((dir + (*it)).c_str(), 0, "%s/", (*it).c_str()))
+		{
+			DrawDirectoryTreeLoadScene((dir + (*it)).c_str());
+			ImGui::TreePop();
+		}
+	}
+
+	std::sort(files.begin(), files.end());//sorts all elements in the string list
+
+	for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+	{
+		const std::string& str = *it;
+		//we check if its a ".meta" file and if so we do not display them
+		std::string extension;
+		unsigned int index = str.find_last_of(".");
+
+		if (index < str.size())
+		{
+			extension = str.substr(index); //look for the last instance of a point. Format should be next
+		}
+
+		if (extension != ".meta" && ImGui::TreeNodeEx(str.c_str(), ImGuiTreeNodeFlags_Leaf))
+		{
+			if (ImGui::IsItemClicked()) {
+				sprintf_s(selectedScene, 250, "%s%s", dir.c_str(), str.c_str());
 			}
 
 			ImGui::TreePop();
