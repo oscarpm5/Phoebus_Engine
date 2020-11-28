@@ -161,8 +161,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 				LOG("Saving absolute scene"); char* buff = "";
 				unsigned int size = Importer::SerializeScene(App->editor3d->root, &buff);
-				std::string auxPath = LIB_PATH; auxPath += "Scenes/AbsoluteScene.pho";
+				std::string auxPath = LIB_PATH; auxPath += "Scenes/AbsoluteScene"; auxPath += std::to_string(App->renderer3D->seed.Int()); auxPath += ".pho";
 				App->fileSystem->SavePHO(auxPath.c_str(), buff, size);
+
+				LOG("Scene (%i size) saved in %s", size, auxPath);
 				RELEASE_ARRAY(buff);
 				buff = nullptr;
 				
