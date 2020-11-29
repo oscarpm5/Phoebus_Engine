@@ -409,9 +409,13 @@ void GameObject::DrawGameObject()
 
 	}
 
-	if (App->renderer3D->displayAABBs || (displayBoundingBox && focused))
+	if ( App->editor3d->root!=this &&(App->renderer3D->displayAABBs || (displayBoundingBox && focused)))
 	{
-		App->renderer3D->AddBoxToDraw(aabbVec);
+		Color c = Color(1.0f,1.0f,1.0f,1.0f);
+		if(focused)
+			c = Color FOCUSED_COLOR;
+
+		App->renderer3D->AddBoxToDraw(aabbVec, c);
 	}
 
 	C_Camera* cam = GetComponent<C_Camera>();
@@ -419,7 +423,11 @@ void GameObject::DrawGameObject()
 	{
 		std::vector<float3> vec;
 		cam->GetFrustumPoints(vec);
-		App->renderer3D->AddBoxToDraw(vec);
+		Color c = Color(1.0f, 1.0f, 1.0f, 1.0f);
+		if (cam->GetIsCulling())
+			c = Color(0.0f, 0.75f, 0.75f, 1.0f);
+
+		App->renderer3D->AddBoxToDraw(vec,c);
 	}
 }
 

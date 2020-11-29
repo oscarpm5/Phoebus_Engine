@@ -37,8 +37,12 @@ public:
 
 	void GetFrustumPoints(std::vector<float3>& emptyVector);
 
+	bool GetIsCulling()const;
+	void SetAsCullingCam(bool newState);
+
 private:
 	void UpdateProjectionMat();
+
 private:
 	bool isCulling;
 	float nearPlaneDist;

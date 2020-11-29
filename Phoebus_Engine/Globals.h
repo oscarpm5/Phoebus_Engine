@@ -61,6 +61,8 @@ class Application;
 
 extern Application* App;
 
+#define SELECTED_COLOR (1.0f, 0.25f,0.0f,0.1f) //all of selected objs
+#define FOCUSED_COLOR (1.0f, 0.5f, 0.0f, 1.0f) //focused color of last selected obj
 
 //define paths
 #define LIB_PATH "Library/"

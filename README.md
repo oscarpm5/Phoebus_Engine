@@ -141,11 +141,11 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 ### Second Assigment
 * Street has been imported with Blender, which causes the fbx folder to have a ".fbm" extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
 * Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back with the prefabs
-* Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
-* AABBs & Camera are visible even outside frustum of the culling cam to let the user know where they are.
+* AABBs for all objects are showing by default. If you want to hide the AABBs for every object but the selected one go to the Config window and under Render settings un-check "Display All AABBs".
+* AABBs & Camera frustum are visible even outside frustum of the culling cam to let the user know where they are.
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
-* Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay". IF you don't see anythingafter clicking move the camera as the ray is pointing straight through the camera and is represented as just a pixel.
-* Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
+* Mouse click Ray can be disabled in config -> rendering -> "DrawDebugCamRay". If you don't see anything when debug ray is active move the camera as the ray is pointing straight through the camera and is represented as just a pixel.
+* Gizmos are only displayed for the selected object. If you don't have any selected objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
 * Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
 * You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.

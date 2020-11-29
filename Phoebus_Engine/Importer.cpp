@@ -739,6 +739,7 @@ void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 	config.SetNumber("NearPlane", camera->GetNearPlaneDist());
 	config.SetNumber("FarPlane", camera->GetFarPlaneDist());
 	config.SetNumber("AspectRatio", camera->GetAspectRatio());
+	config.SetBool("IsCulling", camera->GetIsCulling());
 	//config.SetBool("MainCamera",camera->main);
 }
 
@@ -943,6 +944,16 @@ unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //se
 
 void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 {
+	//App->renderer3D->SetNewCullingCam(nullptr);
+	if (App->renderer3D->activeCam != nullptr)
+	{
+		App->renderer3D->activeCam->SetAsCullingCam(false);
+	}
+	if (!App->editor3d->selectedGameObjs.empty())
+	{
+		App->editor3d->SetSelectedGameObject(nullptr);
+	}
+
 	//Open the bufer you are going to be reading
 	Config file(buffer);
 	//set the root of the new scene
@@ -974,6 +985,12 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		gameObject->isActive = gameObject_node.GetBool("Active");
 		gameObject->focused = gameObject_node.GetBool("Focused");
 
+		//TODO for the future here we will load every selected obj and we will store the focused one to add it at the end of the load
+		if (gameObject->focused)
+		{
+			App->editor3d->SetSelectedGameObject(gameObject);
+		}
+
 		//get the components
 		Config_Array components = gameObject_node.GetArray("Components");
 
@@ -1000,6 +1017,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					cam->SetFarPlane(comp.GetNumber("FarPlane"));
 					cam->SetNewAspectRatio(comp.GetNumber("AspectRatio"));
 					cam->SetNewFoV(comp.GetNumber("FOV"));
+					bool isCulling = comp.GetBool("IsCulling");
+					if(isCulling)cam->SetAsCullingCam(true);
 				}
 				break;
 				case ComponentType::MESH:
@@ -1028,8 +1047,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
 							App->rManager->LoadResourceIntoMem(r);
 						}
-					//component.chutame_la_tex
-					component->SetNewResource(newUID);
+						//component.chutame_la_tex
+						component->SetNewResource(newUID);
 					}
 					C_Material* m = (C_Material*)component;
 					m->matCol.r = comp.GetNumber("Color R");

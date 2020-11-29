@@ -11,8 +11,8 @@
 #include "SDL/include/SDL.h"
 
 //...to here
-#include "Globals.h"
 #include "Application.h"
+#include "Globals.h"
 #include "ModuleRenderer2D.h"
 //#include "ModuleRenderer3D.h" //we need the projection matrix
 //#include "ModuleCamera3D.h"
@@ -74,7 +74,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	imgPos = ImVec2(0.0f, 0.0f);
 	imgSize = ImVec2(0.0f, 0.0f);
 
-	gizmoSize = 0.5f;
+	gizmoSize = 1.0f;
 	showOnlyLoadedRes = true;
 
 	selectedFile[0] = '\0';
@@ -192,22 +192,30 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
-
 		if (ImGui::BeginMenu("GameObjects##menu", true))
 		{
+			GameObject* selectedOnSpawn = nullptr;
+
 			if (ImGui::MenuItem("Empty##GameObjectCreate"))
 			{
-				new GameObject(App->editor3d->root, "Empty", float4x4::identity);
+				selectedOnSpawn = new GameObject(App->editor3d->root, "Empty", float4x4::identity);
 			}
 			if (ImGui::MenuItem("Camera##GameObjectCreate"))
 			{
-				GameObject* obj = new GameObject(App->editor3d->root, "Camera", float4x4::identity);
-				obj->CreateComponent(ComponentType::CAMERA);
-
-				App->renderer3D->activeCam = obj->GetComponent<C_Camera>();//TODO for now the active cam will be the last one created
-
-				obj = nullptr;
+				selectedOnSpawn = new GameObject(App->editor3d->root, "Camera", float4x4::identity);
+				selectedOnSpawn->CreateComponent(ComponentType::CAMERA);
+				
 			}
+
+
+
+			if (selectedOnSpawn != nullptr)
+			{
+				App->editor3d->SetSelectedGameObject(selectedOnSpawn);
+				selectedOnSpawn = nullptr;
+			}
+			
+
 			ImGui::EndMenu();
 		}
 		//Basic forms menu (TODO it is disabled for the moment)
@@ -1766,9 +1774,9 @@ bool ModuleRenderer2D::Show3DWindow()
 			//being the bottom left corner -1,-1 and the upper right 1,1
 			relativeMousePos.x = ((mousePos.x - winPos.x) / (winSize.x * 0.5f)) - 1.0f;
 			relativeMousePos.y = -1.0f * (((mousePos.y - winPos.y) / (winSize.y * 0.5f)) - 1.0f);
-
-			LOG("X:%f", relativeMousePos.x);
-			LOG("Y:%f", relativeMousePos.y);
+			LOG("Viewport screen Mouse Position on last click:");
+			LOG("Pos X:%f", relativeMousePos.x);
+			LOG("Pos Y:%f", relativeMousePos.y);
 
 			App->camera->lastKnowMousePos = relativeMousePos;
 			App->camera->viewportClickRecieved = true;

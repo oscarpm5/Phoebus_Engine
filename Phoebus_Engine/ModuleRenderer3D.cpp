@@ -89,10 +89,10 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
-	drawDebugRay = false;
+	drawDebugRay = true;
 	showDepth = false;
 	activeCam = nullptr;
-	displayAABBs = false;
+	displayAABBs = true;
 	//Just making sure this is initialized
 	gridLength = 500.f;
 	outlineScale = 1.1f;
@@ -781,9 +781,9 @@ void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, Color
 	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/, color));
 }
 
-void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners,Color c)
 {
-	drawAABBs.push_back(RenderBox(corners));//TODO change Box color here (global config var?)
+	drawAABBs.push_back(RenderBox(corners,c));//TODO change Box color here (global config var?)
 }
 
 bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
