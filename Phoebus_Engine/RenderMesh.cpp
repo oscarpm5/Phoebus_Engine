@@ -4,10 +4,16 @@
 #include "Mesh.h"
 #include "C_Material.h"
 #include "Glew/include/glew.h"
+#include "Color.h"
 
-RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform, float3 color) :
-	mesh(mesh), material(material), transform(gTransform), color(color)
-{}
+RenderMesh::RenderMesh(C_Mesh* mesh, C_Material* material, float4x4 gTransform, Color color) :
+	mesh(mesh), material(material), transform(gTransform),color(color)
+{
+	if (material != nullptr)
+	{
+		this->color = material->matCol;
+	}
+}
 
 RenderMesh::~RenderMesh()
 {
@@ -21,7 +27,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	newTrans.Transpose();
 
 	ResourceMesh* m = mesh->GetTemporalMesh();
-	
+
 	if (m == nullptr)
 	{
 		m = mesh->GetMesh();
@@ -42,8 +48,8 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_FACES || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
 		DrawFacesNormals(m);
 
-
-	glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
+	glColor4f(color.r, color.g, color.b, color.a);
+	//glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
 	int localDrawMode = (int)sceneMaxDrawMode;
 
@@ -53,7 +59,8 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 	if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_WIRE)
 	{
-		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
+		glColor4f(0.5f,0.5f,0.5f,0.5f);
+		//glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	else if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_FILL)
@@ -63,12 +70,13 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	else
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-		glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
+		glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+		//glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 
 		DrawBuffers(m);
+		glColor4f(color.r, color.g, color.b, color.a);
 
-		glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
+		//glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -93,7 +101,7 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 void RenderMesh::DrawVertexNormals(ResourceMesh* m)
 {
 	float magnitude = mesh->normalVertexSize;
-	glColor3f(1.0f, 0.5f, 0.0f);
+	glColor4f(1.0f, 0.5f, 0.0f,1.0f);
 	glLineWidth(4.0f);
 	glBegin(GL_LINES);
 
@@ -124,7 +132,7 @@ void RenderMesh::DrawFacesNormals(ResourceMesh* m)
 {
 
 	float magnitude = mesh->normalFaceSize;
-	glColor3f(0.0f, 0.25f, 1.0f);
+	glColor4f(0.0f, 0.25f, 1.0f,1.0f);
 	glLineWidth(4.0f);
 
 
@@ -191,17 +199,21 @@ void RenderMesh::DrawBuffers(ResourceMesh* m)
 		{
 			texIDtoBind = material->GetTextureID();
 		}
-		else
-		{
-			texIDtoBind = material->GetCheckersID();//when texture is not existing we draw checkers for the moment TODO make this better
-		}
+		//else
+		//{
+		//	texIDtoBind = material->GetCheckersID();//when texture is not existing we draw checkers for the moment TODO make this better
+		//}
+	}
+	if (texIDtoBind != 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, texIDtoBind);
 	}
 
-	glBindTexture(GL_TEXTURE_2D, texIDtoBind);
-
 	glDrawElements(GL_TRIANGLES, m->indices.size(), GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
-
-	glBindTexture(GL_TEXTURE_2D, 0);
+	if (texIDtoBind != 0)
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 

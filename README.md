@@ -65,7 +65,6 @@ Note that the 3D viewport controls will only work when interacting with the 3D v
 
 
 To select an object click in the desired object in the Hierarchy Tab (it will turn orange). 
-Note that objects with children in the hierarchy will have to be deployed before being selected.
 
 Holding Shift when dragging the Far/Near plane buttons in the config/camera panels allows extra precision.
 
@@ -118,36 +117,39 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Depth buffer can be displayed in the editor cam. To enable this go to Menu -> config -> rendering and check "Depth display"
 
-* Object Translate/Rotate/Scale can be done in both local & global space.
+* Object Translate/Rotate/Scale can be done in both local & global space coordinates.
 
-* Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]. 
+* Objects can be translated/rotated/scaled from the 3d View using gizmos. 
 
-* Automated saved scenes are made on play/pause. This scene is saved in Library/Scenes
+* The resource manager has an automatic garbage collector which deletes ".meta" & lib files when their asset is missing.
 
-* You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with a automatic name which you can later change
+* Components can be added to an existing object through the "Add Component" button at the bottom part of the Inspector when a game object is selected.
 
-* You can load any saved scene un Menu->Load
-
+* Material color & transparency of a selected object can be changed through the inspector.
  
 ## Aditional comments for the teacher:
 
 ### First Assigment
+
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
-* The two .fbx included in this project (Poste.fbx & Espada.fbx are not directly included in the project as they are intended to be drag & dropped into the engine from the assets folder)
-* Be careful when rotating a game object! This feature is still work in progress and can mess with the scale.
 
 ### Second Assigment
-* DO NOT delete the contents of the folder "our_pics" from the "Assets" folder. Doing so would cause a crash(intended, since they contain engine-related critical resources, ex:the engine icon).
-* Street has been imported with Blender, which couses the fbx folder to have a .fbm extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
-* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back with the frefabs
-* Only the AABB of the select object is showing by default. If you want all the object to show their AABB go to the Config window and under Render settings check "Display All AABBs".
+
+* When tring to drag & drop external assets into the engine, make sure the path & the file don't have special caracters such as accents, otherwise the file won't be imported.
+* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back in the future
+* AABBs for all objects are showing by default. If you want to hide the AABBs for every object but the selected one go to the Config window and under Render settings un-check "Display All AABBs".
+* AABBs & Camera frustum are visible even outside frustum of the culling cam to let the user know where they are.
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
-* Mouse click Ray can be enabled in config -> rendering -> "DrawDebugCamRay".
-* Gizmos are only displayed for the selected object. If you don't have any selcted objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
+* Mouse click Ray can be disabled in config -> rendering -> "DrawDebugCamRay". If you don't see anything when debug ray is active move the camera as the ray is pointing straight through the camera and is represented as just a pixel.
+* Gizmos are only displayed for the selected object. If you don't have any selected objects no gizmo will be displayed. If an object is selected and the gizmo is still not being displayed press W, E or R. (you have pressed Q and hidden the gizmos by accident)
 * Resources can be dragged from the Active Resource window & dropped into the Inspector->Component(the one that matches the dragged resource type)->"Used Resource" selectable to apply it to the object. 
 * Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
 * You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
+* In the exceptional case of an ".fbx" missing in assets, the garbage collector will handle the deletion of ".meta" & model files but won't delete ".mesh" & ".dds" files which originated from that asset as they are independent resources. The garbage collector will handle other asset types correctly. It executes once every minute or if "refresh" button is pressed. 
+* You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with an automatic name which you can later change. You can load any saved scene in Menu->Load
+* Hierarchy elements can be re-parented through dragging them. If you want to re-parent the object to the scene root, simply drag it to the bottom and let it go in the blank space below the hierarchy.
+* Pressing the outer white circle in the rotation gizmo when it turns orange will reset the object rotation to 0. 
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

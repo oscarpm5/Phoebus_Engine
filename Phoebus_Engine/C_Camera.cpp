@@ -5,7 +5,7 @@
 
 #include "Application.h"
 
-C_Camera::C_Camera(GameObject* owner,unsigned int ID) :Component(ComponentType::CAMERA, owner,ID),
+C_Camera::C_Camera(GameObject* owner, unsigned int ID) :Component(ComponentType::CAMERA, owner, ID), isCulling(false),
 nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRatio(0),
 projectionMatrix(float4x4::identity)
 {
@@ -21,11 +21,11 @@ projectionMatrix(float4x4::identity)
 	SetNewAspectRatio(screenSize.x, screenSize.y);
 }
 
-C_Camera::C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV, float aspectRatio):Component(ComponentType::CAMERA, owner),
-nearPlaneDist(nPlaneDist),farPlaneDist(fPlaneDist), FoVx(foV), FoVy(0.0f), invAspectRatio(0),projectionMatrix(float4x4::identity)
+C_Camera::C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV, float aspectRatio) :Component(ComponentType::CAMERA, owner),
+nearPlaneDist(nPlaneDist), farPlaneDist(fPlaneDist), FoVx(foV), FoVy(0.0f), invAspectRatio(0), projectionMatrix(float4x4::identity),isCulling(false)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
-	
+
 	float2 screenSize;
 
 	if (App != nullptr)
@@ -80,7 +80,7 @@ void C_Camera::OnEditor()
 	{
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20);*/
-		ImGui::Checkbox("IS ACTIVE##MeshCheckbox", &active);
+		ImGui::Checkbox("IS ACTIVE##CamCheckbox", &active);
 
 		ImGui::Separator();
 		ImGui::Indent();
@@ -88,6 +88,12 @@ void C_Camera::OnEditor()
 		ImGui::Spacing();
 
 		//TODO camera things here
+		bool cullingAux = isCulling;
+		if (ImGui::Checkbox("Culling Cam##CamCheckbox", &cullingAux))
+		{
+			SetAsCullingCam(cullingAux);
+		}
+
 		float auxf = GetFoV();
 		if (ImGui::DragFloat("FoV##CamFoVx", &auxf, 0.1f, 1.0f, 180.0f))
 		{
@@ -178,7 +184,10 @@ void C_Camera::CalcCamPosFromTransformMat(float4x4& gTransform)
 	//TODO this global mat might have to be transposed?
 	frustum.pos = gTransform.TranslatePart();
 	frustum.front = gTransform.Col3(2); // The camera looks towards +Z axis of the given transform.
+	frustum.front.Normalize();
 	frustum.up = gTransform.Col3(1); // The camera up points towards +Y of the given transform.
+	frustum.up.Normalize();
+
 	assume(pos.IsFinite());
 	assume(front.IsNormalized());
 	assume(up.IsNormalized());
@@ -318,6 +327,33 @@ void C_Camera::GetFrustumPoints(std::vector<float3>& emptyVector)
 	delete[]frustrumPoints;
 	frustrumPoints = nullptr;
 
+}
+
+bool C_Camera::GetIsCulling() const
+{
+	return isCulling;
+}
+//TODO add things to this
+void C_Camera::SetAsCullingCam(bool newState)
+{
+	if (newState != isCulling)
+	{
+
+		if (newState)
+		{
+			if (App->renderer3D->activeCam != nullptr)
+			{
+				App->renderer3D->activeCam->SetAsCullingCam(false);
+			}
+			App->renderer3D->activeCam = this;
+		}
+		else if(App->renderer3D->activeCam==this)
+		{
+			App->renderer3D->activeCam = nullptr;
+		}
+
+		isCulling = newState;
+	}
 }
 
 void C_Camera::UpdateProjectionMat()

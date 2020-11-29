@@ -11,8 +11,8 @@
 #include "SDL/include/SDL.h"
 
 //...to here
-#include "Globals.h"
 #include "Application.h"
+#include "Globals.h"
 #include "ModuleRenderer2D.h"
 //#include "ModuleRenderer3D.h" //we need the projection matrix
 //#include "ModuleCamera3D.h"
@@ -74,7 +74,7 @@ ModuleRenderer2D::ModuleRenderer2D(bool start_enabled) :console(nullptr)
 	imgPos = ImVec2(0.0f, 0.0f);
 	imgSize = ImVec2(0.0f, 0.0f);
 
-	gizmoSize = 0.5f;
+	gizmoSize = 1.0f;
 	showOnlyLoadedRes = true;
 
 	selectedFile[0] = '\0';
@@ -192,22 +192,39 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			ImGui::EndMenu();
 		}
 
-
 		if (ImGui::BeginMenu("GameObjects##menu", true))
 		{
+			GameObject* selectedOnSpawn = nullptr;
+
 			if (ImGui::MenuItem("Empty##GameObjectCreate"))
 			{
-				new GameObject(App->editor3d->root, "Empty", float4x4::identity);
+				selectedOnSpawn = new GameObject(App->editor3d->root, "Empty", float4x4::identity);
+			}
+			if (ImGui::MenuItem("Child Empty##GameObjectCreate"))
+			{
+				GameObject* root = App->editor3d->root;
+				if (!App->editor3d->selectedGameObjs.empty())
+				{
+					root = App->editor3d->selectedGameObjs.back();
+				}
+				selectedOnSpawn = new GameObject(root, "Child Empty", float4x4::identity);
 			}
 			if (ImGui::MenuItem("Camera##GameObjectCreate"))
 			{
-				GameObject* obj = new GameObject(App->editor3d->root, "Camera", float4x4::identity);
-				obj->CreateComponent(ComponentType::CAMERA);
-
-				App->renderer3D->activeCam = obj->GetComponent<C_Camera>();//TODO for now the active cam will be the last one created
-
-				obj = nullptr;
+				selectedOnSpawn = new GameObject(App->editor3d->root, "Camera", float4x4::identity);
+				selectedOnSpawn->CreateComponent(ComponentType::CAMERA);
+				
 			}
+
+
+
+			if (selectedOnSpawn != nullptr)
+			{
+				App->editor3d->SetSelectedGameObject(selectedOnSpawn);
+				selectedOnSpawn = nullptr;
+			}
+			
+
 			ImGui::EndMenu();
 		}
 		//Basic forms menu (TODO it is disabled for the moment)
@@ -558,11 +575,18 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				//TODO Call load asset here??
 				std::string selected = selectedFile;
-
-				Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
-				if (r != nullptr)
+				if (selected != "")
 				{
-					App->rManager->RequestNewResource(r->GetUID());
+
+					Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
+					if (r != nullptr)
+					{
+						App->rManager->RequestNewResource(r->GetUID());
+					}
+				}
+				else
+				{
+					LOG("[warning]We are sorry but we are afraid we may not be able to load a blank space into memory");
 				}
 
 				selectedFile[0] = '\0';
@@ -753,8 +777,16 @@ bool ModuleRenderer2D::showAboutWindow()
 	ImGui::Indent();
 	ImGui::TextColored(ImVec4(153, 153, 000, 250), aux); //(0, 100, 130, 150)
 	ImVec2 vecaux = ImGui::GetCursorPos();
-	ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y - 20);
-	ImGui::Image((ImTextureID)PhoebusIcon, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0));
+	if (PhoebusIcon != 0)
+	{
+
+		ImGui::SetCursorPosX(vecaux.x + 106); ImGui::SetCursorPosY(vecaux.y - 20);
+		ImGui::Image((ImTextureID)PhoebusIcon, ImVec2(25, 25), ImVec2(0, 1), ImVec2(1, 0));
+	}
+	else
+	{
+		ImGui::Text("Missing PHOEBUS ICON image...");
+	}
 	ImGui::Unindent();
 	ImGui::Spacing();
 	ImGui::Spacing();
@@ -784,9 +816,24 @@ bool ModuleRenderer2D::showAboutWindow()
 		//autohors
 		ImGui::Text("This Engine was made by these two brave souls: Adria Serrano Lopez & Oscar Perez Martin");
 		ImGui::Spacing();
-		ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		if (AdriID != 0)
+		{
+
+			ImGui::Image((ImTextureID)AdriID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		}
+		else
+		{
+			ImGui::Text("Missing ASL image...");
+		}
 		ImGui::SameLine();
-		ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		if (OscarID != 0)
+		{
+			ImGui::Image((ImTextureID)OscarID, ImVec2(100, 100), ImVec2(0, 1), ImVec2(1, 0));
+		}
+		else
+		{
+			ImGui::Text("Missing OPM image...");
+		}
 		ImGui::Spacing();
 		ImGui::Text("Check us out in Github:"); ImGui::SameLine();
 		ImGui::SetCursorPosY(ImGui::GetCursorPosY() - 3);
@@ -1736,9 +1783,9 @@ bool ModuleRenderer2D::Show3DWindow()
 			//being the bottom left corner -1,-1 and the upper right 1,1
 			relativeMousePos.x = ((mousePos.x - winPos.x) / (winSize.x * 0.5f)) - 1.0f;
 			relativeMousePos.y = -1.0f * (((mousePos.y - winPos.y) / (winSize.y * 0.5f)) - 1.0f);
-
-			LOG("X:%f", relativeMousePos.x);
-			LOG("Y:%f", relativeMousePos.y);
+			LOG("Viewport screen Mouse Position on last click:");
+			LOG("Pos X:%f", relativeMousePos.x);
+			LOG("Pos Y:%f", relativeMousePos.y);
 
 			App->camera->lastKnowMousePos = relativeMousePos;
 			App->camera->viewportClickRecieved = true;

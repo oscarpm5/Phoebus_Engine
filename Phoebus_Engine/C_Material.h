@@ -4,13 +4,14 @@
 
 #include "Component.h"
 #include <string>
+#include "Color.h"
 
 class ResourceTexture;
 class C_Material:public Component
 {
 public:
-	C_Material(GameObject* owner,unsigned int ID);
-	C_Material(GameObject* owner,unsigned int ilImageName, const char * name);
+	C_Material(GameObject* owner,unsigned int ID,Color color=Color(1.0f,1.0f,1.0f));
+	//C_Material(GameObject* owner,unsigned int ilImageName, const char * name);
 	~C_Material();
 
 	void SetNewResource(unsigned int resourceUID)override;
@@ -40,7 +41,9 @@ public:
 	//int depth;
 	//int sizeInBytes;
 	//unsigned int bpp;
-	std::string path;
+	//std::string path;
+
+	Color matCol;
 
 private:
 	unsigned int idCheckers;

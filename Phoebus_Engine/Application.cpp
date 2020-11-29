@@ -10,7 +10,7 @@ Application::Application() : debug(false), renderPrimitives(true), realDT(0.16f)
 	editor3d = new ModuleEditor3D();
 	fileSystem = new ModuleFileSystem();
 	//resourceManager = new ModuleResourceManager();
-	rManager = new M_ResourceManager();
+	rManager = new ModuleResourceManager();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order

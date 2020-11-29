@@ -22,7 +22,7 @@ namespace Importer
 	{
 		//Take a saved buffer in memory and loads it into a model resource, also imports dependencies if needed (aka meshes / textures) TODO
 		bool ImportModel(const char* Buffer, unsigned int Length, const char* relativePath, Resource * res);
-		bool LoadModel(const char* libPath, GameObject* root);//revise if needed
+		bool LoadModel(const char* libPath, GameObject* root, bool onlyBase=false);//revise if needed
 		unsigned int SaveModel(GameObject* root, Resource* ret);//returns buffer size; it cals upon SavePHO on its own
 	}
 

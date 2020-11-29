@@ -37,10 +37,14 @@ public:
 
 	void GetFrustumPoints(std::vector<float3>& emptyVector);
 
+	bool GetIsCulling()const;
+	void SetAsCullingCam(bool newState);
+
 private:
 	void UpdateProjectionMat();
-private:
 
+private:
+	bool isCulling;
 	float nearPlaneDist;
 	float farPlaneDist;
 	float FoVx;//This is the horizontal FoV which the user changes

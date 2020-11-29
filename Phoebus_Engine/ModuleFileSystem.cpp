@@ -15,6 +15,7 @@
 #include "PhysFS/include/physfs.h"
 #pragma comment( lib, "PhysFS/libx86/physfs.lib" )
 
+#include <fstream>
 
 //linea 102 module input Importer:: load fbx -> llamaar el filesysatem y pasarle el path (dropfiledyr) para probarlo rapido
 
@@ -144,9 +145,9 @@ void ModuleFileSystem::TransformToRelPath(std::string& path)
 {
 	std::string s = "Assets";
 	unsigned int splitPos = path.find(s); //file must be inside Assets directory
-	if (splitPos < path.size()) 
-	{ 
-		path = path.substr(splitPos+s.size()+1, path.length()); 
+	if (splitPos < path.size())
+	{
+		path = path.substr(splitPos + s.size() + 1, path.length());
 	}
 	else
 	{
@@ -171,24 +172,42 @@ void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std:
 
 	if (filePos < path.size())
 	{
-		if (newPath)*newPath = path.substr(0, filePos + 1);
-		if (file)*file = path.substr(filePos + 1);
+		if (newPath)* newPath = path.substr(0, filePos + 1);
+		if (file)* file = path.substr(filePos + 1);
 	}
 	else if (path.size() > 0)
 	{
-		if (file)*file = path;
+		if (file)* file = path;
 	}
 }
 
-void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext)
+void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext, std::string* fileWithoutExt)
 {
 	size_t filePos = file.find_last_of(".");
 
 	if (filePos < file.size())
 	{
+		if (ext != nullptr)
+		{
 		*ext = file.substr(filePos);
+		}
+		if (fileWithoutExt != nullptr)
+		{
+			*fileWithoutExt = file.substr(0, filePos);
+		}
 	}
 }
+//
+//void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext, std::string* filePathWithoutExt)
+//{
+//	size_t filePos = file.find_last_of(".");
+//
+//	if (filePos < file.size())
+//	{
+//		*ext = file.substr(filePos);
+//		*filePathWithoutExt = file.substr(0, file.size() - ext->size());
+//	}
+//}
 
 //normalizes '//' paths
 std::string ModuleFileSystem::NormalizePath(const char* path)
@@ -326,7 +345,7 @@ unsigned int ModuleFileSystem::SavePHO(const char* file, const void* buffer, uns
 
 	PHYSFS_file* fs_file = PHYSFS_openWrite(file);
 
-	if (!overwrite) 
+	if (!overwrite)
 	{
 		//uint written = (uint)PHYSFS_write(fs_file, (const void*)buffer, 1, size);
 	}
@@ -438,7 +457,7 @@ bool ModuleFileSystem::DoesFileExist(const char* file)
 	return PHYSFS_exists(file) != 0;
 }
 
-bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
+bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath, bool isMeta)
 {
 	bool ret = false;
 
@@ -448,23 +467,27 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 
 	//Does the asset exist?
 
-	if (PHYSFS_exists(assetPath))
+
+	if (PHYSFS_exists(assetPath) || isMeta)
 	{
-		//Delete it
-
-		if (PHYSFS_delete(assetPath) == 0) //zero on error. success in everything else
+		std::string metaPath = assetPath;
+		if (!isMeta)
 		{
-			LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", assetPath);
-			LOG("%s", PHYSFS_getLastError());
-		}
-		else
-		{
-			LOG("%s DELETED from assets", assetPath);
-		}
+			//Delete it
+			if (PHYSFS_delete(assetPath) == 0) //zero on error. success in everything else
+			{
+				LOG("[error] Tried to delete %s and found it, but was unable to delete. PHYSFS gives this error:", assetPath);
+				LOG("%s", PHYSFS_getLastError());
+			}
+			else
+			{
+				LOG("%s DELETED from assets", assetPath);
+			}
 
-		//Does the asset have a meta file?
+			//Does the asset have a meta file?
 
-		std::string metaPath = assetPath; metaPath += ".meta";
+			metaPath += ".meta";
+		}
 		if (PHYSFS_exists(metaPath.c_str()))
 		{
 			//Store some info from meta to delete the lib file later
@@ -481,7 +504,7 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 			}
 			else
 			{
-				LOG("%s DELETED from assets", metaPath);
+				LOG("%s DELETED from assets", metaPath.c_str());
 			}
 
 
@@ -490,7 +513,7 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 			App->rManager->FindFileRecursively(std::to_string(UID), LIB_PATH, libPath); //try to find the asset in lib searching its UID we got from the meta
 
 
-			if (PHYSFS_exists(libPath.c_str()))
+			if (libPath!="" && PHYSFS_exists(libPath.c_str()))
 			{
 				//Delete it
 
@@ -501,18 +524,18 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 				}
 				else
 				{
-					LOG("%s DELETED from lib", libPath);
+					LOG("%s DELETED from lib", libPath.c_str());
 				}
 
 				//Do we have it in memory?
-				
+
 				if (App->rManager->DeleteItemFromResourcesMap(UID))
 				{
-					LOG("DELETED %s from memory", libPath);
+					LOG("DELETED %s from memory", libPath.c_str());
 				}
 				else
 				{
-					LOG("Could not delete %s from memory because it was never loaded in the first place", libPath);
+					LOG("Could not delete %s from memory because it was never loaded in the first place", libPath.c_str());
 				}
 			}
 			else
@@ -522,7 +545,7 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 		}
 		else
 		{
-			LOG("[error] Tried to delete the meta file %s but it was not found", metaPath);
+			LOG("[error] Tried to delete the meta file %s but it was not found", metaPath.c_str());
 		}
 	}
 	else
@@ -535,6 +558,91 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath)
 bool ModuleFileSystem::DeleteTemporalScene(char* sceneBuffer)
 {
 	return false;
+}
+
+void ModuleFileSystem::FindFileInDirectory(std::string fileName,std::string currDir, std::string& fullPath,bool excludeMeta)
+{
+	std::vector<std::string>files;
+	std::vector<std::string>dirs;
+	
+	if (!App->fileSystem->GetDirFiles(currDir.c_str(), files, dirs))
+	{
+		LOG("[error] Trying to acces an invalid directory: %s", currDir.c_str());
+		return; //if directory doesn't exist return, just for safety
+	}
+
+
+	for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+	{
+		const std::string& str = *it;
+		std::string absPath = currDir + str;
+
+		std::string extension;
+
+		App->fileSystem->SeparateExtension(str, &extension,nullptr);
+
+		if (excludeMeta)
+		{
+			if (extension == ".meta")continue;
+		}
+		if (str == (fileName + extension))
+		{
+			fullPath = absPath;
+			return;
+		}
+	}
+
+	//for every directory in the current directory, search
+	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
+	{
+		const std::string& str = *it;
+		FindFileInDirectory(fileName, currDir + str + "/", fullPath);
+		if (fullPath != "")
+		{
+			return;
+		}
+	}
+
+
+}
+
+//WARNING paths do not accept caracters such as accents in the original file path and the destination folder, consider renaming assets before importing, TODO put this in the readme
+bool ModuleFileSystem::DuplicateFile(const char* originalFilePath, const char* destinationFolder, std::string& relativePath)
+{
+	std::string newFile;//only the file name
+	std::string newExtension;//only the extension
+	SeparatePath(originalFilePath, nullptr, &newFile);
+	SeparateExtension(newFile, &newExtension, &newFile);
+
+	relativePath = relativePath.append(destinationFolder).append("/") + newFile + newExtension; //construct destination path (aka. Assets/samirkebab.png)
+	std::string finalPath = std::string(*PHYSFS_getSearchPath()).append("/") + relativePath;//search path-> ./Assets/...relative path
+
+	std::ifstream src;
+	src.open(originalFilePath, std::ios::binary);
+	bool srcOpen = src.is_open();
+
+	if (!srcOpen)
+	{
+		src.close();
+		LOG("[error] File couldn't be duplicated, we couldn't open source directory with path:\n %s", originalFilePath);
+		return false;
+	}
+
+	std::ofstream  dst(finalPath, std::ios::binary);
+	bool dstOpen = dst.is_open();
+	if (!dstOpen)
+	{
+		dst.close();
+		LOG("[error] File couldn't be duplicated, we couldn't open destination directory with path:\n %s", finalPath);
+		return false;
+	}
+
+	dst << src.rdbuf();
+
+	src.close();
+	dst.close();
+
+	return true;
 }
 
 

@@ -89,10 +89,10 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	colorMaterial = true;
 	texture2D = true;
 	drawGrid = true;
-	drawDebugRay = false;
+	drawDebugRay = true;
 	showDepth = false;
 	activeCam = nullptr;
-	displayAABBs = false;
+	displayAABBs = true;
 	//Just making sure this is initialized
 	gridLength = 500.f;
 	outlineScale = 1.1f;
@@ -496,8 +496,8 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::DrawOutline()
 {
-	const float3 outlineColorMain = float3(1.0f, 0.5f, 0.0f);
-	const float3 outlineColorSecond = float3(0.75f, 0.25f, 0.0f);
+	const Color outlineColorMain = Color(1.0f, 0.5f, 0.0f);
+	const Color outlineColorSecond = Color(0.75f, 0.25f, 0.0f);
 
 	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
 	{
@@ -520,7 +520,7 @@ void ModuleRenderer3D::DrawOutline()
 				currMesh->SetTemporalMesh(m);
 				stencilMeshes.push_back(currMesh);
 
-				float3 currentOutlineCol = outlineColorMain;
+				Color currentOutlineCol = outlineColorMain;
 				if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
 				{
 					currentOutlineCol = outlineColorSecond;
@@ -775,15 +775,15 @@ void ModuleRenderer3D::AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x
 		drawMeshes.push_back(RenderMesh(mesh, material, gTransform));
 }
 
-void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, float3 color)
+void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, Color color)
 {
 	float scale = 1.05f;
 	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/, color));
 }
 
-void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners)
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners,Color c)
 {
-	drawAABBs.push_back(RenderBox(corners));//TODO change Box color here (global config var?)
+	drawAABBs.push_back(RenderBox(corners,c));//TODO change Box color here (global config var?)
 }
 
 bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)

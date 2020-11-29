@@ -97,13 +97,22 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 
 		//TODO Add mode not working properly
 		if (!addMode)
+		{
+			for (int i = 0; i < selectedGameObjs.size(); i++)
+			{
+				if (selectedGameObjs[i] != nullptr)
+					selectedGameObjs[i]->focused = false;
+			}
 			selectedGameObjs.clear();
+
+		}
 
 		if (selected != nullptr)
 		{
 			RemoveGameObjFromSelected(selected);
 
 			selectedGameObjs.push_back(selected);
+			selected->focused = true;
 			ret = true;
 		}
 	}

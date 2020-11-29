@@ -5,23 +5,24 @@
 #include "DevIL/include/IL/ilu.h"
 #include "Texture.h"
 #include "Application.h"
-#include "M_ResourceManager.h"
+#include "ModuleResourceManager.h"
 
-C_Material::C_Material(GameObject* owner, unsigned int ID) :Component(ComponentType::MATERIAL, owner, ID),
+C_Material::C_Material(GameObject* owner, unsigned int ID, Color color) :Component(ComponentType::MATERIAL, owner, ID),
 idCheckers(0), //width(0), height(0), format(0), depth(0),idTexture(0),sizeInBytes(0), bpp(0), 
 usingCkeckers(false), resourceID(0)
 {
+	matCol = color;
 	GenDefaultTexture();
 }
 
 //TODO deprecated constructor???
-C_Material::C_Material(GameObject* owner, unsigned int ilImageName, const char* path) :Component(ComponentType::MATERIAL, owner),
-idCheckers(0),//idTexture(0),  width(0), height(0), format(0), depth(0),sizeInBytes(0), bpp(0), 
-usingCkeckers(false), resourceID(0)
-{
-	//GenTextureFromName(ilImageName);
-	GenDefaultTexture();
-}
+//C_Material::C_Material(GameObject* owner, unsigned int ilImageName, const char* path) :Component(ComponentType::MATERIAL, owner),
+//idCheckers(0),//idTexture(0),  width(0), height(0), format(0), depth(0),sizeInBytes(0), bpp(0), 
+//usingCkeckers(false), resourceID(0)
+//{
+//	//GenTextureFromName(ilImageName);
+//	GenDefaultTexture();
+//}
 
 C_Material::~C_Material()
 {
@@ -34,7 +35,6 @@ C_Material::~C_Material()
 	//sizeInBytes = 0;
 	//bpp = 0;
 	usingCkeckers = 0;
-	path = "";
 
 	if (resourceID != 0)
 	{
@@ -217,7 +217,7 @@ void C_Material::OnEditor()
 				unsigned int payloadID = *(const int*)payload->Data;
 
 
-				if (payloadID != 0&& payloadID!=resourceID)
+				if (payloadID != 0 && payloadID != resourceID)
 				{
 					SetNewResource(payloadID);
 				}
@@ -226,7 +226,7 @@ void C_Material::OnEditor()
 
 		}
 		//end drag drop target
-			   		 	  	  	 
+
 		ImGui::Indent();
 		ImGui::Separator();
 		if (texture != nullptr)
@@ -253,9 +253,12 @@ void C_Material::OnEditor()
 		}
 		ImGui::Separator();
 
-		ImGui::Text("Path: %s", this->path.c_str());
-
-
+		if (ImGui::TreeNode("Selet Material Color"))
+		{
+			ImGuiColorEditFlags flags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview;
+			ImGui::ColorPicker4("MyColor##4", (float*)& matCol, flags);
+			ImGui::TreePop();
+		}
 
 		ImGui::Separator();
 		ImGui::Unindent();
@@ -369,7 +372,7 @@ void C_Material::DestroyCheckers()
 void C_Material::GenDefaultTexture()
 {
 	DestroyCheckers();
-	this->path = "Default texture - no path";
+	//this->path = "Default texture - no path";
 	const int checkersHeight = 100;
 	const int checkersWidth = 100;
 

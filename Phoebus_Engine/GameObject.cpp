@@ -24,7 +24,7 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 	{
 		parent->children.push_back(this);
 	}
-	this->transform = new C_Transform(this, transform,0,isLocalTrans);
+	this->transform = new C_Transform(this, transform, 0, isLocalTrans);
 	components.push_back(this->transform);
 
 	numberOfObjects++;
@@ -139,7 +139,7 @@ void GameObject::ChangeParent(GameObject* newParent)
 {
 	RemoveMyselfFromParent();
 	//newParent->children
-	
+
 	if (newParent == nullptr)
 	{
 		parent = App->editor3d->root;
@@ -165,7 +165,7 @@ void GameObject::RemoveMyselfFromParent()
 	}
 }
 
-Component* GameObject::CreateComponent(ComponentType type,unsigned int compID)
+Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 {
 	Component* ret = nullptr;
 	//TODO add diferent components here
@@ -325,6 +325,52 @@ void GameObject::DrawOnEditorAllComponents()
 	for (int i = 0; i < this->components.size(); i++)
 	{
 		components[i]->OnEditor();
+
+	}
+
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Separator();
+
+	int buttonWidth = 150;
+	float wWidth=ImGui::GetWindowWidth();
+	ImVec2 cursPos = ImGui::GetCursorPos();
+	cursPos.x = cursPos.x + (wWidth * 0.5f)-(buttonWidth*0.5f); //60 is half button width
+	ImGui::SetCursorPos(cursPos);
+
+	if (ImGui::Button("Add Component##objComponent", ImVec2(buttonWidth, 20)))
+	{
+		ImGui::OpenPopup("AddComponent##Popup");
+
+	}
+	ImGui::SameLine();
+	if (ImGui::BeginPopup("AddComponent##Popup"))
+	{
+		ImGui::Text("Select New Component to Add");
+		ImGui::Separator();
+
+		//TODO this can be made pretty in the future
+		if (GetComponent<C_Mesh>() == nullptr)//support multiple meshes in the future?
+		{
+			if(ImGui::Selectable("Mesh Component##addComponent"))
+			CreateComponent(ComponentType::MESH);
+		}
+		if (GetComponent<C_Material>() == nullptr)
+		{
+			if(ImGui::Selectable("Material Component##addComponent"))
+			CreateComponent(ComponentType::MATERIAL);
+		}
+		if (GetComponent<C_Camera>() == nullptr)
+		{
+			if(ImGui::Selectable("Camera Component##addComponent"))
+			CreateComponent(ComponentType::CAMERA);
+		}
+
+
+
+		ImGui::EndPopup();
 	}
 }
 
@@ -346,32 +392,42 @@ void GameObject::DrawGameObject()
 		std::vector<C_Mesh*>meshes = GetComponents<C_Mesh>();
 
 		C_Material* mat = GetComponent<C_Material>();
-		if (mat != nullptr && (!mat->IsActive()|| mat->GetTexture() == nullptr))
+		if (mat != nullptr && !mat->IsActive())
 		{
 			mat = nullptr;
 		}
 
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			if (meshes[i]->IsActive()&&meshes[i]->GetMesh()!=nullptr)
+			if (meshes[i]->IsActive() && meshes[i]->GetMesh() != nullptr)
 			{
-				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(),focused);//TODO change focused for selected in the future when we have more than 1 selection
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(), focused);//TODO change focused for selected in the future when we have more than 1 selection
 			}
 
 		}
 
-		if (App->renderer3D->displayAABBs||(displayBoundingBox && focused))
-		{
-			App->renderer3D->AddBoxToDraw(aabbVec);
-		}
 
-		C_Camera* cam = GetComponent<C_Camera>();
-		if (cam)
-		{
-			std::vector<float3> vec;
-			cam->GetFrustumPoints(vec);
-			App->renderer3D->AddBoxToDraw(vec);
-		}
+	}
+
+	if ( App->editor3d->root!=this &&(App->renderer3D->displayAABBs || (displayBoundingBox && focused)))
+	{
+		Color c = Color(1.0f,1.0f,1.0f,1.0f);
+		if(focused)
+			c = Color FOCUSED_COLOR;
+
+		App->renderer3D->AddBoxToDraw(aabbVec, c);
+	}
+
+	C_Camera* cam = GetComponent<C_Camera>();
+	if (cam&&cam->IsActive())
+	{
+		std::vector<float3> vec;
+		cam->GetFrustumPoints(vec);
+		Color c = Color(1.0f, 1.0f, 1.0f, 1.0f);
+		if (cam->GetIsCulling())
+			c = Color(0.0f, 0.75f, 0.75f, 1.0f);
+
+		App->renderer3D->AddBoxToDraw(vec,c);
 	}
 }
 

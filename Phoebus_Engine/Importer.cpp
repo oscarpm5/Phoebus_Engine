@@ -35,7 +35,8 @@
 #include "C_Transform.h"
 #include "C_Camera.h"
 #include "Config.h"
-#include "M_ResourceManager.h"
+#include "ModuleResourceManager.h"
+#include "Color.h"
 #include <map>
 
 bool Importer::InitializeDevIL()
@@ -174,11 +175,61 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 											//aiImportFileFromMemory										
 		LOG("Importing 3D asset from buffer: %s", Buffer);
 
-		if (scene != nullptr && scene->HasMeshes())
+		if (scene != nullptr)
 		{
 			std::string pathWithoutFile;
 			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
 			// Use scene->mNumMeshes to iterate on scene->mMeshes array
+
+			std::vector<ResourceMesh*> meshesToAssign;
+			//load each mesh here
+			for (int i = 0; i < scene->mNumMeshes; i++)
+			{
+				//scene->mMeshes[i]->mName; TODO GET MESH NAME TO ASSIGN IT TO THE RESOURCE
+				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+				Mesh::ImportRMesh(scene->mMeshes[i], *currMesh); //Take the mesh out of the fbx in assets and plop it into engine
+				char* auxB;
+				if (Mesh::SaveMesh(*currMesh, &auxB) > 0) //Here we save to lib the mesh portion of our model (from engine to lib)
+				{
+					RELEASE_ARRAY(auxB);
+				}
+				if (currMesh != nullptr)
+					meshesToAssign.push_back(currMesh);
+
+			}
+
+			std::map<unsigned int, ResourceTexture*> texturesToAssign;
+			//load every material here
+			for (int i = 0; i < scene->mNumMaterials; i++)
+			{
+				aiMaterial* material = scene->mMaterials[i];
+				aiString path;
+				unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
+				if (numTextures > 0)
+				{
+					material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+
+					std::string textureName = App->fileSystem->NormalizePath(path.C_Str());
+					App->fileSystem->SeparatePath(textureName, nullptr, &textureName);
+					path = pathWithoutFile + textureName.c_str();//this is the same path as the asset
+
+					Resource* r = App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
+					if (r == nullptr)
+					{
+						//search for the path on assets
+						std::string fullPath = "";
+						App->fileSystem->SeparateExtension(textureName, nullptr, &textureName);
+						App->fileSystem->FindFileInDirectory(textureName, "Assets/", fullPath);//try to find texture in assets
+
+						r = App->rManager->ManageAssetUpdate(fullPath.c_str());
+					}
+
+					if (r != nullptr)
+					{
+						texturesToAssign[i] = (ResourceTexture*)r;
+					}
+				}
+			}
 
 			aiNode* node = scene->mRootNode;
 
@@ -205,7 +256,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 			GameObject* pObj = new GameObject(App->editor3d->root, name, float4x4::identity);
 			GameObject* root = pObj;
-			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh
+			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh nor material
 
 			while (parents.size() > 0)
 			{
@@ -222,34 +273,107 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 					for (int j = 0; j < currentParent->mNumChildren; j++)
 					{
-						ResourceMesh* auxMesh = nullptr;
+						//ResourceMesh* auxMesh = nullptr;
 						parents.push_back(currentParent->mChildren[j]);
-						aiMesh* newMesh = nullptr;
-						if (parents.back()->mNumMeshes > 0) {
-							newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
+						//aiMesh* newMesh = nullptr;
+						//if (parents.back()->mNumMeshes > 0) {
+							//newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
 							//create game object and save it into gameObjParents (its parent is currObjParent)
-							auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
-							Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
-							char* auxB = "y";
-							Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
-							LOG("debug");
+							//auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+							//Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
+							//char* auxB = "y";
+							//Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
+							//LOG("debug");
+						//}
+						//gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh, newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
+
+
+						//here we create the game objects (children) from their node (parents.back()) and a parent (currObjParent)
+						//assigns game object name
+						std::string name = "Untitled";
+						if (parents.back()->mName.C_Str() != "")
+						{
+							name = parents.back()->mName.C_Str();
 						}
-						gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh, newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
+
+						//assigns game object parent
+						GameObject* newParent = currObjParent;
+						if (currObjParent == nullptr)
+							newParent = App->editor3d->root;
+
+						//transform calculations
+						aiVector3D translation, scaling;
+						aiQuaternion rotation;
+						parents.back()->mTransformation.Decompose(scaling, rotation, translation);
+
+						float3 newTranslation = float3(translation.x, translation.y, translation.z);
+
+						Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
+
+						float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
+
+
+
+						//creates new game object
+						GameObject* newObj = new GameObject(newParent, name, newTransform);
+						ResourceMesh* myMesh = nullptr;
+						ResourceTexture* myTexture = nullptr;
+						if (parents.back()->mNumMeshes > 0)
+						{
+							myMesh = meshesToAssign[parents.back()->mMeshes[0]];
+						}
+
+						if (myMesh != nullptr)//assign mesh
+						{
+							C_Mesh* com = (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
+							com->SetNewResource(myMesh->GetUID());
+
+
+							int matIndex = scene->mMeshes[parents.back()->mMeshes[0]]->mMaterialIndex;
+							aiMaterial* aiMat = scene->mMaterials[matIndex];
+							std::map<unsigned int, ResourceTexture*>::iterator it = texturesToAssign.find(matIndex);
+							aiColor4D col;
+							bool hasMat = (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &col) == aiReturn_SUCCESS);
+							if (it != texturesToAssign.end() || hasMat)
+							{
+								C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
+								if (it != texturesToAssign.end() && it->second != nullptr)
+								{
+									com->SetNewResource(it->second->GetUID());
+								}
+								if (hasMat)
+								{
+									com->matCol.r = col.r;
+									com->matCol.g = col.g;
+									com->matCol.b = col.b;
+									com->matCol.a = col.a;
+
+								}
+							}
+
+						}
+
+						gameObjParents.push_back(newObj);
+
 					}
+
+
+
 				}
 			}
-
-
 			Model::SaveModel(root, res);//take the model resource and plop it into lib. It has info such as ID, GO list, Components array...
-
 			delete root;
 			aiReleaseImport(scene);
+			texturesToAssign.clear();
+			meshesToAssign.clear();
 		}
 		else
 		{
-			LOG("[error]Error loading scene % s", Buffer);
+			LOG("[error]Error loading scene %s", Buffer);
 			ret = false;
 		}
+
+
 	}
 	else
 	{
@@ -259,8 +383,17 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 }
 
 //TODO IMPORTANT take model name as a parameter here and assign that name to their childs (every resource should have a name)
-bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
+bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool onlyBase)
 {
+	GameObject* newRoot = nullptr;
+	if (!onlyBase)
+	{
+		newRoot = root;
+	}
+	else//if we are only going to load the objects for the preview of the resources, we will create a root GO and delete it before exiting the method
+	{
+		newRoot = new GameObject(nullptr, "", float4x4::identity);
+	}
 	bool ret = false;
 	char* buffer = "";
 	App->fileSystem->Load(libPath, &buffer);
@@ -284,7 +417,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			parent = it->second;
 
 		//Create the GO
-		GameObject* gameObject = new GameObject(parent ? parent : root, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
+		GameObject* gameObject = new GameObject(parent ? parent : newRoot, gameObject_node.GetString("Name").c_str(), auxGlobalMat);
 		ret = true;
 
 
@@ -312,32 +445,55 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 					//Hold your horses
 					break;
 				case ComponentType::MESH:
-
-					r = App->rManager->FindResInMemory(newUID);
-					if (r == nullptr)//if not found in memory find it in lib
+				{
+					if (newUID != 0)
 					{
-						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
-						App->rManager->LoadResourceIntoMem(r);
+
+						//TODO check if the component has a resource here? (resourceid!=0)
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							App->rManager->LoadResourceIntoMem(r);
+						}
+
+						//component.chutame_la_mesh
+						component->SetNewResource(newUID);
 					}
 
-					//component.chutame_la_mesh
-					component->SetNewResource(newUID);
-
-
-					break;
+				}
+				break;
 				case ComponentType::MATERIAL:
-
-					r = App->rManager->FindResInMemory(newUID);
-					if (r == nullptr)//if not found in memory find it in lib
+				{
+					//TODO check if the component has a resource here? (resourceid!=0)
+					if (newUID != 0)
 					{
-						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
-						App->rManager->LoadResourceIntoMem(r);
+
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							std::string fullpath = "";
+
+							App->fileSystem->FindFileInDirectory(std::to_string(newUID), TEXTURE_PATH, fullpath);
+
+							if (fullpath != "")
+							{
+								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+								App->rManager->LoadResourceIntoMem(r);
+
+								//component.chutame_la_tex
+							}
+						}
+						component->SetNewResource(newUID);
 					}
 
-					//component.chutame_la_tex
-					component->SetNewResource(newUID);
-
-					break;
+					C_Material* m = (C_Material*)component;
+					m->matCol.r = comp.GetNumber("Color R");
+					m->matCol.g = comp.GetNumber("Color G");
+					m->matCol.b = comp.GetNumber("Color B");
+					m->matCol.a = comp.GetNumber("Color A");
+				}
+				break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
 					break;
@@ -350,6 +506,11 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root)
 			}
 		}
 		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
+	}
+	if (onlyBase)
+	{
+		delete newRoot;
+		newRoot = nullptr;
 	}
 	return ret;
 }
@@ -378,253 +539,6 @@ unsigned int Importer::Model::SaveModel(GameObject* root, Resource* ret)
 	return size;
 }
 
-//GameObject* Importer::LoadGameObjFromAiMesh(aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
-//{
-//	std::vector<float> vertices;
-//	std::vector<unsigned int> indices;
-//	std::vector<float> normals;
-//	std::vector<float>texCoords;
-//
-//	//creates a new mesh
-//	aiMesh* mesh = _mesh;
-//	//assigns game object name
-//	std::string name = "Untitled";
-//
-//	if (currNode->mName.C_Str() != "")
-//	{
-//		name = currNode->mName.C_Str();
-//	}
-//	else if (mesh != nullptr)
-//		name = mesh->mName.C_Str();
-//
-//	//assigns game object parent
-//	GameObject* newParent = parent;
-//	if (parent == nullptr)
-//		newParent = App->editor3d->root;
-//
-//	//Transform importing TODO can be optimized ??
-//	aiVector3D translation, scaling;
-//	aiQuaternion rotation;
-//	currNode->mTransformation.Decompose(scaling, rotation, translation);
-//
-//	/*mat4x4 transformMat = IdentityMatrix;
-//	Quat rot(rotation.x, rotation.y, rotation.z, rotation.w);
-//	float3 vec;
-//	float angle;
-//
-//	rot.ToAxisAngle(vec, angle);
-//	angle = RadToDeg(angle);
-//
-//	transformMat.scale(scaling.x, scaling.y, scaling.z);
-//	mat4x4 auxTransform = transformMat;
-//
-//	transformMat = auxTransform.rotate(angle, { vec.x,vec.y,vec.z }) * transformMat;
-//	transformMat.translate(translation.x, translation.y, translation.z);*/
-//
-//
-//
-//	float3 newTranslation = float3(translation.x, translation.y, translation.z);
-//
-//	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
-//
-//	float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
-//
-//	//creates new game object
-//	GameObject* newObj = new GameObject(newParent, name, newTransform);
-//
-//	LOG("----------Importing mesh '%s'----------", (char*)name.c_str());
-//
-//
-//	// copy vertices
-//	//newMesh.numVertex = mesh->mNumVertices;
-//
-//	if (mesh != nullptr && mesh->mNumVertices > 0)
-//	{
-//		vertices.reserve(mesh->mNumVertices * 3);
-//
-//
-//		for (int j = 0; j < mesh->mNumVertices; j++)
-//		{
-//			vertices.push_back(mesh->mVertices[j].x);
-//			vertices.push_back(mesh->mVertices[j].y);
-//			vertices.push_back(mesh->mVertices[j].z);
-//		}
-//		//memcpy(newMesh.vertices, mesh->mVertices, sizeof(float) * newMesh.numVertex * 3);
-//		LOG("New mesh with %i vertices", (vertices.size() / 3));
-//		// copy faces
-//		if (mesh->HasFaces())
-//		{
-//			//newMesh.numIndex = mesh->mNumFaces * 3;
-//			//newMesh.index = new unsigned int[newMesh.numIndex]; // assume each face is a triangle
-//			indices.reserve(mesh->mNumFaces * 3);
-//			indices.resize(mesh->mNumFaces * 3);
-//
-//			for (int j = 0; j < mesh->mNumFaces; j++)
-//			{
-//
-//				if (mesh->mFaces[j].mNumIndices != 3)
-//				{
-//					LOG("[waring] geometry face with != 3 indices!");
-//				}
-//				else
-//				{
-//					//indices.push_back(mesh->mFaces[j].mIndices[0]);
-//					//indices.push_back(mesh->mFaces[j].mIndices[1]);
-//					//indices.push_back(mesh->mFaces[j].mIndices[2]);
-//
-//					memcpy(&indices[j * 3], mesh->mFaces[j].mIndices, 3 * sizeof(unsigned int));
-//
-//
-//				}
-//
-//			}
-//			LOG("New mesh with %i indices", (indices.size()));
-//		}
-//
-//
-//		texCoords.reserve(mesh->mNumVertices * 2); //there are 2 floats for every index
-//		LOG("Importing mesh texture coordinates");
-//		for (int j = 0; j < mesh->mNumVertices; j++)
-//		{
-//			//copy TextureCoords
-//			if (mesh->mTextureCoords[0])
-//			{
-//
-//				texCoords.push_back(mesh->mTextureCoords[0][j].x);
-//				texCoords.push_back(mesh->mTextureCoords[0][j].y);
-//			}
-//			else
-//			{
-//				LOG("[warning]No texture coordinates found");
-//				texCoords.push_back(0.0f);
-//				texCoords.push_back(0.0f);
-//			}
-//		}
-//		LOG("%i texture coordinates have been loaded", texCoords.size() / 2);
-//
-//		//copy normals
-//		if (mesh->HasNormals())
-//		{
-//			LOG("Importing normals");
-//			normals.reserve(mesh->mNumVertices * 3);
-//			for (int j = 0; j < mesh->mNumVertices; j++)
-//			{
-//
-//				normals.push_back(mesh->mNormals[j].x);
-//				normals.push_back(mesh->mNormals[j].y);
-//				normals.push_back(mesh->mNormals[j].z);
-//			}
-//			LOG("%i normals have been loaded", normals.size() / 3);
-//		}
-//		else
-//			LOG("[warning]Mesh has no normals!");
-//
-//
-//
-//		newObj->CreateComponent(ComponentType::MESH);
-//		newObj->GetComponent<C_Mesh>()->SetMesh(ResourceMesh(vertices, indices, normals, texCoords,0));//TODO for the moment we pass id 0 to the mesh
-//
-//
-//		if (scene->HasMaterials())
-//		{
-//
-//			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-//			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
-//
-//			if (numTextures > 0)
-//			{
-//				aiString path;
-//				char* c = (char*)path.C_Str();
-//				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-//
-//				path = App->fileSystem->NormalizePath(path.C_Str());
-//				path = relPath + path.C_Str();
-//				char* buffer;
-//				unsigned int buffLength = App->fileSystem->Load(path.C_Str(), &buffer);
-//				//TODO if path not found try to get the texture from the fbx path, if not found try to get the texture from the library/textures folder (not created yet)
-//				
-//				//LoadNewImageFromObj(buffer, buffLength, newObj, path.C_Str());
-//
-//
-//			}
-//		}
-//		//App->editor3d->meshes.push_back(Mesh(vertices, indices, normals, texCoords));
-//		LOG("----------Mesh '%s' has been loaded----------", (char*)name.c_str());
-//		vertices.clear();
-//		indices.clear();
-//		normals.clear();
-//		mesh = nullptr;
-//	}
-//	return newObj;
-//}
-
-GameObject* Importer::LoadGameObjFromAiMesh(ResourceMesh* m, aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath)
-{
-	//assigns game object name
-	std::string name = "Untitled";
-	if (currNode->mName.C_Str() != "")
-	{
-		name = currNode->mName.C_Str();
-	}
-
-	//assigns game object parent
-	GameObject* newParent = parent;
-	if (parent == nullptr)
-		newParent = App->editor3d->root;
-
-	//transform calculations
-	aiVector3D translation, scaling;
-	aiQuaternion rotation;
-	currNode->mTransformation.Decompose(scaling, rotation, translation);
-
-	float3 newTranslation = float3(translation.x, translation.y, translation.z);
-
-	Quat newRot = Quat(rotation.x, rotation.y, rotation.z, rotation.w);
-
-	float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
-
-
-
-	//creates new game object
-	GameObject* newObj = new GameObject(newParent, name, newTransform);
-
-	if (_mesh != nullptr || m != nullptr)
-	{
-		C_Mesh* com = (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
-		com->SetNewResource(m->GetUID());
-
-
-		//Mesh::ImportRMesh(newMesh,* auxMesh);
-
-		if (scene->HasMaterials())
-		{
-
-			aiMaterial* material = scene->mMaterials[_mesh->mMaterialIndex];
-			unsigned int numTextures = material->GetTextureCount(aiTextureType_DIFFUSE);
-
-			if (numTextures > 0)
-			{
-				aiString path;
-				char* c = (char*)path.C_Str();
-				material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
-
-				path = App->fileSystem->NormalizePath(path.C_Str());
-				path = relPath + path.C_Str();
-
-				Resource* r = App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
-
-				if (r != nullptr)
-				{
-
-					C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
-					com->SetNewResource(r->GetUID());
-				}
-			}
-		}
-	}
-
-	return newObj;
-}
 //returns 0 by default if something failed
 unsigned int Importer::LoadPureImageGL(const char* path)
 {
@@ -642,8 +556,9 @@ unsigned int Importer::LoadPureImageGL(const char* path)
 		ILenum error;
 		error = ilGetError();
 		LOG("\n[error]Could not load an image from buffer");
-		LOG("[error] %d :\n %s", error, iluErrorString(error));
-		RELEASE_ARRAY(new_buffer);
+		//LOG("[error] %d :\n %s", error, iluErrorString(error));
+		if (length != 0)
+			RELEASE_ARRAY(new_buffer);
 		ilDeleteImages(1, &ID);
 	}
 	else if (ret = ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE))
@@ -841,14 +756,20 @@ void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 	config.SetNumber("FOV", camera->GetFoV()); //this is the x, y is calculated afterwards
 	config.SetNumber("NearPlane", camera->GetNearPlaneDist());
 	config.SetNumber("FarPlane", camera->GetFarPlaneDist());
-
+	config.SetNumber("AspectRatio", camera->GetAspectRatio());
+	config.SetBool("IsCulling", camera->GetIsCulling());
 	//config.SetBool("MainCamera",camera->main);
 }
 
 void Importer::Texture::SaveComponentMaterial(Config& config, Component* auxMat)
 {
-	//C_Material* mat = (C_Material*)auxMat;
-	//config.SetString("Path", mat->path.c_str());
+	C_Material* mat = (C_Material*)auxMat;
+	Color c = mat->matCol;
+
+	config.SetNumber("Color R", c.r);
+	config.SetNumber("Color G", c.g);
+	config.SetNumber("Color B", c.b);
+	config.SetNumber("Color A", c.a);
 }
 
 bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshToFillA)
@@ -932,7 +853,8 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	meshToFill->indices = indices;
 	meshToFill->normals = normals;
 	meshToFill->texCoords = texCoords;
-	meshToFill->GenerateSmoothedNormals();
+	meshToFill->smoothedNormals = smoothedNormals;
+	//meshToFill->GenerateSmoothedNormals();
 	meshToFill->GenerateBuffers();
 
 	if (!meshToFill->vertices.empty() && !meshToFill->indices.empty()) { return true; }
@@ -1040,6 +962,16 @@ unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //se
 
 void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 {
+	//App->renderer3D->SetNewCullingCam(nullptr);
+	if (App->renderer3D->activeCam != nullptr)
+	{
+		App->renderer3D->activeCam->SetAsCullingCam(false);
+	}
+	if (!App->editor3d->selectedGameObjs.empty())
+	{
+		App->editor3d->SetSelectedGameObject(nullptr);
+	}
+
 	//Open the bufer you are going to be reading
 	Config file(buffer);
 	//set the root of the new scene
@@ -1071,6 +1003,12 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		gameObject->isActive = gameObject_node.GetBool("Active");
 		gameObject->focused = gameObject_node.GetBool("Focused");
 
+		//TODO for the future here we will load every selected obj and we will store the focused one to add it at the end of the load
+		if (gameObject->focused)
+		{
+			App->editor3d->SetSelectedGameObject(gameObject);
+		}
+
 		//get the components
 		Config_Array components = gameObject_node.GetArray("Components");
 
@@ -1083,18 +1021,27 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			{
 				component->ID = comp.GetNumber("ID");
 				unsigned int newUID = comp.GetNumber("ResourceID");
-				if (newUID != 0)
+
+
+				Resource* r = nullptr;
+
+				switch (type)
 				{
-
-					Resource* r = nullptr;
-
-					switch (type)
+				case ComponentType::CAMERA:
+				{
+					//Hold your horses, if you put brackets you can create variables here
+					C_Camera* cam = (C_Camera*)component;
+					cam->SetNearPlane(comp.GetNumber("NearPlane"));
+					cam->SetFarPlane(comp.GetNumber("FarPlane"));
+					cam->SetNewAspectRatio(comp.GetNumber("AspectRatio"));
+					cam->SetNewFoV(comp.GetNumber("FOV"));
+					bool isCulling = comp.GetBool("IsCulling");
+					if (isCulling)cam->SetAsCullingCam(true);
+				}
+				break;
+				case ComponentType::MESH:
+					if (newUID != 0)
 					{
-					case ComponentType::CAMERA:
-						//Hold your horses
-						break;
-					case ComponentType::MESH:
-
 						r = App->rManager->FindResInMemory(newUID);
 						if (r == nullptr)//if not found in memory find it in lib
 						{
@@ -1104,33 +1051,42 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 
 						//component.chutame_la_mesh
 						component->SetNewResource(newUID);
+					}
 
+					break;
+				case ComponentType::MATERIAL:
+				{
 
-						break;
-					case ComponentType::MATERIAL:
-
+					if (newUID != 0)
+					{
 						r = App->rManager->FindResInMemory(newUID);
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
 							App->rManager->LoadResourceIntoMem(r);
 						}
-
 						//component.chutame_la_tex
 						component->SetNewResource(newUID);
-
-						break;
-					case ComponentType::TRANSFORM:
-						//Nothing: this is already done in constructor
-						break;
-					default:
-						LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
-						break;
 					}
-
-
-					//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
+					C_Material* m = (C_Material*)component;
+					m->matCol.r = comp.GetNumber("Color R");
+					m->matCol.g = comp.GetNumber("Color G");
+					m->matCol.b = comp.GetNumber("Color B");
+					m->matCol.a = comp.GetNumber("Color A");
 				}
+				break;
+
+				case ComponentType::TRANSFORM:
+					//Nothing: this is already done in constructor
+					break;
+				default:
+					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
+					break;
+				}
+
+
+				//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
+
 
 			}
 

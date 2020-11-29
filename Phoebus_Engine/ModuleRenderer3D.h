@@ -38,8 +38,8 @@ public:
 
 
 	void AddMeshToDraw(C_Mesh* mesh, C_Material* material, float4x4 gTransform,bool isSelected);
-	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform,float3 color=float3(1.0f,1.0f,1.0f));
-	void AddBoxToDraw(std::vector<float3> corners);
+	void AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform,Color color=Color(1.0f,1.0f,1.0f));
+	void AddBoxToDraw(std::vector<float3> corners,Color c= Color(1.0f, 1.0f, 1.0f));
 
 	bool IsInsideFrustum(std::vector<float3>& points);
 
