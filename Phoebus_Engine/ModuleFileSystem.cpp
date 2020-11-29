@@ -467,6 +467,7 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath, bool isMet
 
 	//Does the asset exist?
 
+
 	if (PHYSFS_exists(assetPath) || isMeta)
 	{
 		std::string metaPath = assetPath;

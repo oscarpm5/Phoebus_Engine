@@ -385,7 +385,7 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 		}
 		else
 		{
-			std::string assetMissing = "Assets/";
+			std::string assetMissing = "";
 			assetMissing += absPathWithoutExt;
 			if (!App->fileSystem->DoesFileExist(assetMissing.c_str()))
 			{
