@@ -130,10 +130,12 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 ## Aditional comments for the teacher:
 
 ### First Assigment
+
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
 
 ### Second Assigment
+
 * When tring to drag & drop external assets into the engine, make sure the path & the file don't have special caracters such as accents, otherwise the file won't be imported.
 * Street has been imported with Blender, which causes the fbx folder to have a ".fbm" extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
 * Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back in the future
@@ -147,6 +149,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
 * In the exceptional case of an ".fbx" missing in assets, the garbage collector will handle the deletion of ".meta" & model files but won't delete ".mesh" & ".dds" files which originated from that asset as they are independent resources. The garbage collector will handle other asset types correctly. It executes once every minute or if "refresh" button is pressed. 
 * You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with an automatic name which you can later change. You can load any saved scene in Menu->Load
+* Hierarchy elements can be re-parented through dragging them. If you want to re-parent the object to the scene root, simply drag it to the bottom and let it go in the blank space below the hierarchy.
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
