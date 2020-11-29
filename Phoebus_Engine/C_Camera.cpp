@@ -184,7 +184,10 @@ void C_Camera::CalcCamPosFromTransformMat(float4x4& gTransform)
 	//TODO this global mat might have to be transposed?
 	frustum.pos = gTransform.TranslatePart();
 	frustum.front = gTransform.Col3(2); // The camera looks towards +Z axis of the given transform.
+	frustum.front.Normalize();
 	frustum.up = gTransform.Col3(1); // The camera up points towards +Y of the given transform.
+	frustum.up.Normalize();
+
 	assume(pos.IsFinite());
 	assume(front.IsNormalized());
 	assume(up.IsNormalized());
