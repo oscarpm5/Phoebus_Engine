@@ -45,7 +45,6 @@ public:
 	void TransformToLowerCase(std::string& lowerCase);
 
 	void SeparatePath(std::string path, std::string* newPath, std::string* file);
-	void SeparateExtension(std::string file, std::string* ext);
 	void SeparateExtension(std::string file, std::string* ext,std::string* filePathWithoutExt);
 
 	std::string NormalizePath(const char* path);
@@ -82,7 +81,7 @@ public:
 	//deleting temporal scenes
 	bool DeleteTemporalScene(char * sceneBuffer);
 
-
+	void FindFileInDirectory(std::string fileName,std::string currDir, std::string& fullPath,bool excludeMeta=true);
 };
 
 #endif // __MODULEFILESYSTEModuleH__

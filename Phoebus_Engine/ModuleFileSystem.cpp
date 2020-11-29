@@ -180,26 +180,33 @@ void ModuleFileSystem::SeparatePath(std::string path, std::string* newPath, std:
 	}
 }
 
-void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext)
+void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext, std::string* fileWithoutExt)
 {
 	size_t filePos = file.find_last_of(".");
 
 	if (filePos < file.size())
 	{
+		if (ext != nullptr)
+		{
 		*ext = file.substr(filePos);
+		}
+		if (fileWithoutExt != nullptr)
+		{
+			*fileWithoutExt = file.substr(0, filePos);
+		}
 	}
 }
-
-void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext, std::string* filePathWithoutExt)
-{
-	size_t filePos = file.find_last_of(".");
-
-	if (filePos < file.size())
-	{
-		*ext = file.substr(filePos);
-		*filePathWithoutExt = file.substr(0, file.size() - ext->size());
-	}
-}
+//
+//void ModuleFileSystem::SeparateExtension(std::string file, std::string* ext, std::string* filePathWithoutExt)
+//{
+//	size_t filePos = file.find_last_of(".");
+//
+//	if (filePos < file.size())
+//	{
+//		*ext = file.substr(filePos);
+//		*filePathWithoutExt = file.substr(0, file.size() - ext->size());
+//	}
+//}
 
 //normalizes '//' paths
 std::string ModuleFileSystem::NormalizePath(const char* path)
@@ -549,6 +556,52 @@ bool ModuleFileSystem::DeleteFromAssetsAndLibs(const char* assetPath, bool isMet
 bool ModuleFileSystem::DeleteTemporalScene(char* sceneBuffer)
 {
 	return false;
+}
+
+void ModuleFileSystem::FindFileInDirectory(std::string fileName,std::string currDir, std::string& fullPath,bool excludeMeta)
+{
+	std::vector<std::string>files;
+	std::vector<std::string>dirs;
+	
+	if (!App->fileSystem->GetDirFiles(currDir.c_str(), files, dirs))
+	{
+		LOG("[error] Trying to acces an invalid directory: %s", currDir.c_str());
+		return; //if directory doesn't exist return, just for safety
+	}
+
+
+	for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it)
+	{
+		const std::string& str = *it;
+		std::string absPath = currDir + str;
+
+		std::string extension;
+
+		App->fileSystem->SeparateExtension(str, &extension,nullptr);
+
+		if (excludeMeta)
+		{
+			if (extension == ".meta")continue;
+		}
+		if (str == (fileName + extension))
+		{
+			fullPath = absPath;
+			return;
+		}
+	}
+
+	//for every directory in the current directory, search
+	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
+	{
+		const std::string& str = *it;
+		FindFileInDirectory(fileName, currDir + str + "/", fullPath);
+		if (fullPath != "")
+		{
+			return;
+		}
+	}
+
+
 }
 
 

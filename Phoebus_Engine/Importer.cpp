@@ -209,10 +209,20 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 				{
 					material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
 
-					path = App->fileSystem->NormalizePath(path.C_Str());
-					path = pathWithoutFile + path.C_Str();
-
+					std::string textureName = App->fileSystem->NormalizePath(path.C_Str());
+					App->fileSystem->SeparatePath(textureName, nullptr, &textureName);
+					path = pathWithoutFile + textureName.c_str();//this is the same path as the asset
+					
 					Resource* r = App->rManager->ManageAssetUpdate(path.C_Str());//Here we import the non-mesh portion of our model: textures!
+					if (r == nullptr)
+					{
+						//search for the path on assets
+						std::string fullPath = "";
+						App->fileSystem->SeparateExtension(textureName, nullptr, &textureName);
+						App->fileSystem->FindFileInDirectory(textureName, "Assets/", fullPath);//try to find texture in assets
+						
+						r = App->rManager->ManageAssetUpdate(fullPath.c_str());
+					}
 
 					if (r != nullptr)
 					{

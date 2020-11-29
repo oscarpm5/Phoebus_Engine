@@ -193,6 +193,7 @@ Resource* ModuleResourceManager::ReImportExistingFile(const char* newAssetFile, 
 	return res;
 }
 
+//same method on file system, TODO delete this one and check if all works with the one from file system
 void ModuleResourceManager::FindFileRecursively(std::string uid, std::string currDir, std::string& foundFile)
 {
 	std::vector<std::string>files;
@@ -211,7 +212,7 @@ void ModuleResourceManager::FindFileRecursively(std::string uid, std::string cur
 
 		std::string extension;
 
-		App->fileSystem->SeparateExtension(str, &extension);
+		App->fileSystem->SeparateExtension(str, &extension,nullptr);
 
 		if (str == (uid + extension))
 		{
@@ -506,7 +507,9 @@ Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	std::string newPath = App->fileSystem->NormalizePath(newAssetFile);
 	App->fileSystem->TransformToRelPath(newPath);
 	std::string metaPath = "Assets/" + newPath + ".meta";
-
+	
+	//this line is an experiment TODO
+	newPath = "Assets/" + newPath;
 
 
 
@@ -576,10 +579,14 @@ Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 		}
 
 	}
-	else
+	else if (App->fileSystem->DoesFileExist(newPath.c_str()))
 	{
 		ret = ImportNewFile(newPath.c_str());
 		LOG("Loading Asset from path: %s", newPath.c_str());
+	}
+	else
+	{
+		LOG("Couldn't find the file with path: %s", newPath.c_str());
 	}
 	return ret;
 }
@@ -719,7 +726,7 @@ ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 		break;
 	case FileFormats::UNDEFINED:
 	default:
-		LOG("[error]asset from %s has no recognizable format", path);
+		LOG("[error]asset from %s has no recognizable format", path.c_str());
 		ret = ResourceType::UNKNOWN;
 		break;
 	}
