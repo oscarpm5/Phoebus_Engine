@@ -200,6 +200,15 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				selectedOnSpawn = new GameObject(App->editor3d->root, "Empty", float4x4::identity);
 			}
+			if (ImGui::MenuItem("Child Empty##GameObjectCreate"))
+			{
+				GameObject* root = App->editor3d->root;
+				if (!App->editor3d->selectedGameObjs.empty())
+				{
+					root = App->editor3d->selectedGameObjs.back();
+				}
+				selectedOnSpawn = new GameObject(root, "Child Empty", float4x4::identity);
+			}
 			if (ImGui::MenuItem("Camera##GameObjectCreate"))
 			{
 				selectedOnSpawn = new GameObject(App->editor3d->root, "Camera", float4x4::identity);

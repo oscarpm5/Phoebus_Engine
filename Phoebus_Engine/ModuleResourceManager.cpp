@@ -7,7 +7,9 @@
 #include "Mesh.h"
 #include <string>
 #include "Importer.h"
-
+#include "ModuleEditor3D.h"
+#include "GameObject.h"
+#include "C_Transform.h"
 ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
 {
 }
@@ -26,25 +28,25 @@ bool ModuleResourceManager::Start()
 {
 
 	LoadAllAssets();
-	//TODO TESTING CODE
-	/*char* buffer;
-	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/Baker_house.png",&buffer);
-	Resource* r = CreateNewResource("Assets/bakerHouse/Baker_house.png", ResourceType::TEXTURE);
 
-	Importer::Texture::ImportImage(buffer, size, *r);*/
-
-	/*unsigned int id= ImportNewFile("Assets/bakerHouse/Baker_house.png");
-	std::string path;
-	FindFileRecursively(std::to_string(id), LIB_PATH, path);
-	ResourceTexture res(id);
-	Importer::Texture::LoadNewImage(path.c_str(),res);*/
+	std::string streetEnvironmentPath = "Assets/street/Street environment_V01.FBX";
+	Resource* r = App->rManager->ManageAssetUpdate(streetEnvironmentPath.c_str());
+	if (r != nullptr)
+	{
+		App->rManager->RequestNewResource(r->GetUID());
+	}
 
 
-	/*char* buffer;
-	unsigned int size = App->fileSystem->Load("Assets/bakerHouse/BakerHouse.fbx", &buffer);
-	Resource* r=ManageAssetUpdate("Assets/bakerHouse/BakerHouse.fbx");
-	LoadResourceIntoMem(r);*/
-	//Importer::Model::ImportModel(buffer, size, "Assets/bakerHouse/BakerHouse.fbx");
+
+
+	if (!App->editor3d->root->children.empty())//this is just for the initial street environment mesh, it seems to be off by 90 degrees from export
+	{
+		C_Transform* t = App->editor3d->root->GetComponent<C_Transform>();
+
+		float4x4 initialMat= float4x4::RotateX(DegToRad(-90.0f));
+
+		t->SetGlobalTransform(initialMat);
+	}
 
 	return true;
 }
@@ -212,7 +214,7 @@ void ModuleResourceManager::FindFileRecursively(std::string uid, std::string cur
 
 		std::string extension;
 
-		App->fileSystem->SeparateExtension(str, &extension,nullptr);
+		App->fileSystem->SeparateExtension(str, &extension, nullptr);
 
 		if (str == (uid + extension))
 		{
@@ -402,7 +404,7 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		const std::string& str = *it;
-		std::string newDir = dir+ str + "/";
+		std::string newDir = dir + str + "/";
 		LoadAssetsRecursively(newDir);
 	}
 }
@@ -441,7 +443,7 @@ void ModuleResourceManager::LoadResourceIntoMem(Resource* res, bool onlyBase)
 
 	char* buffer;
 	unsigned int size = App->fileSystem->Load(res->GetLibraryFile().c_str(), &buffer);
-	if (size>0)
+	if (size > 0)
 	{
 		switch (type)
 		{
@@ -478,7 +480,7 @@ void ModuleResourceManager::LoadResourceIntoMem(Resource* res, bool onlyBase)
 	}
 	else
 	{
-		LOG("[error] Trying to load a resource that doesn't exist in lib: %s",res->GetLibraryFile().c_str());
+		LOG("[error] Trying to load a resource that doesn't exist in lib: %s", res->GetLibraryFile().c_str());
 	}
 
 }
@@ -506,7 +508,7 @@ Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 	std::string newPath = App->fileSystem->NormalizePath(newAssetFile);
 	App->fileSystem->TransformToRelPath(newPath);
 	std::string metaPath = "Assets/" + newPath + ".meta";
-	
+
 	//this line is an experiment TODO
 	newPath = "Assets/" + newPath;
 
@@ -551,7 +553,7 @@ Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 					if (resType != ResourceType::UNKNOWN)
 					{
 						Resource* res = CreateNewResource(newAssetFile, resType, AssID);
-						if (resType == ResourceType::MODEL) 
+						if (resType == ResourceType::MODEL)
 							LoadResourceIntoMem(res, true);
 						if (res->IsLoadedInMemory())
 						{

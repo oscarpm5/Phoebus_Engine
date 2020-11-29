@@ -119,7 +119,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Object Translate/Rotate/Scale can be done in both local & global space coordinates.
 
-* Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]. 
+* Objects can be translated/rotated/scaled from the 3d View using gizmos. 
 
 * The resource manager has an automatic garbage collector which deletes ".meta" & lib files when their asset is missing.
 
@@ -150,6 +150,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * In the exceptional case of an ".fbx" missing in assets, the garbage collector will handle the deletion of ".meta" & model files but won't delete ".mesh" & ".dds" files which originated from that asset as they are independent resources. The garbage collector will handle other asset types correctly. It executes once every minute or if "refresh" button is pressed. 
 * You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with an automatic name which you can later change. You can load any saved scene in Menu->Load
 * Hierarchy elements can be re-parented through dragging them. If you want to re-parent the object to the scene root, simply drag it to the bottom and let it go in the blank space below the hierarchy.
+* Pressing the outer white circle in the rotation gizmo when it turns orange will reset the object rotation to 0. 
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
