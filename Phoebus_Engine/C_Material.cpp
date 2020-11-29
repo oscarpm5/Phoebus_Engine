@@ -7,10 +7,11 @@
 #include "Application.h"
 #include "ModuleResourceManager.h"
 
-C_Material::C_Material(GameObject* owner, unsigned int ID) :Component(ComponentType::MATERIAL, owner, ID),
+C_Material::C_Material(GameObject* owner, unsigned int ID,Color color):Component(ComponentType::MATERIAL, owner, ID),
 idCheckers(0), //width(0), height(0), format(0), depth(0),idTexture(0),sizeInBytes(0), bpp(0), 
 usingCkeckers(false), resourceID(0)
 {
+	matCol = color;
 	GenDefaultTexture();
 }
 
@@ -34,7 +35,6 @@ C_Material::~C_Material()
 	//sizeInBytes = 0;
 	//bpp = 0;
 	usingCkeckers = 0;
-	path = "";
 
 	if (resourceID != 0)
 	{
@@ -253,8 +253,8 @@ void C_Material::OnEditor()
 		}
 		ImGui::Separator();
 
-		ImGui::Text("Path: %s", this->path.c_str());
-
+		//ImGui::Text("Path: %s", this->path.c_str());
+		//TODO change color here
 
 
 		ImGui::Separator();
@@ -369,7 +369,7 @@ void C_Material::DestroyCheckers()
 void C_Material::GenDefaultTexture()
 {
 	DestroyCheckers();
-	this->path = "Default texture - no path";
+	//this->path = "Default texture - no path";
 	const int checkersHeight = 100;
 	const int checkersWidth = 100;
 

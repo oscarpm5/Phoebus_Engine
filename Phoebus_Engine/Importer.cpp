@@ -36,6 +36,7 @@
 #include "C_Camera.h"
 #include "Config.h"
 #include "ModuleResourceManager.h"
+#include "Color.h"
 #include <map>
 
 bool Importer::InitializeDevIL()
@@ -711,14 +712,19 @@ void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 	config.SetNumber("FOV", camera->GetFoV()); //this is the x, y is calculated afterwards
 	config.SetNumber("NearPlane", camera->GetNearPlaneDist());
 	config.SetNumber("FarPlane", camera->GetFarPlaneDist());
-
+	config.SetNumber("AspectRatio", camera->GetAspectRatio());
 	//config.SetBool("MainCamera",camera->main);
 }
 
 void Importer::Texture::SaveComponentMaterial(Config& config, Component* auxMat)
 {
-	//C_Material* mat = (C_Material*)auxMat;
-	//config.SetString("Path", mat->path.c_str());
+	C_Material* mat = (C_Material*)auxMat;
+	Color c = mat->matCol;
+
+	config.SetNumber("Color R", c.r);
+	config.SetNumber("Color G", c.g);
+	config.SetNumber("Color B", c.b);
+	config.SetNumber("Color A", c.a);
 }
 
 bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshToFillA)
@@ -953,39 +959,47 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			{
 				component->ID = comp.GetNumber("ID");
 				unsigned int newUID = comp.GetNumber("ResourceID");
-				if (newUID != 0)
-				{
+				
 
 					Resource* r = nullptr;
 
 					switch (type)
 					{
 					case ComponentType::CAMERA:
-						//Hold your horses
+					{
+						//Hold your horses, if you put brackets you can create variables here
+						C_Camera* cam = (C_Camera*)component;
+						cam->SetNearPlane(comp.GetNumber("NearPlane"));
+						cam->SetFarPlane(comp.GetNumber("FarPlane"));
+						cam->SetNewAspectRatio(comp.GetNumber("AspectRatio"));
+						cam->SetNewFoV(comp.GetNumber("FOV"));
+					}
 						break;
 					case ComponentType::MESH:
-
-						r = App->rManager->FindResInMemory(newUID);
-						if (r == nullptr)//if not found in memory find it in lib
+						if (newUID != 0)
 						{
-							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
-							App->rManager->LoadResourceIntoMem(r);
+							r = App->rManager->FindResInMemory(newUID);
+							if (r == nullptr)//if not found in memory find it in lib
+							{
+								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+								App->rManager->LoadResourceIntoMem(r);
+							}
+
+							//component.chutame_la_mesh
+							component->SetNewResource(newUID);
 						}
-
-						//component.chutame_la_mesh
-						component->SetNewResource(newUID);
-
 
 						break;
 					case ComponentType::MATERIAL:
-
-						r = App->rManager->FindResInMemory(newUID);
-						if (r == nullptr)//if not found in memory find it in lib
+						if (newUID != 0)
 						{
-							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
-							App->rManager->LoadResourceIntoMem(r);
+							r = App->rManager->FindResInMemory(newUID);
+							if (r == nullptr)//if not found in memory find it in lib
+							{
+								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+								App->rManager->LoadResourceIntoMem(r);
+							}
 						}
-
 						//component.chutame_la_tex
 						component->SetNewResource(newUID);
 
@@ -1000,7 +1014,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 
 
 					//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
-				}
+				
 
 			}
 
