@@ -474,16 +474,18 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							std::string fullpath = "";
+
+							App->fileSystem->FindFileInDirectory(std::to_string(newUID), TEXTURE_PATH, fullpath);
+
 							if (fullpath != "")
 							{
-								App->fileSystem->FindFileInDirectory(std::to_string(newUID), TEXTURE_PATH, fullpath);
 								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
 								App->rManager->LoadResourceIntoMem(r);
 
 								//component.chutame_la_tex
-								component->SetNewResource(newUID);
 							}
 						}
+						component->SetNewResource(newUID);
 					}
 
 					C_Material* m = (C_Material*)component;
