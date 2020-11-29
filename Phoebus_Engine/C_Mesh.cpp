@@ -5,6 +5,7 @@
 #include "MathGeoLib/include/Geometry/AABB.h"
 #include "Application.h"
 #include "ModuleResourceManager.h"
+#include "GameObject.h"
 
 C_Mesh::C_Mesh(GameObject* owner, unsigned int ID) :Component(ComponentType::MESH, owner, ID), resourceID(0),
 normalVertexSize(1.0f), normalFaceSize(1.0f), normalDrawMode(0), meshDrawMode(0), temporalRMesh(nullptr)
@@ -45,6 +46,11 @@ void C_Mesh::SetNewResource(unsigned int resourceUID)
 		resourceID = resourceUID;
 		localAABB.SetNegativeInfinity();//this is like setting the AABB to null
 		localAABB.Enclose((float3*)r->vertices.data(), r->vertices.size() / 3); //generates an AABB on local space from a set of vertices
+		if (owner != nullptr)
+		{
+			owner->bbHasToUpdate = true;
+		}
+
 	}
 	else
 	{
@@ -104,7 +110,7 @@ void C_Mesh::OnEditor()
 	{
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		/*ImGui::SetCursorPosX(ImGui::GetCursorPosX() - 20);*/
-		
+
 		ImGui::Spacing();
 
 
@@ -193,7 +199,7 @@ void C_Mesh::OnEditor()
 				{
 					SetNewResource(payloadID);
 				}
-				
+
 			}
 			ImGui::EndDragDropTarget();
 
@@ -288,7 +294,7 @@ void C_Mesh::OnEditor()
 			ImGui::Text("Mesh local AABB:");
 			actualname = suffixLabel + "columns";
 
-			ImGui::Columns(2,actualname.c_str(),true);
+			ImGui::Columns(2, actualname.c_str(), true);
 			ImGui::Separator();
 			ImGui::Spacing();
 			ImGui::Text("Min Corner:");
@@ -344,7 +350,7 @@ void C_Mesh::OnEditor()
 		ImGui::SetCursorPosX(maxWidth - 50);
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
-		actualname = "Delete" + suffixLabel+"component";
+		actualname = "Delete" + suffixLabel + "component";
 		if (ImGui::Button(actualname.c_str()))
 		{
 			actualname = "Delete Mesh Component" + suffixLabel;

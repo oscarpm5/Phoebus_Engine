@@ -65,7 +65,6 @@ Note that the 3D viewport controls will only work when interacting with the 3D v
 
 
 To select an object click in the desired object in the Hierarchy Tab (it will turn orange). 
-Note that objects with children in the hierarchy will have to be deployed before being selected.
 
 Holding Shift when dragging the Far/Near plane buttons in the config/camera panels allows extra precision.
 
@@ -118,19 +117,15 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Depth buffer can be displayed in the editor cam. To enable this go to Menu -> config -> rendering and check "Depth display"
 
-* Object Translate/Rotate/Scale can be done in both local & global space.
+* Object Translate/Rotate/Scale can be done in both local & global space coordinates.
 
 * Objects can be translated/rotated/scaled from the 3d View using gizmos. [TODO if not fixed gizmo rotation reset (orange circle), put it under the additional comments section]. 
-
-* Automated saved scenes are made on play/pause. This scene is saved in Library/Scenes
-
-* You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with a automatic name which you can later change
-
-* You can load any saved scene in Menu->Load
 
 * The resource manager has an automatic garbage collector which deletes ".meta" & lib files when their asset is missing.
 
 * Components can be added to an existing object through the "Add Component" button at the bottom part of the Inspector when a game object is selected.
+
+* Material color & transparency of a selected object can be changed through the inspector.
  
 ## Aditional comments for the teacher:
 
@@ -140,7 +135,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 ### Second Assigment
 * Street has been imported with Blender, which causes the fbx folder to have a ".fbm" extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
-* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back with the prefabs
+* Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back in the future
 * AABBs for all objects are showing by default. If you want to hide the AABBs for every object but the selected one go to the Config window and under Render settings un-check "Display All AABBs".
 * AABBs & Camera frustum are visible even outside frustum of the culling cam to let the user know where they are.
 * If you want to check the different time variable vaules(both the engine and in-game ones) go to the Config window -> "FPS".
@@ -150,6 +145,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Resource Manager will check the Assets folder every 60 sec, if you need to view a file right away press the refresh button in the "Asset Explorer" window.
 * You can add files only in offline mode my ddragging the file into the Asset folders and pressing the refresh button in the "Asset Explorer" window.
 * In the exceptional case of an ".fbx" missing in assets, the garbage collector will handle the deletion of ".meta" & model files but won't delete ".mesh" & ".dds" files which originated from that asset as they are independent resources. The garbage collector will handle other asset types correctly. It executes once every minute or if "refresh" button is pressed. 
+* You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with an automatic name which you can later change. You can load any saved scene in Menu->Load
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
