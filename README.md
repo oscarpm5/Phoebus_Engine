@@ -137,7 +137,6 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 ### Second Assigment
 
 * When tring to drag & drop external assets into the engine, make sure the path & the file don't have special caracters such as accents, otherwise the file won't be imported.
-* Street has been imported with Blender, which causes the fbx folder to have a ".fbm" extension. Engine detects that a folder has a termination and logs an error, but it loads all perfectly. We did not remove this log, since it's intended, but we thought you would like an explanation
 * Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back in the future
 * AABBs for all objects are showing by default. If you want to hide the AABBs for every object but the selected one go to the Config window and under Render settings un-check "Display All AABBs".
 * AABBs & Camera frustum are visible even outside frustum of the culling cam to let the user know where they are.
