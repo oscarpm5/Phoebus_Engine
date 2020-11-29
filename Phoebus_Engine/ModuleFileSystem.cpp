@@ -15,6 +15,7 @@
 #include "PhysFS/include/physfs.h"
 #pragma comment( lib, "PhysFS/libx86/physfs.lib" )
 
+#include <fstream>
 
 //linea 102 module input Importer:: load fbx -> llamaar el filesysatem y pasarle el path (dropfiledyr) para probarlo rapido
 
@@ -602,6 +603,45 @@ void ModuleFileSystem::FindFileInDirectory(std::string fileName,std::string curr
 	}
 
 
+}
+
+//WARNING paths do not accept caracters such as accents in the original file path and the destination folder, consider renaming assets before importing, TODO put this in the readme
+bool ModuleFileSystem::DuplicateFile(const char* originalFilePath, const char* destinationFolder, std::string& relativePath)
+{
+	std::string newFile;//only the file name
+	std::string newExtension;//only the extension
+	SeparatePath(originalFilePath, nullptr, &newFile);
+	SeparateExtension(newFile, &newExtension, &newFile);
+
+	relativePath = relativePath.append(destinationFolder).append("/") + newFile + newExtension + newExtension; //construct destination path (aka. Assets/samirkebab.png)
+	std::string finalPath = std::string(*PHYSFS_getSearchPath()).append("/") + relativePath;//search path-> ./Assets/...relative path
+
+	std::ifstream src;
+	src.open(originalFilePath, std::ios::binary);
+	bool srcOpen = src.is_open();
+
+	if (!srcOpen)
+	{
+		src.close();
+		LOG("[error] File couldn't be duplicated, we couldn't open source directory with path:\n %s", originalFilePath);
+		return false;
+	}
+
+	std::ofstream  dst(finalPath, std::ios::binary);
+	bool dstOpen = dst.is_open();
+	if (!dstOpen)
+	{
+		dst.close();
+		LOG("[error] File couldn't be duplicated, we couldn't open destination directory with path:\n %s", finalPath);
+		return false;
+	}
+
+	dst << src.rdbuf();
+
+	src.close();
+	dst.close();
+
+	return true;
 }
 
 

@@ -98,8 +98,16 @@ update_status ModuleInput::PreUpdate(float dt)
 
 		case (SDL_DROPFILE): {     // In case if dropped file
 			char* dropped_filedir = e.drop.file;
+			//std::string dropped = dropped_filedir;
+			std::string normalizedDropped= App->fileSystem->NormalizePath(dropped_filedir);
 			// Shows directory of dropped file
+			std::string destinationPath;
+			bool correctImporting= App->fileSystem->DuplicateFile(normalizedDropped.c_str(), "Assets", destinationPath);
 
+			if (correctImporting)
+			{
+				App->rManager->ManageAssetUpdate(destinationPath.c_str());
+			}
 			//bool droppedFile = App->fileSystem->LoadFile(dropped_filedir);
 			//App->fileSystem->LoadAsset(dropped_filedir);//TODO deprecated, use resource manager instead
 

@@ -82,6 +82,9 @@ public:
 	bool DeleteTemporalScene(char * sceneBuffer);
 
 	void FindFileInDirectory(std::string fileName,std::string currDir, std::string& fullPath,bool excludeMeta=true);
+
+	bool DuplicateFile(const char* originalFilePath, const char* destinationFolder, std::string& relativePath);
+
 };
 
 #endif // __MODULEFILESYSTEModuleH__
