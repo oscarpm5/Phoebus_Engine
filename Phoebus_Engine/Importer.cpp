@@ -1028,10 +1028,10 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
 							App->rManager->LoadResourceIntoMem(r);
 						}
-					}
 					//component.chutame_la_tex
 					component->SetNewResource(newUID);
-					C_Material* m = (C_Material*)r;
+					}
+					C_Material* m = (C_Material*)component;
 					m->matCol.r = comp.GetNumber("Color R");
 					m->matCol.g = comp.GetNumber("Color G");
 					m->matCol.b = comp.GetNumber("Color B");
