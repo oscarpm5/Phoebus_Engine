@@ -231,14 +231,10 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 				}
 			}
 
-
-			//End of meshes & materials loading==========================================
-
-
 			aiNode* node = scene->mRootNode;
 
-			std::deque<aiNode*>parents;//ai node parents
-			std::deque<GameObject*>gameObjParents; //game object parents, 1 paired with every aiNode Parent
+			std::deque<aiNode*>parents;
+			std::deque<GameObject*>gameObjParents;
 
 			parents.push_back(node);
 
@@ -258,23 +254,20 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 				name += node->mName.C_Str();
 			}
 
-
-
-
 			GameObject* pObj = new GameObject(App->editor3d->root, name, float4x4::identity);
 			GameObject* root = pObj;
 			gameObjParents.push_back(pObj);//first node is root and doesn't have mesh nor material
 
 			while (parents.size() > 0)
 			{
-				std::deque<aiNode*> parentsCopy = parents;//we make a copy of parents as we are going to edit it and we want to keep the info
+				std::deque<aiNode*> parentsCopy = parents;
 
 				for (int i = 0; i < parentsCopy.size(); i++)
 				{
-					aiNode* currentParent = parents[0];//get and pop last ainode parent
+					aiNode* currentParent = parents[0];
 					parents.pop_front();
 
-					GameObject* currObjParent = gameObjParents[0];//get and pop last gameobject parent
+					GameObject* currObjParent = gameObjParents[0];
 					gameObjParents.pop_front();
 
 
@@ -282,6 +275,17 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 					{
 						//ResourceMesh* auxMesh = nullptr;
 						parents.push_back(currentParent->mChildren[j]);
+						//aiMesh* newMesh = nullptr;
+						//if (parents.back()->mNumMeshes > 0) {
+							//newMesh = scene->mMeshes[parents.back()->mMeshes[0]];//loads a mesh from index
+							//create game object and save it into gameObjParents (its parent is currObjParent)
+							//auxMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+							//Mesh::ImportRMesh(newMesh, *auxMesh); //Take the mesh out of the fbx in assets and plop it into engine
+							//char* auxB = "y";
+							//Mesh::SaveMesh(*auxMesh, &auxB); //Here we save to lib the mesh portion of our model (from engine to lib)
+							//LOG("debug");
+						//}
+						//gameObjParents.push_back(LoadGameObjFromAiMesh(auxMesh, newMesh, scene, parents.back(), currObjParent, pathWithoutFile)); //Here we import tex!
 
 
 						//here we create the game objects (children) from their node (parents.back()) and a parent (currObjParent)
@@ -308,54 +312,49 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 
 						float4x4 newTransform = float4x4::FromTRS(newTranslation, newRot.ToFloat4x4(), float3(scaling.x, scaling.y, scaling.z));
 
-						GameObject* firstChild = nullptr;
-						//creates new game object for every mesh
-						for (int l = 0; l < parents.back()->mNumMeshes; l++)
+
+
+						//creates new game object
+						GameObject* newObj = new GameObject(newParent, name, newTransform);
+						ResourceMesh* myMesh = nullptr;
+						ResourceTexture* myTexture = nullptr;
+						if (parents.back()->mNumMeshes > 0)
 						{
+							myMesh = meshesToAssign[parents.back()->mMeshes[0]];
+						}
 
-							GameObject* newObj = new GameObject(newParent, name, newTransform);
-							if (l == 0)
-								firstChild = newObj;
-
-							ResourceMesh* myMesh = nullptr;
-							ResourceTexture* myTexture = nullptr;
-
-							myMesh = meshesToAssign[parents.back()->mMeshes[l]];
+						if (myMesh != nullptr)//assign mesh
+						{
+							C_Mesh* com = (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
+							com->SetNewResource(myMesh->GetUID());
 
 
-							if (myMesh != nullptr)//assign mesh
+							int matIndex = scene->mMeshes[parents.back()->mMeshes[0]]->mMaterialIndex;
+							aiMaterial* aiMat = scene->mMaterials[matIndex];
+							std::map<unsigned int, ResourceTexture*>::iterator it = texturesToAssign.find(matIndex);
+							aiColor4D col;
+							bool hasMat = (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &col) == aiReturn_SUCCESS);
+							if (it != texturesToAssign.end() || hasMat)
 							{
-								C_Mesh* com = (C_Mesh*)newObj->CreateComponent(ComponentType::MESH);
-								com->SetNewResource(myMesh->GetUID());
-
-
-								int matIndex = scene->mMeshes[parents.back()->mMeshes[l]]->mMaterialIndex;
-								aiMaterial* aiMat = scene->mMaterials[matIndex];
-								std::map<unsigned int, ResourceTexture*>::iterator it = texturesToAssign.find(matIndex);
-								aiColor4D col;
-								bool hasMat = (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &col) == aiReturn_SUCCESS);
-								if (it != texturesToAssign.end() || hasMat)
+								C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
+								if (it != texturesToAssign.end() && it->second != nullptr)
 								{
-									C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
-									if (it != texturesToAssign.end() && it->second != nullptr)
-									{
-										com->SetNewResource(it->second->GetUID());
-									}
-									if (hasMat)
-									{
-										com->matCol.r = col.r;
-										com->matCol.g = col.g;
-										com->matCol.b = col.b;
-										com->matCol.a = col.a;
-
-									}
+									com->SetNewResource(it->second->GetUID());
 								}
+								if (hasMat)
+								{
+									com->matCol.r = col.r;
+									com->matCol.g = col.g;
+									com->matCol.b = col.b;
+									com->matCol.a = col.a;
 
+								}
 							}
 
-
 						}
-						gameObjParents.push_back(firstChild);
+
+						gameObjParents.push_back(newObj);
+
 					}
 
 
