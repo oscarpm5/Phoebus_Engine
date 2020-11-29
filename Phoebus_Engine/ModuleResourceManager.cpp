@@ -391,7 +391,7 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 				assetMissing.clear();
 				assetMissing = "Assets/";
 				assetMissing += absPath;
-				LOG("[warning] Meta file: '%s' is not linked to any asset.\nProceding to delete all unused resources...",absPath.c_str());
+				LOG("[warning] Meta file: '%s' is not linked to any asset.\nProceding to delete all unused resources...", absPath.c_str());
 				//Garbage collector-> check if meta has asset associated, if not delete form lib & memory
 				App->fileSystem->DeleteFromAssetsAndLibs(assetMissing.c_str(), true);
 			}
@@ -441,39 +441,45 @@ void ModuleResourceManager::LoadResourceIntoMem(Resource* res, bool onlyBase)
 
 	char* buffer;
 	unsigned int size = App->fileSystem->Load(res->GetLibraryFile().c_str(), &buffer);
-
-	switch (type)
+	if (size>0)
 	{
-	case ResourceType::TEXTURE:
-		Importer::Texture::LoadNewImage(res->GetLibraryFile().c_str(), *res);
-		res->SetIsLoadedTo(true);
-		break;
-	case ResourceType::MESH:
-		Importer::Mesh::LoadMesh(buffer, size, *res); //TODO meshes should load general resource
-		res->SetIsLoadedTo(true);
-		break;
-	case ResourceType::SCENE:
-		//Scenes are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
-		break;
-	case ResourceType::MODEL:
-		//Models are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
-		
-		if (onlyBase)
+		switch (type)
 		{
-			Importer::Model::LoadModel(res->GetLibraryFile().c_str(), nullptr,true);
-		}
-		else
-		{
-		Importer::Model::LoadModel(res->GetLibraryFile().c_str(), App->editor3d->root);
-		}
+		case ResourceType::TEXTURE:
+			Importer::Texture::LoadNewImage(res->GetLibraryFile().c_str(), *res);
+			res->SetIsLoadedTo(true);
+			break;
+		case ResourceType::MESH:
+			Importer::Mesh::LoadMesh(buffer, size, *res); //TODO meshes should load general resource
+			res->SetIsLoadedTo(true);
+			break;
+		case ResourceType::SCENE:
+			//Scenes are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
+			break;
+		case ResourceType::MODEL:
+			//Models are loaded as a combination of Game Object Hiererchies, so they are not a resource per se and so they never count as load in memory
 
-		break;
-	case ResourceType::UNKNOWN:
-	default:
-		LOG("[error] Trying to load resource with unknown type");
-		break;
+			if (onlyBase)
+			{
+				Importer::Model::LoadModel(res->GetLibraryFile().c_str(), nullptr, true);
+			}
+			else
+			{
+				Importer::Model::LoadModel(res->GetLibraryFile().c_str(), App->editor3d->root);
+			}
+
+			break;
+		case ResourceType::UNKNOWN:
+		default:
+			LOG("[error] Trying to load resource with unknown type");
+			break;
+		}
+		RELEASE_ARRAY(buffer);
 	}
-	RELEASE_ARRAY(buffer);
+	else
+	{
+		LOG("[error] Trying to load a resource that doesn't exist in lib: %s",res->GetLibraryFile().c_str());
+	}
 
 }
 
@@ -543,7 +549,8 @@ Resource* ModuleResourceManager::ManageAssetUpdate(const char* newAssetFile)
 					if (resType != ResourceType::UNKNOWN)
 					{
 						Resource* res = CreateNewResource(newAssetFile, resType, AssID);
-						if (resType == ResourceType::MODEL) LoadResourceIntoMem(res,true);
+						if (resType == ResourceType::MODEL) 
+							LoadResourceIntoMem(res, true);
 						if (res->IsLoadedInMemory())
 						{
 							res->UnloadFromMemory();

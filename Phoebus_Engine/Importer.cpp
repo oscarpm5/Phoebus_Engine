@@ -319,14 +319,25 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 							com->SetNewResource(myMesh->GetUID());
 
 
-
-							std::map<unsigned int, ResourceTexture*>::iterator it = texturesToAssign.find(scene->mMeshes[parents.back()->mMeshes[0]]->mMaterialIndex);
-							if (it != texturesToAssign.end())
+							int matIndex = scene->mMeshes[parents.back()->mMeshes[0]]->mMaterialIndex;
+							aiMaterial* aiMat = scene->mMaterials[matIndex];
+							std::map<unsigned int, ResourceTexture*>::iterator it = texturesToAssign.find(matIndex);
+							aiColor4D col;
+							bool hasMat = (aiGetMaterialColor(aiMat, AI_MATKEY_COLOR_DIFFUSE, &col) == aiReturn_SUCCESS);
+							if (it != texturesToAssign.end() || hasMat)
 							{
-								if (it->second != nullptr)
+								C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
+								if (it != texturesToAssign.end() && it->second != nullptr)
 								{
-									C_Material* com = (C_Material*)newObj->CreateComponent(ComponentType::MATERIAL);
 									com->SetNewResource(it->second->GetUID());
+								}
+								if (hasMat)
+								{
+									com->matCol.r = col.r;
+									com->matCol.g = col.g;
+									com->matCol.b = col.b;
+									com->matCol.a = col.a;
+
 								}
 							}
 
@@ -362,7 +373,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 }
 
 //TODO IMPORTANT take model name as a parameter here and assign that name to their childs (every resource should have a name)
-bool Importer::Model::LoadModel(const char* libPath, GameObject* root,bool onlyBase)
+bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool onlyBase)
 {
 	GameObject* newRoot = nullptr;
 	if (!onlyBase)
@@ -424,32 +435,47 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root,bool onlyB
 					//Hold your horses
 					break;
 				case ComponentType::MESH:
-
-					r = App->rManager->FindResInMemory(newUID);
-					if (r == nullptr)//if not found in memory find it in lib
+				{
+					if (newUID != 0)
 					{
-						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
-						App->rManager->LoadResourceIntoMem(r);
+
+						//TODO check if the component has a resource here? (resourceid!=0)
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							App->rManager->LoadResourceIntoMem(r);
+						}
+
+						//component.chutame_la_mesh
+						component->SetNewResource(newUID);
 					}
 
-					//component.chutame_la_mesh
-					component->SetNewResource(newUID);
-
-
-					break;
+				}
+				break;
 				case ComponentType::MATERIAL:
-
-					r = App->rManager->FindResInMemory(newUID);
-					if (r == nullptr)//if not found in memory find it in lib
+				{
+					//TODO check if the component has a resource here? (resourceid!=0)
+					if (newUID != 0)
 					{
-						r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
-						App->rManager->LoadResourceIntoMem(r);
+
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+							App->rManager->LoadResourceIntoMem(r);
+						}
+						//component.chutame_la_tex
+						component->SetNewResource(newUID);
 					}
 
-					//component.chutame_la_tex
-					component->SetNewResource(newUID);
-
-					break;
+					C_Material* m = (C_Material*)component;
+					m->matCol.r = comp.GetNumber("Color R");
+					m->matCol.g = comp.GetNumber("Color G");
+					m->matCol.b = comp.GetNumber("Color B");
+					m->matCol.a = comp.GetNumber("Color A");
+				}
+				break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
 					break;
@@ -808,7 +834,8 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	meshToFill->indices = indices;
 	meshToFill->normals = normals;
 	meshToFill->texCoords = texCoords;
-	meshToFill->GenerateSmoothedNormals();
+	meshToFill->smoothedNormals = smoothedNormals;
+	//meshToFill->GenerateSmoothedNormals();
 	meshToFill->GenerateBuffers();
 
 	if (!meshToFill->vertices.empty() && !meshToFill->indices.empty()) { return true; }
@@ -959,62 +986,70 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			{
 				component->ID = comp.GetNumber("ID");
 				unsigned int newUID = comp.GetNumber("ResourceID");
-				
 
-					Resource* r = nullptr;
 
-					switch (type)
+				Resource* r = nullptr;
+
+				switch (type)
+				{
+				case ComponentType::CAMERA:
+				{
+					//Hold your horses, if you put brackets you can create variables here
+					C_Camera* cam = (C_Camera*)component;
+					cam->SetNearPlane(comp.GetNumber("NearPlane"));
+					cam->SetFarPlane(comp.GetNumber("FarPlane"));
+					cam->SetNewAspectRatio(comp.GetNumber("AspectRatio"));
+					cam->SetNewFoV(comp.GetNumber("FOV"));
+				}
+				break;
+				case ComponentType::MESH:
+					if (newUID != 0)
 					{
-					case ComponentType::CAMERA:
-					{
-						//Hold your horses, if you put brackets you can create variables here
-						C_Camera* cam = (C_Camera*)component;
-						cam->SetNearPlane(comp.GetNumber("NearPlane"));
-						cam->SetFarPlane(comp.GetNumber("FarPlane"));
-						cam->SetNewAspectRatio(comp.GetNumber("AspectRatio"));
-						cam->SetNewFoV(comp.GetNumber("FOV"));
-					}
-						break;
-					case ComponentType::MESH:
-						if (newUID != 0)
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
 						{
-							r = App->rManager->FindResInMemory(newUID);
-							if (r == nullptr)//if not found in memory find it in lib
-							{
-								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
-								App->rManager->LoadResourceIntoMem(r);
-							}
-
-							//component.chutame_la_mesh
-							component->SetNewResource(newUID);
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							App->rManager->LoadResourceIntoMem(r);
 						}
 
-						break;
-					case ComponentType::MATERIAL:
-						if (newUID != 0)
-						{
-							r = App->rManager->FindResInMemory(newUID);
-							if (r == nullptr)//if not found in memory find it in lib
-							{
-								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
-								App->rManager->LoadResourceIntoMem(r);
-							}
-						}
-						//component.chutame_la_tex
+						//component.chutame_la_mesh
 						component->SetNewResource(newUID);
-
-						break;
-					case ComponentType::TRANSFORM:
-						//Nothing: this is already done in constructor
-						break;
-					default:
-						LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
-						break;
 					}
 
+					break;
+				case ComponentType::MATERIAL:
+				{
 
-					//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
-				
+					if (newUID != 0)
+					{
+						r = App->rManager->FindResInMemory(newUID);
+						if (r == nullptr)//if not found in memory find it in lib
+						{
+							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+							App->rManager->LoadResourceIntoMem(r);
+						}
+					}
+					//component.chutame_la_tex
+					component->SetNewResource(newUID);
+					C_Material* m = (C_Material*)r;
+					m->matCol.r = comp.GetNumber("Color R");
+					m->matCol.g = comp.GetNumber("Color G");
+					m->matCol.b = comp.GetNumber("Color B");
+					m->matCol.a = comp.GetNumber("Color A");
+				}
+				break;
+
+				case ComponentType::TRANSFORM:
+					//Nothing: this is already done in constructor
+					break;
+				default:
+					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
+					break;
+				}
+
+
+				//LoadComponent(comp, component);  //marc uses this for animations and cameras? tf is up witht that? 
+
 
 			}
 
