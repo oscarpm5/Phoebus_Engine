@@ -614,7 +614,7 @@ bool ModuleFileSystem::DuplicateFile(const char* originalFilePath, const char* d
 	SeparatePath(originalFilePath, nullptr, &newFile);
 	SeparateExtension(newFile, &newExtension, &newFile);
 
-	relativePath = relativePath.append(destinationFolder).append("/") + newFile + newExtension + newExtension; //construct destination path (aka. Assets/samirkebab.png)
+	relativePath = relativePath.append(destinationFolder).append("/") + newFile + newExtension; //construct destination path (aka. Assets/samirkebab.png)
 	std::string finalPath = std::string(*PHYSFS_getSearchPath()).append("/") + relativePath;//search path-> ./Assets/...relative path
 
 	std::ifstream src;

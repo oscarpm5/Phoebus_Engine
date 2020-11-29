@@ -389,12 +389,10 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 			assetMissing += absPathWithoutExt;
 			if (!App->fileSystem->DoesFileExist(assetMissing.c_str()))
 			{
-				assetMissing.clear();
-				assetMissing = "Assets/";
-				assetMissing += absPath;
-				LOG("[warning] Meta file: '%s' is not linked to any asset.\nProceding to delete all unused resources...", absPath.c_str());
+				//std::string metapath
+				LOG("[warning] Meta file: '%s' is not linked to any asset.\nProceding to delete all unexisting resources...", absPath.c_str());
 				//Garbage collector-> check if meta has asset associated, if not delete form lib & memory
-				App->fileSystem->DeleteFromAssetsAndLibs(assetMissing.c_str(), true);
+				App->fileSystem->DeleteFromAssetsAndLibs(absPath.c_str(), true);
 			}
 
 		}
@@ -404,7 +402,8 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		const std::string& str = *it;
-		LoadAssetsRecursively(str + "/");
+		std::string newDir = dir+ str + "/";
+		LoadAssetsRecursively(newDir);
 	}
 }
 
