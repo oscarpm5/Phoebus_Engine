@@ -73,8 +73,6 @@ private:
 	//Returns resource type from assets path
 	ResourceType ResourceTypeFromPath(std::string path);
 
-	Resource* TryToLoadResource(unsigned int uid);//TODO deprecated?
-
 	bool ReleaseSingleResource(unsigned int uid);
 
 	void SaveResource(Resource& r);

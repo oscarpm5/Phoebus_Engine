@@ -127,7 +127,6 @@ void ResourceMesh::GenerateSmoothedNormals()
 	}
 
 
-	//TODO FOR OSCAR still need to check if 2 vertices are in the same place and merge normals accordingly
 	//TODO FOR OSCAR this code can be optimized, don't check already visited indices
 	for (int i = 0; i < vertices.size(); i += 3)//if 2 vertices are in the same place merge their normals
 	{

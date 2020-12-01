@@ -16,7 +16,9 @@
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
 
+//class C_Camera;
 class ResourceMesh;
+
 
 class ModuleRenderer3D : public Module
 {

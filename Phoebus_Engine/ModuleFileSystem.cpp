@@ -149,10 +149,6 @@ void ModuleFileSystem::TransformToRelPath(std::string& path)
 	{
 		path = path.substr(splitPos + s.size() + 1, path.length());
 	}
-	else
-	{
-		//don't
-	}
 
 }
 
@@ -606,7 +602,7 @@ void ModuleFileSystem::FindFileInDirectory(std::string fileName,std::string curr
 
 }
 
-//WARNING paths do not accept caracters such as accents in the original file path and the destination folder, consider renaming assets before importing, TODO put this in the readme
+//WARNING paths do not accept caracters such as accents in the original file path and the destination folder, consider renaming assets before importing
 bool ModuleFileSystem::DuplicateFile(const char* originalFilePath, const char* destinationFolder, std::string& relativePath)
 {
 	std::string newFile;//only the file name

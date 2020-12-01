@@ -8,7 +8,6 @@
 
 //class vec3;
 //class mat4x4;
-//TODO this module still works with glmath, change this (vec3, cross method, rotate method)
 
 
 

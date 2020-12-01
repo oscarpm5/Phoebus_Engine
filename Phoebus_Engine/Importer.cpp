@@ -446,10 +446,10 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 					break;
 				case ComponentType::MESH:
 				{
+					//check if the component has a resource (resourceid!=0)
 					if (newUID != 0)
 					{
 
-						//TODO check if the component has a resource here? (resourceid!=0)
 						r = App->rManager->FindResInMemory(newUID);
 						if (r == nullptr)//if not found in memory find it in lib
 						{
@@ -457,7 +457,6 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 							App->rManager->LoadResourceIntoMem(r);
 						}
 
-						//component.chutame_la_mesh
 						component->SetNewResource(newUID);
 					}
 
@@ -465,7 +464,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 				break;
 				case ComponentType::MATERIAL:
 				{
-					//TODO check if the component has a resource here? (resourceid!=0)
+					//check if the component has a resource here (resourceid!=0)
 					if (newUID != 0)
 					{
 
@@ -481,7 +480,6 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
 								App->rManager->LoadResourceIntoMem(r);
 
-								//component.chutame_la_tex
 							}
 						}
 						component->SetNewResource(newUID);
@@ -705,29 +703,9 @@ unsigned int Importer::Texture::SaveTexture(Resource& texture)
 
 	return 0;
 }
-//
-//char* Importer::SaveTransform(C_Transform* aux) //TODO DEPRECATED? should we use game object to store the transform?
-//{
-//	float4x4 values[1] = { aux->GetGlobalTransform() };
-//
-//	unsigned int size = sizeof(values);
-//	char* fileBuffer = new char[size]; // Allocate
-//	char* cursor = fileBuffer;
-//
-//	// First store values
-//	unsigned int bytes = sizeof(values);
-//	memcpy(cursor, values, bytes);
-//	cursor += bytes;
-//
-//	App->fileSystem->SavePHO("testingTransform.pho", fileBuffer, size);
-//
-//	return fileBuffer;
-//}
 
 unsigned int Importer::Camera::SaveCamera(C_Camera* aux, char* buffer)
 {
-	//TODO: this is jurassic code
-
 	//float nearPlaneDist;
 	//float farPlaneDist;
 	//float FoV;
@@ -758,6 +736,11 @@ void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 	config.SetNumber("FarPlane", camera->GetFarPlaneDist());
 	config.SetNumber("AspectRatio", camera->GetAspectRatio());
 	config.SetBool("IsCulling", camera->GetIsCulling());
+	Color c = camera->GetBackgroundCol();
+	config.SetNumber("BG R", c.r);
+	config.SetNumber("BG G", c.g);
+	config.SetNumber("BG B", c.b);
+	config.SetNumber("BG A", c.a);
 	//config.SetBool("MainCamera",camera->main);
 }
 
@@ -791,11 +774,8 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 
 	// Load indices
 	bytes = sizeof(uint) * num_indices;
-	indices.resize(num_indices); //TODO: THIS IS THE LESS GHETTO WAY TO DO IT
-	//for (int i = 0; i < num_indices; i++)
-	//{
-	//	indices.push_back(1); //TODO: ask Oscar a less ghetto way to do this
-	//}
+	indices.resize(num_indices); //THIS IS THE LESS GHETTO WAY TO DO IT
+
 	memcpy(&indices[0], cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
 	cursor += bytes;
 
@@ -803,11 +783,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load vertex
 	bytes = sizeof(float) * num_vertices;
 	vertices.resize(num_vertices);
-	//for (int i = 0; i < num_vertices; i++)
-	//{
-	//	vertices.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+	
 	memcpy(&vertices[0], cursor, bytes);
 	cursor += bytes;
 
@@ -815,22 +791,14 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load normals
 	bytes = sizeof(float) * num_normals;
 	normals.resize(num_normals);
-	//for (int i = 0; i < num_normals; i++)
-	//{
-	//	normals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+
 	memcpy(&normals[0], cursor, bytes);
 	cursor += bytes;
 
 	// Load smoothed normals
 	bytes = sizeof(float) * num_smoothedNormals;
 	smoothedNormals.resize(num_smoothedNormals);
-	//for (int i = 0; i < num_smoothedNormals; i++)
-	//{
-	//	smoothedNormals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+	
 	memcpy(&smoothedNormals[0], cursor, bytes);
 	cursor += bytes;
 
@@ -838,11 +806,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load texcoords
 	bytes = sizeof(float) * num_tex;
 	texCoords.resize(num_tex);
-	//for (int i = 0; i < num_tex; i++)
-	//{
-	//	texCoords.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+	
 	memcpy(&texCoords[0], cursor, bytes);
 	cursor += bytes;
 
@@ -854,7 +818,6 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	meshToFill->normals = normals;
 	meshToFill->texCoords = texCoords;
 	meshToFill->smoothedNormals = smoothedNormals;
-	//meshToFill->GenerateSmoothedNormals();
 	meshToFill->GenerateBuffers();
 
 	if (!meshToFill->vertices.empty() && !meshToFill->indices.empty()) { return true; }
@@ -864,30 +827,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	};
 
 }
-//
-//bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path)
-//{
-//
-//	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
-//
-//	// path
-//	unsigned int values[1]; //necessarily hardcoded
-//	unsigned int bytes = sizeof(values);
-//	memcpy(values, cursor, bytes);
-//	cursor += bytes;
-//
-//	// Load path;
-//	bytes = values[0];
-//	std::string NewPath;
-//	NewPath.resize(bytes);
-//	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
-//	cursor += bytes;
-//
-//	//Remake the Material
-//	// TODO: we have the path to the texture, now do all the Ilbind image stuff
-//
-//	return true;
-//}
+
 
 bool Importer::Camera::LoadCameraFromPho(char* buffer, unsigned int Lenght)
 {
@@ -934,10 +874,6 @@ void Importer::SerializeGameObject(Config& config, GameObject* gameObject) //ser
 
 unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //serialize scene
 {
-	/*
-	TODO: Look at Marc Json functions?? -> class config + class configarray
-										config has own destructor, no worries there
-	*/
 	/*
 	1: search for children
 	2. save gameobject -> UID,UID of parent (0 if root, ghetto Alex), save components as children
@@ -1037,6 +973,14 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					cam->SetNewFoV(comp.GetNumber("FOV"));
 					bool isCulling = comp.GetBool("IsCulling");
 					if (isCulling)cam->SetAsCullingCam(true);
+
+					Color c;
+					c.r=comp.GetNumber("BG R");
+					c.g = comp.GetNumber("BG G");
+					c.b = comp.GetNumber("BG B");
+					c.a = comp.GetNumber("BG A");
+					cam->SetBackgroundCol(c);
+
 				}
 				break;
 				case ComponentType::MESH:

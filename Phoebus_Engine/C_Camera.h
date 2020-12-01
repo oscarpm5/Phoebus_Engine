@@ -3,13 +3,14 @@
 
 #include "Component.h"
 #include "MathGeoLib/include/MathGeoLib.h"
+#include "Color.h"
 
 class C_Camera:public Component
 {
 public:
 
-	C_Camera(GameObject* owner,unsigned int ID);
-	C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV,float aspectRatio=0.0f);
+	C_Camera(GameObject* owner,unsigned int ID,Color backgroundCol=Color(0.05f, 0.05f, 0.1f));
+	C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV,float aspectRatio=0.0f, Color backgroundCol = Color(0.05f, 0.05f, 0.1f));
 	~C_Camera();
 
 	bool Update(float dt);
@@ -40,6 +41,9 @@ public:
 	bool GetIsCulling()const;
 	void SetAsCullingCam(bool newState);
 
+	Color GetBackgroundCol()const;
+	void SetBackgroundCol(Color c);
+
 private:
 	void UpdateProjectionMat();
 
@@ -52,7 +56,7 @@ private:
 	float invAspectRatio;
 
 	Frustum frustum;
-
+	Color backgroundCol;
 	float4x4 projectionMatrix;//this matrix is already transposed for use in opengl
 };
 

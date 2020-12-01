@@ -108,8 +108,6 @@ update_status ModuleInput::PreUpdate(float dt)
 			{
 				App->rManager->ManageAssetUpdate(destinationPath.c_str());
 			}
-			//bool droppedFile = App->fileSystem->LoadFile(dropped_filedir);
-			//App->fileSystem->LoadAsset(dropped_filedir);//TODO deprecated, use resource manager instead
 
 			SDL_free(dropped_filedir);    // Free dropped_filedir memory
 			break;

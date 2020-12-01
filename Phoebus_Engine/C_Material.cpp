@@ -253,7 +253,7 @@ void C_Material::OnEditor()
 		}
 		ImGui::Separator();
 
-		if (ImGui::TreeNode("Selet Material Color"))
+		if (ImGui::TreeNode("Select Material Color"))
 		{
 			ImGuiColorEditFlags flags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview;
 			ImGui::ColorPicker4("MyColor##4", (float*)& matCol, flags);

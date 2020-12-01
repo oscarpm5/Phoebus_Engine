@@ -10,6 +10,7 @@
 #include "C_Mesh.h"
 #include "C_Material.h"
 #include "C_Transform.h"
+#include "C_Camera.h"
 //include & lib of glew
 
 #include "Glew/include/glew.h"
@@ -28,44 +29,6 @@
 #include <math.h>
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
-
-
-
-//TODO make a bool that tells whether we are on editor mode or play mode and changes camera accordingly
-
-
-float vertexArray[] = {
-	0.f, 0.f, 0.f,
-	10.f, 0.f, 0.f,
-	10.f, 0.f, -10.f,
-	0, 0, -10.f,
-
-	0.f, 10.f, 0.f,
-	10.f, 10.f, 0.f,
-	10.f, 10.f, -10.f,
-	0.f, 10.f, -10.f
-};
-
-
-uint indexArray[] = {
-	4, 0, 1,
-	1, 5, 4,
-
-	4, 7, 3,
-	3, 0, 4,
-
-	2, 3, 7,
-	7, 6, 2,
-
-	7, 4, 5,
-	5, 6, 7,
-
-	5, 1, 2,
-	2, 6, 5,
-
-	0, 3, 2,
-	2, 1, 0
-};
 
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
@@ -164,10 +127,12 @@ bool ModuleRenderer3D::Init()
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		//TODO ADDED from class this enables alpha clip at 0.5 alpha
+		//ADDED from class this enables alpha clip at 0.5 alpha
+
 		//glEnable(GL_ALPHA_TEST);
 		//glAlphaFunc(GL_GREATER, 0.5f);
-		//TODO ADDED from class this enables alpha blend
+
+		//ADDED from class this enables alpha blend
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -309,102 +274,6 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	GenerateBuffers(width, height);
 }
 
-void ModuleRenderer3D::TestingRender()
-{
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-
-	/*
-	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);			//this is for printing the vertices
-	// … bind and use other buffers
-	glDrawArrays(GL_TRIANGLES, 0, nVertex);
-	*/
-
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);			//this is for printing the index
-	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
-
-	glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
-
-
-
-	glDisableClientState(GL_VERTEX_ARRAY);		//... or here
-
-
-
-}
-
-//For now it uses Inmediate mode (testing purposes)
-void ModuleRenderer3D::TestingRenderAtStart()
-{
-	// no index cube
-	static const GLfloat g_vertex_buffer[] = {
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f
-	};
-	nVertex = sizeof(g_vertex_buffer) / sizeof(float);
-	glGenBuffers(1, (GLuint*) & (exampleMeshIdentifier));
-	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer), g_vertex_buffer, GL_STATIC_DRAW);
-
-
-	////index cube
-	//
-	//glGenBuffers(1, (GLuint*) & (vertexBind));
-	//glBindBuffer(GL_ARRAY_BUFFER, vertexBind);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
-
-
-	//glGenBuffers(1, (GLuint*) & (indexBind));
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexArray), indexArray, GL_STATIC_DRAW);
-
-	//indexSize = sizeof(indexArray) / sizeof(unsigned int);
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);			//this is for printing the vertices
-	// … bind and use other buffers
-	glDrawArrays(GL_TRIANGLES, 0, nVertex);
-	glDisableClientState(GL_VERTEX_ARRAY);		//... or here
-
-	glDeleteBuffers(1, &exampleMeshIdentifier);
-}
 
 void ModuleRenderer3D::GenerateBuffers(int width, int height)
 {
@@ -473,10 +342,13 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 
 void ModuleRenderer3D::Draw3D()
 {
-
-
-	//TODO Set a color here  from the camera ?? on editor mode take it from the editor cam on game take it from the main cam
-	Color c = Color(0.05f, 0.05f, 0.1f);
+	Color c = App->camera->editorCam->GetBackgroundCol();
+	//const Color lineColor(0.05f, 0.05f, 0.1f);
+	//Set a color here  from the camera, on editor mode take it from the editor cam on game take it from the main cam
+	if (App->GetGameState() != GameStateEnum::STOPPED&& activeCam != nullptr)
+	{
+		c = activeCam->GetBackgroundCol();
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);

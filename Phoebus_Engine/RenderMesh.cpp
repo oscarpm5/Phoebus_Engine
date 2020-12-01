@@ -48,8 +48,8 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_FACES || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
 		DrawFacesNormals(m);
 
+	//TODO change this for the default mesh color
 	glColor4f(color.r, color.g, color.b, color.a);
-	//glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
 	int localDrawMode = (int)sceneMaxDrawMode;
 
@@ -59,8 +59,8 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 	if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_WIRE)
 	{
+		//TODO change this for the default wireframe color
 		glColor4f(0.5f,0.5f,0.5f,0.5f);
-		//glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
 	else if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_FILL)
@@ -70,13 +70,13 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	else
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//TODO change this for the default wireframe color
 		glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
-		//glColor3f(0.5f, 0.5f, 0.5f); //TODO change this for the default wireframe color
 
 		DrawBuffers(m);
+		//TODO change this for the default mesh color
 		glColor4f(color.r, color.g, color.b, color.a);
 
-		//glColor3f(color.x, color.y, color.z);//TODO change this for the default mesh color
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -111,7 +111,7 @@ void RenderMesh::DrawVertexNormals(ResourceMesh* m)
 		float3 vertex0 = { m->vertices[i * 3], m->vertices[(i * 3) + 1], m->vertices[(i * 3) + 2] };
 		float3 vertex1 =
 		{
-			m->vertices[i * 3] + (m->smoothedNormals[i * 3] * magnitude),//TODO FOR OSCAR i changed normals for smoothed normals here for testing purposes, change this back
+			m->vertices[i * 3] + (m->smoothedNormals[i * 3] * magnitude),//TODO FOR OSCAR make a button which can toggle bewteen normals & smooth normals
 			m->vertices[(i * 3) + 1] + (m->smoothedNormals[(i * 3) + 1] * magnitude),
 			m->vertices[(i * 3) + 2] + (m->smoothedNormals[(i * 3) + 2] * magnitude)
 		};
@@ -199,10 +199,6 @@ void RenderMesh::DrawBuffers(ResourceMesh* m)
 		{
 			texIDtoBind = material->GetTextureID();
 		}
-		//else
-		//{
-		//	texIDtoBind = material->GetCheckersID();//when texture is not existing we draw checkers for the moment TODO make this better
-		//}
 	}
 	if (texIDtoBind != 0)
 	{

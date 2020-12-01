@@ -48,7 +48,6 @@ public:
 	void SeparateExtension(std::string file, std::string* ext,std::string* filePathWithoutExt);
 
 	std::string NormalizePath(const char* path);
-	void LoadAsset(char * path);//TODO this method will soon be deptrecated -> moving it to resource manager
 
 	FileFormats CheckFileFormat(const char* path);
 

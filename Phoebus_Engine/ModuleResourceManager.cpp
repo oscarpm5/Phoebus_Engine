@@ -58,14 +58,8 @@ update_status ModuleResourceManager::PreUpdate(float dt)
 	{
 		haveToReload = false;
 		checkTimer = 0.0f;
-		//TODO check all asset files here
 
 		LoadAllAssets();
-		//Testing code
-	/*	CreateNewResource("emptyMesh", ResourceType::MESH);
-		CreateNewResource("emptyTexture", ResourceType::TEXTURE);
-
-		ActiveResources act= GetActiveResources();*/
 
 
 	}
@@ -736,21 +730,6 @@ ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 	return ret;
 }
 
-Resource* ModuleResourceManager::TryToLoadResource(unsigned int uid)
-{
-	Resource* res = nullptr;
-	//find resource path and load resource into the engine here
-	std::string result = "";
-	FindFileRecursively(std::to_string(uid), LIB_PATH, result);
-	if (result != "")
-	{
-		//TODO Load resource with path from lib (result) and assign it to "res" aka Importer::Load (not Import!!!)
-	}
-
-
-
-	return res;
-}
 
 bool ModuleResourceManager::ReleaseSingleResource(unsigned int uid)
 {

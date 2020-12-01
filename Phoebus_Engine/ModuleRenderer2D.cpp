@@ -122,7 +122,7 @@ bool ModuleRenderer2D::Init()
 	}
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
-	ImGui_ImplOpenGL3_Init("#version 140"); //TODO: this is hardcoded. Deal with it.
+	ImGui_ImplOpenGL3_Init("#version 140"); //this is hardcoded. Deal with it.
 
 	//fps goodness
 	fps_log.resize(maxFPShown);
@@ -573,7 +573,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::Button("Load##fileExplorer", ImVec2(50, 20)))
 			{
-				//TODO Call load asset here??
+				//TODO Depending on what you want to load (ex. PNG), load it into the selected object
 				std::string selected = selectedFile;
 				if (selected != "")
 				{
@@ -704,7 +704,7 @@ bool ModuleRenderer2D::CleanUp()
 	if (OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
 	if (AdriID != 0) glDeleteTextures(1, &AdriID);	AdriID = 0;
 	if (PhoebusIcon != 0) glDeleteTextures(1, &PhoebusIcon);	PhoebusIcon = 0;
-	//TODO: Void functions, no return, no check possible. FIX!
+	//Void functions, no return, no check possible.
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
@@ -1407,7 +1407,7 @@ void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
 
 		if (extension != ".meta")
 		{
-			//TODO if it has no meta don't bother drawing it
+			//if it has no meta don't bother drawing it
 			std::string directory = newDir;
 			std::string metapath = directory + "/" + str + ".meta";
 			if (App->fileSystem->DoesFileExist(metapath.c_str()))
@@ -1733,7 +1733,6 @@ bool ModuleRenderer2D::Show3DWindow()
 	imgPos.y = imgPos.y + lastCursorPos.y;
 
 
-	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	GuizmoEditTransform();

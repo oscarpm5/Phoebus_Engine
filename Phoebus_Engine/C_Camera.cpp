@@ -5,8 +5,8 @@
 
 #include "Application.h"
 
-C_Camera::C_Camera(GameObject* owner, unsigned int ID) :Component(ComponentType::CAMERA, owner, ID), isCulling(false),
-nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRatio(0),
+C_Camera::C_Camera(GameObject* owner, unsigned int ID, Color backgroundCol) :Component(ComponentType::CAMERA, owner, ID), isCulling(false),
+nearPlaneDist(0.1f), farPlaneDist(500.0f), FoVx(70.0f), FoVy(0.0f), invAspectRatio(0), backgroundCol(backgroundCol),
 projectionMatrix(float4x4::identity)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
@@ -21,8 +21,9 @@ projectionMatrix(float4x4::identity)
 	SetNewAspectRatio(screenSize.x, screenSize.y);
 }
 
-C_Camera::C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV, float aspectRatio) :Component(ComponentType::CAMERA, owner),
-nearPlaneDist(nPlaneDist), farPlaneDist(fPlaneDist), FoVx(foV), FoVy(0.0f), invAspectRatio(0), projectionMatrix(float4x4::identity),isCulling(false)
+C_Camera::C_Camera(GameObject* owner, float nPlaneDist, float fPlaneDist, float foV, float aspectRatio, Color backgroundCol) :Component(ComponentType::CAMERA, owner),
+nearPlaneDist(nPlaneDist), farPlaneDist(fPlaneDist), FoVx(foV), FoVy(0.0f), invAspectRatio(0), projectionMatrix(float4x4::identity), isCulling(false),
+backgroundCol(backgroundCol)
 {
 	frustum.type = math::FrustumType::PerspectiveFrustum;
 
@@ -134,7 +135,13 @@ void C_Camera::OnEditor()
 		{
 			SetNewAspectRatio(auxf);
 		}
-
+		ImGui::Separator();
+		if (ImGui::TreeNode("Select Background Color"))
+		{
+			ImGuiColorEditFlags flags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview;
+			ImGui::ColorPicker4("MyColor##4", (float*)&backgroundCol, flags);
+			ImGui::TreePop();
+		}
 
 		//camera things end here
 		ImGui::Spacing();
@@ -347,13 +354,23 @@ void C_Camera::SetAsCullingCam(bool newState)
 			}
 			App->renderer3D->activeCam = this;
 		}
-		else if(App->renderer3D->activeCam==this)
+		else if (App->renderer3D->activeCam == this)
 		{
 			App->renderer3D->activeCam = nullptr;
 		}
 
 		isCulling = newState;
 	}
+}
+
+Color C_Camera::GetBackgroundCol() const
+{
+	return backgroundCol;
+}
+
+void C_Camera::SetBackgroundCol(Color c)
+{
+	backgroundCol = c;
 }
 
 void C_Camera::UpdateProjectionMat()
