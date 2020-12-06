@@ -1224,6 +1224,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 		//std::sort(act.textures.begin(), act.textures.end());
 		//std::sort(act.scenes.begin(), act.scenes.end());
 
+		std::string selectableString = "";
 
 		if (ImGui::CollapsingHeader("Textures##resources"))
 		{
@@ -1233,7 +1234,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.textures[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.textures[i]->GetLibraryFile().c_str());
+				selectableString = act.textures[i]->GetName() + "##" + std::to_string(act.textures[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 
 				//DragDropSource Begin
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -1245,22 +1247,27 @@ bool ModuleRenderer2D::ShowResourcesActive()
 					// Display preview (could be anything, e.g. when dragging an image we could decide to display
 					// the filename and a small preview of the image, etc.)
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4 FOCUSED_COLOR);
-					ImGui::Text("%s", act.textures[i]->GetAssetFile().c_str());
+					ImGui::Text("%s", act.textures[i]->GetName().c_str());
 					ImGui::PopStyleColor();
 
 					ImGui::EndDragDropSource();
 				}
 				//DragDropSource End
 
-				if (ImGui::IsItemHovered())
+				if (ImGui::IsItemHovered())//TODO the tooltip is the same for every case, consider creating a method
 				{
 					ImGui::BeginTooltip();
 
 					std::string count = std::to_string(act.textures[i]->referenceCount);
 					std::string ID = std::to_string(act.textures[i]->GetUID());
+					std::string assetPath = act.textures[i]->GetAssetFile();
+					std::string libPath = act.textures[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
+
 
 					ImGui::EndTooltip();
 				}
@@ -1277,7 +1284,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.meshes[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.meshes[i]->GetLibraryFile().c_str());
+				selectableString = act.meshes[i]->GetName() + "##" + std::to_string(act.meshes[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 
 				//DragDropSource Begin
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -1289,7 +1297,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 					// Display preview (could be anything, e.g. when dragging an image we could decide to display
 					// the filename and a small preview of the image, etc.)
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4 FOCUSED_COLOR);
-					ImGui::Text("%s", act.meshes[i]->GetAssetFile().c_str());
+					ImGui::Text("%s", act.meshes[i]->GetName().c_str());
 					ImGui::PopStyleColor();
 
 					ImGui::EndDragDropSource();
@@ -1302,9 +1310,13 @@ bool ModuleRenderer2D::ShowResourcesActive()
 
 					std::string count = std::to_string(act.meshes[i]->referenceCount);
 					std::string ID = std::to_string(act.meshes[i]->GetUID());
+					std::string assetPath = act.meshes[i]->GetAssetFile();
+					std::string libPath = act.meshes[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
 
 					ImGui::EndTooltip();
 				}
@@ -1321,16 +1333,21 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.scenes[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.scenes[i]->GetLibraryFile().c_str());
+				selectableString = act.scenes[i]->GetName() + "##" + std::to_string(act.scenes[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 
 					std::string count = std::to_string(act.scenes[i]->referenceCount);
 					std::string ID = std::to_string(act.scenes[i]->GetUID());
+					std::string assetPath = act.scenes[i]->GetAssetFile();
+					std::string libPath = act.scenes[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
 
 					ImGui::EndTooltip();
 				}
@@ -1347,16 +1364,21 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.models[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.models[i]->GetLibraryFile().c_str());
+				selectableString = act.models[i]->GetName() + "##" + std::to_string(act.models[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 
 					std::string count = std::to_string(act.models[i]->referenceCount);
 					std::string ID = std::to_string(act.models[i]->GetUID());
+					std::string assetPath = act.models[i]->GetAssetFile();
+					std::string libPath = act.models[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
 
 					ImGui::EndTooltip();
 				}

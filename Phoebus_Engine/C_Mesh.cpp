@@ -128,7 +128,7 @@ void C_Mesh::OnEditor()
 		unsigned int myResourceID = 0;
 		if (mesh != nullptr)
 		{
-			meshNameDisplay = mesh->GetAssetFile();
+			meshNameDisplay = mesh->GetName();
 			myResourceID = mesh->GetUID();
 		}
 		std::vector<Resource*> allLoadedMeshes;
@@ -166,18 +166,35 @@ void C_Mesh::OnEditor()
 
 			for (int n = 0; n < allLoadedMeshes.size(); n++)
 			{
-				std::string name = allLoadedMeshes[n]->GetAssetFile();
+				std::string name = allLoadedMeshes[n]->GetName();
 				name += suffixLabel;
 				name += "List";
 				name += std::to_string(n);
-				const bool is_selected = (myResourceID == allLoadedMeshes[n]->GetUID());
-				if (ImGui::Selectable(name.c_str(), is_selected))
+				const bool isMeshselected = (myResourceID == allLoadedMeshes[n]->GetUID());
+				if (ImGui::Selectable(name.c_str(), isMeshselected))
 				{
 					SetNewResource(allLoadedMeshes[n]->GetUID());
 				}
 
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+
+					std::string count = std::to_string(allLoadedMeshes[n]->referenceCount);
+					std::string ID = std::to_string(allLoadedMeshes[n]->GetUID());
+					std::string assetPath = allLoadedMeshes[n]->GetAssetFile();
+					std::string libPath = allLoadedMeshes[n]->GetLibraryFile();
+
+					ImGui::Text("ID: %s", ID.c_str());
+					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
+
+					ImGui::EndTooltip();
+				}
+
 				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected)
+				if (isMeshselected)
 					ImGui::SetItemDefaultFocus();
 			}
 			ImGui::EndCombo();

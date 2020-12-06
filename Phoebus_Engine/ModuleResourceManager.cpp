@@ -717,6 +717,7 @@ Resource* ModuleResourceManager::CreateNewResource(const char* assetsFile, Resou
 		}
 
 		ret->SetAssetPath(assetsFile);
+		ret->SetName(GenNameFromPath(*ret));
 		ret->SetLibPath(GenLibPath(*ret));
 	}
 
@@ -760,6 +761,20 @@ std::string ModuleResourceManager::GenLibPath(Resource& res)
 	}
 
 	return path;
+}
+
+std::string ModuleResourceManager::GenNameFromPath(Resource& res)
+{
+	std::string path = res.GetAssetFile();
+	std::string name = "";
+	if (path != "")
+	{
+		App->fileSystem->SeparatePath(path, nullptr, &name);
+		App->fileSystem->SeparateExtension(name, nullptr, &name);
+	}
+
+
+	return name;
 }
 
 ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)

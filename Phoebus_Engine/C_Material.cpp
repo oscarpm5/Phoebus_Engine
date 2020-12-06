@@ -156,7 +156,7 @@ void C_Material::OnEditor()
 		unsigned int myResourceID = 0;
 		if (texture != nullptr)
 		{
-			textNameDisplay = texture->GetAssetFile();
+			textNameDisplay = texture->GetName();
 			myResourceID = texture->GetTextureID();
 		}
 
@@ -189,18 +189,35 @@ void C_Material::OnEditor()
 			//================================
 			for (int n = 0; n < allLoadedTextures.size(); n++)
 			{
-				std::string name = allLoadedTextures[n]->GetAssetFile();
+				std::string name = allLoadedTextures[n]->GetName();
 				name += "##";
 				name += "textureList";
 				name += std::to_string(n);
-				const bool is_selected = (myResourceID == allLoadedTextures[n]->GetUID());
-				if (ImGui::Selectable(name.c_str(), is_selected))
+				const bool isMatselected = (myResourceID == allLoadedTextures[n]->GetUID());
+				if (ImGui::Selectable(name.c_str(), isMatselected))
 				{
 					SetNewResource(allLoadedTextures[n]->GetUID());
 				}
 
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+
+					std::string count = std::to_string(allLoadedTextures[n]->referenceCount);
+					std::string ID = std::to_string(allLoadedTextures[n]->GetUID());
+					std::string assetPath = allLoadedTextures[n]->GetAssetFile();
+					std::string libPath = allLoadedTextures[n]->GetLibraryFile();
+
+					ImGui::Text("ID: %s", ID.c_str());
+					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
+
+					ImGui::EndTooltip();
+				}
+
 				// Set the initial focus when opening the combo (scrolling + keyboard navigation focus)
-				if (is_selected)
+				if (isMatselected)
 					ImGui::SetItemDefaultFocus();
 			}
 

@@ -56,6 +56,7 @@ public:
 
 	bool DeleteItemFromResourcesMap(unsigned int UID);
 
+	//finds a certain resource even if it is not in memory
 	Resource* FindResInMemory(unsigned int UID);
 	//only base paremeters is only used for the moldels, as they have other resource dependencies, use this bool as true when you only want to load the base resources into memory and not the actual Model
 	void LoadResourceIntoMem(Resource* res, bool onlyBase = false);
@@ -75,6 +76,7 @@ private:
 
 
 	std::string GenLibPath(Resource& res);
+	std::string GenNameFromPath(Resource& res);
 	//Returns resource type from assets path
 	ResourceType ResourceTypeFromPath(std::string path);
 

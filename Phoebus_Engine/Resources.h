@@ -27,10 +27,10 @@ public:
 	//Reminder GetAssetFile().c_str() has to be assigned to a string variable if you want to work with it, otherwise it gets deleted
 	std::string GetAssetFile() const;
 	std::string GetLibraryFile() const;
-
+	std::string GetName() const;
 	void SetAssetPath(std::string newPath);
 	void SetLibPath(std::string newPath);
-
+	void SetName(std::string newName);
 
 	virtual bool UnloadFromMemory();
 
@@ -47,6 +47,7 @@ protected:
 
 	std::string assetsFile;
 	std::string libraryFile;
+	std::string name;
 
 
 };

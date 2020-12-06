@@ -186,7 +186,12 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 			for (int i = 0; i < scene->mNumMeshes; i++)
 			{
 				//scene->mMeshes[i]->mName; TODO GET MESH NAME TO ASSIGN IT TO THE RESOURCE
+				std::string meshName = scene->mMeshes[i]->mName.C_Str();
+				if (meshName == "")
+					meshName = "Untitled Mesh";
+
 				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+				currMesh->SetName(meshName);
 				Mesh::ImportRMesh(scene->mMeshes[i], *currMesh); //Take the mesh out of the fbx in assets and plop it into engine
 				char* auxB;
 				if (Mesh::SaveMesh(*currMesh, &auxB) > 0) //Here we save to lib the mesh portion of our model (from engine to lib)
@@ -438,6 +443,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 			{
 				//Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
 				unsigned int newUID = comp.GetNumber("ResourceID");
+				std::string resourceName = comp.GetString("ResourceName");
 				Resource* r = nullptr;
 				switch (type)
 				{
@@ -454,6 +460,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							r->SetName(resourceName);
 							App->rManager->LoadResourceIntoMem(r);
 						}
 
@@ -478,6 +485,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 							if (fullpath != "")
 							{
 								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+								r->SetName(resourceName);
 								App->rManager->LoadResourceIntoMem(r);
 
 							}
@@ -957,7 +965,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			{
 				component->ID = comp.GetNumber("ID");
 				unsigned int newUID = comp.GetNumber("ResourceID");
-
+				std::string resourceName = comp.GetString("ResourceName");
 
 				Resource* r = nullptr;
 
@@ -990,6 +998,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							r->SetName(resourceName);
 							App->rManager->LoadResourceIntoMem(r);
 						}
 
@@ -1007,6 +1016,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+							r->SetName(resourceName);
 							App->rManager->LoadResourceIntoMem(r);
 						}
 						//component.chutame_la_tex
@@ -1054,7 +1064,19 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 {
 	config.SetNumber("ComponentType", (int)component->GetType());
 	config.SetNumber("ID", (int)component->ID);
-	config.SetNumber("ResourceID", component->GetResourceID());
+	
+	unsigned int resID = component->GetResourceID();
+	config.SetNumber("ResourceID", resID);
+
+	std::string resName = "";
+	Resource* currResource = App->rManager->FindResInMemory(resID);
+	if (currResource)
+	{
+		resName = currResource->GetName();
+	}
+	config.SetString("ResourceName", resName.c_str());
+
+
 	switch (component->GetType())
 	{
 	case ComponentType::CAMERA:
