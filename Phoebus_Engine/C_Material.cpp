@@ -135,7 +135,10 @@ void C_Material::OnEditor()
 {
 	bool activeAux = active;
 
-	std::string headerName = "Texture";
+	std::string headerName = "Material";
+	std::string suffixLabel = "##Material";
+	std::string actualname;
+	suffixLabel += std::to_string(ID);
 	if (!activeAux)headerName += " (not active)";
 
 	if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
@@ -143,7 +146,8 @@ void C_Material::OnEditor()
 	if (ImGui::CollapsingHeader(headerName.c_str(), ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
-		ImGui::Checkbox("IS ACTIVE##MaterialCheckbox", &active); //##adds more to the label id without displaying so we can have 2 checkbox with the same text
+		actualname = "IS ACTIVE" + suffixLabel + "Checkbox";
+		ImGui::Checkbox(actualname.c_str(), &active); //##adds more to the label id without displaying so we can have 2 checkbox with the same text
 
 		ResourceTexture* texture = nullptr;
 		texture = GetTexture();
@@ -157,7 +161,7 @@ void C_Material::OnEditor()
 		if (texture != nullptr)
 		{
 			textNameDisplay = texture->GetName();
-			myResourceID = texture->GetTextureID();
+			myResourceID = texture->GetUID();
 		}
 
 		std::vector<Resource*> allLoadedTextures;
@@ -165,12 +169,12 @@ void C_Material::OnEditor()
 		//const char* items[] = { "AAAA", "BBBB", "CCCC", "DDDD", "EEEE", "FFFF", "GGGG", "HHHH", "IIII", "JJJJ", "KKKK", "LLLLLLL", "MMMM", "OOOOOOO" };
 		//static int item_current_idx = 0;                    // Here our selection data is an index.
 		//const char* combo_label = textNameDisplay.c_str();  // Label to preview before opening the combo (technically it could be anything)
-		if (ImGui::BeginCombo("Used Texture##texture", textNameDisplay.c_str(), ImGuiComboFlags_PopupAlignLeft))
+		actualname = "Used Texture" + suffixLabel;
+		if (ImGui::BeginCombo(actualname.c_str(), textNameDisplay.c_str(), ImGuiComboFlags_PopupAlignLeft))
 		{
-
-
+			actualname = "NONE" + suffixLabel;
 			const bool noneSelected = (texture == nullptr);
-			if (ImGui::Selectable("NONE##texture", noneSelected))
+			if (ImGui::Selectable(actualname.c_str(), noneSelected))
 			{
 				if (texture != nullptr)
 				{
@@ -190,8 +194,8 @@ void C_Material::OnEditor()
 			for (int n = 0; n < allLoadedTextures.size(); n++)
 			{
 				std::string name = allLoadedTextures[n]->GetName();
-				name += "##";
-				name += "textureList";
+				name += suffixLabel;
+				name += "List";
 				name += std::to_string(n);
 				const bool isMatselected = (myResourceID == allLoadedTextures[n]->GetUID());
 				if (ImGui::Selectable(name.c_str(), isMatselected))
@@ -259,7 +263,8 @@ void C_Material::OnEditor()
 		{
 			if (ImGui::TreeNode("Texture Preview"))
 			{
-				ImGui::SliderInt("Size", &size, 1, 400);
+				actualname = "Size" + suffixLabel;
+				ImGui::SliderInt(actualname.c_str(), &size, 1, 400);
 				if (usingCkeckers)
 					ImGui::Image((ImTextureID)this->GetCheckersID(), ImVec2(size, size), ImVec2(0, 1), ImVec2(1, 0));
 				else if (texture != nullptr)
@@ -273,24 +278,26 @@ void C_Material::OnEditor()
 		if (ImGui::TreeNode("Select Material Color"))
 		{
 			ImGuiColorEditFlags flags = ImGuiColorEditFlags_AlphaBar | ImGuiColorEditFlags_NoSidePreview;
-			ImGui::ColorPicker4("MyColor##4", (float*)& matCol, flags);
+			actualname = "MyColor" + suffixLabel;
+			ImGui::ColorPicker4(actualname.c_str(), (float*)& matCol, flags);
 			ImGui::TreePop();
 		}
 
 		ImGui::Separator();
 		ImGui::Unindent();
-
-		if (ImGui::BeginPopup("Delete Material Component", ImGuiWindowFlags_AlwaysAutoResize))
+		actualname = "Delete Material Component" + suffixLabel;
+		if (ImGui::BeginPopup(actualname.c_str(), ImGuiWindowFlags_AlwaysAutoResize))
 		{
 			ImGui::Text("you are about to delete\n this component");
-
-			if (ImGui::Button("Go ahead"))
+			actualname = "Go ahead" + suffixLabel;
+			if (ImGui::Button(actualname.c_str()))
 			{
 				toDelete = true;
 			}
 
 			ImGui::SameLine();
-			if (ImGui::Button("Cancel"))
+			actualname = "Cancel" + suffixLabel;
+			if (ImGui::Button(actualname.c_str()))
 			{
 				ImGui::CloseCurrentPopup();
 			}
@@ -303,9 +310,11 @@ void C_Material::OnEditor()
 		ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(1.0f, 0.25f, 0.0f, 1.0f));
 		ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.0f, 0.0f, 0.0f, 1.0f));
 
-		if (ImGui::Button("Delete##Material"))
+		actualname = "Delete" + suffixLabel;
+		if (ImGui::Button(actualname.c_str()))
 		{
-			ImGui::OpenPopup("Delete Material Component");
+			actualname = "Delete Material Component" + suffixLabel;
+			ImGui::OpenPopup(actualname.c_str());
 		}
 
 
