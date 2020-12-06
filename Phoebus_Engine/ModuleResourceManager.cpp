@@ -10,7 +10,9 @@
 #include "ModuleEditor3D.h"
 #include "GameObject.h"
 #include "C_Transform.h"
-ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
+#include "C_Mesh.h"
+#include "C_Material.h"
+ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f), haveToReload(false)
 {
 }
 
@@ -20,7 +22,6 @@ ModuleResourceManager::~ModuleResourceManager()
 
 bool ModuleResourceManager::Init()
 {
-	haveToReload = false;
 	return true;
 }
 
@@ -43,7 +44,7 @@ bool ModuleResourceManager::Start()
 	{
 		C_Transform* t = App->editor3d->root->GetComponent<C_Transform>();
 
-		float4x4 initialMat= float4x4::RotateX(DegToRad(-90.0f));
+		float4x4 initialMat = float4x4::RotateX(DegToRad(-90.0f));
 
 		t->SetGlobalTransform(initialMat);
 	}
@@ -311,6 +312,69 @@ void ModuleResourceManager::StopUsingResource(unsigned int uid)
 		}
 
 	}
+}
+
+bool ModuleResourceManager::TryLoadResIntoScene(unsigned int uid)
+{
+
+	//Find if the resource is already loaded or imported
+	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+	if (it != resources.end())
+	{
+
+		ResourceType resType = it->second->GetType();
+		if (resType != ResourceType::MODEL)//we do not consider models to be loaded into mem (only its dependencies) and so it has no reference count
+		{
+
+			if (App->editor3d->selectedGameObjs.empty())//if the resource is not a model & we have no selected object we cannot load the resource into mem
+			{
+				LOG("[warning] This resource cannot be loaded if there is no selected object to apply the resource to it");//TODO discuss if we should just create an empty and assign the resource to it with adri
+				return false;
+			}
+
+			bool ret = false;
+			GameObject* currObj = App->editor3d->selectedGameObjs.back();
+
+			switch (resType)
+			{
+			case ResourceType::TEXTURE:
+			{
+				C_Material* mat = currObj->GetComponent<C_Material>();
+				//if it has the component, just change its resource otherwise create the component first
+				if (!mat)
+				{
+					mat = (C_Material*)currObj->CreateComponent(ComponentType::MATERIAL);
+				}
+				mat->SetNewResource(uid);
+				ret = true;
+			}
+			break;
+			case ResourceType::MESH://TODO mesh don't needed (for now) as we are loading from assets & we do not have meshes in assets (the plan is to display the meshes associated with each fbx in the assets panel in the future)
+			{
+				C_Mesh* mesh = currObj->GetComponent<C_Mesh>();
+				//if it has the component, just change its resource otherwise create the component first
+				if (!mesh)
+				{
+					mesh = (C_Mesh*)currObj->CreateComponent(ComponentType::MESH);
+				}
+				mesh->SetNewResource(uid);
+				ret = true;
+			}
+			break;
+			}
+
+			return ret;
+		}
+		else
+		{
+			LoadResourceIntoMem(it->second);
+			return true;
+		}
+
+	}
+
+	LOG("[error] The requested resource with ID: %i, doesn't exist", uid);
+	return false;
 }
 
 ActiveResources ModuleResourceManager::GetActiveResources(bool getAll)

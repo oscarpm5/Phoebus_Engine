@@ -581,7 +581,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
 					if (r != nullptr)
 					{
-						App->rManager->RequestNewResource(r->GetUID());
+						App->rManager->TryLoadResIntoScene(r->GetUID());
 					}
 				}
 				else

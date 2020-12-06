@@ -39,9 +39,14 @@ public:
 
 	void GenerateMetaFile(Resource* res);
 
+	//this is used when an object requests a new resource, if you want to load it to scene use TryLoadResIntoScene()
 	Resource* RequestNewResource(unsigned int uid);
-	Resource* RequestExistingResource(unsigned int uid);//This doesn't add to the resource count, we use it during the execution
+	//This doesn't add to the resource count, we use it during the execution
+	Resource* RequestExistingResource(unsigned int uid);
 	void StopUsingResource(unsigned int uid);
+	//this method will try to load the requested resource directly into scene (in the case of meshes & images it will put the mesh/image into the selected object if any), it returns false on failure
+	bool TryLoadResIntoScene(unsigned int uid);
+
 	//getAll=true will get you all resources imported, the ones active and the ones that are not active
 	ActiveResources GetActiveResources(bool getAll = false);
 	//if creatinga  new resource do not use the last parameter, it is only used when loading resources
