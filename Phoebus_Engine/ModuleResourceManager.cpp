@@ -39,10 +39,10 @@ bool ModuleResourceManager::Start()
 
 
 
-
+	//TODO this is hardcoded to make the street environment look good fix that (Importing options maybe¿??)
 	if (!App->editor3d->root->children.empty())//this is just for the initial street environment mesh, it seems to be off by 90 degrees from export
 	{
-		C_Transform* t = App->editor3d->root->GetComponent<C_Transform>();
+		C_Transform* t = App->editor3d->root->children[0]->GetComponent<C_Transform>();
 
 		float4x4 initialMat = float4x4::RotateX(DegToRad(-90.0f));
 
