@@ -345,7 +345,7 @@ void ModuleRenderer3D::Draw3D()
 	Color c = App->camera->editorCam->GetBackgroundCol();
 	//const Color lineColor(0.05f, 0.05f, 0.1f);
 	//Set a color here  from the camera, on editor mode take it from the editor cam on game take it from the main cam
-	if (App->GetGameState() != GameStateEnum::STOPPED&& activeCam != nullptr)
+	if (App->GetGameState() != GameStateEnum::STOPPED && activeCam != nullptr)
 	{
 		c = activeCam->GetBackgroundCol();
 	}
@@ -406,7 +406,11 @@ void ModuleRenderer3D::DrawOutline()
 
 
 	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+	
+	glStencilOp(
+		GL_KEEP, //stencil action if stencil test fails
+		GL_REPLACE, //stencil action if stencil test passes but depth test fails
+		GL_REPLACE); //stencil action if both pass (in case we ose shaders, fragment shader will also run)
 
 	glStencilMask(0xFF);
 	if (drawGrid)
@@ -432,8 +436,8 @@ void ModuleRenderer3D::DrawOutline()
 		glDisable(GL_LIGHTING);
 	//glDisable(GL_CULL_FACE);
 	RenderStencil();
-	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 0, 0xFF);
+	glStencilMask(0xFF);
 
 	if (depthTesting)
 		glEnable(GL_DEPTH_TEST);
@@ -653,9 +657,9 @@ void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, Color
 	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/, color));
 }
 
-void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners,Color c)
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners, Color c)
 {
-	drawAABBs.push_back(RenderBox(corners,c));//TODO change Box color here (global config var?)
+	drawAABBs.push_back(RenderBox(corners, c));//TODO change Box color here (global config var?)
 }
 
 bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
