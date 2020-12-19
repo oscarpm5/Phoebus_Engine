@@ -405,12 +405,12 @@ void ModuleRenderer3D::DrawOutline()
 	}
 
 
-	glEnable(GL_STENCIL_TEST);
 	
 	glStencilOp(
 		GL_KEEP, //stencil action if stencil test fails
 		GL_REPLACE, //stencil action if stencil test passes but depth test fails
 		GL_REPLACE); //stencil action if both pass (in case we ose shaders, fragment shader will also run)
+	glDisable(GL_STENCIL_TEST);
 
 	glStencilMask(0xFF);
 	if (drawGrid)
@@ -423,7 +423,11 @@ void ModuleRenderer3D::DrawOutline()
 	}
 	RenderMeshes();
 
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(
+		GL_ALWAYS, // the comparison test between ref and the current stencil value
+		1, //the reference vaule, used in the comparison and also for GL_REPLACE
+		0xFF);//bitwise anded with reference and current stencil value before they are compared
 	glStencilMask(0xFF);
 	RenderSelectedMeshes();
 
