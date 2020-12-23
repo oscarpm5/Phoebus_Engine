@@ -58,7 +58,7 @@ Note that the 3D viewport controls will only work when interacting with the 3D v
 
 
 * Delete Key (not backspace)
-	- Deletes the selected object and its children if any
+	- Deletes all selected objects and their children if any
 
 
 * Esc: open/close the exit menu (this menu can be accessed also from the exit tab in the menu bar and by clicking the window cross)
