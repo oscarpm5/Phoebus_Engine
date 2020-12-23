@@ -380,7 +380,7 @@ void ModuleRenderer3D::DrawOutline()
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			if (meshes[i]->GetMesh() != nullptr)
+			if (meshes[i]->IsActive() && meshes[i]->GetMesh() != nullptr)
 			{
 
 				ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
