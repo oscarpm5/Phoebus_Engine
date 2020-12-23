@@ -64,7 +64,17 @@ Note that the 3D viewport controls will only work when interacting with the 3D v
 * Esc: open/close the exit menu (this menu can be accessed also from the exit tab in the menu bar and by clicking the window cross)
 
 
-To select an object click in the desired object in the Hierarchy Tab (it will turn orange). 
+* Left Mouse Click
+	- Select/Deselect/Multiselect (it works on the hierarchy & the 3D Viewport)
+	
+		* Left Shift (hold)
+			- Multiselect mode. Add object to selection.
+	
+		* Left Ctrl (hold)
+			- Multiselect mode. Remove object from selection.
+
+
+When not in Multiselect mode, selecting an object will remove all the previous selections. When using Left Mouse Click + Left Shift(hold) without clicking any object the previous selection will remain unchanged. When doing so without Left Shift (hold) will cause the selection to be erased (interpreting that the user wants to deselect all)
 
 Holding Shift when dragging the Far/Near plane buttons in the config/camera panels allows extra precision.
 
@@ -127,6 +137,9 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Material color & transparency of a selected object can be changed through the inspector.
  
+### Third Assigment
+* Objects support multiSelection from the hierarchy & 3D Viewport (see Controls section for more details).
+
 ## Aditional comments for the teacher:
 
 ### First Assigment

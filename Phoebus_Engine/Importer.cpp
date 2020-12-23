@@ -431,7 +431,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 		createdGameObjects[gameObject->ID] = gameObject;
 		gameObject->isActive = gameObject_node.GetBool("Active");
 		gameObject->focused = gameObject_node.GetBool("Focused");
-
+		gameObject->selected = gameObject_node.GetBool("Selected");
 		//get the components
 		Config_Array components = gameObject_node.GetArray("Components");
 
@@ -865,6 +865,7 @@ void Importer::SerializeGameObject(Config& config, GameObject* gameObject) //ser
 	config.SetString("Name", gameObject->GetName().c_str());
 	config.SetBool("Active", gameObject->isActive);
 	config.SetBool("Focused", gameObject->focused);
+	config.SetBool("Selected", gameObject->selected);
 
 	//Global transform
 	const C_Transform* transform = gameObject->GetComponent<C_Transform>();
@@ -923,6 +924,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	//the map is a correlation between ID nad GO. It comes useful later. Thanks Marc!
 	std::map<int, GameObject*> createdGameObjects;
 	Config_Array gameObjects_array = file.GetArray("GameObjects");
+	GameObject* focusedGameObject=nullptr;
 	for (uint i = 0; i < gameObjects_array.GetSize(); ++i)
 	{
 		//Pinpoint the GO 
@@ -946,11 +948,16 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		createdGameObjects[gameObject->ID] = gameObject;
 		gameObject->isActive = gameObject_node.GetBool("Active");
 		gameObject->focused = gameObject_node.GetBool("Focused");
+		gameObject->selected = gameObject_node.GetBool("Selected");
 
 		//TODO for the future here we will load every selected obj and we will store the focused one to add it at the end of the load
-		if (gameObject->focused)
+		if (gameObject->selected)
 		{
-			App->editor3d->SetSelectedGameObject(gameObject);
+			App->editor3d->SetSelectedGameObject(gameObject,true);
+			if (gameObject->focused)
+			{
+				focusedGameObject = gameObject;
+			}
 		}
 
 		//get the components
@@ -1047,6 +1054,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		}
 		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
 	}
+
+	App->editor3d->SetSelectedGameObject(focusedGameObject, true);
 
 }
 

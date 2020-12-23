@@ -14,7 +14,7 @@
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false), displayBoundingBox(showAABB)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false),selected(false), displayBoundingBox(showAABB)
 {
 	App->editor3d->AddObjName(this->name);
 	this->parent = parent;
@@ -401,7 +401,7 @@ void GameObject::DrawGameObject()
 		{
 			if (meshes[i]->IsActive() && meshes[i]->GetMesh() != nullptr)
 			{
-				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(), focused);//TODO change focused for selected in the future when we have more than 1 selection
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(), selected);
 			}
 
 		}
@@ -409,11 +409,13 @@ void GameObject::DrawGameObject()
 
 	}
 
-	if ( App->editor3d->root!=this &&(App->renderer3D->displayAABBs || (displayBoundingBox && focused)))
+	if ( App->editor3d->root!=this &&(App->renderer3D->displayAABBs || (displayBoundingBox && (focused||selected))))
 	{
 		Color c = Color(1.0f,1.0f,1.0f,1.0f);
-		if(focused)
+		if (focused)
 			c = Color FOCUSED_COLOR;
+		else if (selected)
+			c = Color SELECTED_COLOR;
 
 		App->renderer3D->AddBoxToDraw(aabbVec, c);
 	}

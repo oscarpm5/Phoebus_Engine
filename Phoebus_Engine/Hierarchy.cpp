@@ -71,7 +71,7 @@ void SeekMyChildren(GameObject* myself)
 
 				GameObject* isParent = nullptr;
 				newObj->GetChildWithID(newParent->ID, isParent);
-				
+
 				if (!isParent)
 					newObj->ChangeParent(newParent);
 
@@ -94,12 +94,28 @@ void SeekMyChildren(GameObject* myself)
 
 		if (ImGui::IsItemClicked())
 		{
-			if (!App->editor3d->GetSelectedGameObject().empty())
+			//this if is redundant, check is already done inside setSelectedGameObject()
+			/*if (!App->editor3d->GetSelectedGameObject().empty())
 			{
 				App->editor3d->GetSelectedGameObject().back()->focused = false;
+			}*/
+
+			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+			{
+				App->editor3d->SetSelectedGameObject(myself, true);
 			}
-			App->editor3d->SetSelectedGameObject(myself);
-			App->editor3d->GetSelectedGameObject().back()->focused = true;
+			else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+			{
+				App->editor3d->RemoveGameObjFromSelected(myself);
+			}
+			else
+			{
+				App->editor3d->SetSelectedGameObject(myself);
+			}
+
+
+			//this line is redundant, assignment is already done inside setSelectedGameObject()
+			//App->editor3d->GetSelectedGameObject().back()->focused = true;
 
 		}
 
@@ -142,5 +158,6 @@ ImVec4 ChooseMyColor(GameObject* myself)
 
 	if (!myself->isActive || !myself->IsParentActive()) activeColor = ImVec4 PASIVE_COLOR;
 	if (myself->focused) activeColor = ImVec4 FOCUSED_COLOR;
+	else if (myself->selected) activeColor = ImVec4 SELECTED_COLOR;
 	return activeColor;
 }

@@ -61,7 +61,8 @@ class Application;
 
 extern Application* App;
 
-#define SELECTED_COLOR (1.0f, 0.25f,0.0f,0.1f) //all of selected objs
+//TODO change these 2 defines to const Color()?
+#define SELECTED_COLOR (0.75f, 0.25f,0.0f,1.0f) //all of selected objs
 #define FOCUSED_COLOR (1.0f, 0.5f, 0.0f, 1.0f) //focused color of last selected obj
 
 //define paths
@@ -71,3 +72,5 @@ extern Application* App;
 #define TEXTURE_PATH "Library/Textures/"
 #define SCENE_PATH "Library/Scenes/"
 #define MODEL_PATH "Library/Models/"
+
+

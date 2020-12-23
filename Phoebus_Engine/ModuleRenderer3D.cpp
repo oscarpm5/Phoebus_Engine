@@ -368,22 +368,27 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::DrawOutline()
 {
-	const Color outlineColorMain = Color(1.0f, 0.5f, 0.0f);
-	const Color outlineColorSecond = Color(0.75f, 0.25f, 0.0f);
+	const Color outlineColorMain = Color FOCUSED_COLOR;
+	const Color outlineColorSecond = Color SELECTED_COLOR;
 
 	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
 	{
 		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
 		std::vector<C_Mesh*> meshes = App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
 
+		Color currentOutlineCol = outlineColorMain;
+		if (i != App->editor3d->selectedGameObjs.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+		{
+			currentOutlineCol = outlineColorSecond;
+		}
 
 		float4x4 transfMat = transf->GetGlobalTransform();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			if (meshes[i]->IsActive() && meshes[i]->GetMesh() != nullptr)
+			if (meshes[j]->IsActive() && meshes[j]->GetMesh() != nullptr)
 			{
 
-				ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
+				ResourceMesh* m = new ResourceMesh(*meshes[j]->GetMesh());
 				ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
 				m->FreeBuffers();
 				m->GenerateBuffers();
@@ -392,11 +397,6 @@ void ModuleRenderer3D::DrawOutline()
 				currMesh->SetTemporalMesh(m);
 				stencilMeshes.push_back(currMesh);
 
-				Color currentOutlineCol = outlineColorMain;
-				if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
-				{
-					currentOutlineCol = outlineColorSecond;
-				}
 
 				AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
 			}
@@ -405,7 +405,7 @@ void ModuleRenderer3D::DrawOutline()
 	}
 
 
-	
+
 	glStencilOp(
 		GL_KEEP, //stencil action if stencil test fails
 		GL_REPLACE, //stencil action if stencil test passes but depth test fails
@@ -429,6 +429,11 @@ void ModuleRenderer3D::DrawOutline()
 		1, //the reference vaule, used in the comparison and also for GL_REPLACE
 		0xFF);//bitwise anded with reference and current stencil value before they are compared
 	glStencilMask(0xFF);
+
+	//TODO we need this cullFace to make outline behave correctly but then the object is not cullled obviously. Fix that
+	//if (cullFace)
+		//glDisable(GL_CULL_FACE);
+
 	RenderSelectedMeshes();
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -438,7 +443,6 @@ void ModuleRenderer3D::DrawOutline()
 		glDisable(GL_DEPTH_TEST);
 	if (lighting)
 		glDisable(GL_LIGHTING);
-	//glDisable(GL_CULL_FACE);
 	RenderStencil();
 	glStencilFunc(GL_ALWAYS, 0, 0xFF);
 	glStencilMask(0xFF);
@@ -447,7 +451,8 @@ void ModuleRenderer3D::DrawOutline()
 		glEnable(GL_DEPTH_TEST);
 	if (lighting)
 		glEnable(GL_LIGHTING);
-	//glEnable(GL_CULL_FACE);
+	if (cullFace)
+		glEnable(GL_CULL_FACE);
 
 	//TODO for the moment we harcode enable/ disable of the depth/lighting here and that causes depth 6 lightning display to have stopped working
 	//TODO make objects scale from their bounding box center when on outline mode or ideally scale from vertex normal

@@ -80,6 +80,7 @@ private:
 public:
 	bool isActive;
 	bool focused;
+	bool selected;
 	bool displayBoundingBox;
 	bool bbHasToUpdate;
 	std::vector<GameObject*> children; //we need them public for hierarchy

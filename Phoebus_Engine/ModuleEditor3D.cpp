@@ -43,12 +43,20 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 	{
-		if (selectedGameObjs.size() > 0)
+		while (!selectedGameObjs.empty())
 		{
 			GameObject* aux = selectedGameObjs.back();
 			selectedGameObjs.pop_back();
 			delete aux;
+			aux = nullptr;
 		}
+
+		/*if (selectedGameObjs.size() > 0)
+		{
+			GameObject* aux = selectedGameObjs.back();
+			selectedGameObjs.pop_back();
+			delete aux;
+		}*/
 	}
 	return UPDATE_CONTINUE;
 }
@@ -88,13 +96,15 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 	if (selected != root)
 	{
 
-		//TODO Add mode not working properly
 		if (!addMode)
 		{
 			for (int i = 0; i < selectedGameObjs.size(); i++)
 			{
 				if (selectedGameObjs[i] != nullptr)
+				{
 					selectedGameObjs[i]->focused = false;
+					selectedGameObjs[i]->selected = false;
+				}
 			}
 			selectedGameObjs.clear();
 
@@ -104,8 +114,13 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 		{
 			RemoveGameObjFromSelected(selected);
 
+			for (int i = 0; i < selectedGameObjs.size(); i++)
+			{
+				selectedGameObjs[i]->focused = false;
+			}
 			selectedGameObjs.push_back(selected);
 			selected->focused = true;
+			selected->selected = true;
 			ret = true;
 		}
 	}
@@ -116,16 +131,37 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 bool ModuleEditor3D::RemoveGameObjFromSelected(GameObject* toRemove)
 {
 	bool ret = false;
+	bool wasFocused = false;
 	for (int i = 0; i < selectedGameObjs.size(); i++)
 	{
 		if (selectedGameObjs[i] == toRemove)
 		{
+			if (selectedGameObjs[i]->focused)
+			{
+				selectedGameObjs[i]->focused = false;
+				wasFocused = true;
+			}
+			selectedGameObjs[i]->selected = false;
+
 			selectedGameObjs[i] = nullptr;
 			selectedGameObjs.erase(selectedGameObjs.begin() + i);
 			ret = true;
 			break;
 		}
 	}
+
+	if (wasFocused)
+	{
+		for (int i = selectedGameObjs.size()-1; i >=0; i--)//focus on the last selected object
+		{
+			if (selectedGameObjs[i]->selected)
+			{
+				selectedGameObjs[i]->focused = true;
+				break;
+			}
+		}
+	}
+
 	return ret;
 }
 
@@ -186,6 +222,18 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 {
 	//Ray ray = line.ToRay();
 	bool hasHitAnything = false;
+	bool selectAddMode = false;
+	bool cancelSelectionMode = false;
+
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+	{
+		selectAddMode = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+	{
+		cancelSelectionMode = true;
+	}
+
 
 	std::vector<GameObject*> allObjs;
 
@@ -288,13 +336,19 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 
 			if (hit)//TODO duplicated code from the "else" just below, consider grouping it into a method
 			{
-				if (!selectedGameObjs.empty())
-					selectedGameObjs.back()->focused = false;
+				/*if (!selectedGameObjs.empty())
+					selectedGameObjs.back()->focused = false;*/
+				if (cancelSelectionMode)
+				{
+					RemoveGameObjFromSelected(currObj);
+				}
+				else
+				{
+					SetSelectedGameObject(currObj, selectAddMode);
+				}
 
-				SetSelectedGameObject(currObj);
-
-				if (!selectedGameObjs.empty())
-					selectedGameObjs.back()->focused = true;
+				/*if (!selectedGameObjs.empty())
+					selectedGameObjs.back()->focused = true;*/
 
 				hasHitAnything = true;
 				break;
@@ -305,13 +359,19 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 		else //if it doesn't have mesh we assume that is an empty and thus select this game object by bounding box
 		{
 			//select game object
-			if (!selectedGameObjs.empty())
-				selectedGameObjs.back()->focused = false;
+			/*if (!selectedGameObjs.empty())
+				selectedGameObjs.back()->focused = false;*/
+			if (cancelSelectionMode)
+			{
+				RemoveGameObjFromSelected(currObj);
+			}
+			else
+			{
+				SetSelectedGameObject(currObj, selectAddMode);
+			}
 
-			SetSelectedGameObject(currObj);
-
-			if (!selectedGameObjs.empty())
-				selectedGameObjs.back()->focused = true;
+			/*if (!selectedGameObjs.empty())
+				selectedGameObjs.back()->focused = true;*/
 
 			hasHitAnything = true;
 			break;
@@ -324,11 +384,13 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 
 
 
-	if (hasHitAnything == false)
+	if (hasHitAnything == false && !selectAddMode)//when on add mode we do not want to make all the objects un-select on a missclick 
 	{
+
 		for (int i = 0; i < selectedGameObjs.size(); i++)
 		{
 			selectedGameObjs[i]->focused = false;
+			selectedGameObjs[i]->selected = false;
 		}
 		selectedGameObjs.clear();
 	}
