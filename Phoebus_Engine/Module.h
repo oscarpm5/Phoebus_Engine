@@ -17,6 +17,11 @@ public:
 		return true; 
 	}
 
+	virtual bool GameInit()
+	{
+		return true;
+	}
+
 	virtual bool Start()
 	{
 		return true;
@@ -33,6 +38,11 @@ public:
 	}
 
 	virtual update_status PostUpdate(float dt)
+	{
+		return UPDATE_CONTINUE;
+	}
+
+	virtual update_status GameUpdate(float dt)
 	{
 		return UPDATE_CONTINUE;
 	}

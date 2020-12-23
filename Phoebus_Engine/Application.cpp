@@ -57,6 +57,7 @@ bool Application::Init()
 	realTime = 0;
 	realDT = 0.0f;
 	gameState = GameStateEnum::STOPPED;//TODO this will change when executing the game
+	gameJustStarted = false;
 
 	// Call Init() in all modules
 	for (int i = 0; i < list_modules.size(); i++)
@@ -97,7 +98,7 @@ void Application::PrepareUpdate()
 			time = 0;
 			LOG("");
 			LOG("[error] Well, well, it seems that someone has tried to go back in time to before the creation of time iself.\nWe have tried that too, and we assure you that is not possible.");
-			LOG("[warning] We will now proceed to restore the flow of time as it should be...\nPress 'Pause' button to continue the execution of the game")
+			LOG("[warning] We will now proceed to restore the flow of time as it should be...\nPress 'Pause' button to continue the execution of the game");
 			timeScale = 1.0f;
 			SetNewGameState(GameStateEnum::PAUSED);
 		}
@@ -144,6 +145,24 @@ update_status Application::Update()
 	update_status ret = UPDATE_CONTINUE;
 	PrepareUpdate();
 
+	if (gameJustStarted)
+	{
+		gameJustStarted = false;
+		for (int i = 0; i < list_modules.size(); i++)
+		{
+			if (list_modules[i] != nullptr && ret == true)
+			{
+				if (list_modules[i]->GameInit())//TODO consider returning an update_status instead of a bool in the game_init()
+					ret = UPDATE_CONTINUE;
+				else
+					ret = UPDATE_ERROR;
+			}
+		}
+	}
+
+
+
+
 	for (int i = 0; i < list_modules.size(); i++)
 	{
 		if (list_modules[i] != nullptr && ret == true)
@@ -154,6 +173,15 @@ update_status Application::Update()
 	{
 		if (list_modules[i] != nullptr && ret == true)
 			ret = list_modules[i]->Update(realDT);
+	}
+
+	if (gameState == GameStateEnum::PLAYED || gameState == GameStateEnum::ADVANCEONE)
+	{
+		for (int i = 0; i < list_modules.size(); i++)
+		{
+			if (list_modules[i] != nullptr && ret == true)
+				ret = list_modules[i]->GameUpdate(gameDT);
+		}
 	}
 
 	for (int i = 0; i < list_modules.size(); i++)
@@ -192,6 +220,7 @@ void Application::ProcessGameStates(GameStateEnum newState)
 		{
 			//start play clock
 			gameState = GameStateEnum::PLAYED;
+			gameJustStarted = true;
 		}
 
 

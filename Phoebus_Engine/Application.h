@@ -58,6 +58,8 @@ private:
 	Uint32 realTime;//ms since engine start(Real Time Clock)
 	float realDT; //last frame time expressed in seconds(Real Time Clock)
 
+	bool gameJustStarted;
+
 public:
 
 	Application();
