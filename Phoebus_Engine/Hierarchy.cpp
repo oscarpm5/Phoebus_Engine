@@ -20,6 +20,7 @@ bool ShowHierarchyTab()
 //This is the recursive func that makes the hierarchy
 void SeekMyChildren(GameObject* myself)
 {
+	bool droppedItem = false;
 	ImGuiTreeNodeFlags TreeNodeEx_flags = ImGuiTreeNodeFlags_OpenOnArrow; //yeah, we have to set it each iteration. ImGui Badness
 
 	if (myself->children.size() == 0)
@@ -84,6 +85,8 @@ void SeekMyChildren(GameObject* myself)
 					names[n] = names[payload_n];
 					names[payload_n] = "";
 				}*/
+				droppedItem = true;
+
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -92,7 +95,7 @@ void SeekMyChildren(GameObject* myself)
 
 
 
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemHovered())//we use itemHovered + mouse click check because we want the mouse to perform the action on key up, otherwise it would select an item when dropping a payload
 		{
 			//this if is redundant, check is already done inside setSelectedGameObject()
 			/*if (!App->editor3d->GetSelectedGameObject().empty())
@@ -100,17 +103,21 @@ void SeekMyChildren(GameObject* myself)
 				App->editor3d->GetSelectedGameObject().back()->focused = false;
 			}*/
 
-			if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP&& !droppedItem)
 			{
-				App->editor3d->SetSelectedGameObject(myself, true);
-			}
-			else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
-			{
-				App->editor3d->RemoveGameObjFromSelected(myself);
-			}
-			else
-			{
-				App->editor3d->SetSelectedGameObject(myself);
+
+				if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+				{
+					App->editor3d->SetSelectedGameObject(myself, true);
+				}
+				else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+				{
+					App->editor3d->RemoveGameObjFromSelected(myself);
+				}
+				else
+				{
+					App->editor3d->SetSelectedGameObject(myself);
+				}
 			}
 
 
