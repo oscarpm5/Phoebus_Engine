@@ -336,8 +336,6 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 
 			if (hit)//TODO duplicated code from the "else" just below, consider grouping it into a method
 			{
-				/*if (!selectedGameObjs.empty())
-					selectedGameObjs.back()->focused = false;*/
 				if (cancelSelectionMode)
 				{
 					RemoveGameObjFromSelected(currObj);
@@ -346,9 +344,6 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 				{
 					SetSelectedGameObject(currObj, selectAddMode);
 				}
-
-				/*if (!selectedGameObjs.empty())
-					selectedGameObjs.back()->focused = true;*/
 
 				hasHitAnything = true;
 				break;
@@ -359,8 +354,6 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 		else //if it doesn't have mesh we assume that is an empty and thus select this game object by bounding box
 		{
 			//select game object
-			/*if (!selectedGameObjs.empty())
-				selectedGameObjs.back()->focused = false;*/
 			if (cancelSelectionMode)
 			{
 				RemoveGameObjFromSelected(currObj);
@@ -369,9 +362,6 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 			{
 				SetSelectedGameObject(currObj, selectAddMode);
 			}
-
-			/*if (!selectedGameObjs.empty())
-				selectedGameObjs.back()->focused = true;*/
 
 			hasHitAnything = true;
 			break;

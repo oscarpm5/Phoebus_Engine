@@ -48,7 +48,6 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	if ((mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_FACES || mesh->normalDrawMode == (int)NormalDrawMode::NORMAL_MODE_BOTH) && !m->normals.empty())
 		DrawFacesNormals(m);
 
-	//TODO change this for the default mesh color
 	glColor4f(color.r, color.g, color.b, color.a);
 
 	int localDrawMode = (int)sceneMaxDrawMode;
@@ -59,7 +58,6 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 
 	if (localDrawMode == (int)MeshDrawMode::DRAW_MODE_WIRE)
 	{
-		//TODO change this for the default wireframe color
 		glColor4f(0.5f,0.5f,0.5f,0.5f);
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	}
@@ -70,11 +68,11 @@ void RenderMesh::Draw(MeshDrawMode sceneMaxDrawMode)
 	else
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//TODO change this for the default wireframe color
+
 		glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
 
 		DrawBuffers(m);
-		//TODO change this for the default mesh color
+
 		glColor4f(color.r, color.g, color.b, color.a);
 
 

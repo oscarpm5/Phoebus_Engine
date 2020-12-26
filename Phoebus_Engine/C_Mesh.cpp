@@ -87,9 +87,6 @@ unsigned int C_Mesh::GetResourceID()
 
 void C_Mesh::OnEditor()
 {
-	//ResourceMesh* m= GetMesh();
-	//if (m == nullptr) return; //TODO the component should be supported in the editor even without a mesh
-
 
 	bool activeAux = active;
 

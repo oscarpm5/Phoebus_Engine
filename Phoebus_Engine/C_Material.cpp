@@ -15,25 +15,10 @@ usingCkeckers(false), resourceID(0)
 	GenDefaultTexture();
 }
 
-//TODO deprecated constructor???
-//C_Material::C_Material(GameObject* owner, unsigned int ilImageName, const char* path) :Component(ComponentType::MATERIAL, owner),
-//idCheckers(0),//idTexture(0),  width(0), height(0), format(0), depth(0),sizeInBytes(0), bpp(0), 
-//usingCkeckers(false), resourceID(0)
-//{
-//	//GenTextureFromName(ilImageName);
-//	GenDefaultTexture();
-//}
-
 C_Material::~C_Material()
 {
-	//DestroyTexture();
 	DestroyCheckers();
-	//width = 0;
-	//height = 0;
-	//format = 0;
-	//depth = 0;
-	//sizeInBytes = 0;
-	//bpp = 0;
+	
 	usingCkeckers = 0;
 
 	if (resourceID != 0)

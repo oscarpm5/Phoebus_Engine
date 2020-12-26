@@ -251,7 +251,7 @@ void GameObject::UpdateBoundingBox()
 	if (mesh != nullptr)
 	{
 		globalOBB = mesh->GetAABB();
-		globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());//TODO we need to fork with float4x4 and not mat4x4
+		globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());
 
 		globalAABB.SetNegativeInfinity();
 		globalAABB.Enclose(globalOBB);
@@ -259,7 +259,7 @@ void GameObject::UpdateBoundingBox()
 	else
 	{
 		globalAABB.SetNegativeInfinity();
-		globalAABB.SetFromCenterAndSize((float3)transform->GetGlobalPosition(), float3(1, 1, 1));//todo we need to return float3 not vec3
+		globalAABB.SetFromCenterAndSize(transform->GetGlobalPosition(), float3(1, 1, 1));
 		globalOBB = globalAABB;
 	}
 
@@ -381,7 +381,6 @@ std::vector<Component*> GameObject::GetAllComponents()
 
 void GameObject::DrawGameObject()
 {
-	//TODO test if inside camera cull
 	std::vector<float3> aabbVec;
 	GetPointsFromAABB(globalAABB, aabbVec);
 

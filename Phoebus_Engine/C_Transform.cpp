@@ -42,7 +42,6 @@ float4x4 C_Transform::GetLocalTransform() const
 
 void C_Transform::SetGlobalTransform(float4x4 newGTransform)
 {
-	//TODO update this local from global
 	gTransformMat = newGTransform;
 	UpdateLocalMat();
 	owner->UpdateChildTransforms();

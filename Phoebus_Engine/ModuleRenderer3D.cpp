@@ -628,9 +628,9 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	//wireframe here too?
 }
 
-bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale)//TODO consider creating an expanded mesh when the mesh is created instead of doing it every frame
+bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale)
 {
-	if (m.normals.empty())//TODO in the future if scaling cannot be done by vertex normals, use generated face normals or normal scaling instead
+	if (m.smoothedNormals.empty())
 		return false;
 
 
@@ -668,7 +668,7 @@ void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, Color
 
 void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners, Color c)
 {
-	drawAABBs.push_back(RenderBox(corners, c));//TODO change Box color here (global config var?)
+	drawAABBs.push_back(RenderBox(corners, c));
 }
 
 bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
@@ -689,7 +689,7 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 			Plane planes[6];
 			if (activeCam != nullptr && activeCam->IsActive())
 			{
-				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted
+				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted-> not anymore? check this
 			}
 			else
 			{

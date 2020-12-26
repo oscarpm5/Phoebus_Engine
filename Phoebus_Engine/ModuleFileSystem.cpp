@@ -57,8 +57,6 @@ bool ModuleFileSystem::Start()
 	else
 		LOG("[error]Failed loading Asset Manager");
 
-
-	//PHYSFS_mount("Assets", nullptr, 1); //TODO why is that here?
 	return ret;
 }
 

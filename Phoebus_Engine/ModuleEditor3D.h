@@ -38,7 +38,7 @@ private:
 	void MakeNameUnique(std::string& name); //if this object is going to have the same name as another, make it unique
 
 public:
-	GameObject* root; //TODO move this into a scene once we have one
+	GameObject* root; 
 
 	std::vector<GameObject*> selectedGameObjs;
 

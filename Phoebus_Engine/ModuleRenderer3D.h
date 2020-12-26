@@ -32,8 +32,6 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
-	void TestingRender();
-	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
 	void DrawOutline();

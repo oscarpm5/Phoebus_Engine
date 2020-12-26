@@ -28,7 +28,7 @@ public:
 
 	void RemoveChildren(GameObject* toRemove);
 
-	void ChangeParent(GameObject* newParent);//TODO
+	void ChangeParent(GameObject* newParent);
 
 	void RemoveMyselfFromParent();
 
