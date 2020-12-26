@@ -8,7 +8,9 @@ class GameObject;
 		TRANSFORM,
 		MESH,
 		MATERIAL,
-		CAMERA
+		CAMERA,
+		AUDIO_SOURCE,
+		AUDIO_LISTENER
 	};
 
 class Component

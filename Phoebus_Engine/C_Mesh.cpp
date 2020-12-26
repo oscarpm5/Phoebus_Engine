@@ -348,6 +348,7 @@ void C_Mesh::OnEditor()
 			if (ImGui::Button(actualname.c_str()))
 			{
 				toDelete = true;
+				owner->bbHasToUpdate = true;
 			}
 
 			ImGui::SameLine();

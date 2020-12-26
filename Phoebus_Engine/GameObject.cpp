@@ -4,6 +4,8 @@
 #include "C_Mesh.h"
 #include "C_Material.h"
 #include "C_Camera.h"
+#include "C_AudioSource.h"
+#include "C_AudioListener.h"
 #include "Application.h"
 #include "imgui/imgui.h"
 
@@ -184,6 +186,17 @@ Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 		if (GetComponent<C_Camera>() == nullptr)
 			ret = new C_Camera(this, compID);
 		break;
+	case ComponentType::AUDIO_LISTENER:
+		//only one instance of a listener for a certain gameObj
+		if (GetComponent<C_AudioListener>() == nullptr)
+			ret = new C_AudioListener(this, compID);
+		break;
+	case ComponentType::AUDIO_SOURCE:
+		//only one instance of a audio source for a certain gameObj
+		if (GetComponent<C_AudioSource>() == nullptr)
+			ret = new C_AudioSource(this, compID);
+		break;
+
 	default:
 		break;
 	}
@@ -366,6 +379,16 @@ void GameObject::DrawOnEditorAllComponents()
 		{
 			if(ImGui::Selectable("Camera Component##addComponent"))
 			CreateComponent(ComponentType::CAMERA);
+		}
+		if (GetComponent<C_AudioListener>() == nullptr)
+		{
+			if (ImGui::Selectable("Audio Listener Component##addComponent"))
+				CreateComponent(ComponentType::AUDIO_LISTENER);
+		}
+		if (GetComponent<C_AudioSource>() == nullptr)
+		{
+			if (ImGui::Selectable("Audio Source Component##addComponent"))
+				CreateComponent(ComponentType::AUDIO_SOURCE);
 		}
 
 

@@ -791,7 +791,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load vertex
 	bytes = sizeof(float) * num_vertices;
 	vertices.resize(num_vertices);
-	
+
 	memcpy(&vertices[0], cursor, bytes);
 	cursor += bytes;
 
@@ -806,7 +806,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load smoothed normals
 	bytes = sizeof(float) * num_smoothedNormals;
 	smoothedNormals.resize(num_smoothedNormals);
-	
+
 	memcpy(&smoothedNormals[0], cursor, bytes);
 	cursor += bytes;
 
@@ -814,7 +814,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load texcoords
 	bytes = sizeof(float) * num_tex;
 	texCoords.resize(num_tex);
-	
+
 	memcpy(&texCoords[0], cursor, bytes);
 	cursor += bytes;
 
@@ -924,7 +924,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	//the map is a correlation between ID nad GO. It comes useful later. Thanks Marc!
 	std::map<int, GameObject*> createdGameObjects;
 	Config_Array gameObjects_array = file.GetArray("GameObjects");
-	GameObject* focusedGameObject=nullptr;
+	GameObject* focusedGameObject = nullptr;
 	for (uint i = 0; i < gameObjects_array.GetSize(); ++i)
 	{
 		//Pinpoint the GO 
@@ -953,7 +953,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		//TODO for the future here we will load every selected obj and we will store the focused one to add it at the end of the load
 		if (gameObject->selected)
 		{
-			App->editor3d->SetSelectedGameObject(gameObject,true);
+			App->editor3d->SetSelectedGameObject(gameObject, true);
 			if (gameObject->focused)
 			{
 				focusedGameObject = gameObject;
@@ -990,7 +990,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					if (isCulling)cam->SetAsCullingCam(true);
 
 					Color c;
-					c.r=comp.GetNumber("BG R");
+					c.r = comp.GetNumber("BG R");
 					c.g = comp.GetNumber("BG G");
 					c.b = comp.GetNumber("BG B");
 					c.a = comp.GetNumber("BG A");
@@ -1036,7 +1036,18 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					m->matCol.a = comp.GetNumber("Color A");
 				}
 				break;
+				case ComponentType::AUDIO_LISTENER:
+				{
 
+					//TODO load audio listener in here
+				}
+				break;
+				case ComponentType::AUDIO_SOURCE:
+				{
+
+					//TODO load audio source in here
+				}
+				break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
 					break;
@@ -1073,7 +1084,7 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 {
 	config.SetNumber("ComponentType", (int)component->GetType());
 	config.SetNumber("ID", (int)component->ID);
-	
+
 	unsigned int resID = component->GetResourceID();
 	config.SetNumber("ResourceID", resID);
 
@@ -1100,7 +1111,12 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 	case ComponentType::TRANSFORM:
 		//we're already saving it as an array
 		break;
-
+	case ComponentType::AUDIO_LISTENER:
+		Audio::SaveComponentAudioListener(config, component);
+		break;
+	case ComponentType::AUDIO_SOURCE:
+		Audio::SaveComponentAudioSource(config, component);
+		break;
 	default:
 		//how did you even get here smh
 		LOG("[error] Trying to save component with ID %i from Game Object %s but the type is invalid", component->ID, component->owner->GetName());
@@ -1201,4 +1217,18 @@ void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 	}
 }
 
+void Importer::Audio::SaveComponentAudioListener(Config& config, Component* audioListener)
+{
+	C_AudioListener* mat = (C_AudioListener*)audioListener;
+	//TODO complete this method
 
+
+}
+
+void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioSource)
+{
+	C_AudioSource* mat = (C_AudioSource*)audioSource;
+	//TODO complete this method
+
+
+}

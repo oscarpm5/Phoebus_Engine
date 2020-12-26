@@ -10,6 +10,8 @@ class ResourceTexture;
 class C_Material;
 class C_Transform;
 class C_Camera;
+class C_AudioSource;
+class C_AudioListener;
 struct JSON_Object;
 class Config;
 class Component;
@@ -54,7 +56,7 @@ namespace Importer
 	{
 		//Import camera will exist when we load Cameras from Fbx, NOT NOW
 		//Own file format
-		unsigned int SaveCamera(C_Camera* aux, char* buffer);
+		unsigned int SaveCamera(C_Camera* aux, char* buffer);//TODO this method is unused??? ASK ADRI
 		//Used in GameObject serialization. Never call this "raw"
 		void SaveComponentCamera(Config& config, Component* camera);
 		//Own file format
@@ -62,9 +64,12 @@ namespace Importer
 
 	}
 
-	//Kill me already please
-	GameObject* LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath);
+	namespace Audio
+	{
+		void SaveComponentAudioListener(Config& config, Component* audioListener);
+		void SaveComponentAudioSource(Config& config, Component* audioSource);
 
+	}
 
 
 	//Dont use this directly

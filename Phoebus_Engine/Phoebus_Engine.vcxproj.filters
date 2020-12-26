@@ -376,6 +376,12 @@
     <ClInclude Include="ModuleResourceManager.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="C_AudioSource.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="C_AudioListener.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -584,6 +590,12 @@
     </ClCompile>
     <ClCompile Include="ModuleResourceManager.cpp">
       <Filter>Sources\Modules</Filter>
+    </ClCompile>
+    <ClCompile Include="C_AudioSource.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_AudioListener.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

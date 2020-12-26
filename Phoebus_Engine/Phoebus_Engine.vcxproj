@@ -85,6 +85,8 @@
     <ClInclude Include="Component.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="C_AudioListener.h" />
+    <ClInclude Include="C_AudioSource.h" />
     <ClInclude Include="C_Camera.h" />
     <ClInclude Include="C_Material.h" />
     <ClInclude Include="C_Mesh.h" />
@@ -191,6 +193,8 @@
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="C_AudioListener.cpp" />
+    <ClCompile Include="C_AudioSource.cpp" />
     <ClCompile Include="C_Camera.cpp" />
     <ClCompile Include="C_Material.cpp" />
     <ClCompile Include="C_Mesh.cpp" />
