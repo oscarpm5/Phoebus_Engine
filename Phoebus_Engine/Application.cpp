@@ -11,6 +11,7 @@ Application::Application() : debug(false), renderPrimitives(true), realDT(0.16f)
 	fileSystem = new ModuleFileSystem();
 	//resourceManager = new ModuleResourceManager();
 	rManager = new ModuleResourceManager();
+	audioManager = new ModuleAudioManager();
 
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
@@ -24,6 +25,7 @@ Application::Application() : debug(false), renderPrimitives(true), realDT(0.16f)
 	AddModule(input);
 	AddModule(editor3d);
 	AddModule(rManager);
+	AddModule(audioManager);
 	// Renderer last!
 	AddModule(renderer3D);
 	AddModule(renderer2D);

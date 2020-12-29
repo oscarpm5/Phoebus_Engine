@@ -11,6 +11,7 @@
 #include "ModuleEditor3D.h"
 #include "ModuleFileSystem.h"
 #include "ModuleResourceManager.h"
+#include "ModuleAudioManager.h"
 
 enum class GameStateEnum
 {
@@ -33,6 +34,7 @@ public:
 	ModuleFileSystem* fileSystem;
 	//ModuleResourceManager* resourceManager;
 	ModuleResourceManager* rManager;
+	ModuleAudioManager* audioManager;
 
 	bool debug;
 	bool renderPrimitives;
