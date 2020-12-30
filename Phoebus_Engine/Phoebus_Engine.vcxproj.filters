@@ -61,6 +61,9 @@
     <Filter Include="Sources\Resources">
       <UniqueIdentifier>{cce82c1b-3d08-40aa-9999-2a2aab80c211}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Wwise">
+      <UniqueIdentifier>{820ac673-b183-449a-b5b7-0226c5bb2ab9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Module.h">
@@ -385,6 +388,132 @@
     <ClInclude Include="ModuleAudioManager.h">
       <Filter>Sources\Modules</Filter>
     </ClInclude>
+    <ClInclude Include="wwise_libraries.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkBytesMem.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkCallback.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkCommonDefs.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkDefaultIOHookBlocking.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkDefaultLowLevelIODispatcher.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkDynamicDialogue.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkDynamicSequence.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\akfilehelpers.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkFileLocationBase.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkFilePackage.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkFilePackageLowLevelIO.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkFilePackageLUT.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkFPUtilities.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkMemoryMgr.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkMidiTypes.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkModule.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\AkMultipleFileLocation.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkQueryParameters.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkSimd.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkSoundEngine.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkSoundEngineExport.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkSpeakerConfig.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkSpeakerVolumes.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkStreamMgrModule.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkTypes.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\AkVirtualAcoustics.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\AudioPlugin.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\IAkMixerPlugin.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\IAkPlugin.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\IAkPluginMemAlloc.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\IAkProcessorFeatures.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\IAkRTPCSubscriber.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\SoundEngine\Common\IAkStreamMgr.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\IXmlTextReader.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\IXmlTextWriter.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\MotionPlugin.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\PlatformID.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\TargetVer.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\Undo.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\AK\Wwise\Utilities.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
+    <ClInclude Include="Wwise\include\IO_DefaultInterface\stdafx.h">
+      <Filter>Sources\Wwise</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -603,6 +732,24 @@
     <ClCompile Include="ModuleAudioManager.cpp">
       <Filter>Sources\Modules</Filter>
     </ClCompile>
+    <ClCompile Include="Wwise\include\IO_DefaultInterface\AkDefaultIOHookBlocking.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\include\IO_DefaultInterface\AkDefaultLowLevelIODispatcher.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\include\IO_DefaultInterface\AkFileLocationBase.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\include\IO_DefaultInterface\AkFilePackage.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\include\IO_DefaultInterface\AkFilePackageLUT.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="Wwise\include\IO_DefaultInterface\stdafx.cpp">
+      <Filter>Sources\Wwise</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt">
@@ -633,6 +780,12 @@
     </None>
     <None Include="Json\README.md">
       <Filter>Sources\Tools\Json</Filter>
+    </None>
+    <None Include="Wwise\include\IO_DefaultInterface\AkFilePackageLowLevelIO.inl">
+      <Filter>Sources\Wwise</Filter>
+    </None>
+    <None Include="Wwise\include\IO_DefaultInterface\AkMultipleFileLocation.inl">
+      <Filter>Sources\Wwise</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,6 @@
 #ifndef __MODULE_AUDIO_MANAGER__
 #define __MODULE_AUDIO_MANAGER__
 
-#ifndef AK_OPTIMIZED
-#include <AK/Comm/AkCommunication.h> // Communication between Wwise and the game (excluded in release build)
-#endif
-
-
 #include "Module.h"
 #include "Globals.h"
 
