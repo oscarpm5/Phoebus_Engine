@@ -15,6 +15,7 @@ public:
 	bool Init();
 
 	update_status Update(float dt) override;
+	update_status GameUpdate(float dt) override;
 	bool CleanUp();
 
 private:

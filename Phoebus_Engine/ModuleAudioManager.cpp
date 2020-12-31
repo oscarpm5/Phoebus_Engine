@@ -136,6 +136,14 @@ update_status ModuleAudioManager::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
+update_status ModuleAudioManager::GameUpdate(float dt)
+{
+	// Process bank requests, events, positions, RTPC, etc.
+	AK::SoundEngine::RenderAudio();
+
+	return UPDATE_CONTINUE;
+}
+
 bool ModuleAudioManager::CleanUp()
 {
 
