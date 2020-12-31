@@ -14,11 +14,17 @@ public:
 	~ModuleAudioManager();
 
 	bool Init();
+	bool GameInit();
 	bool Start();
 
 	update_status Update(float dt) override;
 	update_status GameUpdate(float dt) override;
+	void UpdateListener();
 	bool CleanUp();
+
+	void RegisterNewAudioObj(unsigned int componentID);
+	void UnRegisterAudioObj(unsigned int componentID);
+	void UnRegisterAllAudioObjs()const;
 
 public:
 

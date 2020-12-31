@@ -4,16 +4,24 @@
 #include "Application.h"
 #include "ModuleAudioManager.h"
 
-C_AudioListener::C_AudioListener(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_LISTENER, owner, ID),isListener(false)
+C_AudioListener::C_AudioListener(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_LISTENER, owner, ID), isListener(false)
 {
+	App->audioManager->RegisterNewAudioObj(this->ID);
 }
 
 C_AudioListener::~C_AudioListener()
 {
-	if (App != nullptr && App->audioManager->activeListener == this)
+	if (App != nullptr && App->audioManager != nullptr)
 	{
-		App->audioManager->activeListener = nullptr;
+
+		if (App->audioManager->activeListener == this)
+		{
+			App->audioManager->activeListener = nullptr;
+		}
+
+		App->audioManager->UnRegisterAudioObj(this->ID);
 	}
+
 }
 
 void C_AudioListener::SetAsListener(bool newState)
@@ -65,7 +73,7 @@ void C_AudioListener::OnEditor()
 
 		actualname = "IS ACTIVE" + suffixLabel + "Checkbox";
 		ImGui::Checkbox(actualname.c_str(), &active);
-		
+
 		ImGui::Separator();
 		ImGui::Indent();
 		ImGui::Spacing();

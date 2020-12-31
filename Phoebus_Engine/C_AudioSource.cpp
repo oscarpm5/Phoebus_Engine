@@ -1,13 +1,20 @@
 #include "C_AudioSource.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
 #include <string>
+#include "Application.h"
+#include "ModuleAudioManager.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID):Component(ComponentType::AUDIO_SOURCE,owner,ID)
 {
+	App->audioManager->RegisterNewAudioObj(this->ID);
 }
 
 C_AudioSource::~C_AudioSource()
 {
+	if (App!=nullptr && App->audioManager!=nullptr)
+	{
+		App->audioManager->UnRegisterAudioObj(this->ID);
+	}
 }
 
 void C_AudioSource::OnEditor()

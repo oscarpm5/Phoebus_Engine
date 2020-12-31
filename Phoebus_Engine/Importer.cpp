@@ -912,10 +912,9 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	{
 		App->renderer3D->activeCam->SetAsCullingCam(false);
 	}
-	if (App->audioManager->activeListener != nullptr)
-	{
-		App->audioManager->activeListener->SetAsListener(false);
-	}
+
+	App->audioManager->UnRegisterAllAudioObjs();
+
 	if (!App->editor3d->selectedGameObjs.empty())
 	{
 		App->editor3d->SetSelectedGameObject(nullptr);
@@ -972,9 +971,9 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			Config comp = components.GetNode(i);
 			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
 
-			if (Component * component = gameObject->CreateComponent(type))
+			if (Component * component = gameObject->CreateComponent(type, comp.GetNumber("ID")))
 			{
-				component->ID = comp.GetNumber("ID");
+				//component->ID = comp.GetNumber("ID");
 				component->SetActive(comp.GetBool("Active"));
 
 				unsigned int newUID = comp.GetNumber("ResourceID");

@@ -162,30 +162,59 @@ bool ModuleAudioManager::Init()
 	return true;
 }
 
+bool ModuleAudioManager::GameInit()
+{
+	UpdateListener();
+	AkGameObjectID id = App->editor3d->root->ID;
+	if (activeListener != nullptr)
+	{
+		id = activeListener->ID;
+	}
+	AK::SoundEngine::PostEvent("Laser_Player", id); //plays Laser sound (from the listener for the moment)
+	return true;
+}
+
 bool ModuleAudioManager::Start()
 {
-	AkGameObjectID id = App->editor3d->root->ID;
+	//AkGameObjectID id = App->editor3d->root->ID;
 
-	// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
-	AK::SoundEngine::RegisterGameObj(id);
-	// Set one listener as the default.
-	AK::SoundEngine::SetDefaultListeners(&id,1);
+	//// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
+	//AK::SoundEngine::RegisterGameObj(id);
 
-	AK::SoundEngine::PostEvent("Laser_Player", App->editor3d->root->ID);
+	//UpdateListener();
+
 	return true;
 }
 
 update_status ModuleAudioManager::Update(float dt)
 {
+	//UpdateListener();
+	// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
+	//AK::SoundEngine::RegisterGameObj(id);
+
 	return UPDATE_CONTINUE;
 }
 
 update_status ModuleAudioManager::GameUpdate(float dt)
 {
+
 	// Process bank requests, events, positions, RTPC, etc.
 	AK::SoundEngine::RenderAudio();
 
 	return UPDATE_CONTINUE;
+}
+
+void ModuleAudioManager::UpdateListener()
+{
+	AkGameObjectID id = App->editor3d->root->ID;
+	//TODO trashy way to do it, we do not want to set the listener every frame
+	if (activeListener != nullptr)
+	{
+		id = activeListener->ID;
+	}
+
+	// Set one listener as the default.
+	AK::SoundEngine::SetDefaultListeners(&id, 1);
 }
 
 bool ModuleAudioManager::CleanUp()
@@ -222,6 +251,27 @@ bool ModuleAudioManager::CleanUp()
 
 	// Terminate the Memory Manager
 	AK::MemoryMgr::Term();
-
+	enabled = false;
 	return true;
+}
+
+void ModuleAudioManager::RegisterNewAudioObj(unsigned int componentID)
+{
+	if (enabled)
+		AK::SoundEngine::RegisterGameObj(componentID);
+}
+
+void ModuleAudioManager::UnRegisterAudioObj(unsigned int componentID)
+{
+	if (enabled)
+		AK::SoundEngine::UnregisterGameObj(componentID);
+}
+
+void ModuleAudioManager::UnRegisterAllAudioObjs() const
+{
+	if (activeListener != nullptr)
+	{
+		activeListener->SetAsListener(false);
+	}
+	AK::SoundEngine::UnregisterAllGameObj();
 }

@@ -2,7 +2,7 @@
 #include "Globals.h"
 class Module
 {
-private :
+protected :
 	bool enabled;
 
 public:

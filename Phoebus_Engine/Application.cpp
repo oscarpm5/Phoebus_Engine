@@ -204,6 +204,7 @@ bool Application::CleanUp()
 	{
 		if (list_modules[i] != nullptr && ret == true)
 			ret = list_modules[i]->CleanUp();
+		//TODO we should disable all modules here
 	}
 
 	App = nullptr;
