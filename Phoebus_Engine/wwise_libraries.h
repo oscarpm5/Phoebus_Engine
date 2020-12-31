@@ -12,6 +12,8 @@
 #include "Wwise/AK/Tools/Common/AkPlatformFuncs.h"
 
 
+#include "Wwise/AK/SpatialAudio/Common/AkSpatialAudio.h"
+
 #ifndef AK_OPTIMIZED //AK_OPTIMIZED is defined by the precompiler only in release
 
 
