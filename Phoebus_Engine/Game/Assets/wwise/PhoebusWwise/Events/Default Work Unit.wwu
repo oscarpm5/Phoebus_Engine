@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" SchemaVersion="97">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Laser_Player" ID="{AD7658F2-6782-4AA3-A254-57A84B6EECD2}">
+					<ChildrenList>
+						<Action Name="" ID="{6C672AF9-9D77-4772-8808-861EC1E13580}" ShortID="154491689">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Laser" ID="{DC97B6E2-640D-4E3F-998B-DE7D25F263FC}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

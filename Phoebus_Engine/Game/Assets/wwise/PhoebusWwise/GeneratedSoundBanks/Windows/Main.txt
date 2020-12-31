@@ -1,0 +1,6 @@
+Event	ID	Name			Wwise Object Path	Notes
+	837780346	Laser_Player			\Default Work Unit\Laser_Player	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	355308146	Laser	M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\Laser_10C4C929.wem		\Actor-Mixer Hierarchy\Default Work Unit\Laser		352864
+

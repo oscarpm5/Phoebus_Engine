@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{42B593B0-F3DE-4C96-B29A-0674E1A1155C}" SchemaVersion="97">
+	<SoundBanks>
+		<WorkUnit Name="Default Work Unit" ID="{42B593B0-F3DE-4C96-B29A-0674E1A1155C}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="Main" ID="{E94FE608-E18D-4AE4-93D2-BC9C1D1A33BC}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Laser_Player" ID="{AD7658F2-6782-4AA3-A254-57A84B6EECD2}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

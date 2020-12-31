@@ -4,6 +4,12 @@
 #include "Wwise/low_level_IO/Win32/AkFilePackageLowLevelIOBlocking.h"
 //#include "AK/DefaultIO/Win32/AkFilePackageLowLevelIOBlocking.h"
 
+
+//Testing Includes:
+#include "Application.h"
+#include "ModuleEditor3D.h"
+#include "GameObject.h"
+
 CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
 ModuleAudioManager::ModuleAudioManager(bool start_enabled) :Module(start_enabled)
@@ -128,6 +134,42 @@ bool ModuleAudioManager::Init()
 #endif // AK_OPTIMIZED
 
 
+
+	//=======================================================================================================================
+	//LOAD SOUNDBANKS
+	// Setup banks path
+
+	g_lowLevelIO.SetBasePath(AKTEXT("Assets/wwise/PhoebusWwise/GeneratedSoundBanks/Windows/"));
+	AK::StreamMgr::SetCurrentLanguage(AKTEXT("English(US)"));
+	// Load banks synchronously (from file name).
+
+	AkBankID bankID; // Not used. These banks can be unloaded with their file name.
+
+	AKRESULT eResult = AK::SoundEngine::LoadBank("Init.bnk", bankID);
+
+	//assert(eResult != AK_Success);
+
+	eResult = AK::SoundEngine::LoadBank("Main.bnk", bankID);
+
+	//assert(eResult != AK_Success);
+
+
+
+
+
+	return true;
+}
+
+bool ModuleAudioManager::Start()
+{
+	AkGameObjectID id = App->editor3d->root->ID;
+
+	// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
+	AK::SoundEngine::RegisterGameObj(id);
+	// Set one listener as the default.
+	AK::SoundEngine::SetDefaultListeners(&id,1);
+
+	AK::SoundEngine::PostEvent("Laser_Player", App->editor3d->root->ID);
 	return true;
 }
 
@@ -146,6 +188,10 @@ update_status ModuleAudioManager::GameUpdate(float dt)
 
 bool ModuleAudioManager::CleanUp()
 {
+
+	AK::SoundEngine::UnregisterAllGameObj();
+
+
 
 	// Terminate Communication Services
 #ifndef AK_OPTIMIZED

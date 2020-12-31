@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}" SchemaVersion="97">
+	<AudioObjects>
+		<WorkUnit Name="Default Work Unit" ID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}" PersistMode="Standalone">
+			<ChildrenList>
+				<Sound Name="Laser" ID="{DC97B6E2-640D-4E3F-998B-DE7D25F263FC}" ShortID="91999340">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F291A319-64E0-40B5-835A-E4145AC5EA8D}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{617D9A87-BCC8-475E-8299-738C47F91020}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Laser" ID="{4EF4DE26-AD05-403E-93BC-618F71618304}">
+							<Language>SFX</Language>
+							<AudioFile>Laser.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="355308146"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Laser" ID="{4EF4DE26-AD05-403E-93BC-618F71618304}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>
