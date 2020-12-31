@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "Globals.h"
+#include "C_AudioListener.h"
 
 
 
@@ -19,7 +20,9 @@ public:
 	update_status GameUpdate(float dt) override;
 	bool CleanUp();
 
-private:
+public:
+
+	C_AudioListener* activeListener;
 
 };
 

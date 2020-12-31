@@ -28,6 +28,13 @@ bool ModuleEditor3D::Init()
 	return ret;
 }
 
+bool ModuleEditor3D::GameInit()
+{
+	if (root)
+		root->GameInit();
+	return true;
+}
+
 bool ModuleEditor3D::Start()
 {
 	bool ret = true;
@@ -69,6 +76,16 @@ update_status ModuleEditor3D::Update(float dt)
 
 	return UPDATE_CONTINUE;
 }
+
+update_status ModuleEditor3D::GameUpdate(float gameDt)
+{
+
+	if (root)
+		root->GameUpdate(gameDt);
+
+	return UPDATE_CONTINUE;
+}
+
 
 update_status ModuleEditor3D::PostUpdate(float dt)
 {

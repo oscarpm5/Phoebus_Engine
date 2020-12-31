@@ -14,10 +14,12 @@ CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
 ModuleAudioManager::ModuleAudioManager(bool start_enabled) :Module(start_enabled)
 {
+	activeListener = nullptr;
 }
 
 ModuleAudioManager::~ModuleAudioManager()
 {
+	activeListener = nullptr;
 }
 
 bool ModuleAudioManager::Init()

@@ -21,6 +21,7 @@ public:
 	virtual ~Component();
 	virtual bool Update(float dt);
 	virtual bool GameUpdate(float dt);
+	virtual bool GameInit();
 
 	virtual void OnEditor();//component drawing itself on the window
 	

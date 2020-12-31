@@ -43,6 +43,11 @@ bool Component::GameUpdate(float dt)
 	return true;
 }
 
+bool Component::GameInit()
+{
+	return true;
+}
+
 void Component::OnEditor()
 {
 }

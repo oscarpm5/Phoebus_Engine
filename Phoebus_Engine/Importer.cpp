@@ -912,6 +912,10 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	{
 		App->renderer3D->activeCam->SetAsCullingCam(false);
 	}
+	if (App->audioManager->activeListener != nullptr)
+	{
+		App->audioManager->activeListener->SetAsListener(false);
+	}
 	if (!App->editor3d->selectedGameObjs.empty())
 	{
 		App->editor3d->SetSelectedGameObject(nullptr);
@@ -971,6 +975,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			if (Component * component = gameObject->CreateComponent(type))
 			{
 				component->ID = comp.GetNumber("ID");
+				component->SetActive(comp.GetBool("Active"));
+
 				unsigned int newUID = comp.GetNumber("ResourceID");
 				std::string resourceName = comp.GetString("ResourceName");
 
@@ -1038,8 +1044,10 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 				break;
 				case ComponentType::AUDIO_LISTENER:
 				{
-
 					//TODO load audio listener in here
+					C_AudioListener* listener = (C_AudioListener*)component;
+					bool isListener = comp.GetBool("IsListener");
+					if (isListener)listener->SetAsListener(true);
 				}
 				break;
 				case ComponentType::AUDIO_SOURCE:
@@ -1084,7 +1092,7 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 {
 	config.SetNumber("ComponentType", (int)component->GetType());
 	config.SetNumber("ID", (int)component->ID);
-
+	config.SetBool("Active", component->IsActive());
 	unsigned int resID = component->GetResourceID();
 	config.SetNumber("ResourceID", resID);
 
@@ -1219,9 +1227,9 @@ void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 
 void Importer::Audio::SaveComponentAudioListener(Config& config, Component* audioListener)
 {
-	C_AudioListener* mat = (C_AudioListener*)audioListener;
+	C_AudioListener* listener = (C_AudioListener*)audioListener;
 	//TODO complete this method
-
+	config.SetBool("IsListener", listener->GetIsListener());
 
 }
 

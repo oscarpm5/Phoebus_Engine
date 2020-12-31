@@ -16,7 +16,7 @@
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false),selected(false), displayBoundingBox(showAABB)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false), selected(false), displayBoundingBox(showAABB)
 {
 	App->editor3d->AddObjName(this->name);
 	this->parent = parent;
@@ -40,6 +40,23 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 void GameObject::Awake()
 {
 }
+
+void GameObject::GameInit()
+{
+	for (int i = 0; i < components.size(); i++)
+	{
+
+		components[i]->GameInit();
+
+	}
+	for (int i = 0; i < children.size(); i++)
+	{
+
+		children[i]->GameInit();
+
+	}
+}
+
 
 void GameObject::Update(float dt)
 {
@@ -80,6 +97,31 @@ void GameObject::Update(float dt)
 			UpdateBoundingBox();
 		}
 		DrawGameObject();
+	}
+}
+
+void GameObject::GameUpdate(float gameDt)
+{
+	if (isActive)
+	{
+
+		for (int i = 0; i < components.size(); i++)
+		{
+			if (components[i]->IsActive())
+			{
+				components[i]->GameUpdate(gameDt);
+			}
+		}
+
+
+
+		for (int i = 0; i < children.size(); i++)
+		{
+			if (children[i]->isActive)
+			{
+				children[i]->GameUpdate(gameDt);
+			}
+		}
 	}
 }
 
@@ -348,9 +390,9 @@ void GameObject::DrawOnEditorAllComponents()
 	ImGui::Separator();
 
 	int buttonWidth = 150;
-	float wWidth=ImGui::GetWindowWidth();
+	float wWidth = ImGui::GetWindowWidth();
 	ImVec2 cursPos = ImGui::GetCursorPos();
-	cursPos.x = cursPos.x + (wWidth * 0.5f)-(buttonWidth*0.5f); //60 is half button width
+	cursPos.x = cursPos.x + (wWidth * 0.5f) - (buttonWidth * 0.5f); //60 is half button width
 	ImGui::SetCursorPos(cursPos);
 
 	if (ImGui::Button("Add Component##objComponent", ImVec2(buttonWidth, 20)))
@@ -367,18 +409,18 @@ void GameObject::DrawOnEditorAllComponents()
 		//TODO this can be made pretty in the future
 		if (GetComponent<C_Mesh>() == nullptr)//support multiple meshes in the future?
 		{
-			if(ImGui::Selectable("Mesh Component##addComponent"))
-			CreateComponent(ComponentType::MESH);
+			if (ImGui::Selectable("Mesh Component##addComponent"))
+				CreateComponent(ComponentType::MESH);
 		}
 		if (GetComponent<C_Material>() == nullptr)
 		{
-			if(ImGui::Selectable("Material Component##addComponent"))
-			CreateComponent(ComponentType::MATERIAL);
+			if (ImGui::Selectable("Material Component##addComponent"))
+				CreateComponent(ComponentType::MATERIAL);
 		}
 		if (GetComponent<C_Camera>() == nullptr)
 		{
-			if(ImGui::Selectable("Camera Component##addComponent"))
-			CreateComponent(ComponentType::CAMERA);
+			if (ImGui::Selectable("Camera Component##addComponent"))
+				CreateComponent(ComponentType::CAMERA);
 		}
 		if (GetComponent<C_AudioListener>() == nullptr)
 		{
@@ -431,9 +473,9 @@ void GameObject::DrawGameObject()
 
 	}
 
-	if ( App->editor3d->root!=this &&(App->renderer3D->displayAABBs || (displayBoundingBox && (focused||selected))))
+	if (App->editor3d->root != this && (App->renderer3D->displayAABBs || (displayBoundingBox && (focused || selected))))
 	{
-		Color c = Color(1.0f,1.0f,1.0f,1.0f);
+		Color c = Color(1.0f, 1.0f, 1.0f, 1.0f);
 		if (focused)
 			c = Color FOCUSED_COLOR;
 		else if (selected)
@@ -443,7 +485,7 @@ void GameObject::DrawGameObject()
 	}
 
 	C_Camera* cam = GetComponent<C_Camera>();
-	if (cam&&cam->IsActive())
+	if (cam && cam->IsActive())
 	{
 		std::vector<float3> vec;
 		cam->GetFrustumPoints(vec);
@@ -451,7 +493,7 @@ void GameObject::DrawGameObject()
 		if (cam->GetIsCulling())
 			c = Color(0.0f, 0.75f, 0.75f, 1.0f);
 
-		App->renderer3D->AddBoxToDraw(vec,c);
+		App->renderer3D->AddBoxToDraw(vec, c);
 	}
 }
 

@@ -19,8 +19,10 @@ public:
 	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true, bool isLocalTrans = true);
 	
 	void Awake();
+	void GameInit();
 
 	void Update(float dt);
+	void GameUpdate(float gameDt);
 
 	~GameObject();
 

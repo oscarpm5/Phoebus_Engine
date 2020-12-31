@@ -1,13 +1,46 @@
 #include "C_AudioListener.h"
 #include "imgui/imgui.h" //On Editor usage. TODO: cant this be done in another way to not have this here?
 #include <string>
+#include "Application.h"
+#include "ModuleAudioManager.h"
 
-C_AudioListener::C_AudioListener(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_LISTENER, owner, ID)
+C_AudioListener::C_AudioListener(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_LISTENER, owner, ID),isListener(false)
 {
 }
 
 C_AudioListener::~C_AudioListener()
 {
+	if (App != nullptr && App->audioManager->activeListener == this)
+	{
+		App->audioManager->activeListener = nullptr;
+	}
+}
+
+void C_AudioListener::SetAsListener(bool newState)
+{
+	if (newState != isListener)
+	{
+
+		if (newState)
+		{
+			if (App->audioManager->activeListener != nullptr)
+			{
+				App->audioManager->activeListener->SetAsListener(false);
+			}
+			App->audioManager->activeListener = this;
+		}
+		else if (App->audioManager->activeListener == this)
+		{
+			App->audioManager->activeListener = nullptr;
+		}
+
+		isListener = newState;
+	}
+}
+
+bool C_AudioListener::GetIsListener() const
+{
+	return isListener;
 }
 
 void C_AudioListener::OnEditor()
@@ -35,7 +68,15 @@ void C_AudioListener::OnEditor()
 		
 		ImGui::Separator();
 		ImGui::Indent();
+		ImGui::Spacing();
+		ImGui::Spacing();
 		//TODO actual Component code here
+
+		bool listenerAux = isListener;
+		if (ImGui::Checkbox("Is Current Listener##ListenerCheckbox", &listenerAux))
+		{
+			SetAsListener(listenerAux);
+		}
 
 		ImGui::Separator();
 		ImGui::Unindent();
