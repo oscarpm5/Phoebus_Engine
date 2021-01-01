@@ -3,6 +3,8 @@
 #include <string>
 #include "Application.h"
 #include "ModuleAudioManager.h"
+#include "GameObject.h"
+#include "C_Transform.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID):Component(ComponentType::AUDIO_SOURCE,owner,ID)
 {
@@ -84,4 +86,32 @@ void C_AudioSource::OnEditor()
 	}
 	if (!activeAux)ImGui::PopStyleColor();
 
+}
+
+bool C_AudioSource::GameUpdate(float gameDT)
+{
+	if (owner != nullptr)
+	{
+		C_Transform* transformComp = owner->GetComponent<C_Transform>();
+		float4x4 transform = transformComp->GetGlobalTransform();
+
+		App->audioManager->SetAudioObjTransform(this->ID, transform);
+	}
+	return true;
+}
+
+bool C_AudioSource::GameInit()
+{
+	//SAME AS GAME UPDATE FOR THE MOMENT
+	if (owner != nullptr)
+	{
+		C_Transform* transformComp = owner->GetComponent<C_Transform>();
+		float4x4 transform = transformComp->GetGlobalTransform();
+
+		App->audioManager->SetAudioObjTransform(this->ID, transform);
+	}
+
+	//different
+	App->audioManager->SendAudioObjEvent(this->ID, "StarWars_Player");
+	return true;
 }

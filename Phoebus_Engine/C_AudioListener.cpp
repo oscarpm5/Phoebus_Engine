@@ -3,6 +3,8 @@
 #include <string>
 #include "Application.h"
 #include "ModuleAudioManager.h"
+#include "GameObject.h"
+#include "C_Transform.h"
 
 C_AudioListener::C_AudioListener(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_LISTENER, owner, ID), isListener(false)
 {
@@ -128,4 +130,29 @@ void C_AudioListener::OnEditor()
 	if (!activeAux)ImGui::PopStyleColor();
 
 
+}
+
+bool C_AudioListener::GameUpdate(float gameDT)
+{
+	if (owner != nullptr)
+	{
+		C_Transform* transformComp= owner->GetComponent<C_Transform>();
+		float4x4 transform=  transformComp->GetGlobalTransform();
+
+		App->audioManager->SetAudioObjTransform(this->ID, transform);
+	}
+	return true;
+}
+
+bool C_AudioListener::GameInit()
+{
+	//SAME AS GAME UPDATE FOR THE MOMENT
+	if (owner != nullptr)
+	{
+		C_Transform* transformComp = owner->GetComponent<C_Transform>();
+		float4x4 transform = transformComp->GetGlobalTransform();
+
+		App->audioManager->SetAudioObjTransform(this->ID, transform);
+	}
+	return true;
 }

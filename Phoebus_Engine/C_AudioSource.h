@@ -11,6 +11,8 @@ public:
 	~C_AudioSource();
 
 	void OnEditor();
+	bool GameUpdate(float gameDT)override;
+	bool GameInit()override;
 
 private:
 

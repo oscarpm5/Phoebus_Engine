@@ -4,6 +4,8 @@
 		<UserProjectSettings Name="" ID="{94EC8E96-BEC5-4606-BD86-3E40A1C51B1D}">
 			<PropertyList>
 				<Property Name="AudioFilesImporter\Path" Type="string" Value="M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\"/>
+				<Property Name="Event Action List\{2BC8A4D7-F0FD-4951-B1E3-541E49903791}\x64_Expand States" Type="string" Value=""/>
+				<Property Name="Event Action List\{5B844F05-05AD-4382-9087-FA6D07FFFBC4}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="Event Action List\{AD7658F2-6782-4AA3-A254-57A84B6EECD2}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="EventView\FilterMode1" Type="int32" Value="2"/>
 				<Property Name="ExternalSourcesInputPath" Type="string">

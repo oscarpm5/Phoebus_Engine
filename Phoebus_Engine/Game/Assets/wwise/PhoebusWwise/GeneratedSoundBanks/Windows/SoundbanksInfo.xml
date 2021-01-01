@@ -16,7 +16,7 @@
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="3161908922" Language="SFX" Hash="1573328821">
+		<SoundBank Id="3161908922" Language="SFX" Hash="2684860144">
 			<ObjectPath>\SoundBanks\Default Work Unit\Main</ObjectPath>
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
@@ -26,6 +26,14 @@
 						<File Id="355308146" Language="SFX">
 							<ShortName>Laser.wav</ShortName>
 							<Path>SFX\Laser_10C4C929.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
+				<Event Id="2526740212" Name="StarWars_Player" ObjectPath="\Events\Default Work Unit\StarWars_Player">
+					<IncludedMemoryFiles>
+						<File Id="382387716" Language="SFX">
+							<ShortName>Starwars.wav</ShortName>
+							<Path>SFX\Starwars_10C4C929.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>

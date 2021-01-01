@@ -12,6 +12,8 @@ public:
 	void SetAsListener(bool newState);
 	bool GetIsListener()const;
 	void OnEditor();
+	bool GameUpdate(float gameDT)override;
+	bool GameInit()override;
 
 private:
 	bool isListener;

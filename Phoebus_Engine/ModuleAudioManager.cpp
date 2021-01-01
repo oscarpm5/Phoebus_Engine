@@ -165,12 +165,13 @@ bool ModuleAudioManager::Init()
 bool ModuleAudioManager::GameInit()
 {
 	UpdateListener();
-	AkGameObjectID id = App->editor3d->root->ID;
+	AkGameObjectID id = 0;
 	if (activeListener != nullptr)
 	{
 		id = activeListener->ID;
 	}
-	AK::SoundEngine::PostEvent("Laser_Player", id); //plays Laser sound (from the listener for the moment)
+	//AK::SoundEngine::PostEvent("Laser_Player", id); //plays Laser sound (from the listener for the moment)
+
 	return true;
 }
 
@@ -206,11 +207,15 @@ update_status ModuleAudioManager::GameUpdate(float dt)
 
 void ModuleAudioManager::UpdateListener()
 {
-	AkGameObjectID id = App->editor3d->root->ID;
+	AkGameObjectID id = 0;
 	//TODO trashy way to do it, we do not want to set the listener every frame
 	if (activeListener != nullptr)
 	{
 		id = activeListener->ID;
+	}
+	else
+	{
+		LOG("[warning] There is no audio listener component active. Sounds won't be heard");
 	}
 
 	// Set one listener as the default.
@@ -274,4 +279,29 @@ void ModuleAudioManager::UnRegisterAllAudioObjs() const
 		activeListener->SetAsListener(false);
 	}
 	AK::SoundEngine::UnregisterAllGameObj();
+}
+
+void ModuleAudioManager::SetAudioObjTransform(unsigned int componentID, float4x4 transform)
+{
+	float3 pos;
+	float3 scale;
+	float3x3 rot;
+	float3 front(0.0f,0.0f,1.0f);
+	float3 up(0.0f, 1.0f, 0.0f);
+
+	transform.Decompose(pos, rot, scale);
+	//TODO take orientation too?
+	up = up * rot;
+	front = front * rot;
+
+	AkSoundPosition newPos;
+	newPos.SetPosition(pos.x,pos.y,pos.z);
+	newPos.SetOrientation(front.x, front.y, front.z, up.x, up.y, up.z);
+
+	AK::SoundEngine::SetPosition(componentID, newPos);
+}
+
+void ModuleAudioManager::SendAudioObjEvent(unsigned int componentID, std::string eventName)
+{
+	AK::SoundEngine::PostEvent(eventName.c_str(), componentID); //plays sound
 }

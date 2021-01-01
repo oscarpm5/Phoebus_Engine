@@ -14,6 +14,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="StarWars_Player" ID="{2BC8A4D7-F0FD-4951-B1E3-541E49903791}">
+					<ChildrenList>
+						<Action Name="" ID="{628B80CB-9577-4F11-BF62-9E28DB6571F2}" ShortID="75780251">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Starwars" ID="{DD227BED-CC3F-4BDA-A47F-2BD9FB720E79}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

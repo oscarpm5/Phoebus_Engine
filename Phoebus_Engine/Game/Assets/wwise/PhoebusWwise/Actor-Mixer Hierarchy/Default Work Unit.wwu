@@ -4,6 +4,9 @@
 		<WorkUnit Name="Default Work Unit" ID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}" PersistMode="Standalone">
 			<ChildrenList>
 				<Sound Name="Laser" ID="{DC97B6E2-640D-4E3F-998B-DE7D25F263FC}" ShortID="91999340">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F291A319-64E0-40B5-835A-E4145AC5EA8D}"/>
@@ -23,6 +26,31 @@
 					</ChildrenList>
 					<ActiveSourceList>
 						<ActiveSource Name="Laser" ID="{4EF4DE26-AD05-403E-93BC-618F71618304}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+				<Sound Name="Starwars" ID="{DD227BED-CC3F-4BDA-A47F-2BD9FB720E79}" ShortID="149385551">
+					<PropertyList>
+						<Property Name="3DSpatialization" Type="int16" Value="2"/>
+					</PropertyList>
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F291A319-64E0-40B5-835A-E4145AC5EA8D}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{617D9A87-BCC8-475E-8299-738C47F91020}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="Starwars" ID="{90BF67D0-B65A-44A7-BC8B-88FC77AD3E90}">
+							<Language>SFX</Language>
+							<AudioFile>Starwars.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="382387716"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="Starwars" ID="{90BF67D0-B65A-44A7-BC8B-88FC77AD3E90}" Platform="Linked"/>
 					</ActiveSourceList>
 				</Sound>
 			</ChildrenList>
