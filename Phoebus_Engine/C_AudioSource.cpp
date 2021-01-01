@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include "C_Transform.h"
 
-C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID):Component(ComponentType::AUDIO_SOURCE,owner,ID)
+C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID):Component(ComponentType::AUDIO_SOURCE,owner,ID),volume(50.0f)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
@@ -44,6 +44,12 @@ void C_AudioSource::OnEditor()
 		ImGui::Separator();
 		ImGui::Indent();
 		//TODO actual Component code here
+		actualname = "Audio Volume" + suffixLabel;
+		if(ImGui::SliderFloat(actualname.c_str(), &volume, 0.0f, 100.0f))
+		{
+			App->audioManager->ChangeRTPCValue(this->ID, "SourceVolume", volume);
+		}
+
 
 		ImGui::Separator();
 		ImGui::Unindent();
@@ -114,4 +120,15 @@ bool C_AudioSource::GameInit()
 	//different
 	App->audioManager->SendAudioObjEvent(this->ID, "StarWars_Player");
 	return true;
+}
+
+float C_AudioSource::GetVolume() const
+{
+	return volume;
+}
+
+void C_AudioSource::SetVolume(float volume)
+{
+	this->volume = volume;
+	App->audioManager->ChangeRTPCValue(ID, "SourceVolume", this->volume);
 }

@@ -305,3 +305,8 @@ void ModuleAudioManager::SendAudioObjEvent(unsigned int componentID, std::string
 {
 	AK::SoundEngine::PostEvent(eventName.c_str(), componentID); //plays sound
 }
+
+void ModuleAudioManager::ChangeRPTCValue(unsigned int componentID, std::string RPTCname, float value)
+{
+	AK::SoundEngine::SetRTPCValue(RPTCname.c_str(), value, componentID);
+}

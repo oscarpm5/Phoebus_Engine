@@ -34,6 +34,7 @@
 #include "C_Material.h"
 #include "C_Transform.h"
 #include "C_Camera.h"
+#include "C_AudioSource.h"
 #include "Config.h"
 #include "ModuleResourceManager.h"
 #include "Color.h"
@@ -1051,8 +1052,9 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 				break;
 				case ComponentType::AUDIO_SOURCE:
 				{
-
+					C_AudioSource* source = (C_AudioSource*)component;
 					//TODO load audio source in here
+					source->SetVolume(comp.GetNumber("Volume"));
 				}
 				break;
 				case ComponentType::TRANSFORM:
@@ -1234,8 +1236,8 @@ void Importer::Audio::SaveComponentAudioListener(Config& config, Component* audi
 
 void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioSource)
 {
-	C_AudioSource* mat = (C_AudioSource*)audioSource;
+	C_AudioSource* source = (C_AudioSource*)audioSource;
 	//TODO complete this method
-
+	config.SetNumber("Volume", source->GetVolume());
 
 }

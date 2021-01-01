@@ -14,8 +14,11 @@ public:
 	bool GameUpdate(float gameDT)override;
 	bool GameInit()override;
 
-private:
+	float GetVolume()const;
+	void SetVolume(float volume);
 
+private:
+	float volume;
 };
 
 #endif // !__C_AUDIO_SOURCE__
