@@ -14,7 +14,7 @@ Guess what goes here darling
 <br><br>
 
 # Engine Overview
-<p align="justify">Although our focus is in the Audio System, Phouebus Engine does have the basic utilities you would hope to find in an Engine:</p>
+Although our focus is in the Audio System, Phouebus Engine does have the basic utilities you would hope to find in an Engine:
 - Game Object structure
 	- Loading external FBX and saving them as Game Objects
 	- Material, Scale, etc. can be changed in-engine
