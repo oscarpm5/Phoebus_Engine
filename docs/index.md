@@ -2,11 +2,11 @@
    <br><br>
 
 # Phoebus Engine
-Welcome to Phoebus Engine! <br><br>
-<p align="justify">This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer <a href="https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es">Marc Garrigó</a>.</p> <br><br>
+Welcome to Phoebus Engine! <br>
+<p align="justify">This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer <a href="https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es">Marc Garrigó</a>.</p> <br>
 
-<p align="justify">The intent is to create a functional 3D engine with a focus on performance and Audio capabilities (hence the engine name). Because of that, we'll provide a deeper analysis of the audio system further down the web. <br><br>
-If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.<br><br>
+<p align="justify">The intent is to create a functional 3D engine with a focus on performance and Audio capabilities (hence the engine name). Because of that, we'll provide a deeper analysis of the audio system further down the web. <br>
+If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.<br>
 We hope you'll enjoy using it as much as we enjoyed making it! </p>
 <br><br>
 
