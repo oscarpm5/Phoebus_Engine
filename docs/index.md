@@ -8,14 +8,13 @@ Welcome to Phoebus Engine! <br>
 <p align="justify">The intent is to create a functional 3D engine with a focus on performance and Audio capabilities (hence the engine name). Because of that, we'll provide a deeper analysis of the audio system further down the web. <br>
 If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.<br>
 We hope you'll enjoy using it as much as we enjoyed making it! </p>
-<br><br>
-
+<br>
 ## Check out our latest Release!
 Guess what goes here darling
 <br><br>
 
 # Engine Overview
-Although our focus is in the Audio System, Phouebus Engine does have the basic utilities you would hope to find in an Engine:
+<p align="justify">Although our focus is in the Audio System, Phouebus Engine does have the basic utilities you would hope to find in an Engine:</p>
 - Game Object structure
 	- Loading external FBX and saving them as Game Objects
 	- Material, Scale, etc. can be changed in-engine
