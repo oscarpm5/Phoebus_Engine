@@ -1,7 +1,7 @@
 <p align="center"><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/PhoebusIcon.png?token=ALMIHWWE2CTPST6X2FY4FMC77GRBO" alt="Phoebus Icon" class="center" align="center"></p>
 
 
- # Phouebus Engine
+ # Phoebus Engine
    <br>
 Welcome to Phoebus Engine! <br><br>
 This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer <a href="https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es">Marc Garrigó</a>. <br><br>
