@@ -1,9 +1,10 @@
 <p align="left"><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/PhoebusIcon.png?token=ALMIHWWE2CTPST6X2FY4FMC77GRBO" alt="Phoebus Icon" class="center" align="left"></p>
 
 # Phouebus Engine
-Welcome to Phoebus Engine! This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer [Marc Garrigó](https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es). <br><br>
+Welcome to Phoebus Engine! <br>
+This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer [Marc Garrigó](https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es). <br><br>
 The intent is to create a functional 3D engine with a focus on performance and Audio capabilities (hence the engine name). Because of that, we'll provide a deeper analysis of the audio system further down the web. <br><br>
-If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.
+If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.<br>
     
 We hope you'll enjoy using it as much as we enjoyed making it! 
 <br><br>
@@ -32,14 +33,14 @@ Link to code repo and release
   </tr>
   <tr> 
     <tr>
-    <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
+    <td><a href="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png?token=ALMIHWSZQ4YUMH2ZFV4HRWK77GR3U">Oscar Pérez</a></td>
     <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png" alt="Oscar" class="inline"></td>
     <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">My Linkedin!</a></td>
     <td> Here goes what I've done </td>
     </tr>
     <tr>
     <td><a href="https://github.com/adriaserrano97">Adrià Serrano</a></td>
-    <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png" alt="Adrià" class="inline"></td>
+    <td><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png?token=ALMIHWS2U63RUBCC2TWBUNK77GR32" alt="Adrià" class="inline"></td>
     <td><a href="https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/">My Linkedin!</a></td>
     <td> Here goes what I've done </td>
     </tr>
