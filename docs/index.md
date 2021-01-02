@@ -51,9 +51,9 @@ Link to code repo and release
     </tr>
    </tr>
 </table>
+
 <br><br>
 # License
- <br>
 MIT License
 
 Copyright (c) 2020 oscarpm5
