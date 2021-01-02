@@ -20,12 +20,12 @@ Guess what goes here darling
     <tr>
     <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
     <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png" alt="Oscar" class="inline"></td>
-     <td> [My Linkedin!](https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/) </td>
+     <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">My Linkedin!</a></td>
     </tr>
     <tr>
     <td><a href="https://github.com/adriaserrano97">Adrià Serrano</a></td>
     <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png" alt="Adrià" class="inline"></td>
-    <td> [My Linkedin!](https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/) </td>
+    <td><a href="https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/">My Linkedin!</a></td>
 </table>
 
 
