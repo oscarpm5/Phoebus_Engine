@@ -1,6 +1,7 @@
 <p align="center"><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/PhoebusIcon.png?token=ALMIHWWE2CTPST6X2FY4FMC77GRBO" alt="Phoebus Icon" class="center" align="center"></p>
-
+<center>
 # Phouebus Engine
+    </center>
 Welcome to Phoebus Engine! <br>
 This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer [Marc Garrigó](https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es). <br><br>
 The intent is to create a functional 3D engine with a focus on performance and Audio capabilities (hence the engine name). Because of that, we'll provide a deeper analysis of the audio system further down the web. <br><br>
