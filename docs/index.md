@@ -15,11 +15,17 @@ Guess what goes here darling
 <br><br>
 
 # Engine Overview
-Core sub-system explanations
+Although our focus is in the Audio System, Phouebus Engine does have the basic utilities you would hope to find in an Engine:
+- Game Object structure
+	- Loading external FBX and saving them as Game Objects
+	- Material, Scale, etc. can be changed in-engine
+	- Info is saved in a ".pho" JSON which the user has access to
+- Component System to customize your Game Objects
+- Scene viewer and editor
+- Real time rendering (scene managed: pause - play - stop)
 
 ## Controls:
 Note that the 3D viewport controls will only work when interacting with the 3D view and won't work in the menus
-
 
 * Right Mouse Click (hold)
 	- Enter FPS mode
@@ -99,13 +105,13 @@ Link to code repo and release
     <tr>
     <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
     <td><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png?token=ALMIHWSZQ4YUMH2ZFV4HRWK77GR3U" alt="Oscar" class="inline"></td>
-    <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">My Linkedin!</a></td>
+    <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">Linkedin!</a></td>
     <td> Here goes what I've done </td>
     </tr>
     <tr>
     <td><a href="https://github.com/adriaserrano97">Adrià Serrano</a></td>
     <td><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png?token=ALMIHWS2U63RUBCC2TWBUNK77GR32" alt="Adrià" class="inline"></td>
-    <td><a href="https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/">My Linkedin!</a></td>
+    <td><a href="https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/">Linkedin!</a></td>
     <td> Here goes what I've done </td>
     </tr>
    </tr>
