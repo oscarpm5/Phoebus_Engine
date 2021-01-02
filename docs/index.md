@@ -9,9 +9,6 @@ We hope you'll enjoy using it as much as we enjoyed making it!
 Guess what goes here darling
 
 # Meet the Team
-<center>
-  
-<h2  align="center" id="team-members">Team Members</h2>
 
 <table style="width:100%">
   <tr>
@@ -66,32 +63,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
-
-
-
-### Markdown
-
-Webs: [editor on GitHub](https://github.com/oscarpm5/Phoebus_Engine/edit/master/docs/index.md) 
-
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
 
