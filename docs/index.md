@@ -10,19 +10,17 @@ Welcome to Phoebus Engine! <br><br>
 If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.<br><br>
 We hope you'll enjoy using it as much as we enjoyed making it! </p>
 <br><br>
+
 ## Check out our latest Release!
- <br>
 Guess what goes here darling
 <br><br>
 
 # Engine Overview
- <br>
 Core sub-system explanations
 
 <br><br>
 
 # Audio System
- <br>
 Audio detailed explanation (add at east 2 gifs)
 1 min video messing with engine
 
@@ -30,7 +28,6 @@ Audio detailed explanation (add at east 2 gifs)
 Link to code repo and release
 <br><br>
 # Meet the Team
- <br>
 
 <table>   
   <tr>
