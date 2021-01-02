@@ -376,6 +376,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				App->fileSystem->SavePHO(auxPath.c_str(), auxB, size);
 				RELEASE_ARRAY(auxB);
 				auxB = nullptr;
+				App->audioManager->StopAllSounds();
 			}
 		}
 		if (isGamePlaying)

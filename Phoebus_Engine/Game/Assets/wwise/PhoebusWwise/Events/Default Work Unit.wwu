@@ -25,6 +25,29 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="PauseAll" ID="{4404C1E7-056A-4237-B611-85401FBCBBB1}">
+					<ChildrenList>
+						<Action Name="" ID="{DE1F96D0-A1EE-48B2-BB2D-C4A72E8AF6EC}" ShortID="975477398">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="8"/>
+								<Property Name="Scope" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="ResumeAll" ID="{FED4DBFF-60FE-46FE-ADF0-CE73FB1BD87A}">
+					<ChildrenList>
+						<Action Name="" ID="{0D220BD1-E09A-4B0A-856C-1F3693153FCA}" ShortID="1003108645">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="10"/>
+								<Property Name="MasterResume" Type="bool" Value="True"/>
+								<Property Name="Scope" Type="int16" Value="1"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

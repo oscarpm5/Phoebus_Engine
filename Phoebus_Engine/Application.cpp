@@ -60,6 +60,7 @@ bool Application::Init()
 	realDT = 0.0f;
 	gameState = GameStateEnum::STOPPED;//TODO this will change when executing the game
 	gameJustStarted = false;
+	gameStateJustChanged = false;
 
 	// Call Init() in all modules
 	for (int i = 0; i < list_modules.size(); i++)
@@ -88,8 +89,14 @@ void Application::PrepareUpdate()
 	realTime += msDT;
 	realDT = (float)msDT * 0.001f;
 
-
+	gameStateJustChanged = false;
+	GameStateEnum lastGameState = gameState;
 	ProcessGameStates(lastRelevantStateChange);
+	if (lastGameState != gameState)
+	{
+		gameStateJustChanged = true;
+	}
+
 	lastRelevantStateChange = GameStateEnum::UNKNOWN;
 
 	if (gameState == GameStateEnum::PLAYED || gameState == GameStateEnum::ADVANCEONE)
@@ -331,6 +338,21 @@ void Application::SetNewTimeScale(float newTimeScale)
 
 	timeScale = max(newTimeScale, -maxMinTimeScale);
 	timeScale = min(timeScale, maxMinTimeScale);
+}
+
+bool Application::HasGameStateChanged() const
+{
+	return gameStateJustChanged;
+}
+
+bool Application::HasGameStateChanged(GameStateEnum& currentGameState)
+{
+	if (gameStateJustChanged)
+	{
+		currentGameState = gameState;
+	}
+
+	return gameStateJustChanged;
 }
 
 void Application::AddModule(Module* mod)

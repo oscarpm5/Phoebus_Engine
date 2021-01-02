@@ -5,8 +5,10 @@
 			<PropertyList>
 				<Property Name="AudioFilesImporter\Path" Type="string" Value="M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\"/>
 				<Property Name="Event Action List\{2BC8A4D7-F0FD-4951-B1E3-541E49903791}\x64_Expand States" Type="string" Value=""/>
+				<Property Name="Event Action List\{4404C1E7-056A-4237-B611-85401FBCBBB1}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="Event Action List\{5B844F05-05AD-4382-9087-FA6D07FFFBC4}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="Event Action List\{AD7658F2-6782-4AA3-A254-57A84B6EECD2}\x64_Expand States" Type="string" Value=""/>
+				<Property Name="Event Action List\{FED4DBFF-60FE-46FE-ADF0-CE73FB1BD87A}\x64_Expand States" Type="string" Value=""/>
 				<Property Name="EventView\FilterMode1" Type="int32" Value="2"/>
 				<Property Name="ExternalSourcesInputPath" Type="string">
 					<ValueList>
@@ -62,7 +64,7 @@
 				<Property Name="ProjectExplorer\x64_Expanded_6_1" Type="string" Value=""/>
 				<Property Name="ProjectExplorer\x64_Expanded_7_1" Type="string" Value=""/>
 				<Property Name="ProjectExplorer\x64_Expanded_8_1" Type="string" Value=""/>
-				<Property Name="RTPC\GameParameterSimValue\{8C63A84D-B12F-463A-8201-62774A330CEA}" Type="Real64" Value="50"/>
+				<Property Name="RTPC\GameParameterSimValue\{8C63A84D-B12F-463A-8201-62774A330CEA}" Type="Real64" Value="31.68"/>
 				<Property Name="SoundBank Manager\x64_Expand States" Type="string" Value="sJO1Qt7zlkyymgZ04aEVXA=="/>
 				<Property Name="SoundBankHeaderFilePath" Type="string" Value="GeneratedSoundBanks\"/>
 				<Property Name="SoundBankPaths" Type="string">

@@ -19,6 +19,7 @@ public:
 	bool Start();
 
 	update_status Update(float dt) override;
+	update_status PostUpdate(float dt)override;
 	update_status GameUpdate(float dt) override;
 	void UpdateListener();
 	bool CleanUp();
@@ -29,6 +30,10 @@ public:
 	void SetAudioObjTransform(unsigned int componentID, float4x4 transform);
 	void SendAudioObjEvent(unsigned int componentID, std::string eventName);
 	void ChangeRTPCValue(unsigned int componentID, std::string RPTCname, float value);
+
+	void StopAllSounds()const;
+	void PauseAllSounds()const;
+	void ResumeAllSounds()const;
 
 public:
 

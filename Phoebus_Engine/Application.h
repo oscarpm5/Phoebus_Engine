@@ -61,6 +61,7 @@ private:
 	float realDT; //last frame time expressed in seconds(Real Time Clock)
 
 	bool gameJustStarted;
+	bool gameStateJustChanged;//true only during the frame when the game state changes
 
 public:
 
@@ -94,8 +95,12 @@ public:
 	
 	//Clock Related Setters
 	void SetNewTimeScale(float newTimeScale);
-
 	//============================================================
+
+	//returns true if the game state has changed in the last frame
+	bool HasGameStateChanged()const;
+	//returns true if the game state has changed in the last frame, it also returns the current Game state if true
+	bool HasGameStateChanged(GameStateEnum& currentGameState);
 
 private:
 

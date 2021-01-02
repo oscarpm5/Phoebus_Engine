@@ -164,6 +164,7 @@ bool ModuleAudioManager::Init()
 
 bool ModuleAudioManager::GameInit()
 {
+
 	UpdateListener();
 	AkGameObjectID id = 0;
 	if (activeListener != nullptr)
@@ -192,6 +193,36 @@ update_status ModuleAudioManager::Update(float dt)
 	//UpdateListener();
 	// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
 	//AK::SoundEngine::RegisterGameObj(id);
+	
+	return UPDATE_CONTINUE;
+}
+
+update_status ModuleAudioManager::PostUpdate(float dt)
+{
+	GameStateEnum currentState = GameStateEnum::UNKNOWN;
+	if (App->HasGameStateChanged(currentState))
+	{
+		switch (currentState)
+		{
+		case GameStateEnum::STOPPED:
+			StopAllSounds();
+			break;
+		case GameStateEnum::PLAYED:
+			ResumeAllSounds();
+			break;
+		case GameStateEnum::PAUSED:
+			PauseAllSounds();
+			break;
+		case GameStateEnum::ADVANCEONE:
+			ResumeAllSounds();
+			break;
+		}
+	}
+
+
+
+	// Process bank requests, events, positions, RTPC, etc.
+	AK::SoundEngine::RenderAudio();
 
 	return UPDATE_CONTINUE;
 }
@@ -199,8 +230,8 @@ update_status ModuleAudioManager::Update(float dt)
 update_status ModuleAudioManager::GameUpdate(float dt)
 {
 
-	// Process bank requests, events, positions, RTPC, etc.
-	AK::SoundEngine::RenderAudio();
+	//// Process bank requests, events, positions, RTPC, etc.
+	//AK::SoundEngine::RenderAudio();
 
 	return UPDATE_CONTINUE;
 }
@@ -309,4 +340,20 @@ void ModuleAudioManager::SendAudioObjEvent(unsigned int componentID, std::string
 void ModuleAudioManager::ChangeRTPCValue(unsigned int componentID, std::string RPTCname, float value)
 {
 	AK::SoundEngine::SetRTPCValue(RPTCname.c_str(), value, componentID);
+}
+
+
+void ModuleAudioManager::StopAllSounds() const
+{
+	AK::SoundEngine::StopAll();
+}
+
+void ModuleAudioManager::PauseAllSounds() const
+{
+	AK::SoundEngine::PostEvent("PauseAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
+}
+
+void ModuleAudioManager::ResumeAllSounds() const
+{
+	AK::SoundEngine::PostEvent("ResumeAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
 }
