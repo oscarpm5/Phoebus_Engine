@@ -1,8 +1,38 @@
 # About Phouebus Engine
-Introduction + context (university subject)
+Welcome to Phoebus Engine! This engine is made by two 3rd grade students of Design and Development of Videogames on CITM university (Terrassa, Barcelona, Spain) under the supervision and guidance of lecturer [Marc Garrigó](https://www.linkedin.com/in/mgarrigo/?originalSubdomain=es).
+The intent is to create a functional 3D engine with a focus on performance and Audio capabilities (hence the engine name). Because of that, we'll provide a deeper analysis of the audio system further down the web.
+If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.
+    
+We hope you'll enjoy using it as much as we enjoyed making it! 
+
+## Check out our latest Release!
+Guess what goes here darling
 
 # Meet the Team
-Team photo + quick explanation + work done
+<center>
+  
+<h2  align="center" id="team-members">Team Members</h2>
+
+<table style="width:100%">
+  <tr>
+    <th>Member</th>
+    <th>Portrait</th>
+    <th>Linkedin</th>
+  </tr>
+  <tr>
+    <tr>
+    <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
+    <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png" alt="Oscar" class="inline"></td>
+     <td>[My Linkedin!](https://www.youtube.com/watch?v=32jJW4SMIn8&ab_channel=FredHateUnite)</td>
+    </tr>
+    <tr>
+    <td><a href="https://github.com/adriaserrano97">Adrià Serrano</a></td>
+    <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png" alt="Adrià" class="inline"></td>
+    <td>[My Linkedin!](https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/)</td>
+</table>
+
+
+<br><br>
 
 # Engine Overview
 Core sub-system explanations
