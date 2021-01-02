@@ -1,4 +1,4 @@
-<p align="left"><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/PhoebusIcon.png?token=ALMIHWWE2CTPST6X2FY4FMC77GRBO" alt="Phoebus Icon" class="center" align="left"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/PhoebusIcon.png?token=ALMIHWWE2CTPST6X2FY4FMC77GRBO" alt="Phoebus Icon" class="center" align="center"></p>
 
 # Phouebus Engine
 Welcome to Phoebus Engine! <br>
