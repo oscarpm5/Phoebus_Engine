@@ -10,7 +10,7 @@ If you wish to contact us or provide any kind of feedback, we'll gladly answer a
 We hope you'll enjoy using it as much as we enjoyed making it! </p>
 <br>
 ## Check out our latest Release!
-Guess what goes here darling
+Link to code repo and release
 <br><br>
 
 # Engine Overview
@@ -22,6 +22,10 @@ Although our focus is in the Audio System, Phouebus Engine does have the basic u
 - Component System to customize your Game Objects
 - Scene viewer and editor
 - Real time rendering (scene managed: pause - play - stop)
+
+<br><br>
+!!!!1 min video messing with engine!!!!
+<br><br>
 
 ## Controls:
 
@@ -88,10 +92,10 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 
 # Audio System
 Audio detailed explanation (add at east 2 gifs)
-1 min video messing with engine
 
 
-Link to code repo and release
+
+
 <br><br>
 # Meet the Team
 
