@@ -33,8 +33,8 @@ Link to code repo and release
   </tr>
   <tr> 
     <tr>
-    <td><a href="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png?token=ALMIHWSZQ4YUMH2ZFV4HRWK77GR3U">Oscar Pérez</a></td>
-    <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png" alt="Oscar" class="inline"></td>
+    <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
+    <td><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png?token=ALMIHWSZQ4YUMH2ZFV4HRWK77GR3U" alt="Oscar" class="inline"></td>
     <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">My Linkedin!</a></td>
     <td> Here goes what I've done </td>
     </tr>
