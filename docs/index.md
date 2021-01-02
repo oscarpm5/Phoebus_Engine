@@ -22,14 +22,15 @@ Audio detailed explanation (add at east 2 gifs)
 Link to code repo and release
 <br><br>
 # Meet the Team
-<table>
+
+<table>   
   <tr>
     <th>Member</th>
     <th>Portrait</th>
     <th>Linkedin</th>
     <th>Work</th>
   </tr>
-  <tr>
+  <tr> 
     <tr>
     <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
     <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png" alt="Oscar" class="inline"></td>
