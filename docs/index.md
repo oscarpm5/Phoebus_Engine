@@ -15,7 +15,6 @@ Guess what goes here darling
 <br><br>
 
 # Engine Overview
-<p align="justify">
 Although our focus is in the Audio System, Phouebus Engine does have the basic utilities you would hope to find in an Engine:
 - Game Object structure
 	- Loading external FBX and saving them as Game Objects
@@ -24,9 +23,9 @@ Although our focus is in the Audio System, Phouebus Engine does have the basic u
 - Component System to customize your Game Objects
 - Scene viewer and editor
 - Real time rendering (scene managed: pause - play - stop)
-</p>
+
 ## Controls:
-<p align="justify">
+
 Note that the 3D viewport controls will only work when interacting with the 3D view and won't work in the menus
 
 * Right Mouse Click (hold)
@@ -86,7 +85,6 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 * R key
 	- Use Scale Gizmo
 	
-</p>
 <br><br>
 
 # Audio System
@@ -124,7 +122,7 @@ Link to code repo and release
 <br><br>
 # License
 MIT License
-<p align="justify">
+
 Copyright (c) 2020 oscarpm5
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -144,5 +142,5 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-</p>
+
 
