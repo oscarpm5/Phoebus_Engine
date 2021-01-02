@@ -4,35 +4,37 @@ The intent is to create a functional 3D engine with a focus on performance and A
 If you wish to contact us or provide any kind of feedback, we'll gladly answer all your questions.
     
 We hope you'll enjoy using it as much as we enjoyed making it! 
-
+<br><br>
 ## Check out our latest Release!
 Guess what goes here darling
-
+<br><br>
 # Meet the Team
-
 <table style="width:100%">
   <tr>
     <th>Member</th>
     <th>Portrait</th>
     <th>Linkedin</th>
+    <th>Work</th>
   </tr>
   <tr>
     <tr>
     <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
     <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png" alt="Oscar" class="inline"></td>
-     <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">My Linkedin!</a></td>
+    <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">My Linkedin!</a></td>
+    <td> Here goes what I've done </td>
     </tr>
     <tr>
     <td><a href="https://github.com/adriaserrano97">Adrià Serrano</a></td>
     <td><img src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png" alt="Adrià" class="inline"></td>
     <td><a href="https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/">My Linkedin!</a></td>
+    <td> Here goes what I've done </td>
 </table>
 
 
 <br><br>
-
 # Engine Overview
 Core sub-system explanations
+<br><br>
 
 # Audio System
 Audio detailed explanation (add at east 2 gifs)
@@ -40,6 +42,7 @@ Audio detailed explanation (add at east 2 gifs)
 
 
 Link to code repo and release
+<br><br>
 
 # License
 MIT License
