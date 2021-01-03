@@ -92,6 +92,7 @@
     <ClInclude Include="C_AudioListener.h" />
     <ClInclude Include="C_AudioSource.h" />
     <ClInclude Include="C_Camera.h" />
+    <ClInclude Include="C_Control.h" />
     <ClInclude Include="C_Material.h" />
     <ClInclude Include="C_Mesh.h" />
     <ClInclude Include="C_Transform.h" />
@@ -243,6 +244,7 @@
     <ClCompile Include="C_AudioListener.cpp" />
     <ClCompile Include="C_AudioSource.cpp" />
     <ClCompile Include="C_Camera.cpp" />
+    <ClCompile Include="C_Control.cpp" />
     <ClCompile Include="C_Material.cpp" />
     <ClCompile Include="C_Mesh.cpp" />
     <ClCompile Include="C_Transform.cpp" />

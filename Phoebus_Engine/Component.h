@@ -10,7 +10,8 @@ class GameObject;
 		MATERIAL,
 		CAMERA,
 		AUDIO_SOURCE,
-		AUDIO_LISTENER
+		AUDIO_LISTENER,
+		CONTROL
 	};
 
 class Component

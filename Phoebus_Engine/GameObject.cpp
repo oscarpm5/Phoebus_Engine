@@ -6,6 +6,7 @@
 #include "C_Camera.h"
 #include "C_AudioSource.h"
 #include "C_AudioListener.h"
+#include "C_Control.h"
 #include "Application.h"
 #include "imgui/imgui.h"
 
@@ -238,6 +239,9 @@ Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 		if (GetComponent<C_AudioSource>() == nullptr)
 			ret = new C_AudioSource(this, compID);
 		break;
+	case ComponentType::CONTROL:
+		if (GetComponent<C_Control>() == nullptr)
+			ret = new C_Control(this, compID);
 
 	default:
 		break;
@@ -432,7 +436,11 @@ void GameObject::DrawOnEditorAllComponents()
 			if (ImGui::Selectable("Audio Source Component##addComponent"))
 				CreateComponent(ComponentType::AUDIO_SOURCE);
 		}
-
+		if (GetComponent<C_Control>() == nullptr)
+		{
+			if (ImGui::Selectable("Control Component##addComponent"))
+				CreateComponent(ComponentType::CONTROL);
+		}
 
 
 		ImGui::EndPopup();

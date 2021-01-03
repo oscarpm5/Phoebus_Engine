@@ -517,6 +517,9 @@
     <ClInclude Include="AudioEvent.h">
       <Filter>Sources\Wwise</Filter>
     </ClInclude>
+    <ClInclude Include="C_Control.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -764,6 +767,9 @@
     </ClCompile>
     <ClCompile Include="AudioEvent.cpp">
       <Filter>Sources\Wwise</Filter>
+    </ClCompile>
+    <ClCompile Include="C_Control.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
