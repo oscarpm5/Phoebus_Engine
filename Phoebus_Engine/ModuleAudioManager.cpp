@@ -166,11 +166,11 @@ bool ModuleAudioManager::GameInit()
 {
 
 	UpdateListener();
-	AkGameObjectID id = 0;
+	/*AkGameObjectID id = 0;
 	if (activeListener != nullptr)
 	{
 		id = activeListener->ID;
-	}
+	}*/
 	//AK::SoundEngine::PostEvent("Laser_Player", id); //plays Laser sound (from the listener for the moment)
 
 	return true;
@@ -193,7 +193,7 @@ update_status ModuleAudioManager::Update(float dt)
 	//UpdateListener();
 	// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
 	//AK::SoundEngine::RegisterGameObj(id);
-	
+
 	return UPDATE_CONTINUE;
 }
 
@@ -238,19 +238,23 @@ update_status ModuleAudioManager::GameUpdate(float dt)
 
 void ModuleAudioManager::UpdateListener()
 {
-	AkGameObjectID id = 0;
-	//TODO trashy way to do it, we do not want to set the listener every frame
-	if (activeListener != nullptr)
+	if (enabled)//TODO bad code structure makes us need this enabled in lots of audio manager methods. Fix it
 	{
-		id = activeListener->ID;
-	}
-	else
-	{
-		LOG("[warning] There is no audio listener component active. Sounds won't be heard");
-	}
 
-	// Set one listener as the default.
-	AK::SoundEngine::SetDefaultListeners(&id, 1);
+		AkGameObjectID id = 0;
+		//TODO trashy way to do it, we do not want to set the listener every frame
+		if (activeListener != nullptr)
+		{
+			id = activeListener->ID;
+		}
+		else
+		{
+			LOG("[warning] There is no audio listener component active. Sounds won't be heard");
+		}
+
+		// Set one listener as the default.
+		AK::SoundEngine::SetDefaultListeners(&id, 1);
+	}
 }
 
 bool ModuleAudioManager::CleanUp()
@@ -317,7 +321,7 @@ void ModuleAudioManager::SetAudioObjTransform(unsigned int componentID, float4x4
 	float3 pos;
 	float3 scale;
 	float3x3 rot;
-	float3 front(0.0f,0.0f,1.0f);
+	float3 front(0.0f, 0.0f, 1.0f);
 	float3 up(0.0f, 1.0f, 0.0f);
 
 	transform.Decompose(pos, rot, scale);
@@ -326,34 +330,45 @@ void ModuleAudioManager::SetAudioObjTransform(unsigned int componentID, float4x4
 	front = front * rot;
 
 	AkSoundPosition newPos;
-	newPos.SetPosition(pos.x,pos.y,pos.z);
+	newPos.SetPosition(pos.x, pos.y, pos.z);
 	newPos.SetOrientation(front.x, front.y, front.z, up.x, up.y, up.z);
 
 	AK::SoundEngine::SetPosition(componentID, newPos);
 }
 
-void ModuleAudioManager::SendAudioObjEvent(unsigned int componentID, std::string eventName)
+void ModuleAudioManager::SendAudioObjEvent(unsigned int componentID, std::string eventName)const
 {
-	AK::SoundEngine::PostEvent(eventName.c_str(), componentID); //plays sound
+	if (enabled)
+		AK::SoundEngine::PostEvent(eventName.c_str(), componentID); //plays sound
+}
+
+void ModuleAudioManager::SendStopEvent(unsigned int componentID, std::string eventName)const
+{
+	if (enabled)
+		AK::SoundEngine::ExecuteActionOnEvent(eventName.c_str(), AK::SoundEngine::AkActionOnEventType::AkActionOnEventType_Stop, componentID);
 }
 
 void ModuleAudioManager::ChangeRTPCValue(unsigned int componentID, std::string RPTCname, float value)
 {
-	AK::SoundEngine::SetRTPCValue(RPTCname.c_str(), value, componentID);
+	if (enabled)
+		AK::SoundEngine::SetRTPCValue(RPTCname.c_str(), value, componentID);
 }
 
 
 void ModuleAudioManager::StopAllSounds() const
 {
-	AK::SoundEngine::StopAll();
+	if (enabled)
+		AK::SoundEngine::StopAll();
 }
 
 void ModuleAudioManager::PauseAllSounds() const
 {
-	AK::SoundEngine::PostEvent("PauseAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
+	if (enabled)
+		AK::SoundEngine::PostEvent("PauseAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
 }
 
 void ModuleAudioManager::ResumeAllSounds() const
 {
-	AK::SoundEngine::PostEvent("ResumeAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
+	if (enabled)
+		AK::SoundEngine::PostEvent("ResumeAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
 }

@@ -19,6 +19,7 @@ C_AudioListener::~C_AudioListener()
 		if (App->audioManager->activeListener == this)
 		{
 			App->audioManager->activeListener = nullptr;
+			App->audioManager->UpdateListener();
 		}
 
 		App->audioManager->UnRegisterAudioObj(this->ID);
@@ -44,6 +45,7 @@ void C_AudioListener::SetAsListener(bool newState)
 			App->audioManager->activeListener = nullptr;
 		}
 
+		App->audioManager->UpdateListener();
 		isListener = newState;
 	}
 }
@@ -136,8 +138,8 @@ bool C_AudioListener::GameUpdate(float gameDT)
 {
 	if (owner != nullptr)
 	{
-		C_Transform* transformComp= owner->GetComponent<C_Transform>();
-		float4x4 transform=  transformComp->GetGlobalTransform();
+		C_Transform* transformComp = owner->GetComponent<C_Transform>();
+		float4x4 transform = transformComp->GetGlobalTransform();
 
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 	}

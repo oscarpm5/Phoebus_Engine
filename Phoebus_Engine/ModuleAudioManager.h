@@ -28,7 +28,8 @@ public:
 	void UnRegisterAudioObj(unsigned int componentID);
 	void UnRegisterAllAudioObjs()const;
 	void SetAudioObjTransform(unsigned int componentID, float4x4 transform);
-	void SendAudioObjEvent(unsigned int componentID, std::string eventName);
+	void SendAudioObjEvent(unsigned int componentID, std::string eventName)const;
+	void SendStopEvent(unsigned int componentID, std::string eventName)const;
 	void ChangeRTPCValue(unsigned int componentID, std::string RPTCname, float value);
 
 	void StopAllSounds()const;
