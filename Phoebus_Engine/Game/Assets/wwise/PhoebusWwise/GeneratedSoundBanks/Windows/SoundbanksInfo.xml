@@ -11,21 +11,22 @@
 	<StreamedFiles/>
 	<MediaFilesNotInAnyBank/>
 	<SoundBanks>
-		<SoundBank Id="1355168291" Language="SFX" Hash="2535648473">
+		<SoundBank Id="1355168291" Language="SFX" Hash="802199875">
 			<ObjectPath>Init</ObjectPath>
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="3161908922" Language="SFX" Hash="2986988736">
+		<SoundBank Id="3161908922" Language="SFX" Hash="4034067289">
 			<ObjectPath>\SoundBanks\Default Work Unit\Main</ObjectPath>
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
 			<IncludedEvents>
+				<Event Id="1869375877" Name="Halo_Player" ObjectPath="\Events\Default Work Unit\Halo_Player"/>
 				<Event Id="837780346" Name="Laser_Player" ObjectPath="\Events\Default Work Unit\Laser_Player">
 					<IncludedMemoryFiles>
 						<File Id="355308146" Language="SFX">
 							<ShortName>Laser.wav</ShortName>
-							<Path>SFX\Laser_10C4C929.wem</Path>
+							<Path>SFX\Laser_D79FB2B7.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
@@ -35,13 +36,24 @@
 					<IncludedMemoryFiles>
 						<File Id="382387716" Language="SFX">
 							<ShortName>Starwars.wav</ShortName>
-							<Path>SFX\Starwars_10C4C929.wem</Path>
+							<Path>SFX\Starwars_D79FB2B7.wem</Path>
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
 			</IncludedEvents>
+			<IncludedMemoryFiles>
+				<File Id="382387716" Language="SFX">
+					<ShortName>Starwars.wav</ShortName>
+					<Path>SFX\Starwars_D79FB2B7.wem</Path>
+				</File>
+				<File Id="897631041" Language="SFX">
+					<ShortName>HaloTheme.wav</ShortName>
+					<Path>SFX\HaloTheme_D79FB2B7.wem</Path>
+				</File>
+			</IncludedMemoryFiles>
 			<GameParameters>
 				<GameParameter Id="467158820" Name="SourceVolume" ObjectPath="\Game Parameters\Default Work Unit\SourceVolume"/>
+				<GameParameter Id="2275229972" Name="MusicBlendParameter" ObjectPath="\Game Parameters\Default Work Unit\MusicBlendParameter"/>
 			</GameParameters>
 		</SoundBank>
 	</SoundBanks>

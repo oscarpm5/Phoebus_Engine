@@ -4,6 +4,7 @@
 		<WorkUnit Name="Default Work Unit" ID="{9F4A64FC-DAB7-4651-BCF7-3132160F26D6}" PersistMode="Standalone">
 			<ChildrenList>
 				<GameParameter Name="SourceVolume" ID="{8C63A84D-B12F-463A-8201-62774A330CEA}"/>
+				<GameParameter Name="MusicBlendParameter" ID="{F297D131-8A38-4E4F-B685-2A2D97C317E5}"/>
 			</ChildrenList>
 		</WorkUnit>
 	</GameParameters>

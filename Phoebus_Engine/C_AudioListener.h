@@ -3,7 +3,6 @@
 
 #include "Component.h"
 
-
 class C_AudioListener :public Component
 {
 public:
@@ -17,7 +16,6 @@ public:
 
 private:
 	bool isListener;
-
 };
 
 #endif // !__C_AUDIO_LISTENER__

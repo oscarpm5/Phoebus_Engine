@@ -5,15 +5,18 @@
 #include "ModuleAudioManager.h"
 #include "GameObject.h"
 #include "C_Transform.h"
+#include "AudioEvent.h"
 
-C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID):Component(ComponentType::AUDIO_SOURCE,owner,ID),volume(50.0f)
+C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
 
 C_AudioSource::~C_AudioSource()
 {
-	if (App!=nullptr && App->audioManager!=nullptr)
+	DeleteAllAudioEvents();
+	
+	if (App != nullptr && App->audioManager != nullptr)
 	{
 		App->audioManager->UnRegisterAudioObj(this->ID);
 	}
@@ -40,12 +43,12 @@ void C_AudioSource::OnEditor()
 
 		actualname = "IS ACTIVE" + suffixLabel + "Checkbox";
 		ImGui::Checkbox(actualname.c_str(), &active);
-		
+
 		ImGui::Separator();
 		ImGui::Indent();
 		//TODO actual Component code here
 		actualname = "Audio Volume" + suffixLabel;
-		if(ImGui::SliderFloat(actualname.c_str(), &volume, 0.0f, 100.0f))
+		if (ImGui::SliderFloat(actualname.c_str(), &volume, 0.0f, 100.0f))
 		{
 			App->audioManager->ChangeRTPCValue(this->ID, "SourceVolume", volume);
 		}
@@ -102,6 +105,8 @@ bool C_AudioSource::GameUpdate(float gameDT)
 		float4x4 transform = transformComp->GetGlobalTransform();
 
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
+
+
 	}
 	return true;
 }
@@ -118,7 +123,7 @@ bool C_AudioSource::GameInit()
 	}
 
 	//different
-	App->audioManager->SendAudioObjEvent(this->ID, "StarWars_Player");
+	App->audioManager->SendAudioObjEvent(this->ID, "Laser_Player");
 	return true;
 }
 
@@ -131,4 +136,64 @@ void C_AudioSource::SetVolume(float volume)
 {
 	this->volume = volume;
 	App->audioManager->ChangeRTPCValue(ID, "SourceVolume", this->volume);
+}
+
+void C_AudioSource::CreateAudioEvent(std::string name, AudioEventType type, float changeTracksTime)
+{
+	if (!DoesAudioEventExist(name))
+	{
+		AudioEvent* newEv = new AudioEvent(name, type, changeTracksTime);
+		events.push_back(newEv);
+	}
+	else
+	{
+		LOG("[error] Could not create an event with name: %s. Reason:", name);
+		LOG("[error] There is an event with the same name already created in this component");
+	}
+}
+
+void C_AudioSource::DeleteAudioEvent(std::string name)
+{
+	for (int i = 0; i < events.size(); i++)
+	{
+		if (events[i]->GetEventName() == name)
+		{
+			AudioEvent* auxEv = events[i];
+			events.erase(events.begin() + i);
+			delete auxEv;
+			auxEv = nullptr;
+			break;
+		}
+	}
+}
+
+bool C_AudioSource::DoesAudioEventExist(std::string name)
+{
+	for (int i = 0; i < events.size(); i++)
+	{
+		if (events[i]->GetEventName() == name)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void C_AudioSource::DeleteAllAudioEvents()
+{
+	while (!events.empty())
+	{
+		AudioEvent* auxEv = events.back();
+		events.pop_back();
+		delete auxEv;
+		auxEv = nullptr;
+	}
+}
+
+void C_AudioSource::ResetAllAudioEvents()
+{
+	for (int i = 0; i < events.size(); i++)
+	{
+		events[i]->ResetPlayed();
+	}
 }

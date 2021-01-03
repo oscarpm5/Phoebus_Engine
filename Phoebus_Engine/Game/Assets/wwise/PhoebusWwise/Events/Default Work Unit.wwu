@@ -48,6 +48,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Halo_Player" ID="{0D07A878-DA2C-439B-ADD4-B0B459F066AB}">
+					<ChildrenList>
+						<Action Name="" ID="{55CD601F-384C-4F81-A284-9B448ED6645B}" ShortID="204455679">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="HaloTheme" ID="{F317C8D6-D04A-4614-8FA0-6BF7F6F3CF9C}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
