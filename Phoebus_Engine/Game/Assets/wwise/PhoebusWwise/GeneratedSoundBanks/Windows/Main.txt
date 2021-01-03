@@ -1,6 +1,8 @@
 Event	ID	Name			Wwise Object Path	Notes
 	837780346	Laser_Player			\Default Work Unit\Laser_Player	
 	2526740212	StarWars_Player			\Default Work Unit\StarWars_Player	
+	3240900869	ResumeAll			\Default Work Unit\ResumeAll	
+	4091047182	PauseAll			\Default Work Unit\PauseAll	
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	467158820	SourceVolume			\Default Work Unit\SourceVolume	

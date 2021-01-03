@@ -214,7 +214,7 @@ update_status ModuleAudioManager::PostUpdate(float dt)
 			PauseAllSounds();
 			break;
 		case GameStateEnum::ADVANCEONE:
-			ResumeAllSounds();
+			ResumeAllSounds();//TODO first it advances one then it pauses ???
 			break;
 		}
 	}
