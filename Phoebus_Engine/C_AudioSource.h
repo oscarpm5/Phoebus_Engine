@@ -27,8 +27,8 @@ public:
 
 private:
 	float volume;
-	std::vector<AudioEvent*> events;
 	char newEvName[250] = "";
+	std::vector<AudioEvent*> events;
 };
 
 #endif // !__C_AUDIO_SOURCE__

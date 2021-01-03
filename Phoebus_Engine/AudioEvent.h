@@ -16,6 +16,7 @@ public:
 	std::string GetEventName()const;
 	void ResetPlayed();
 	bool GetPlayed()const;
+	void StartPlaying();
 	AudioEventType GetType()const;
 	float GetTrackTimeChange()const;
 	void SetTrackTimeChange(float newTime);

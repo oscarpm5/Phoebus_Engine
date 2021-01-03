@@ -52,10 +52,10 @@ void C_AudioSource::OnEditor()
 
 		//TODO actual Component code here
 
-		bool disableButtons = false;
-		if (App->GetGameState() == GameStateEnum::PLAYED || App->GetGameState() == GameStateEnum::ADVANCEONE)
+		bool disableButtons = true;
+		if (App->GetGameState() == GameStateEnum::STOPPED)//makes it so the audio events can only be edited when in offline mode
 		{
-			disableButtons = true;
+			disableButtons = false;
 		}
 		if (disableButtons)
 		{
@@ -123,14 +123,14 @@ void C_AudioSource::OnEditor()
 			}
 			ImGui::NextColumn();
 			ImGui::SetColumnWidth(-1, 125);
-			actualname = "Play" + suffixLabel;
+			actualname = "Play" + suffixLabel+ events[i]->GetEventName();
 			if (ImGui::Button(actualname.c_str()))
 			{
 				App->audioManager->SendStopEvent(this->ID, events[i]->GetEventName());
 				App->audioManager->SendAudioObjEvent(this->ID, events[i]->GetEventName());
 			}
 			ImGui::SameLine();
-			actualname = "Stop" + suffixLabel;
+			actualname = "Stop" + suffixLabel+ events[i]->GetEventName();
 			if (ImGui::Button(actualname.c_str()))
 			{
 				App->audioManager->SendStopEvent(this->ID, events[i]->GetEventName());
@@ -209,7 +209,6 @@ bool C_AudioSource::GameUpdate(float gameDT)
 
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
-
 	}
 	return true;
 }
@@ -223,10 +222,24 @@ bool C_AudioSource::GameInit()
 		float4x4 transform = transformComp->GetGlobalTransform();
 
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
+
+
+
+		for (int i = 0; i < events.size(); i++)
+		{
+			if (events[i]->GetPlayed() == false)
+			{
+				App->audioManager->SendAudioObjEvent(this->ID, events[i]->GetEventName());
+				events[i]->StartPlaying();
+			}
+		}
+
+
+
 	}
 
 	//different
-	App->audioManager->SendAudioObjEvent(this->ID, "Laser_Player");
+	//App->audioManager->SendAudioObjEvent(this->ID, "Laser_Player");
 	return true;
 }
 

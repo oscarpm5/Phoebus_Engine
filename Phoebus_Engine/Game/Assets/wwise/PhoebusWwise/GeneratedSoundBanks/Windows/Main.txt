@@ -2,6 +2,7 @@ Event	ID	Name			Wwise Object Path	Notes
 	837780346	Laser_Player			\Default Work Unit\Laser_Player	
 	1869375877	Halo_Player			\Default Work Unit\Halo_Player	
 	2526740212	StarWars_Player			\Default Work Unit\StarWars_Player	
+	2932040671	Play_Music			\Default Work Unit\Play_Music	
 	3240900869	ResumeAll			\Default Work Unit\ResumeAll	
 	4091047182	PauseAll			\Default Work Unit\PauseAll	
 

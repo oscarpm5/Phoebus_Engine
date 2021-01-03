@@ -39,6 +39,11 @@ bool AudioEvent::GetPlayed() const
 	return hasPlayed;
 }
 
+void AudioEvent::StartPlaying()
+{
+	hasPlayed = true;
+}
+
 AudioEventType AudioEvent::GetType() const
 {
 	return type;
