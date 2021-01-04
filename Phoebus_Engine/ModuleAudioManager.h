@@ -6,7 +6,9 @@
 #include "C_AudioListener.h"
 #include "MathGeoLib/include/MathGeoLibFwd.h"
 #include <string>
+#include <vector>
 
+class C_ReverbZone; // C_ReverbZone.h included in .cpp
 
 class ModuleAudioManager:public Module
 {
@@ -36,10 +38,13 @@ public:
 	void PauseAllSounds()const;
 	void ResumeAllSounds()const;
 
+	void AddRevZone(C_ReverbZone* revZone);
+	bool RemoveRevZone(C_ReverbZone* revZone);
+
 public:
 
 	C_AudioListener* activeListener;
-
+	std::vector <C_ReverbZone*> revAreas;
 };
 
 

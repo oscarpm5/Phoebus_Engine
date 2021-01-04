@@ -9,12 +9,14 @@
 #include "Application.h"
 #include "ModuleEditor3D.h"
 #include "GameObject.h"
+#include "C_ReverbZone.h"
 
 CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
 ModuleAudioManager::ModuleAudioManager(bool start_enabled) :Module(start_enabled)
 {
 	activeListener = nullptr;
+	
 }
 
 ModuleAudioManager::~ModuleAudioManager()
@@ -371,4 +373,24 @@ void ModuleAudioManager::ResumeAllSounds() const
 {
 	if (enabled)
 		AK::SoundEngine::PostEvent("ResumeAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
+}
+
+void ModuleAudioManager::AddRevZone(C_ReverbZone* revZone)
+{
+	revAreas.push_back(revZone);
+}
+
+bool ModuleAudioManager::RemoveRevZone(C_ReverbZone* revZone)
+{
+	bool ret = false;
+	for (int i = 0; i < revAreas.size(); i++)
+	{
+		if (revAreas[i] == revZone)
+		{
+			revAreas.erase((revAreas.begin() + i));
+			ret = true;
+			break;
+		}
+	}
+	return ret;
 }

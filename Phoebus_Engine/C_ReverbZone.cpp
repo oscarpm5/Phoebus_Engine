@@ -9,13 +9,15 @@
 #include "C_Transform.h"
 #include "ModuleRenderer3D.h"
 
-C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID), radius(1), dirtyUpdate(false)
+C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID), radius(1), dirtyUpdate(false), targetBus(""), revValue(1)
 {
 	UpdateReverbZoneDimension();
+	App->audioManager->AddRevZone(this);
 }
 
 C_ReverbZone::~C_ReverbZone()
 {
+	App->audioManager->RemoveRevZone(this);
 }
 
 void C_ReverbZone::OnEditor()
@@ -55,6 +57,25 @@ void C_ReverbZone::OnEditor()
 		ImGui::Separator();
 		ImGui::Unindent();
 
+		//Thanks to Carlos Cabreira for clarifying the "targetBus" logic
+		char* bus_name = new char[41];
+		std::copy(targetBus.begin(), targetBus.end(), bus_name);
+		bus_name[targetBus.length()] = '\0';
+		actualname = "Target Bus" + suffixLabel;
+		ImGui::InputText(actualname.c_str(), bus_name, 40);
+		targetBus = bus_name;
+		delete[] bus_name;
+
+		ImGui::Separator();
+		ImGui::Unindent();
+
+		actualname = "Reverb Intensity" + suffixLabel;
+		
+		ImGui::DragFloat(actualname.c_str(), &revValue, 0.1, 0.0, 12.0, "%.1f");
+
+		ImGui::Separator();
+		ImGui::Unindent();
+		
 		actualname = "Delete ReverbZone Component" + suffixLabel;
 		if (ImGui::BeginPopup(actualname.c_str(), ImGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -146,4 +167,9 @@ void C_ReverbZone::GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector)
 	}
 	delete[]frustrumPoints;
 	frustrumPoints = nullptr;
+}
+
+bool C_ReverbZone::DoesReverbZoneContainPoint(float3 point) const
+{
+	return revZone.Contains(point);
 }

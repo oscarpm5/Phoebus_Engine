@@ -7,9 +7,10 @@
 #include "GameObject.h"
 #include "C_Transform.h"
 #include "AudioEvent.h"
+#include "C_ReverbZone.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f),
-musicChangeTime(30.0f),musicTimeCounter(0.0f),userPitch(1.0f)
+musicChangeTime(30.0f), musicTimeCounter(0.0f), userPitch(1.0f)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
@@ -108,7 +109,7 @@ void C_AudioSource::OnEditor()
 					actualname = "Delete Event" + suffixLabel + events[i]->GetEventName();
 					if (ImGui::Button(actualname.c_str()))
 					{
-						events[i]->toDelete=true;
+						events[i]->toDelete = true;
 					}
 				}
 				else if (events[i]->GetType() == AudioEventType::MUSIC)
@@ -124,14 +125,14 @@ void C_AudioSource::OnEditor()
 			}
 			ImGui::NextColumn();
 			ImGui::SetColumnWidth(-1, 125);
-			actualname = "Play" + suffixLabel+ events[i]->GetEventName();
+			actualname = "Play" + suffixLabel + events[i]->GetEventName();
 			if (ImGui::Button(actualname.c_str()))
 			{
 				App->audioManager->SendStopEvent(this->ID, events[i]->GetEventName());
 				App->audioManager->SendAudioObjEvent(this->ID, events[i]->GetEventName());
 			}
 			ImGui::SameLine();
-			actualname = "Stop" + suffixLabel+ events[i]->GetEventName();
+			actualname = "Stop" + suffixLabel + events[i]->GetEventName();
 			if (ImGui::Button(actualname.c_str()))
 			{
 				App->audioManager->SendStopEvent(this->ID, events[i]->GetEventName());
@@ -165,7 +166,7 @@ void C_AudioSource::OnEditor()
 		}
 		actualname = "Sound Pitch" + suffixLabel;
 		float auxUserPitch = userPitch;
-		if(ImGui::SliderFloat(actualname.c_str(), &auxUserPitch, 0.25f, 4.0f))
+		if (ImGui::SliderFloat(actualname.c_str(), &auxUserPitch, 0.25f, 4.0f))
 		{
 			SetUserPitch(auxUserPitch);
 		}
@@ -216,10 +217,10 @@ void C_AudioSource::OnEditor()
 bool C_AudioSource::Update(float dt)
 {
 
-	for (int i = events.size()-1; i>=0; i--)
+	for (int i = events.size() - 1; i >= 0; i--)
 	{
-		if(events[i]->toDelete)
-		DeleteAudioEvent(events[i]->GetEventName());
+		if (events[i]->toDelete)
+			DeleteAudioEvent(events[i]->GetEventName());
 	}
 	return false;
 }
@@ -228,16 +229,19 @@ bool C_AudioSource::GameUpdate(float gameDT)
 {
 	if (owner != nullptr)
 	{
+		//Check reverb Zones to see if they affect this emitter
+		CheckReverbZones();
+		
 		//Updates the RTPC variable that makes music blend possible
 		musicTimeCounter += gameDT;
-		if (musicTimeCounter >= musicChangeTime *2)
+		if (musicTimeCounter >= musicChangeTime * 2)
 		{
 			musicTimeCounter = 0.0f;
 		}
 
 		float rtpcVal = 0.0f;
-		if(musicChangeTime >0.0f) 
-			rtpcVal= musicTimeCounter * (100.0f / (musicChangeTime * 2.0f));
+		if (musicChangeTime > 0.0f)
+			rtpcVal = musicTimeCounter * (100.0f / (musicChangeTime * 2.0f));
 
 		App->audioManager->ChangeRTPCValue(this->ID, "MusicBlendParameter", rtpcVal);
 
@@ -248,7 +252,7 @@ bool C_AudioSource::GameUpdate(float gameDT)
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
 		//Changes audio pitch
-		float secs =60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
+		float secs = 60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
 		float overallPitch = (secs * 100);//TODO take into account user pitch too
 		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", overallPitch);
 
@@ -383,4 +387,37 @@ void C_AudioSource::SetUserPitch(float newPitch)
 float C_AudioSource::GetUserPitch() const
 {
 	return userPitch;
+}
+
+bool C_AudioSource::CheckReverbZones()
+{
+	bool ret = false;
+
+	if (owner != nullptr)
+	{
+		float3 myPosition = owner->GetComponent<C_Transform>()->GetGlobalPosition();
+
+		for (int i = 0; i < App->audioManager->revAreas.size(); i++)
+		{
+			float value = 0.0;
+			//if (App->audioManager->revAreas[i]->CheckCollision(t->GetTranslation()))
+			if (App->audioManager->revAreas[i]->DoesReverbZoneContainPoint(myPosition))
+			{
+				value = App->audioManager->revAreas[i]->revValue;
+				ret = true;
+			}
+			ApplyReverb(value, App->audioManager->revAreas[i]->targetBus.c_str());
+		}
+
+		return ret;
+	}
+	else return ret;
+}
+
+void C_AudioSource::ApplyReverb(float revValue, const char* targetBus)
+{
+	
+	//TODO: APPLY REVERB ADRI
+	LOG("Yuhuu");
+
 }

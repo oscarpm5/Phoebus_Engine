@@ -2,7 +2,6 @@
 #define __C_REVERBZONE__
 
 #include "Component.h"
-//class AABB;
 
 class C_ReverbZone :public Component
 {
@@ -17,7 +16,11 @@ public:
 	void SetReverbZone(float r);
 	void UpdateReverbZoneDimension();
 	void GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector);
+	bool DoesReverbZoneContainPoint(float3 point) const;
 	
+	std::string targetBus; //these 2 need to be in public. Do not move. -Adri
+	float revValue;
+
 private:
 	float radius;
 	bool dirtyUpdate;
