@@ -7,6 +7,34 @@
 					<PropertyList>
 						<Property Name="3DSpatialization" Type="int16" Value="2"/>
 						<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+						<Property Name="Pitch" Type="int32">
+							<RTPCList>
+								<RTPC Name="" ID="{C10CAE8D-E9F1-49F9-81D6-3CDF36AA9604}" ShortID="234734837">
+									<ReferenceList>
+										<Reference Name="ControlInput">
+											<ObjectRef Name="SoundPitch" ID="{6D90C6C0-576F-48FF-85B7-91982AF9BA93}" WorkUnitID="{9F4A64FC-DAB7-4651-BCF7-3132160F26D6}"/>
+										</Reference>
+									</ReferenceList>
+									<Curve Name="" ID="{E7F8DD2C-235E-49C6-8436-BD4CF08FB5D4}">
+										<PropertyList>
+											<Property Name="Flags" Type="int32" Value="65537"/>
+										</PropertyList>
+										<PointList>
+											<Point>
+												<XPos>0</XPos>
+												<YPos>-4800</YPos>
+												<Flags>5</Flags>
+											</Point>
+											<Point>
+												<XPos>200</XPos>
+												<YPos>4800</YPos>
+												<Flags>37</Flags>
+											</Point>
+										</PointList>
+									</Curve>
+								</RTPC>
+							</RTPCList>
+						</Property>
 						<Property Name="Volume" Type="Real64">
 							<RTPCList>
 								<RTPC Name="" ID="{1F58144D-764A-4F22-99FD-B47236370AF4}" ShortID="611525300">
@@ -122,6 +150,34 @@
 							<PropertyList>
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+								<Property Name="Pitch" Type="int32">
+									<RTPCList>
+										<RTPC Name="" ID="{31ABB106-47B9-4B75-A06A-68CB4A5F1358}" ShortID="318060142">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="SoundPitch" ID="{6D90C6C0-576F-48FF-85B7-91982AF9BA93}" WorkUnitID="{9F4A64FC-DAB7-4651-BCF7-3132160F26D6}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{AAEECBFA-32B4-4A06-86DE-53F8245B2089}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-4800</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>200</XPos>
+														<YPos>4800</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
 								<Property Name="Volume" Type="Real64">
 									<RTPCList>
 										<RTPC Name="" ID="{82F1B3CC-86E7-45F8-B868-472BDCD87245}" ShortID="129871626">
@@ -227,6 +283,34 @@
 							<PropertyList>
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+								<Property Name="Pitch" Type="int32">
+									<RTPCList>
+										<RTPC Name="" ID="{1911C4C6-EFC1-4044-BD43-67D8A8B40A31}" ShortID="747167445">
+											<ReferenceList>
+												<Reference Name="ControlInput">
+													<ObjectRef Name="SoundPitch" ID="{6D90C6C0-576F-48FF-85B7-91982AF9BA93}" WorkUnitID="{9F4A64FC-DAB7-4651-BCF7-3132160F26D6}"/>
+												</Reference>
+											</ReferenceList>
+											<Curve Name="" ID="{C5197A8B-EC45-42D0-9425-E481CDA78F7D}">
+												<PropertyList>
+													<Property Name="Flags" Type="int32" Value="65537"/>
+												</PropertyList>
+												<PointList>
+													<Point>
+														<XPos>0</XPos>
+														<YPos>-4800</YPos>
+														<Flags>5</Flags>
+													</Point>
+													<Point>
+														<XPos>200</XPos>
+														<YPos>4800</YPos>
+														<Flags>37</Flags>
+													</Point>
+												</PointList>
+											</Curve>
+										</RTPC>
+									</RTPCList>
+								</Property>
 								<Property Name="Volume" Type="Real64">
 									<RTPCList>
 										<RTPC Name="" ID="{7BB9EBC5-EBE9-4DF3-9E29-9A2A1CBBD208}" ShortID="292303332">

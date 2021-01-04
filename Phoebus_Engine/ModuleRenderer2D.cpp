@@ -930,7 +930,12 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::Text("FrameCount: %u", App->GetFrameCount());
 		ImGui::Text("GameClock:  %.3f", App->GetTime());
 		ImGui::Text("Game DT:    %.3f", App->GetGameDT());
-		ImGui::Text("TimeScale:  %.3f", App->GetTimeScale());
+
+		float timeScale = App->GetTimeScale();
+		if (ImGui::SliderFloat("TimeScale", &timeScale,0.25f,4.0f))
+		{
+			App->SetNewTimeScale(timeScale);
+		}
 		ImGui::Spacing();
 		ImGui::Spacing();
 		ImGui::Text("RealClock:  %.3f", App->GetRealTime());

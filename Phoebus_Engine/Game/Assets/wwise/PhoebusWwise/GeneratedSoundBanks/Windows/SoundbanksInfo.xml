@@ -11,12 +11,12 @@
 	<StreamedFiles/>
 	<MediaFilesNotInAnyBank/>
 	<SoundBanks>
-		<SoundBank Id="1355168291" Language="SFX" Hash="802199875">
+		<SoundBank Id="1355168291" Language="SFX" Hash="2789178382">
 			<ObjectPath>Init</ObjectPath>
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
 		</SoundBank>
-		<SoundBank Id="3161908922" Language="SFX" Hash="2966027912">
+		<SoundBank Id="3161908922" Language="SFX" Hash="145831895">
 			<ObjectPath>\SoundBanks\Default Work Unit\Main</ObjectPath>
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
@@ -54,6 +54,7 @@
 			</IncludedMemoryFiles>
 			<GameParameters>
 				<GameParameter Id="467158820" Name="SourceVolume" ObjectPath="\Game Parameters\Default Work Unit\SourceVolume"/>
+				<GameParameter Id="685061404" Name="SoundPitch" ObjectPath="\Game Parameters\Default Work Unit\SoundPitch"/>
 				<GameParameter Id="2275229972" Name="MusicBlendParameter" ObjectPath="\Game Parameters\Default Work Unit\MusicBlendParameter"/>
 			</GameParameters>
 		</SoundBank>

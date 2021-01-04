@@ -1056,6 +1056,15 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					C_AudioSource* source = (C_AudioSource*)component;
 					//TODO load audio source in here
 					source->SetVolume(comp.GetNumber("Volume"));
+
+					Config_Array confArray= comp.GetArray("Events");
+					for (int j = 0; j < confArray.GetSize(); j++)
+					{
+						Config& eventConf = confArray.GetNode(j);
+						std::string evName = eventConf.GetString("Name");
+						AudioEventType evType = (AudioEventType)(int)eventConf.GetNumber("Type");
+						source->CreateAudioEvent(evName, evType);
+					}
 				}
 				break;
 				case ComponentType::TRANSFORM:
@@ -1250,6 +1259,14 @@ void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioS
 	C_AudioSource* source = (C_AudioSource*)audioSource;
 	//TODO complete this method
 	config.SetNumber("Volume", source->GetVolume());
+	Config_Array eventsArray = config.SetArray("Events");
+	const std::vector<AudioEvent*> events = source->GetEvents();
+	for (int i = 0; i < events.size(); i++)
+	{
+		Config& c = eventsArray.AddNode();
+		c.SetString("Name", events[i]->GetEventName().c_str());
+		c.SetNumber("Type", (int)events[i]->GetType());
+	}
 
 }
 

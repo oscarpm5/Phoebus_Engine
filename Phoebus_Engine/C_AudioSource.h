@@ -24,9 +24,11 @@ public:
 	bool DoesAudioEventExist(std::string name);
 	void DeleteAllAudioEvents();
 	void ResetAllAudioEvents();
+	const std::vector<AudioEvent*> GetEvents()const;
 
 private:
 	float volume;
+	float userPitch;
 	char newEvName[250] = "";
 	std::vector<AudioEvent*> events;
 };

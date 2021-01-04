@@ -8,6 +8,7 @@ Event	ID	Name			Wwise Object Path	Notes
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	467158820	SourceVolume			\Default Work Unit\SourceVolume	
+	685061404	SoundPitch			\Default Work Unit\SoundPitch	
 	2275229972	MusicBlendParameter			\Default Work Unit\MusicBlendParameter	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size

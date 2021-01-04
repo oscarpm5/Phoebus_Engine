@@ -209,6 +209,10 @@ bool C_AudioSource::GameUpdate(float gameDT)
 
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
+		float secs =60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
+		float overallPitch = (secs * 100);//TODO take into account user pitch too
+		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", overallPitch);
+
 	}
 	return true;
 }
@@ -312,4 +316,9 @@ void C_AudioSource::ResetAllAudioEvents()
 	{
 		events[i]->ResetPlayed();
 	}
+}
+
+const std::vector<AudioEvent*> C_AudioSource::GetEvents() const
+{
+	return events;
 }
