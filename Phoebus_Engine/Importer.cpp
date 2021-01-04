@@ -1056,7 +1056,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					C_AudioSource* source = (C_AudioSource*)component;
 					//TODO load audio source in here
 					source->SetVolume(comp.GetNumber("Volume"));
-
+					source->SetSecondsToChangeMusic(comp.GetNumber("SecondsToNextMusic"));
+					source->SetUserPitch(comp.GetNumber("UserPitch"));
 					Config_Array confArray= comp.GetArray("Events");
 					for (int j = 0; j < confArray.GetSize(); j++)
 					{
@@ -1259,6 +1260,8 @@ void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioS
 	C_AudioSource* source = (C_AudioSource*)audioSource;
 	//TODO complete this method
 	config.SetNumber("Volume", source->GetVolume());
+	config.SetNumber("SecondsToNextMusic", source->GetSecondsToChangeMusic());
+	config.SetNumber("UserPitch", source->GetUserPitch());
 	Config_Array eventsArray = config.SetArray("Events");
 	const std::vector<AudioEvent*> events = source->GetEvents();
 	for (int i = 0; i < events.size(); i++)

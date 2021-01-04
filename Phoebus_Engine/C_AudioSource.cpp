@@ -8,7 +8,8 @@
 #include "C_Transform.h"
 #include "AudioEvent.h"
 
-C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f)
+C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f),
+musicChangeTime(30.0f),musicTimeCounter(0.0f),userPitch(1.0f)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
@@ -156,6 +157,18 @@ void C_AudioSource::OnEditor()
 			App->audioManager->ChangeRTPCValue(this->ID, "SourceVolume", volume);
 		}
 
+		actualname = "Seconds to change music" + suffixLabel;
+		float auxMusicChangeTime = musicChangeTime;
+		if (ImGui::InputFloat(actualname.c_str(), &auxMusicChangeTime, 1.0f, 2.0f, 3))
+		{
+			SetSecondsToChangeMusic(auxMusicChangeTime);
+		}
+		actualname = "Sound Pitch" + suffixLabel;
+		float auxUserPitch = userPitch;
+		if(ImGui::SliderFloat(actualname.c_str(), &auxUserPitch, 0.25f, 4.0f))
+		{
+			SetUserPitch(auxUserPitch);
+		}
 
 		ImGui::Separator();
 		ImGui::Unindent();
@@ -215,11 +228,26 @@ bool C_AudioSource::GameUpdate(float gameDT)
 {
 	if (owner != nullptr)
 	{
+		//Updates the RTPC variable that makes music blend possible
+		musicTimeCounter += gameDT;
+		if (musicTimeCounter >= musicChangeTime *2)
+		{
+			musicTimeCounter = 0.0f;
+		}
+
+		float rtpcVal = 0.0f;
+		if(musicChangeTime >0.0f) 
+			rtpcVal= musicTimeCounter * (100.0f / (musicChangeTime * 2.0f));
+
+		App->audioManager->ChangeRTPCValue(this->ID, "MusicBlendParameter", rtpcVal);
+
+		//Updates the audio obj transform 
 		C_Transform* transformComp = owner->GetComponent<C_Transform>();
 		float4x4 transform = transformComp->GetGlobalTransform();
 
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
+		//Changes audio pitch
 		float secs =60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
 		float overallPitch = (secs * 100);//TODO take into account user pitch too
 		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", overallPitch);
@@ -233,6 +261,8 @@ bool C_AudioSource::GameInit()
 	//SAME AS GAME UPDATE FOR THE MOMENT
 	if (owner != nullptr)
 	{
+		musicTimeCounter = 0.0f;
+
 		C_Transform* transformComp = owner->GetComponent<C_Transform>();
 		float4x4 transform = transformComp->GetGlobalTransform();
 
@@ -248,7 +278,6 @@ bool C_AudioSource::GameInit()
 				events[i]->StartPlaying();
 			}
 		}
-
 
 
 	}
@@ -332,4 +361,26 @@ void C_AudioSource::ResetAllAudioEvents()
 const std::vector<AudioEvent*> C_AudioSource::GetEvents() const
 {
 	return events;
+}
+
+void C_AudioSource::SetSecondsToChangeMusic(float newSeconds)
+{
+	musicChangeTime = max(0.0f, newSeconds);
+	musicTimeCounter = 0.0f;//resets the counter every time it is changed
+}
+
+float C_AudioSource::GetSecondsToChangeMusic() const
+{
+	return musicChangeTime;
+}
+
+void C_AudioSource::SetUserPitch(float newPitch)
+{
+	userPitch = max(0.25f, newPitch);
+	userPitch = min(userPitch, 4.0f);
+}
+
+float C_AudioSource::GetUserPitch() const
+{
+	return userPitch;
 }
