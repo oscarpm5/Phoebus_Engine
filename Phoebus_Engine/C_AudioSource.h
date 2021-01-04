@@ -26,8 +26,14 @@ public:
 	void DeleteAllAudioEvents();
 	void ResetAllAudioEvents();
 	const std::vector<AudioEvent*> GetEvents()const;
+	void SetSecondsToChangeMusic(float newSeconds);
+	float GetSecondsToChangeMusic()const;
+	void SetUserPitch(float newPitch);
+	float GetUserPitch()const;
 
 private:
+	float musicChangeTime;//user set variable, it controls when the music has to change
+	float musicTimeCounter;//just a timer
 	float volume;
 	float userPitch;
 	char newEvName[250] = "";
