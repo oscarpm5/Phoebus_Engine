@@ -7,6 +7,7 @@
 #include "C_AudioSource.h"
 #include "C_AudioListener.h"
 #include "C_Control.h"
+#include "C_ReverbZone.h"
 #include "Application.h"
 #include "imgui/imgui.h"
 
@@ -243,6 +244,10 @@ Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 		if (GetComponent<C_Control>() == nullptr)
 			ret = new C_Control(this, compID);
 
+	case ComponentType::REVERB_ZONE:
+		if (GetComponent<C_ReverbZone>() == nullptr)
+			ret = new C_ReverbZone(this, compID);
+
 	default:
 		break;
 	}
@@ -441,7 +446,11 @@ void GameObject::DrawOnEditorAllComponents()
 			if (ImGui::Selectable("Control Component##addComponent"))
 				CreateComponent(ComponentType::CONTROL);
 		}
-
+		if (GetComponent<C_ReverbZone>() == nullptr)
+		{
+			if (ImGui::Selectable("ReverbZone Component##addComponent"))
+				CreateComponent(ComponentType::REVERB_ZONE);
+		}
 
 		ImGui::EndPopup();
 	}

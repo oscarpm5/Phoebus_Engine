@@ -11,7 +11,8 @@ class GameObject;
 		CAMERA,
 		AUDIO_SOURCE,
 		AUDIO_LISTENER,
-		CONTROL
+		CONTROL,
+		REVERB_ZONE
 	};
 
 class Component

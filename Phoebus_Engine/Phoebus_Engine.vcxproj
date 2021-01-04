@@ -95,6 +95,7 @@
     <ClInclude Include="C_Control.h" />
     <ClInclude Include="C_Material.h" />
     <ClInclude Include="C_Mesh.h" />
+    <ClInclude Include="C_ReverbZone.h" />
     <ClInclude Include="C_Transform.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />
@@ -247,6 +248,7 @@
     <ClCompile Include="C_Control.cpp" />
     <ClCompile Include="C_Material.cpp" />
     <ClCompile Include="C_Mesh.cpp" />
+    <ClCompile Include="C_ReverbZone.cpp" />
     <ClCompile Include="C_Transform.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Hierarchy.cpp" />

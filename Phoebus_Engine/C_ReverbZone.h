@@ -1,0 +1,27 @@
+#ifndef __C_REVERBZONE__
+#define __C_REVERBZONE__
+
+#include "Component.h"
+//class AABB;
+
+class C_ReverbZone :public Component
+{
+public:
+	C_ReverbZone(GameObject* owner, unsigned int ID);
+	~C_ReverbZone();
+	void OnEditor();
+	bool GameUpdate(float gameDT)override;
+	bool GameInit()override;
+	bool Update(float dt);
+
+	void SetReverbZone(float r);
+	void UpdateReverbZoneDimension();
+	void GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector);
+	
+private:
+	float radius;
+	bool dirtyUpdate;
+	AABB revZone;
+};
+
+#endif // !__C_REVERBZONE__

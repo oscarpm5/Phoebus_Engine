@@ -520,6 +520,9 @@
     <ClInclude Include="C_Control.h">
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="C_ReverbZone.h">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
@@ -769,6 +772,9 @@
       <Filter>Sources\Wwise</Filter>
     </ClCompile>
     <ClCompile Include="C_Control.cpp">
+      <Filter>Sources\Game Object\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="C_ReverbZone.cpp">
       <Filter>Sources\Game Object\Components</Filter>
     </ClCompile>
   </ItemGroup>

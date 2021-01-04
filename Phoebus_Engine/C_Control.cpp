@@ -117,32 +117,37 @@ bool C_Control::ManageMovement(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
 		auxPos.z -= auxSpeed;
+		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z - speed * dt));
 		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
 		auxPos.z += auxSpeed;
+		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z + speed * dt));
 		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		auxPos.x += auxSpeed;
+		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x + speed * dt, auxPos.y, auxPos.z));
 		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		auxPos.x -= auxSpeed;
+		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x - speed * dt, auxPos.y, auxPos.z));
 		//owner->UpdateChildTransforms();
 	}
 
-	auxPos = owner->GetComponent<C_Transform>()->GetGlobalPosition() + auxPos;
-
-	owner->GetComponent<C_Transform>()->SetGlobalPosition(auxPos);
-	//owner->UpdateChildTransforms();
+	if (ret == true) {
+		auxPos = owner->GetComponent<C_Transform>()->GetGlobalPosition() + auxPos;
+		owner->GetComponent<C_Transform>()->SetGlobalPosition(auxPos);
+		//owner->UpdateChildTransforms();
+	}
 
 	return ret;
 }
