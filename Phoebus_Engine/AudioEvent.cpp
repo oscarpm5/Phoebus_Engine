@@ -2,7 +2,7 @@
 #include "Globals.h"
 
 AudioEvent::AudioEvent(std::string eventName, AudioEventType type, float changeTrackTime):
-	eventName(eventName),type(type),changeTrackTime(changeTrackTime),hasPlayed(false),currentTime(0.0f)
+	eventName(eventName),type(type),changeTrackTime(changeTrackTime),hasPlayed(false),currentTime(0.0f),toDelete(false)
 {
 	if (this->type == AudioEventType::MUSIC)
 	{
@@ -17,6 +17,7 @@ AudioEvent::AudioEvent(std::string eventName, AudioEventType type, float changeT
 
 AudioEvent::~AudioEvent()
 {
+	toDelete = true;
 	hasPlayed = false;
 	eventName.clear();
 	changeTrackTime = -1.0f;

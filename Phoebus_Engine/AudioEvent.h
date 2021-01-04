@@ -29,6 +29,8 @@ private:
 	float changeTrackTime;
 	float currentTime;
 	std::string eventName;
+public:
+	bool toDelete;
 };
 
 

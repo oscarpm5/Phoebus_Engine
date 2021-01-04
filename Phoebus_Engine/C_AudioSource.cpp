@@ -107,7 +107,7 @@ void C_AudioSource::OnEditor()
 					actualname = "Delete Event" + suffixLabel + events[i]->GetEventName();
 					if (ImGui::Button(actualname.c_str()))
 					{
-						DeleteAudioEvent(events[i]->GetEventName());
+						events[i]->toDelete=true;
 					}
 				}
 				else if (events[i]->GetType() == AudioEventType::MUSIC)
@@ -117,7 +117,7 @@ void C_AudioSource::OnEditor()
 					actualname = "Delete Event" + suffixLabel + events[i]->GetEventName();
 					if (ImGui::Button(actualname.c_str()))
 					{
-						DeleteAudioEvent(events[i]->GetEventName());
+						events[i]->toDelete = true;
 					}
 				}
 			}
@@ -198,6 +198,17 @@ void C_AudioSource::OnEditor()
 	}
 	if (!activeAux)ImGui::PopStyleColor();
 
+}
+
+bool C_AudioSource::Update(float dt)
+{
+
+	for (int i = events.size()-1; i>=0; i--)
+	{
+		if(events[i]->toDelete)
+		DeleteAudioEvent(events[i]->GetEventName());
+	}
+	return false;
 }
 
 bool C_AudioSource::GameUpdate(float gameDT)
