@@ -9,7 +9,7 @@
 #include "AudioEvent.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f),
-musicChangeTime(30.0f),musicTimeCounter(0.0f)
+musicChangeTime(30.0f),musicTimeCounter(0.0f),userPitch(1.0f)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
