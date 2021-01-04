@@ -13,6 +13,8 @@ public:
 	bool GameInit()override;
 	bool ManageMovement(float gameDT);
 	bool Update(float dt);
+	float GetSpeed()const;
+	void SetSpeed(float newSpeed);
 private:
 	float speed;
 };

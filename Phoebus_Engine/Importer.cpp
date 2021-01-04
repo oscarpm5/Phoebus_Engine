@@ -35,6 +35,7 @@
 #include "C_Transform.h"
 #include "C_Camera.h"
 #include "C_AudioSource.h"
+#include "C_Control.h"
 #include "Config.h"
 #include "ModuleResourceManager.h"
 #include "Color.h"
@@ -1060,6 +1061,13 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
 					break;
+				case ComponentType::CONTROL:
+				{
+
+					C_Control* control = (C_Control*)component;
+					control->SetSpeed(comp.GetNumber("Speed"));
+					break;
+				}
 				default:
 					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
 					break;
@@ -1125,6 +1133,9 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 		break;
 	case ComponentType::AUDIO_SOURCE:
 		Audio::SaveComponentAudioSource(config, component);
+		break;
+	case ComponentType::CONTROL:
+		Controller::SaveComponentController(config, component);
 		break;
 	default:
 		//how did you even get here smh
@@ -1240,4 +1251,10 @@ void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioS
 	//TODO complete this method
 	config.SetNumber("Volume", source->GetVolume());
 
+}
+
+void Importer::Controller::SaveComponentController(Config& config, Component* controller)
+{
+	C_Control* control = (C_Control*)controller;
+	config.SetNumber("Speed", control->GetSpeed());
 }

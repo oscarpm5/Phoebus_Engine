@@ -7,7 +7,7 @@
 
 C_Control::C_Control(GameObject* owner, unsigned int ID) :Component(ComponentType::CONTROL, owner, ID), speed(1)
 {
-	App->editor3d->selectedGameObjs.push_back(owner);
+	//App->editor3d->selectedGameObjs.push_back(owner);
 }
 
 C_Control::~C_Control()
@@ -91,49 +91,73 @@ void C_Control::OnEditor()
 
 bool C_Control::GameUpdate(float gameDT)
 {
-	
+	if (this->IsActive())
+	{
+		ManageMovement(gameDT);
+	}
 	return true;
 }
 
 bool C_Control::GameInit()
 {
-	speed = 1;
+	//speed = 1;
 	return true;
 }
 
 bool C_Control::ManageMovement(float dt)
 {
 	bool ret = false;
-	float3 auxPos = owner->GetComponent<C_Transform>()->GetGlobalPosition();
-
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	float3 auxPos(0.0f,0.0f,0.0f);
+	float auxSpeed = speed * dt;
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
 	{
-		owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z - speed * dt));
-		owner->UpdateChildTransforms();
+		auxSpeed *= 3;
 	}
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
 	{
-		owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z + speed * dt));
-		owner->UpdateChildTransforms();
+		auxPos.z -= auxSpeed;
+		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z - speed * dt));
+		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
 	{
-		owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x + speed * dt, auxPos.y, auxPos.z));
-		owner->UpdateChildTransforms();
+		auxPos.z += auxSpeed;
+		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z + speed * dt));
+		//owner->UpdateChildTransforms();
 	}
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
-		owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x - speed * dt, auxPos.y, auxPos.z));
-		owner->UpdateChildTransforms();
+		auxPos.x += auxSpeed;
+		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x + speed * dt, auxPos.y, auxPos.z));
+		//owner->UpdateChildTransforms();
 	}
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	{
+		auxPos.x -= auxSpeed;
+		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x - speed * dt, auxPos.y, auxPos.z));
+		//owner->UpdateChildTransforms();
+	}
+
+	auxPos = owner->GetComponent<C_Transform>()->GetGlobalPosition() + auxPos;
+
+	owner->GetComponent<C_Transform>()->SetGlobalPosition(auxPos);
+	//owner->UpdateChildTransforms();
+
 	return ret;
 }
 
 bool C_Control::Update(float dt)
 {
-	if (owner->isActive && owner->focused && this->IsActive())
-	{
-		ManageMovement(dt);
-	}
 	return true;
+}
+
+float C_Control::GetSpeed() const
+{
+	return speed;
+}
+
+void C_Control::SetSpeed(float newSpeed)
+{
+	speed = newSpeed;
 }

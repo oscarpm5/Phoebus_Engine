@@ -71,6 +71,11 @@ namespace Importer
 
 	}
 
+	namespace Controller
+	{
+		void SaveComponentController(Config& config, Component* controller);
+	}
+
 
 	//Dont use this directly
 	unsigned int LoadPureImageGL(const char* path);
