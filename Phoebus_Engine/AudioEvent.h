@@ -14,20 +14,15 @@ public:
 	AudioEvent(std::string eventName, AudioEventType type,float changeTrackTime=0.0f);
 	~AudioEvent();
 	std::string GetEventName()const;
-	void ResetPlayed();
 	bool GetPlayed()const;
 	void StartPlaying();
+	void ResetPlayed();
 	AudioEventType GetType()const;
-	float GetTrackTimeChange()const;
-	void SetTrackTimeChange(float newTime);
-	void ResetTimer();
 
 private:
 	bool hasPlayed; //this bool shows whether the audio has been played or not
 
 	AudioEventType type;
-	float changeTrackTime;
-	float currentTime;
 	std::string eventName;
 public:
 	bool toDelete;

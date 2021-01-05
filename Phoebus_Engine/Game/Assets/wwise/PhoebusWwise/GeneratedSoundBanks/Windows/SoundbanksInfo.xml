@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
 	<RootPaths>
-		<ProjectRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\</ProjectRoot>
-		<SourceFilesRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ProjectRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\</ProjectRoot>
+		<SourceFilesRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
 	<MediaFilesNotInAnyBank/>
 	<SoundBanks>
-		<SoundBank Id="1355168291" Language="SFX" Hash="2985180329">
+		<SoundBank Id="1355168291" Language="SFX" Hash="2224965401">
 			<ObjectPath>Init</ObjectPath>
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
@@ -19,12 +19,19 @@
 				<AuxBus Id="3744218805" Name="ReverbBus" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\ReverbBus"/>
 			</IncludedAuxBusses>
 		</SoundBank>
-		<SoundBank Id="3161908922" Language="SFX" Hash="2272829885">
+		<SoundBank Id="3161908922" Language="SFX" Hash="580820334">
 			<ObjectPath>\SoundBanks\Default Work Unit\Main</ObjectPath>
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>
 			<IncludedEvents>
-				<Event Id="1869375877" Name="Halo_Player" ObjectPath="\Events\Default Work Unit\Halo_Player"/>
+				<Event Id="1869375877" Name="Halo_Player" ObjectPath="\Events\Default Work Unit\Halo_Player">
+					<IncludedMemoryFiles>
+						<File Id="897631041" Language="SFX">
+							<ShortName>HaloTheme.wav</ShortName>
+							<Path>SFX\HaloTheme_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="837780346" Name="Laser_Player" ObjectPath="\Events\Default Work Unit\Laser_Player">
 					<IncludedMemoryFiles>
 						<File Id="355308146" Language="SFX">
@@ -34,8 +41,21 @@
 					</IncludedMemoryFiles>
 				</Event>
 				<Event Id="4091047182" Name="PauseAll" ObjectPath="\Events\Default Work Unit\PauseAll"/>
-				<Event Id="2932040671" Name="Play_Music" ObjectPath="\Events\Default Work Unit\Play_Music"/>
+				<Event Id="3853895036" Name="PauseObj" ObjectPath="\Events\Default Work Unit\PauseObj"/>
+				<Event Id="2932040671" Name="Play_Music" ObjectPath="\Events\Default Work Unit\Play_Music">
+					<IncludedMemoryFiles>
+						<File Id="382387716" Language="SFX">
+							<ShortName>Starwars.wav</ShortName>
+							<Path>SFX\Starwars_D79FB2B7.wem</Path>
+						</File>
+						<File Id="897631041" Language="SFX">
+							<ShortName>HaloTheme.wav</ShortName>
+							<Path>SFX\HaloTheme_D79FB2B7.wem</Path>
+						</File>
+					</IncludedMemoryFiles>
+				</Event>
 				<Event Id="3240900869" Name="ResumeAll" ObjectPath="\Events\Default Work Unit\ResumeAll"/>
+				<Event Id="3006999939" Name="ResumeObj" ObjectPath="\Events\Default Work Unit\ResumeObj"/>
 				<Event Id="2526740212" Name="StarWars_Player" ObjectPath="\Events\Default Work Unit\StarWars_Player">
 					<IncludedMemoryFiles>
 						<File Id="382387716" Language="SFX">
@@ -44,6 +64,7 @@
 						</File>
 					</IncludedMemoryFiles>
 				</Event>
+				<Event Id="3120493540" Name="StopObj" ObjectPath="\Events\Default Work Unit\StopObj"/>
 			</IncludedEvents>
 			<IncludedMemoryFiles>
 				<File Id="382387716" Language="SFX">

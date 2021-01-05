@@ -35,6 +35,7 @@ public:
 	void ApplyReverb(float revValue, const char* targetBus);
 
 private:
+
 	float musicChangeTime;//user set variable, it controls when the music has to change
 	float musicTimeCounter;//just a timer
 	float volume;

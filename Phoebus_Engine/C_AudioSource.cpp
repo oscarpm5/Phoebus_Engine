@@ -45,8 +45,42 @@ void C_AudioSource::OnEditor()
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		ImGui::Spacing();
 
+		GameStateEnum currentGameState = App->GetGameState();
+
 		actualname = "IS ACTIVE" + suffixLabel + "Checkbox";
-		ImGui::Checkbox(actualname.c_str(), &active);
+		if (ImGui::Checkbox(actualname.c_str(), &active))
+		{
+			if (!active)
+			{
+				//stop sound if offline pause sound if online
+
+				if (currentGameState == GameStateEnum::STOPPED)
+				{
+					for (int i = 0; i < events.size(); i++)
+					{
+						//TODO stop curr object sounds here
+						App->audioManager->StopObjSounds(this->ID);
+					}
+				}
+				else if (currentGameState != GameStateEnum::UNKNOWN)
+				{
+					for (int i = 0; i < events.size(); i++)
+					{
+						//TODO pause curr object sounds here
+						App->audioManager->PauseObjSounds(this->ID);
+					}
+				}
+			}
+			else if (currentGameState != GameStateEnum::STOPPED && currentGameState != GameStateEnum::UNKNOWN)
+			{
+				for (int i = 0; i < events.size(); i++)
+				{
+					//TODO resume playing (only in game)
+					App->audioManager->ResumeObjSounds(this->ID);
+
+				}
+			}
+		}
 
 		ImGui::Separator();
 		ImGui::Indent();
@@ -56,7 +90,7 @@ void C_AudioSource::OnEditor()
 		//TODO actual Component code here
 
 		bool disableButtons = true;
-		if (App->GetGameState() == GameStateEnum::STOPPED)//makes it so the audio events can only be edited when in offline mode
+		if (currentGameState == GameStateEnum::STOPPED)//makes it so the audio events can only be edited when in offline mode
 		{
 			disableButtons = false;
 		}

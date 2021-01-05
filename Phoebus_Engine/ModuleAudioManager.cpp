@@ -379,10 +379,30 @@ void ModuleAudioManager::PauseAllSounds() const
 		AK::SoundEngine::PostEvent("PauseAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
 }
 
+//Note that this is not a master resume, that means that will only remove 1 pause action if many
 void ModuleAudioManager::ResumeAllSounds() const
 {
 	if (enabled)
 		AK::SoundEngine::PostEvent("ResumeAll", AK_INVALID_GAME_OBJECT); //Invalid Game Object also means all game objects
+}
+
+void ModuleAudioManager::PauseObjSounds(unsigned int componentID)
+{
+	if (enabled)
+		AK::SoundEngine::PostEvent("PauseObj", componentID);
+}
+
+//Note that this is not a master resume, that means that will only remove 1 pause action if many
+void ModuleAudioManager::ResumeObjSounds(unsigned int componentID)
+{
+	if (enabled)
+		AK::SoundEngine::PostEvent("ResumeObj", componentID);
+}
+
+void ModuleAudioManager::StopObjSounds(unsigned int componentID)
+{
+	if (enabled)
+		AK::SoundEngine::PostEvent("StopObj", componentID);
 }
 
 void ModuleAudioManager::AddRevZone(C_ReverbZone* revZone)

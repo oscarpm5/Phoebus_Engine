@@ -41,7 +41,6 @@
 						<Action Name="" ID="{0D220BD1-E09A-4B0A-856C-1F3693153FCA}" ShortID="1003108645">
 							<PropertyList>
 								<Property Name="ActionType" Type="int16" Value="10"/>
-								<Property Name="MasterResume" Type="bool" Value="True"/>
 								<Property Name="Scope" Type="int16" Value="1"/>
 							</PropertyList>
 							<ReferenceList/>
@@ -67,6 +66,36 @@
 									<ObjectRef Name="MusicBlend" ID="{577E31AA-8101-4FAB-ABBA-568A5F6A6475}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
 								</Reference>
 							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="ResumeObj" ID="{35D41927-2D4B-417C-948A-CEA75EB4CF0A}">
+					<ChildrenList>
+						<Action Name="" ID="{31823AD9-E799-4A5A-AE3E-E257AB115669}" ShortID="901739537">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="10"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="PauseObj" ID="{2AA496AA-C2B1-4C4C-8E0C-9129E47EA418}">
+					<ChildrenList>
+						<Action Name="" ID="{5494101C-8988-45DB-B7EB-27E595CACE86}" ShortID="471811012">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="8"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="StopObj" ID="{CDB6DB26-0D60-427A-BDF3-F98E2D62C9D3}">
+					<ChildrenList>
+						<Action Name="" ID="{C4F15ED4-3591-41CC-BE2F-3BEF1DEEFA1C}" ShortID="978367061">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="3"/>
+							</PropertyList>
+							<ReferenceList/>
 						</Action>
 					</ChildrenList>
 				</Event>

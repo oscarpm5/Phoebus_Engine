@@ -39,6 +39,12 @@ public:
 	void PauseAllSounds()const;
 	void ResumeAllSounds()const;
 
+	void PauseObjSounds(unsigned int componentID);
+	void ResumeObjSounds(unsigned int componentID);
+	void StopObjSounds(unsigned int componentID);
+
+
+
 	void AddRevZone(C_ReverbZone* revZone);
 	bool RemoveRevZone(C_ReverbZone* revZone);
 	void AuxSendValues(AkReal32 value, const char* targetBus, unsigned long listenerID, unsigned long sourceID) const;
