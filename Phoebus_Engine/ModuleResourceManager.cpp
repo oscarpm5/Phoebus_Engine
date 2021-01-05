@@ -823,7 +823,9 @@ bool ModuleResourceManager::ReleaseSingleResource(unsigned int uid)
 		//release resource here TODO
 
 		ret = true;
-	}	return ret;
+	}
+
+	return ret;
 }
 
 void ModuleResourceManager::SaveResource(Resource& r)

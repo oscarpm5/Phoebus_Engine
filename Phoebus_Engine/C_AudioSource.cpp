@@ -289,7 +289,8 @@ bool C_AudioSource::GameUpdate(float gameDT)
 
 		//Changes audio pitch
 
-		float modifier = userPitch * App->GetTimeScale();// *PitchCalculationFromDT(gameDT);
+		float modifier = userPitch * App->GetTimeScale() * PitchCalculationFromDT(App->GetGameDT());
+
 		//userPitch = the individual pitcxh of each source
 		//timeScale = the game speed that affects everything. Acces it in-engine via config
 		// pitch calculations = taking into account if engine is NOT going at 60fps
@@ -440,13 +441,15 @@ float C_AudioSource::PitchCalculationFromDT(float gamedt) const
 
 	/*
 	
-	speed x1 --- 1s / 60f == 0.016º dt		therefore		dt / (1s / 60f) = xN	
+	speed x1 --- 1s / 60f == 0.016º dt		inverse correlation -> dt is 1/dt therefore -> (1/60) is to 1 AS (1/ dt) is to N
 	speed xN --- dt
 	
 	
 	*/
+	float ratio = 1.0/60.0;
+	float mod = ratio / gamedt;
 
-	return gamedt/(1/60);
+	return mod;
 }
 
 bool C_AudioSource::CheckReverbZones()
