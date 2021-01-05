@@ -9,8 +9,8 @@
 #include "C_Transform.h"
 #include "ModuleRenderer3D.h"
 
-C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID), 
-dimensions(1.0f,1.0f,1.0f), dirtyUpdate(false), targetBus("ReverbBus"), revValue(1)
+C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID),
+dimensions(1.0f, 1.0f, 1.0f), dirtyUpdate(false), targetBus("ReverbBus"), revValue(1)
 {
 	UpdateReverbZoneDimension();
 	App->audioManager->AddRevZone(this);
@@ -50,9 +50,9 @@ void C_ReverbZone::OnEditor()
 		//TODO actual Component code here
 
 		actualname = "Dimensions" + suffixLabel;
-		float auxDimensions[3] = {dimensions.x,dimensions.y,dimensions.z};
+		float auxDimensions[3] = { dimensions.x,dimensions.y,dimensions.z };
 
-		if (ImGui::DragFloat3(actualname.c_str(), auxDimensions, 0.1f,0.0f, 1000.0f))
+		if (ImGui::DragFloat3(actualname.c_str(), auxDimensions, 0.1f, 0.0f, 1000.0f))
 		{
 			SetReverbZone(float3(auxDimensions[0], auxDimensions[1], auxDimensions[2]));
 			dirtyUpdate = true;//Dirty update not needed??
@@ -72,12 +72,12 @@ void C_ReverbZone::OnEditor()
 		delete[] bus_name;
 
 		actualname = "Reverb Intensity" + suffixLabel;
-		
+
 		ImGui::DragFloat(actualname.c_str(), &revValue, 0.1, 0.0, 12.0, "%.1f");
 
 		ImGui::Separator();
 		ImGui::Unindent();
-		
+
 		actualname = "Delete ReverbZone Component" + suffixLabel;
 		if (ImGui::BeginPopup(actualname.c_str(), ImGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -137,7 +137,7 @@ bool C_ReverbZone::Update(float dt)
 
 	if (active)
 	{
-		std::vector<float3> aabbVec; 
+		std::vector<float3> aabbVec;
 		GetAABBPoints(revZone, aabbVec);
 		App->renderer3D->AddBoxToDraw(aabbVec, Color(Red));
 	}
@@ -152,9 +152,15 @@ void C_ReverbZone::SetReverbZone(float3 dimensions)
 
 void C_ReverbZone::UpdateReverbZoneDimension()
 {
-	//should we clear memory of previous AABB or since we're rewriting over it it's not necessary? TODO -> (OSCAR) Not necessary if we do not use Enclose()
-	//revZone = AABB(Sphere(this->owner->GetComponent<C_Transform>()->GetGlobalPosition(), radius));
-	revZone = AABB::FromCenterAndSize(this->owner->GetComponent<C_Transform>()->GetGlobalPosition(),dimensions);
+	float3 auxPos = float3::zero;
+	if (this->owner && this->owner->GetComponent<C_Transform>())
+	{
+		auxPos = this->owner->GetComponent<C_Transform>()->GetGlobalPosition();
+	}
+
+		//should we clear memory of previous AABB or since we're rewriting over it it's not necessary? TODO -> (OSCAR) Not necessary if we do not use Enclose()
+		//revZone = AABB(Sphere(this->owner->GetComponent<C_Transform>()->GetGlobalPosition(), radius));
+	revZone = AABB::FromCenterAndSize(auxPos, dimensions);
 }
 
 void C_ReverbZone::GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector)//TODO This code is copied from somewhere else in the code??? consider making a single method
@@ -176,4 +182,9 @@ void C_ReverbZone::GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector)//
 bool C_ReverbZone::DoesReverbZoneContainPoint(float3 point) const
 {
 	return revZone.Contains(point);
+}
+
+float3 C_ReverbZone::GetDimensions() const
+{
+	return dimensions;
 }

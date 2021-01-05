@@ -17,7 +17,7 @@ public:
 	void UpdateReverbZoneDimension();
 	void GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector);
 	bool DoesReverbZoneContainPoint(float3 point) const;
-	
+	float3 GetDimensions()const;
 	std::string targetBus; //these 2 need to be in public. Do not move. -Adri
 	float revValue;
 

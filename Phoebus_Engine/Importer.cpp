@@ -36,6 +36,7 @@
 #include "C_Camera.h"
 #include "C_AudioSource.h"
 #include "C_Control.h"
+#include "C_ReverbZone.h"
 #include "Config.h"
 #include "ModuleResourceManager.h"
 #include "Color.h"
@@ -1058,7 +1059,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					source->SetVolume(comp.GetNumber("Volume"));
 					source->SetSecondsToChangeMusic(comp.GetNumber("SecondsToNextMusic"));
 					source->SetUserPitch(comp.GetNumber("UserPitch"));
-					Config_Array confArray= comp.GetArray("Events");
+					Config_Array confArray = comp.GetArray("Events");
 					for (int j = 0; j < confArray.GetSize(); j++)
 					{
 						Config& eventConf = confArray.GetNode(j);
@@ -1066,6 +1067,17 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 						AudioEventType evType = (AudioEventType)(int)eventConf.GetNumber("Type");
 						source->CreateAudioEvent(evName, evType);
 					}
+				}
+				break;
+				case ComponentType::REVERB_ZONE:
+				{
+					C_ReverbZone* reverb = (C_ReverbZone*)component;
+					reverb->targetBus = comp.GetString("TargetBus");
+					reverb->revValue = comp.GetNumber("RevValue");
+					reverb->SetReverbZone(float3(
+						comp.GetNumber("DimensionsX"), 
+						comp.GetNumber("DimensionsY"), 
+						comp.GetNumber("DimensionsZ")));
 				}
 				break;
 				case ComponentType::TRANSFORM:
@@ -1143,6 +1155,9 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 		break;
 	case ComponentType::AUDIO_SOURCE:
 		Audio::SaveComponentAudioSource(config, component);
+		break;
+	case ComponentType::REVERB_ZONE:
+		Audio::SaveComponentReverbZone(config, component);
 		break;
 	case ComponentType::CONTROL:
 		Controller::SaveComponentController(config, component);
@@ -1270,6 +1285,18 @@ void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioS
 		c.SetString("Name", events[i]->GetEventName().c_str());
 		c.SetNumber("Type", (int)events[i]->GetType());
 	}
+
+}
+
+void Importer::Audio::SaveComponentReverbZone(Config& config, Component* reverbZone)
+{
+	C_ReverbZone* reverb = (C_ReverbZone*)reverbZone;
+	float3 dimensions = reverb->GetDimensions();
+	config.SetNumber("DimensionsX", dimensions.x);
+	config.SetNumber("DimensionsY", dimensions.y);
+	config.SetNumber("DimensionsZ", dimensions.z);
+	config.SetString("TargetBus", reverb->targetBus.c_str());
+	config.SetNumber("RevValue", reverb->revValue);
 
 }
 

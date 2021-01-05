@@ -68,8 +68,9 @@ namespace Importer
 	{
 		void SaveComponentAudioListener(Config& config, Component* audioListener);
 		void SaveComponentAudioSource(Config& config, Component* audioSource);
-
+		void SaveComponentReverbZone(Config& config, Component* reverbZone);
 	}
+
 
 	namespace Controller
 	{
