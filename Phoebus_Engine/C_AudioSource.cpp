@@ -232,7 +232,7 @@ bool C_AudioSource::GameUpdate(float gameDT)
 	{
 		//Check reverb Zones to see if they affect this emitter
 		CheckReverbZones();
-		
+
 		//Updates the RTPC variable that makes music blend possible
 		musicTimeCounter += gameDT;
 		if (musicTimeCounter >= musicChangeTime * 2)
@@ -417,5 +417,9 @@ bool C_AudioSource::CheckReverbZones()
 
 void C_AudioSource::ApplyReverb(float revValue, const char* targetBus)
 {
-	App->audioManager->AuxSendValues(revValue, targetBus, App->audioManager->activeListener->GetResourceID(), this->ID);
+	if (App->audioManager->activeListener != nullptr)
+	{
+		App->audioManager->AuxSendValues(revValue, targetBus, App->audioManager->activeListener->GetResourceID(), this->ID);
+	}
+
 }
