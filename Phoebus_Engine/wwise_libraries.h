@@ -10,9 +10,9 @@
 #include "Wwise/AK/SoundEngine/Common/AkStreamMgrModule.h"
 #include "Wwise/AK/Tools/Common/AkPlatformFuncs.h"
 
-
-
 #include "Wwise/AK/SpatialAudio/Common/AkSpatialAudio.h"
+
+
 
 #ifndef AK_OPTIMIZED //AK_OPTIMIZED is defined by the precompiler only in release
 
@@ -22,6 +22,7 @@
 #pragma comment(lib, "Wwise/Profile(StaticCRT)/lib/AkMemoryMgr.lib")
 #pragma comment(lib, "Wwise/Profile(StaticCRT)/lib/AkStreamMgr.lib")
 #pragma comment(lib, "Wwise/Profile(StaticCRT)/lib/AkSpatialAudio.lib")
+#pragma comment(lib, "Wwise/Profile(StaticCRT)/lib/AkRoomVerbFX.lib")
 
 #include "Wwise/AK/Comm/AkCommunication.h"
 #pragma comment(lib, "Wwise/Profile(StaticCRT)/lib/CommunicationCentral.lib")
@@ -34,6 +35,7 @@
 #pragma comment(lib, "Wwise/Release(StaticCRT)/lib/AkMemoryMgr.lib")
 #pragma comment(lib, "Wwise/Release(StaticCRT)/lib/AkStreamMgr.lib")
 #pragma comment(lib, "Wwise/Release(StaticCRT)/lib/AkSpatialAudio.lib")
+#pragma comment(lib, "Wwise/Release(StaticCRT)/lib/AkRoomVerbFX.lib")
 
 #endif // !AK_OPTIMIZED
 

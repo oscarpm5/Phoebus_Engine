@@ -9,7 +9,7 @@
 #include "C_Transform.h"
 #include "ModuleRenderer3D.h"
 
-C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID), radius(1), dirtyUpdate(false), targetBus(""), revValue(1)
+C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID), radius(1), dirtyUpdate(false), targetBus("ReverbBus"), revValue(1)
 {
 	UpdateReverbZoneDimension();
 	App->audioManager->AddRevZone(this);

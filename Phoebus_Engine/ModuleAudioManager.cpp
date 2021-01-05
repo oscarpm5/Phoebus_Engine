@@ -10,6 +10,7 @@
 #include "ModuleEditor3D.h"
 #include "GameObject.h"
 #include "C_ReverbZone.h"
+#include "Wwise/AK/Plugin/AkRoomVerbFXFactory.h" //room reverb
 
 CAkFilePackageLowLevelIOBlocking g_lowLevelIO;
 
@@ -143,6 +144,12 @@ bool ModuleAudioManager::Init()
 	//LOAD SOUNDBANKS
 	// Setup banks path
 
+
+	//AK::InitAkRoomVerbFX(AK::SoundEngine::GetGlobalPluginContext());
+
+	
+	
+
 	g_lowLevelIO.SetBasePath(AKTEXT("Assets/wwise/PhoebusWwise/GeneratedSoundBanks/Windows/"));
 	AK::StreamMgr::SetCurrentLanguage(AKTEXT("English(US)"));
 	// Load banks synchronously (from file name).
@@ -152,6 +159,9 @@ bool ModuleAudioManager::Init()
 	AKRESULT eResult = AK::SoundEngine::LoadBank("Init.bnk", bankID);
 
 	//assert(eResult != AK_Success);
+
+
+
 
 	eResult = AK::SoundEngine::LoadBank("Main.bnk", bankID);
 

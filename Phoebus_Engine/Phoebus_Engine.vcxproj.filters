@@ -523,6 +523,9 @@
     <ClInclude Include="C_ReverbZone.h">
       <Filter>Sources\Game Object\Components</Filter>
     </ClInclude>
+    <ClInclude Include="Wwise\AK\Plugin\AkRoomVerbFXFactory.h">
+      <Filter>Sources\Wwise\Includes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ModuleInput.cpp">
