@@ -400,12 +400,16 @@ bool C_AudioSource::CheckReverbZones()
 
 		for (int i = 0; i < App->audioManager->revAreas.size(); i++)
 		{
+
 			float value = 0.0;
-			//if (App->audioManager->revAreas[i]->CheckCollision(t->GetTranslation()))
-			if (App->audioManager->revAreas[i]->DoesReverbZoneContainPoint(myPosition))
+			if (App->audioManager->revAreas[i]->IsActive())
 			{
-				value = App->audioManager->revAreas[i]->revValue;
-				ret = true;
+				//if (App->audioManager->revAreas[i]->CheckCollision(t->GetTranslation()))
+				if (App->audioManager->revAreas[i]->DoesReverbZoneContainPoint(myPosition))
+				{
+					value = App->audioManager->revAreas[i]->revValue;
+					ret = true;
+				}
 			}
 			ApplyReverb(value, App->audioManager->revAreas[i]->targetBus.c_str());
 		}

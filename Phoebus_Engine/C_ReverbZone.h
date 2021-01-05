@@ -13,7 +13,7 @@ public:
 	bool GameInit()override;
 	bool Update(float dt);
 
-	void SetReverbZone(float r);
+	void SetReverbZone(float3 dimensions);
 	void UpdateReverbZoneDimension();
 	void GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector);
 	bool DoesReverbZoneContainPoint(float3 point) const;
@@ -22,7 +22,7 @@ public:
 	float revValue;
 
 private:
-	float radius;
+	float3 dimensions;
 	bool dirtyUpdate;
 	AABB revZone;
 };
