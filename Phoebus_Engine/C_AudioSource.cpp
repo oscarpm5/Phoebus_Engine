@@ -11,7 +11,7 @@
 #include "AK/SoundEngine/Common/AkTypes.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f),
-musicChangeTime(30.0f), musicTimeCounter(0.0f), userPitch(1.0f)
+musicChangeTime(30.0f), musicTimeCounter(0.0f), userPitch(1.0f), scalingMod(50)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
@@ -288,9 +288,18 @@ bool C_AudioSource::GameUpdate(float gameDT)
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
 		//Changes audio pitch
-		//float secs = 60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
+
+		float modifier = userPitch * App->GetTimeScale();// *PitchCalculationFromDT(gameDT);
+		//userPitch = the individual pitcxh of each source
+		//timeScale = the game speed that affects everything. Acces it in-engine via config
+		// pitch calculations = taking into account if engine is NOT going at 60fps
+
+
+		//float secs = 60 * gameDT * App->GetTimeScale();
 		//float overallPitch = (secs * 100);//TODO take into account user pitch too
-		//App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", overallPitch);
+		//userPitch
+
+		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", modifier * 100);
 
 	}
 	return true;
@@ -423,6 +432,21 @@ void C_AudioSource::SetUserPitch(float newPitch)
 float C_AudioSource::GetUserPitch() const
 {
 	return userPitch;
+}
+
+float C_AudioSource::PitchCalculationFromDT(float gamedt) const
+{
+	//60 FPS is target and will be considered speed x1
+
+	/*
+	
+	speed x1 --- 1s / 60f == 0.016º dt		therefore		dt / (1s / 60f) = xN	
+	speed xN --- dt
+	
+	
+	*/
+
+	return gamedt/(1/60);
 }
 
 bool C_AudioSource::CheckReverbZones()
