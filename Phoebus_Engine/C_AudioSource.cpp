@@ -8,6 +8,7 @@
 #include "C_Transform.h"
 #include "AudioEvent.h"
 #include "C_ReverbZone.h"
+#include "AK/SoundEngine/Common/AkTypes.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f),
 musicChangeTime(30.0f), musicTimeCounter(0.0f), userPitch(1.0f)
@@ -252,9 +253,9 @@ bool C_AudioSource::GameUpdate(float gameDT)
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
 		//Changes audio pitch
-		float secs = 60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
-		float overallPitch = (secs * 100);//TODO take into account user pitch too
-		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", overallPitch);
+		//float secs = 60 * gameDT * App->GetTimeScale();//TODO adjust the formula THIS IS JSUT A PLACEHOLDER
+		//float overallPitch = (secs * 100);//TODO take into account user pitch too
+		//App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", overallPitch);
 
 	}
 	return true;
@@ -416,8 +417,5 @@ bool C_AudioSource::CheckReverbZones()
 
 void C_AudioSource::ApplyReverb(float revValue, const char* targetBus)
 {
-	
-	//TODO: APPLY REVERB ADRI
-	LOG("Yuhuu");
-
+	App->audioManager->AuxSendValues(revValue, targetBus, App->audioManager->activeListener->GetResourceID(), this->ID);
 }

@@ -35,6 +35,7 @@
 								</RTPC>
 							</RTPCList>
 						</Property>
+						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
 						<Property Name="Volume" Type="Real64">
 							<RTPCList>
 								<RTPC Name="" ID="{1F58144D-764A-4F22-99FD-B47236370AF4}" ShortID="611525300">
@@ -137,6 +138,14 @@
 					</ActiveSourceList>
 				</Sound>
 				<BlendContainer Name="MusicBlend" ID="{577E31AA-8101-4FAB-ABBA-568A5F6A6475}" ShortID="813227421">
+					<PropertyList>
+						<Property Name="UseGameAuxSends" Type="bool" Value="True"/>
+						<Property Name="UserAuxSendVolume0" Type="Real64">
+							<ValueList>
+								<Value>-5</Value>
+							</ValueList>
+						</Property>
+					</PropertyList>
 					<ReferenceList>
 						<Reference Name="Conversion">
 							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F291A319-64E0-40B5-835A-E4145AC5EA8D}"/>
@@ -150,6 +159,7 @@
 							<PropertyList>
 								<Property Name="3DSpatialization" Type="int16" Value="2"/>
 								<Property Name="IsLoopingEnabled" Type="bool" Value="True"/>
+								<Property Name="OverrideGameAuxSends" Type="bool" Value="True"/>
 								<Property Name="Pitch" Type="int32">
 									<RTPCList>
 										<RTPC Name="" ID="{31ABB106-47B9-4B75-A06A-68CB4A5F1358}" ShortID="318060142">

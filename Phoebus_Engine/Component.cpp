@@ -74,5 +74,5 @@ void Component::SetNewResource(unsigned int resourceID)
 
 unsigned int Component::GetResourceID()
 {
-	return 0;
+	return this->ID;
 }

@@ -394,3 +394,13 @@ bool ModuleAudioManager::RemoveRevZone(C_ReverbZone* revZone)
 	}
 	return ret;
 }
+
+void ModuleAudioManager::AuxSendValues(AkReal32 value, const char* targetBus, unsigned long listenerID, unsigned long sourceID) const
+{
+	AkAuxSendValue data;
+	data.listenerID = listenerID;
+	data.auxBusID = AK::SoundEngine::GetIDFromString(targetBus);
+	data.fControlValue = value;
+
+	AKRESULT res = AK::SoundEngine::SetGameObjectAuxSendValues(sourceID, &data, 1);
+}

@@ -12,7 +12,7 @@ Game Parameter	ID	Name			Wwise Object Path	Notes
 	2275229972	MusicBlendParameter			\Default Work Unit\MusicBlendParameter	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	355308146	Laser	M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\Laser_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\Laser		352864
-	382387716	Starwars	M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\Starwars_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\MusicBlend\Starwars		62125120
-	897631041	HaloTheme	M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\HaloTheme_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\MusicBlend\HaloTheme		37085248
+	355308146	Laser	D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\Laser_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\Laser		352864
+	382387716	Starwars	D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\Starwars_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\MusicBlend\Starwars		62125120
+	897631041	HaloTheme	D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\SFX\HaloTheme_D79FB2B7.wem		\Actor-Mixer Hierarchy\Default Work Unit\MusicBlend\HaloTheme		37085248
 

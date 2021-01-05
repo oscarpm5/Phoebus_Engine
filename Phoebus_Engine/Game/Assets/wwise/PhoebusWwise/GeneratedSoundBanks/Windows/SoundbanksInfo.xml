@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <SoundBanksInfo Platform="Windows" BasePlatform="Windows" SchemaVersion="12" SoundbankVersion="135">
 	<RootPaths>
-		<ProjectRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\</ProjectRoot>
-		<SourceFilesRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\</SourceFilesRoot>
-		<SoundBanksRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
+		<ProjectRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\</ProjectRoot>
+		<SourceFilesRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\.cache\Windows\</SourceFilesRoot>
+		<SoundBanksRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows\</SoundBanksRoot>
 		<ExternalSourcesInputFile></ExternalSourcesInputFile>
-		<ExternalSourcesOutputRoot>M:\Escritorio\Universitat\GitHub Repository\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
+		<ExternalSourcesOutputRoot>D:\adri\uni\CITEM\3r\Motors\Phoebus_Engine\Phoebus_Engine\Game\Assets\wwise\PhoebusWwise\GeneratedSoundBanks\Windows</ExternalSourcesOutputRoot>
 	</RootPaths>
 	<DialogueEvents/>
 	<StreamedFiles/>
 	<MediaFilesNotInAnyBank/>
 	<SoundBanks>
-		<SoundBank Id="1355168291" Language="SFX" Hash="2789178382">
+		<SoundBank Id="1355168291" Language="SFX" Hash="2985180329">
 			<ObjectPath>Init</ObjectPath>
 			<ShortName>Init</ShortName>
 			<Path>Init.bnk</Path>
+			<IncludedAuxBusses>
+				<AuxBus Id="3744218805" Name="ReverbBus" ObjectPath="\Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus\ReverbBus"/>
+			</IncludedAuxBusses>
 		</SoundBank>
-		<SoundBank Id="3161908922" Language="SFX" Hash="145831895">
+		<SoundBank Id="3161908922" Language="SFX" Hash="2272829885">
 			<ObjectPath>\SoundBanks\Default Work Unit\Main</ObjectPath>
 			<ShortName>Main</ShortName>
 			<Path>Main.bnk</Path>

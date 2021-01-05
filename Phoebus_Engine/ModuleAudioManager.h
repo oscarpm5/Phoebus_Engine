@@ -5,6 +5,7 @@
 #include "Globals.h"
 #include "C_AudioListener.h"
 #include "MathGeoLib/include/MathGeoLibFwd.h"
+#include "AK/SoundEngine/Common/AkTypes.h" // cant forward typedefs if extern, apparently
 #include <string>
 #include <vector>
 
@@ -40,6 +41,7 @@ public:
 
 	void AddRevZone(C_ReverbZone* revZone);
 	bool RemoveRevZone(C_ReverbZone* revZone);
+	void AuxSendValues(AkReal32 value, const char* targetBus, unsigned long listenerID, unsigned long sourceID) const;
 
 public:
 
