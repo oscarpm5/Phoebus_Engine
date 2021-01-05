@@ -236,8 +236,8 @@ Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 			ret = new C_AudioListener(this, compID);
 		break;
 	case ComponentType::AUDIO_SOURCE:
-		//only one instance of a audio source for a certain gameObj
-		if (GetComponent<C_AudioSource>() == nullptr)
+		//only one instance of a audio source for a certain gameObj - DON'T THINK SO BUDDY
+		//if (GetComponent<C_AudioSource>() == nullptr)
 			ret = new C_AudioSource(this, compID);
 		break;
 	case ComponentType::CONTROL:
@@ -436,7 +436,7 @@ void GameObject::DrawOnEditorAllComponents()
 			if (ImGui::Selectable("Audio Listener Component##addComponent"))
 				CreateComponent(ComponentType::AUDIO_LISTENER);
 		}
-		if (GetComponent<C_AudioSource>() == nullptr)
+		//if (GetComponent<C_AudioSource>() == nullptr)
 		{
 			if (ImGui::Selectable("Audio Source Component##addComponent"))
 				CreateComponent(ComponentType::AUDIO_SOURCE);

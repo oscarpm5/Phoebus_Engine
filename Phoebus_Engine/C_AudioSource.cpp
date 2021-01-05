@@ -40,7 +40,8 @@ void C_AudioSource::OnEditor()
 
 	if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
 
-	if (ImGui::CollapsingHeader(headerName.c_str(), headerFlags))
+	actualname = headerName + suffixLabel;
+	if (ImGui::CollapsingHeader(actualname.c_str(), headerFlags))
 	{
 		if (!activeAux)ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 0.8f));
 		ImGui::Spacing();
