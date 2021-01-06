@@ -99,6 +99,72 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Play_SH1" ID="{943BC924-33DF-4C1C-A334-850CD73FAEDC}">
+					<ChildrenList>
+						<Action Name="" ID="{8E16B331-4782-49C9-A723-55C70972E591}" ShortID="284065374">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Silent Hill 2 OST - Alone In The Town" ID="{73D8700E-DC4A-4BD0-9991-C70E185445A2}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SH2" ID="{0B82FD05-319E-4561-AAC2-4354D6ACAEA5}">
+					<ChildrenList>
+						<Action Name="" ID="{D62FAB36-6CE0-47A0-897F-E7C9F3B3A6CB}" ShortID="925929225">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Silent Hill 2 OST - White Noiz" ID="{1150DD2F-9512-4114-9605-2878E51BFA08}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_SH_Blend" ID="{BDD82DAB-D62F-41B5-A220-1FF24D1AB59A}">
+					<ChildrenList>
+						<Action Name="" ID="{3801518D-7C49-4752-9566-689BFD8C676D}" ShortID="720121591">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="MusicBlend_SH" ID="{09D402A7-60EA-46E7-845C-5A73C72D122C}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Raven" ID="{155001DB-8038-41B9-9156-8A339F0EC587}">
+					<ChildrenList>
+						<Action Name="" ID="{B879C1E4-2A58-40D0-8504-A72A82B63939}" ShortID="437845639">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="raven" ID="{E7157122-5691-4CC8-BC65-E3ABFBB0C833}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Laugh" ID="{2C86EC4C-3D5F-4978-95D9-EC196833D87C}">
+					<ChildrenList>
+						<Action Name="" ID="{77CDF826-19F8-49A1-B48E-4B4B31237792}" ShortID="182215486">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Evil Laugh Male" ID="{D9295E5B-4CA3-4601-9D18-884636A9FDF1}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Play_Anger" ID="{B946D705-CE7E-4E66-9DFC-69B9500C8871}">
+					<ChildrenList>
+						<Action Name="" ID="{94CAEB06-6B44-49A8-9FC5-C283C5E915F7}" ShortID="1051781043">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="Anger-Mike_Koenig" ID="{70532BA3-7B6D-4F94-8279-682B306A6E33}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
