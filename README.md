@@ -97,7 +97,7 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 
 ## Aditional functionality:
 
-### First Assigment
+### First Assignment
 
 * Unique Naming system that prevents two objects from having the same name by renaming them when needed. 
 
@@ -121,7 +121,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Components & game objects can now be activated/ deactivated independently.
 
-### Second Assigment
+### Second Assignment
 
 * Objects have an outline when selected, outline size can be configured via the config panel. A filled outline from the seleted object can be seen through other objects if they are in front of it.
 
@@ -137,17 +137,17 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 * Material color & transparency of a selected object can be changed through the inspector.
  
-### Third Assigment
+### Third Assignment
 * Objects support multiSelection from the hierarchy & 3D Viewport (see Controls section for more details).
 
 ## Aditional comments for the teacher:
 
-### First Assigment
+### First Assignment
 
 * A .ini file is included as it stores the information of how we want the windows to be displayed when the engine is opened for the first time.
 * The license for DevIL is not included as it was not provided in the library files. 
 
-### Second Assigment
+### Second Assignment
 
 * When tring to drag & drop external assets into the engine, make sure the path & the file don't have special caracters such as accents, otherwise the file won't be imported.
 * Basic Forms (Primitives) have been disabled for this assignment due to meshes being converted to resources. They will be brought back in the future
@@ -163,6 +163,10 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * You can manually save scenes in Menu->Save. They will be saved in Library/Scenes with an automatic name which you can later change. You can load any saved scene in Menu->Load
 * Hierarchy elements can be re-parented through dragging them. If you want to re-parent the object to the scene root, simply drag it to the bottom and let it go in the blank space below the hierarchy.
 * Pressing the outer white circle in the rotation gizmo when it turns orange will reset the object rotation to 0. 
+
+### Third Assignment
+
+* Do NOT delete "wwise" folder located in "Assets/" because the audio system depends on it.
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

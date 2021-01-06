@@ -222,6 +222,7 @@ void ModuleResourceManager::FindFileRecursively(std::string uid, std::string cur
 	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		const std::string& str = *it;
+
 		FindFileRecursively(uid, currDir + str + "/", foundFile);
 		if (foundFile != "")
 		{
@@ -462,8 +463,11 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		const std::string& str = *it;
-		std::string newDir = dir + str + "/";
-		LoadAssetsRecursively(newDir);
+		if (str != "wwise")
+		{
+			std::string newDir = dir + str + "/";
+			LoadAssetsRecursively(newDir);
+		}
 	}
 }
 
