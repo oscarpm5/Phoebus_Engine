@@ -59,7 +59,7 @@ void C_AudioSource::OnEditor()
 				{
 					for (int i = 0; i < events.size(); i++)
 					{
-						//TODO stop curr object sounds here
+						//stop curr object sounds here
 						App->audioManager->StopObjSounds(this->ID);
 					}
 				}
@@ -67,7 +67,7 @@ void C_AudioSource::OnEditor()
 				{
 					for (int i = 0; i < events.size(); i++)
 					{
-						//TODO pause curr object sounds here
+						//pause curr object sounds here
 						App->audioManager->PauseObjSounds(this->ID);
 					}
 				}
@@ -76,7 +76,7 @@ void C_AudioSource::OnEditor()
 			{
 				for (int i = 0; i < events.size(); i++)
 				{
-					//TODO resume playing (only in game)
+					//resume playing (only in game)
 					App->audioManager->ResumeObjSounds(this->ID);
 
 				}
@@ -88,7 +88,7 @@ void C_AudioSource::OnEditor()
 		ImGui::Spacing();
 		ImGui::Spacing();
 
-		//TODO actual Component code here
+		//actual Component code here
 
 		bool disableButtons = true;
 		if (currentGameState == GameStateEnum::STOPPED)//makes it so the audio events can only be edited when in offline mode
@@ -323,8 +323,6 @@ bool C_AudioSource::GameInit()
 
 	}
 
-	//different
-	//App->audioManager->SendAudioObjEvent(this->ID, "Laser_Player");
 	return true;
 }
 

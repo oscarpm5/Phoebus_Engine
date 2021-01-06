@@ -23,7 +23,6 @@ public:
 
 private:
 	float3 dimensions;
-	bool dirtyUpdate;
 	AABB revZone;
 };
 
