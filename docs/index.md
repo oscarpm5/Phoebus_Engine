@@ -11,7 +11,7 @@ We hope you'll enjoy using it as much as we enjoyed making it! </p>
 <br>
 ## Check out our latest Release!
 
-Link to code repo and release
+[Check it here!](https://github.com/oscarpm5/Phoebus_Engine/releases/tag/1.0)
 <br><br>
 
 # Engine Overview
