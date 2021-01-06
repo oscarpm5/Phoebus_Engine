@@ -184,6 +184,7 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 
 ### Third Assignment
 
+* The project ".Zip" weighs more than the allowed 50Mb. This is due to the audio files inside the sound banks, which are pretty heavy (around 95 Mb - MainBank+InitBank) 
 * Do NOT delete "wwise" folder located in "Assets/" because the audio system depends on it.
 * The system where the user has to input the events names in the Audio Source component has been implemented to make the designer handle all the work and to not depend on a programmer when implementing sounds.
 * You can add more than 1 Audio Source component for each object, that allows the sounds in a single object to be customized further as each component has its own settings.

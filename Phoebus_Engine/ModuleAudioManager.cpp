@@ -145,8 +145,11 @@ bool ModuleAudioManager::Init()
 	//=======================================================================================================================
 	//LOAD SOUNDBANKS
 	// Setup banks path	
-
+#ifndef AK_OPTIMIZED
 	g_lowLevelIO.SetBasePath(AKTEXT("Assets/wwise/PhoebusWwise/GeneratedSoundBanks/Windows/"));
+#else
+	g_lowLevelIO.SetBasePath(AKTEXT("Assets/wwise/"));
+#endif // AK_OPTIMIZED
 
 	AK::StreamMgr::SetCurrentLanguage(AKTEXT("English(US)"));
 	// Load banks synchronously (from file name).
