@@ -25,7 +25,7 @@ Although our focus is in the Audio System, Phouebus Engine does have the basic u
 - Real time rendering (scene managed: pause - play - stop)
 
 <br><br>
-<video width="1080" height="720" controls>
+<video width="540" height="360" controls>
   <source type="video/mp4" src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/docs/PHOEBUS_DEMO.mp4">
 </video>
 
