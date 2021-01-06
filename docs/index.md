@@ -89,14 +89,34 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 * R key
 	- Use Scale Gizmo
 	
+If you have a Component Control on a Game Object AND Engine is Playing:
+
+* I
+	-Move fwd
+* J
+	-Move left
+* K
+	-Move back
+* L
+	-Move right
+	
 <br><br>
 
 # Audio System
-Audio detailed explanation (add at east 2 gifs)
+Phoebus Engine has a focus on it's audio department. In order to do so, we've implemented the following components and systems:
 
-![](/Revzone.gif)
-<br><br>
+## Listener
+asdf
+<br>
+## Source
+asdf
 ![](/House.gif)
+<br>
+## Reverb Zone / Mod Zone
+asdf
+![](/Revzone.gif)
+
+
 
 <br><br>
 # Meet the Team
