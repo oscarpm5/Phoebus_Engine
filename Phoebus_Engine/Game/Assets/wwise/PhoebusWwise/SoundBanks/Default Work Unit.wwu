@@ -6,15 +6,16 @@
 				<SoundBank Name="Main" ID="{E94FE608-E18D-4AE4-93D2-BC9C1D1A33BC}">
 					<ObjectInclusionList>
 						<ObjectRef Name="ResumeObj" ID="{35D41927-2D4B-417C-948A-CEA75EB4CF0A}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_SH_Blend" ID="{BDD82DAB-D62F-41B5-A220-1FF24D1AB59A}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Raven" ID="{155001DB-8038-41B9-9156-8A339F0EC587}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="PauseAll" ID="{4404C1E7-056A-4237-B611-85401FBCBBB1}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="StopObj" ID="{CDB6DB26-0D60-427A-BDF3-F98E2D62C9D3}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Halo_Player" ID="{0D07A878-DA2C-439B-ADD4-B0B459F066AB}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_SH2" ID="{0B82FD05-319E-4561-AAC2-4354D6ACAEA5}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="ResumeAll" ID="{FED4DBFF-60FE-46FE-ADF0-CE73FB1BD87A}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="StarWars_Player" ID="{2BC8A4D7-F0FD-4951-B1E3-541E49903791}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Laser_Player" ID="{AD7658F2-6782-4AA3-A254-57A84B6EECD2}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Laugh" ID="{2C86EC4C-3D5F-4978-95D9-EC196833D87C}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_SH1" ID="{943BC924-33DF-4C1C-A334-850CD73FAEDC}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
 						<ObjectRef Name="PauseObj" ID="{2AA496AA-C2B1-4C4C-8E0C-9129E47EA418}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Play_Music" ID="{A31F5708-C194-4F32-BA2C-3F76D6B0203D}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="MusicBlend" ID="{577E31AA-8101-4FAB-ABBA-568A5F6A6475}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Play_Anger" ID="{B946D705-CE7E-4E66-9DFC-69B9500C8871}" WorkUnitID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

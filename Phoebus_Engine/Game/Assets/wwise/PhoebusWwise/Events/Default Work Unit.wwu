@@ -3,28 +3,6 @@
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{D204DF30-62EE-40DC-8A3C-FB02C5B2CDF6}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="Laser_Player" ID="{AD7658F2-6782-4AA3-A254-57A84B6EECD2}">
-					<ChildrenList>
-						<Action Name="" ID="{6C672AF9-9D77-4772-8808-861EC1E13580}" ShortID="154491689">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="Laser" ID="{DC97B6E2-640D-4E3F-998B-DE7D25F263FC}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Event Name="StarWars_Player" ID="{2BC8A4D7-F0FD-4951-B1E3-541E49903791}">
-					<ChildrenList>
-						<Action Name="" ID="{628B80CB-9577-4F11-BF62-9E28DB6571F2}" ShortID="75780251">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="Starwars" ID="{DD227BED-CC3F-4BDA-A47F-2BD9FB720E79}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
 				<Event Name="PauseAll" ID="{4404C1E7-056A-4237-B611-85401FBCBBB1}">
 					<ChildrenList>
 						<Action Name="" ID="{DE1F96D0-A1EE-48B2-BB2D-C4A72E8AF6EC}" ShortID="975477398">
@@ -44,28 +22,6 @@
 								<Property Name="Scope" Type="int16" Value="1"/>
 							</PropertyList>
 							<ReferenceList/>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Event Name="Halo_Player" ID="{0D07A878-DA2C-439B-ADD4-B0B459F066AB}">
-					<ChildrenList>
-						<Action Name="" ID="{55CD601F-384C-4F81-A284-9B448ED6645B}" ShortID="204455679">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="HaloTheme" ID="{F317C8D6-D04A-4614-8FA0-6BF7F6F3CF9C}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Event Name="Play_Music" ID="{A31F5708-C194-4F32-BA2C-3F76D6B0203D}">
-					<ChildrenList>
-						<Action Name="" ID="{C7A77757-292D-4741-89D0-46EDBC90E061}" ShortID="215540614">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="MusicBlend" ID="{577E31AA-8101-4FAB-ABBA-568A5F6A6475}" WorkUnitID="{9C8835F7-33E8-4115-8ECA-9A60E74D5279}"/>
-								</Reference>
-							</ReferenceList>
 						</Action>
 					</ChildrenList>
 				</Event>
