@@ -31,6 +31,7 @@ public:
 	void SetUserPitch(float newPitch);
 	float GetUserPitch()const;
 	float PitchCalculationFromDT(float gamedt)const;
+	float RTPCValCalculationFromPitch(float overallPitch)const;
 	bool CheckReverbZones();
 	void ApplyReverb(float revValue, const char* targetBus);
 

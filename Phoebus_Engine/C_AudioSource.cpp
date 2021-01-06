@@ -288,8 +288,13 @@ bool C_AudioSource::GameUpdate(float gameDT)
 		App->audioManager->SetAudioObjTransform(this->ID, transform);
 
 		//Changes audio pitch
+		float overallPitch = userPitch * App->GetTimeScale();
+		//overallPitch->0.25	== "SoundPitch"->0
+		//overallPitch->1		== "SoundPitch"->100
+		//overallPitch->4		== "SoundPitch"->200
+		float res= RTPCValCalculationFromPitch(overallPitch);
 
-		float modifier = userPitch * App->GetTimeScale() * PitchCalculationFromDT(App->GetGameDT());
+		//float modifier = userPitch * App->GetTimeScale() * PitchCalculationFromDT(App->GetGameDT());
 
 		//userPitch = the individual pitcxh of each source
 		//timeScale = the game speed that affects everything. Acces it in-engine via config
@@ -300,7 +305,7 @@ bool C_AudioSource::GameUpdate(float gameDT)
 		//float overallPitch = (secs * 100);//TODO take into account user pitch too
 		//userPitch
 
-		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", modifier * 100);
+		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", res);
 
 	}
 	return true;
@@ -450,6 +455,12 @@ float C_AudioSource::PitchCalculationFromDT(float gamedt) const
 	float mod = ratio / gamedt;
 
 	return mod;
+}
+
+float C_AudioSource::RTPCValCalculationFromPitch(float overallPitch) const
+{
+	//1.01395949 this is the num with enough precision to make it nearly exact
+	return Log(1.01396, overallPitch) + 100;
 }
 
 bool C_AudioSource::CheckReverbZones()
