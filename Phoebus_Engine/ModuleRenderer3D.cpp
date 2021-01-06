@@ -10,6 +10,7 @@
 #include "C_Mesh.h"
 #include "C_Material.h"
 #include "C_Transform.h"
+#include "C_Camera.h"
 //include & lib of glew
 
 #include "Glew/include/glew.h"
@@ -28,44 +29,6 @@
 #include <math.h>
 #pragma comment (lib, "glu32.lib")    /* link OpenGL Utility lib     */
 #pragma comment (lib, "opengl32.lib") /* link Microsoft OpenGL lib   */
-
-
-
-//TODO make a bool that tells whether we are on editor mode or play mode and changes camera accordingly
-
-
-float vertexArray[] = {
-	0.f, 0.f, 0.f,
-	10.f, 0.f, 0.f,
-	10.f, 0.f, -10.f,
-	0, 0, -10.f,
-
-	0.f, 10.f, 0.f,
-	10.f, 10.f, 0.f,
-	10.f, 10.f, -10.f,
-	0.f, 10.f, -10.f
-};
-
-
-uint indexArray[] = {
-	4, 0, 1,
-	1, 5, 4,
-
-	4, 7, 3,
-	3, 0, 4,
-
-	2, 3, 7,
-	7, 6, 2,
-
-	7, 4, 5,
-	5, 6, 7,
-
-	5, 1, 2,
-	2, 6, 5,
-
-	0, 3, 2,
-	2, 1, 0
-};
 
 
 ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), context()
@@ -95,7 +58,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	displayAABBs = true;
 	//Just making sure this is initialized
 	gridLength = 500.f;
-	outlineScale = 1.1f;
+	outlineScale = 1.01f;
 }
 
 // Destructor
@@ -164,10 +127,12 @@ bool ModuleRenderer3D::Init()
 		//Initialize clear color
 		glClearColor(0.f, 0.f, 0.f, 1.f);
 
-		//TODO ADDED from class this enables alpha clip at 0.5 alpha
+		//ADDED from class this enables alpha clip at 0.5 alpha
+
 		//glEnable(GL_ALPHA_TEST);
 		//glAlphaFunc(GL_GREATER, 0.5f);
-		//TODO ADDED from class this enables alpha blend
+
+		//ADDED from class this enables alpha blend
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -309,102 +274,6 @@ void ModuleRenderer3D::OnResize(int width, int height)
 	GenerateBuffers(width, height);
 }
 
-void ModuleRenderer3D::TestingRender()
-{
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-
-	/*
-	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);			//this is for printing the vertices
-	// … bind and use other buffers
-	glDrawArrays(GL_TRIANGLES, 0, nVertex);
-	*/
-
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBind);			//this is for printing the index
-	glVertexPointer(3, GL_FLOAT, 0, NULL);				//Null => somehow OpenGL knows what you're talking about
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);	//Because this Bind is after the vertex bind, OpenGl knows these two are in order & connected. *Magic*	
-
-	glDrawElements(GL_TRIANGLES, indexSize, GL_UNSIGNED_INT, NULL);	//End of "bind addition" here...
-
-
-
-	glDisableClientState(GL_VERTEX_ARRAY);		//... or here
-
-
-
-}
-
-//For now it uses Inmediate mode (testing purposes)
-void ModuleRenderer3D::TestingRenderAtStart()
-{
-	// no index cube
-	static const GLfloat g_vertex_buffer[] = {
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f
-	};
-	nVertex = sizeof(g_vertex_buffer) / sizeof(float);
-	glGenBuffers(1, (GLuint*) & (exampleMeshIdentifier));
-	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer), g_vertex_buffer, GL_STATIC_DRAW);
-
-
-	////index cube
-	//
-	//glGenBuffers(1, (GLuint*) & (vertexBind));
-	//glBindBuffer(GL_ARRAY_BUFFER, vertexBind);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertexArray), vertexArray, GL_STATIC_DRAW);
-
-
-	//glGenBuffers(1, (GLuint*) & (indexBind));
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBind);
-	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indexArray), indexArray, GL_STATIC_DRAW);
-
-	//indexSize = sizeof(indexArray) / sizeof(unsigned int);
-	glEnableClientState(GL_VERTEX_ARRAY);
-
-	glBindBuffer(GL_ARRAY_BUFFER, exampleMeshIdentifier);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);			//this is for printing the vertices
-	// … bind and use other buffers
-	glDrawArrays(GL_TRIANGLES, 0, nVertex);
-	glDisableClientState(GL_VERTEX_ARRAY);		//... or here
-
-	glDeleteBuffers(1, &exampleMeshIdentifier);
-}
 
 void ModuleRenderer3D::GenerateBuffers(int width, int height)
 {
@@ -473,10 +342,13 @@ void ModuleRenderer3D::GenerateBuffers(int width, int height)
 
 void ModuleRenderer3D::Draw3D()
 {
-
-
-	//TODO Set a color here  from the camera ?? on editor mode take it from the editor cam on game take it from the main cam
-	Color c = Color(0.05f, 0.05f, 0.1f);
+	Color c = App->camera->editorCam->GetBackgroundCol();
+	//const Color lineColor(0.05f, 0.05f, 0.1f);
+	//Set a color here  from the camera, on editor mode take it from the editor cam on game take it from the main cam
+	if (App->GetGameState() != GameStateEnum::STOPPED && activeCam != nullptr)
+	{
+		c = activeCam->GetBackgroundCol();
+	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
 	glClearColor(c.r, c.g, c.b, c.a);
@@ -496,22 +368,28 @@ void ModuleRenderer3D::Draw3D()
 
 void ModuleRenderer3D::DrawOutline()
 {
-	const Color outlineColorMain = Color(1.0f, 0.5f, 0.0f);
-	const Color outlineColorSecond = Color(0.75f, 0.25f, 0.0f);
+	const Color outlineColorMain = Color FOCUSED_COLOR;
+	const Color outlineColorSecond = Color SELECTED_COLOR;
 
 	for (int i = 0; i < App->editor3d->selectedGameObjs.size(); i++)
 	{
 		C_Transform* transf = App->editor3d->selectedGameObjs[i]->GetComponent<C_Transform>();
 		std::vector<C_Mesh*> meshes = App->editor3d->selectedGameObjs[i]->GetComponents<C_Mesh>();
 
+		Color currentOutlineCol = outlineColorMain;
+		if (i != App->editor3d->selectedGameObjs.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
+		{
+			currentOutlineCol = outlineColorSecond;
+		}
 
 		float4x4 transfMat = transf->GetGlobalTransform();
+		float3 meshScale = transf->GetGlobalScale();
 		for (int j = 0; j < meshes.size(); j++)
 		{
-			if (meshes[i]->GetMesh() != nullptr)
+			if (meshes[j]->IsActive() && meshes[j]->GetMesh() != nullptr)
 			{
 
-				ResourceMesh* m = new ResourceMesh(*meshes[i]->GetMesh());
+				ResourceMesh* m = new ResourceMesh(*meshes[j]->GetMesh());
 				ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
 				m->FreeBuffers();
 				m->GenerateBuffers();
@@ -520,11 +398,6 @@ void ModuleRenderer3D::DrawOutline()
 				currMesh->SetTemporalMesh(m);
 				stencilMeshes.push_back(currMesh);
 
-				Color currentOutlineCol = outlineColorMain;
-				if (j != meshes.size() - 1)//makes outline color different for selected & selected->focused objects (will test once we have multiselection)
-				{
-					currentOutlineCol = outlineColorSecond;
-				}
 
 				AddMeshToStencil(currMesh, transfMat, currentOutlineCol);
 			}
@@ -533,8 +406,12 @@ void ModuleRenderer3D::DrawOutline()
 	}
 
 
-	glEnable(GL_STENCIL_TEST);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+	glStencilOp(
+		GL_KEEP, //stencil action if stencil test fails
+		GL_REPLACE, //stencil action if stencil test passes but depth test fails
+		GL_REPLACE); //stencil action if both pass (in case we ose shaders, fragment shader will also run)
+	glDisable(GL_STENCIL_TEST);
 
 	glStencilMask(0xFF);
 	if (drawGrid)
@@ -547,8 +424,17 @@ void ModuleRenderer3D::DrawOutline()
 	}
 	RenderMeshes();
 
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(
+		GL_ALWAYS, // the comparison test between ref and the current stencil value
+		1, //the reference vaule, used in the comparison and also for GL_REPLACE
+		0xFF);//bitwise anded with reference and current stencil value before they are compared
 	glStencilMask(0xFF);
+
+	//TODO we need this cullFace to make outline behave correctly but then the object is not cullled obviously. Fix that
+	//if (cullFace)
+		//glDisable(GL_CULL_FACE);
+
 	RenderSelectedMeshes();
 
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -558,16 +444,16 @@ void ModuleRenderer3D::DrawOutline()
 		glDisable(GL_DEPTH_TEST);
 	if (lighting)
 		glDisable(GL_LIGHTING);
-	//glDisable(GL_CULL_FACE);
 	RenderStencil();
-	glStencilMask(0xFF);
 	glStencilFunc(GL_ALWAYS, 0, 0xFF);
+	glStencilMask(0xFF);
 
 	if (depthTesting)
 		glEnable(GL_DEPTH_TEST);
 	if (lighting)
 		glEnable(GL_LIGHTING);
-	//glEnable(GL_CULL_FACE);
+	if (cullFace)
+		glEnable(GL_CULL_FACE);
 
 	//TODO for the moment we harcode enable/ disable of the depth/lighting here and that causes depth 6 lightning display to have stopped working
 	//TODO make objects scale from their bounding box center when on outline mode or ideally scale from vertex normal
@@ -743,20 +629,29 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	//wireframe here too?
 }
 
-bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale)//TODO consider creating an expanded mesh when the mesh is created instead of doing it every frame
+bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale,float3 objScale)
 {
-	if (m.normals.empty())//TODO in the future if scaling cannot be done by vertex normals, use generated face normals or normal scaling instead
+	if (m.smoothedNormals.empty())
 		return false;
 
 
 	for (int i = 0; i < m.vertices.size(); i += 3)
 	{
 		float3 currVertex = float3(m.vertices[i], m.vertices[i + 1], m.vertices[i + 2]);
-
+		float3 expandVector = float3(m.smoothedNormals[i], m.smoothedNormals[i + 1], m.smoothedNormals[i + 2]);
+		
+		/*if(expandVector.x!=0.0f&&objScale.x!=0.0f)
+		expandVector.x /=  objScale.x;
+		if (expandVector.y != 0.0f && objScale.y != 0.0f)
+		expandVector.y /= objScale.y;
+		if (expandVector.z != 0.0f && objScale.z != 0.0f)
+		expandVector.z /= objScale.z;*/
+		
 		//if newScale is 1 it means the scale should remain the same
-		currVertex.x += (m.smoothedNormals[i] * (newScale - 1.0f));
-		currVertex.y += (m.smoothedNormals[i + 1] * (newScale - 1.0f));
-		currVertex.z += (m.smoothedNormals[i + 2] * (newScale - 1.0f));
+		expandVector *= (newScale - 1.0f);
+
+		currVertex += expandVector;
+		
 		m.vertices[i] = currVertex.x;
 		m.vertices[i + 1] = currVertex.y;
 		m.vertices[i + 2] = currVertex.z;
@@ -781,9 +676,9 @@ void ModuleRenderer3D::AddMeshToStencil(C_Mesh* mesh, float4x4 gTransform, Color
 	drawStencil.push_back(RenderMesh(mesh, nullptr, gTransform /** float4x4::Scale(float3(scale, scale, scale))*/, color));
 }
 
-void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners,Color c)
+void ModuleRenderer3D::AddBoxToDraw(std::vector<float3> corners, Color c)
 {
-	drawAABBs.push_back(RenderBox(corners,c));//TODO change Box color here (global config var?)
+	drawAABBs.push_back(RenderBox(corners, c));
 }
 
 bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
@@ -804,7 +699,7 @@ bool ModuleRenderer3D::IsInsideFrustum(std::vector<float3>& points)
 			Plane planes[6];
 			if (activeCam != nullptr && activeCam->IsActive())
 			{
-				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted
+				f = activeCam->GetFrustum();//TODO active cam goes kabbom if deleted-> not anymore? check this
 			}
 			else
 			{

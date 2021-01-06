@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "Mesh.h"
+#include "Importer.h"
 
 
 #include <map>
@@ -28,19 +29,19 @@ bool ModuleEditor3D::Init()
 	return ret;
 }
 
+bool ModuleEditor3D::GameInit()
+{
+	if (root)
+		root->GameInit();
+	return true;
+}
+
 bool ModuleEditor3D::Start()
 {
 	bool ret = true;
 
 	root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false);
 	App->camera->Move(float3(1.0f, 1.0f, 0.0f));
-	//App->camera->LookAt(vec3(0, 0, 0));
-
-
-
-
-	//App->fileSystem->LoadAsset("Assets/bakerHouse/BakerHouse.fbx"); //TODO Deprecated, use resource manager instead
-
 
 	return ret;
 }
@@ -50,12 +51,20 @@ update_status ModuleEditor3D::PreUpdate(float dt)
 
 	if (App->input->GetKey(SDL_SCANCODE_DELETE) == KEY_DOWN)
 	{
-		if (selectedGameObjs.size() > 0)
+		while (!selectedGameObjs.empty())
 		{
 			GameObject* aux = selectedGameObjs.back();
 			selectedGameObjs.pop_back();
 			delete aux;
+			aux = nullptr;
 		}
+
+		/*if (selectedGameObjs.size() > 0)
+		{
+			GameObject* aux = selectedGameObjs.back();
+			selectedGameObjs.pop_back();
+			delete aux;
+		}*/
 	}
 	return UPDATE_CONTINUE;
 }
@@ -68,6 +77,16 @@ update_status ModuleEditor3D::Update(float dt)
 
 	return UPDATE_CONTINUE;
 }
+
+update_status ModuleEditor3D::GameUpdate(float gameDt)
+{
+
+	if (root)
+		root->GameUpdate(gameDt);
+
+	return UPDATE_CONTINUE;
+}
+
 
 update_status ModuleEditor3D::PostUpdate(float dt)
 {
@@ -95,13 +114,15 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 	if (selected != root)
 	{
 
-		//TODO Add mode not working properly
 		if (!addMode)
 		{
 			for (int i = 0; i < selectedGameObjs.size(); i++)
 			{
 				if (selectedGameObjs[i] != nullptr)
+				{
 					selectedGameObjs[i]->focused = false;
+					selectedGameObjs[i]->selected = false;
+				}
 			}
 			selectedGameObjs.clear();
 
@@ -111,8 +132,13 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 		{
 			RemoveGameObjFromSelected(selected);
 
+			for (int i = 0; i < selectedGameObjs.size(); i++)
+			{
+				selectedGameObjs[i]->focused = false;
+			}
 			selectedGameObjs.push_back(selected);
 			selected->focused = true;
+			selected->selected = true;
 			ret = true;
 		}
 	}
@@ -123,16 +149,37 @@ bool ModuleEditor3D::SetSelectedGameObject(GameObject* selected, bool addMode)
 bool ModuleEditor3D::RemoveGameObjFromSelected(GameObject* toRemove)
 {
 	bool ret = false;
+	bool wasFocused = false;
 	for (int i = 0; i < selectedGameObjs.size(); i++)
 	{
 		if (selectedGameObjs[i] == toRemove)
 		{
+			if (selectedGameObjs[i]->focused)
+			{
+				selectedGameObjs[i]->focused = false;
+				wasFocused = true;
+			}
+			selectedGameObjs[i]->selected = false;
+
 			selectedGameObjs[i] = nullptr;
 			selectedGameObjs.erase(selectedGameObjs.begin() + i);
 			ret = true;
 			break;
 		}
 	}
+
+	if (wasFocused)
+	{
+		for (int i = selectedGameObjs.size() - 1; i >= 0; i--)//focus on the last selected object
+		{
+			if (selectedGameObjs[i]->selected)
+			{
+				selectedGameObjs[i]->focused = true;
+				break;
+			}
+		}
+	}
+
 	return ret;
 }
 
@@ -193,6 +240,18 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 {
 	//Ray ray = line.ToRay();
 	bool hasHitAnything = false;
+	bool selectAddMode = false;
+	bool cancelSelectionMode = false;
+
+	if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+	{
+		selectAddMode = true;
+	}
+	else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+	{
+		cancelSelectionMode = true;
+	}
+
 
 	std::vector<GameObject*> allObjs;
 
@@ -295,13 +354,14 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 
 			if (hit)//TODO duplicated code from the "else" just below, consider grouping it into a method
 			{
-				if (!selectedGameObjs.empty())
-					selectedGameObjs.back()->focused = false;
-
-				SetSelectedGameObject(currObj);
-
-				if (!selectedGameObjs.empty())
-					selectedGameObjs.back()->focused = true;
+				if (cancelSelectionMode)
+				{
+					RemoveGameObjFromSelected(currObj);
+				}
+				else
+				{
+					SetSelectedGameObject(currObj, selectAddMode);
+				}
 
 				hasHitAnything = true;
 				break;
@@ -312,13 +372,14 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 		else //if it doesn't have mesh we assume that is an empty and thus select this game object by bounding box
 		{
 			//select game object
-			if (!selectedGameObjs.empty())
-				selectedGameObjs.back()->focused = false;
-
-			SetSelectedGameObject(currObj);
-
-			if (!selectedGameObjs.empty())
-				selectedGameObjs.back()->focused = true;
+			if (cancelSelectionMode)
+			{
+				RemoveGameObjFromSelected(currObj);
+			}
+			else
+			{
+				SetSelectedGameObject(currObj, selectAddMode);
+			}
 
 			hasHitAnything = true;
 			break;
@@ -331,11 +392,13 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 
 
 
-	if (hasHitAnything == false)
+	if (hasHitAnything == false && !selectAddMode)//when on add mode we do not want to make all the objects un-select on a missclick 
 	{
+
 		for (int i = 0; i < selectedGameObjs.size(); i++)
 		{
 			selectedGameObjs[i]->focused = false;
+			selectedGameObjs[i]->selected = false;
 		}
 		selectedGameObjs.clear();
 	}
@@ -344,6 +407,34 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 	hitObjAABBs.clear();
 
 }
+
+void ModuleEditor3D::LoadSceneIntoEditor(std::string sceneName)
+{
+	LOG("Loading scene");
+
+	char* aux = "";
+	std::string scenePath = SCENE_PATH + sceneName;
+	int size = App->fileSystem->Load(scenePath.c_str(), &aux);
+
+	if (size != 0)
+	{
+		StartNewScene();
+		Importer::LoadScene(aux, App->editor3d->root);
+		RELEASE_ARRAY(aux);
+		aux = nullptr;
+	}
+}
+
+void ModuleEditor3D::StartNewScene()
+{
+	if (App->editor3d->root != nullptr)
+	{
+		delete App->editor3d->root;
+		App->editor3d->root = nullptr;
+	}
+	App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
+}
+
 
 int ModuleEditor3D::DoesNameExist(std::string name)
 {

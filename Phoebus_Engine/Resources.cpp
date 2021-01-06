@@ -34,6 +34,11 @@ std::string Resource::GetLibraryFile() const
 	return libraryFile;
 }
 
+std::string Resource::GetName() const
+{
+	return name;
+}
+
 void Resource::SetAssetPath(std::string newPath)
 {
 	assetsFile = newPath;
@@ -42,6 +47,11 @@ void Resource::SetAssetPath(std::string newPath)
 void Resource::SetLibPath(std::string newPath)
 {
 	libraryFile = newPath;
+}
+
+void Resource::SetName(std::string newName)
+{
+	name = newName;
 }
 
 bool Resource::UnloadFromMemory()

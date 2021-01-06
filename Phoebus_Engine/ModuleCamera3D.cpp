@@ -144,7 +144,7 @@ update_status ModuleCamera3D::Update(float dt)
 			{
 				float DeltaX = (float)dx * Sensitivity;
 
-				X = Rotate(X, DeltaX, float3(0.0f, 1.0f, 0.0f));//TODO rotate still works with gl math
+				X = Rotate(X, DeltaX, float3(0.0f, 1.0f, 0.0f));
 				Y = Rotate(Y, DeltaX, float3(0.0f, 1.0f, 0.0f));
 				Z = Rotate(Z, DeltaX, float3(0.0f, 1.0f, 0.0f));
 			}

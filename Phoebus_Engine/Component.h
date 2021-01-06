@@ -8,7 +8,11 @@ class GameObject;
 		TRANSFORM,
 		MESH,
 		MATERIAL,
-		CAMERA
+		CAMERA,
+		AUDIO_SOURCE,
+		AUDIO_LISTENER,
+		CONTROL,
+		REVERB_ZONE
 	};
 
 class Component
@@ -19,6 +23,7 @@ public:
 	virtual ~Component();
 	virtual bool Update(float dt);
 	virtual bool GameUpdate(float dt);
+	virtual bool GameInit();
 
 	virtual void OnEditor();//component drawing itself on the window
 	

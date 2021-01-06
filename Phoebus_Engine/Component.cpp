@@ -43,6 +43,11 @@ bool Component::GameUpdate(float dt)
 	return true;
 }
 
+bool Component::GameInit()
+{
+	return true;
+}
+
 void Component::OnEditor()
 {
 }
@@ -69,5 +74,5 @@ void Component::SetNewResource(unsigned int resourceID)
 
 unsigned int Component::GetResourceID()
 {
-	return 0;
+	return this->ID;
 }

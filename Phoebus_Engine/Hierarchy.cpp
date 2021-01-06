@@ -20,6 +20,7 @@ bool ShowHierarchyTab()
 //This is the recursive func that makes the hierarchy
 void SeekMyChildren(GameObject* myself)
 {
+	bool droppedItem = false;
 	ImGuiTreeNodeFlags TreeNodeEx_flags = ImGuiTreeNodeFlags_OpenOnArrow; //yeah, we have to set it each iteration. ImGui Badness
 
 	if (myself->children.size() == 0)
@@ -71,7 +72,7 @@ void SeekMyChildren(GameObject* myself)
 
 				GameObject* isParent = nullptr;
 				newObj->GetChildWithID(newParent->ID, isParent);
-				
+
 				if (!isParent)
 					newObj->ChangeParent(newParent);
 
@@ -84,6 +85,8 @@ void SeekMyChildren(GameObject* myself)
 					names[n] = names[payload_n];
 					names[payload_n] = "";
 				}*/
+				droppedItem = true;
+
 			}
 			ImGui::EndDragDropTarget();
 		}
@@ -92,14 +95,34 @@ void SeekMyChildren(GameObject* myself)
 
 
 
-		if (ImGui::IsItemClicked())
+		if (ImGui::IsItemHovered())//we use itemHovered + mouse click check because we want the mouse to perform the action on key up, otherwise it would select an item when dropping a payload
 		{
-			if (!App->editor3d->GetSelectedGameObject().empty())
+			//this if is redundant, check is already done inside setSelectedGameObject()
+			/*if (!App->editor3d->GetSelectedGameObject().empty())
 			{
 				App->editor3d->GetSelectedGameObject().back()->focused = false;
+			}*/
+
+			if (App->input->GetMouseButton(SDL_BUTTON_LEFT) == KEY_UP&& !droppedItem)
+			{
+
+				if (App->input->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT)
+				{
+					App->editor3d->SetSelectedGameObject(myself, true);
+				}
+				else if (App->input->GetKey(SDL_SCANCODE_LCTRL) == KEY_REPEAT)
+				{
+					App->editor3d->RemoveGameObjFromSelected(myself);
+				}
+				else
+				{
+					App->editor3d->SetSelectedGameObject(myself);
+				}
 			}
-			App->editor3d->SetSelectedGameObject(myself);
-			App->editor3d->GetSelectedGameObject().back()->focused = true;
+
+
+			//this line is redundant, assignment is already done inside setSelectedGameObject()
+			//App->editor3d->GetSelectedGameObject().back()->focused = true;
 
 		}
 
@@ -142,5 +165,6 @@ ImVec4 ChooseMyColor(GameObject* myself)
 
 	if (!myself->isActive || !myself->IsParentActive()) activeColor = ImVec4 PASIVE_COLOR;
 	if (myself->focused) activeColor = ImVec4 FOCUSED_COLOR;
+	else if (myself->selected) activeColor = ImVec4 SELECTED_COLOR;
 	return activeColor;
 }

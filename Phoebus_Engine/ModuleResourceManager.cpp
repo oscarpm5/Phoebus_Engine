@@ -10,7 +10,9 @@
 #include "ModuleEditor3D.h"
 #include "GameObject.h"
 #include "C_Transform.h"
-ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f)
+#include "C_Mesh.h"
+#include "C_Material.h"
+ModuleResourceManager::ModuleResourceManager(bool start_enabled) :Module(start_enabled), checkTimer(0.0f), haveToReload(false)
 {
 }
 
@@ -20,7 +22,6 @@ ModuleResourceManager::~ModuleResourceManager()
 
 bool ModuleResourceManager::Init()
 {
-	haveToReload = false;
 	return true;
 }
 
@@ -29,24 +30,26 @@ bool ModuleResourceManager::Start()
 
 	LoadAllAssets();
 
-	std::string streetEnvironmentPath = "Assets/street/Street environment_V01.FBX";
-	Resource* r = App->rManager->ManageAssetUpdate(streetEnvironmentPath.c_str());
-	if (r != nullptr)
-	{
-		App->rManager->RequestNewResource(r->GetUID());
-	}
+	//std::string streetEnvironmentPath = "Assets/street/Street environment_V01.FBX";
+	//Resource* r = App->rManager->ManageAssetUpdate(streetEnvironmentPath.c_str());
+	//if (r != nullptr)
+	//{
+	//	App->rManager->RequestNewResource(r->GetUID());
+	//}
 
 
 
+	////TODO this is hardcoded to make the street environment look good fix that (Importing options maybe¿??)
+	//if (!App->editor3d->root->children.empty())//this is just for the initial street environment mesh, it seems to be off by 90 degrees from export
+	//{
+	//	C_Transform* t = App->editor3d->root->children[0]->GetComponent<C_Transform>();
 
-	if (!App->editor3d->root->children.empty())//this is just for the initial street environment mesh, it seems to be off by 90 degrees from export
-	{
-		C_Transform* t = App->editor3d->root->GetComponent<C_Transform>();
+	//	float4x4 initialMat = float4x4::RotateX(DegToRad(-90.0f));
 
-		float4x4 initialMat= float4x4::RotateX(DegToRad(-90.0f));
+	//	t->SetGlobalTransform(initialMat);
+	//}
 
-		t->SetGlobalTransform(initialMat);
-	}
+	App->editor3d->LoadSceneIntoEditor("Audio_Demo.pho");
 
 	return true;
 }
@@ -58,14 +61,8 @@ update_status ModuleResourceManager::PreUpdate(float dt)
 	{
 		haveToReload = false;
 		checkTimer = 0.0f;
-		//TODO check all asset files here
 
 		LoadAllAssets();
-		//Testing code
-	/*	CreateNewResource("emptyMesh", ResourceType::MESH);
-		CreateNewResource("emptyTexture", ResourceType::TEXTURE);
-
-		ActiveResources act= GetActiveResources();*/
 
 
 	}
@@ -227,6 +224,7 @@ void ModuleResourceManager::FindFileRecursively(std::string uid, std::string cur
 	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		const std::string& str = *it;
+
 		FindFileRecursively(uid, currDir + str + "/", foundFile);
 		if (foundFile != "")
 		{
@@ -319,6 +317,69 @@ void ModuleResourceManager::StopUsingResource(unsigned int uid)
 	}
 }
 
+bool ModuleResourceManager::TryLoadResIntoScene(unsigned int uid)
+{
+
+	//Find if the resource is already loaded or imported
+	std::map<unsigned int, Resource*>::iterator it = resources.find(uid);
+	if (it != resources.end())
+	{
+
+		ResourceType resType = it->second->GetType();
+		if (resType != ResourceType::MODEL)//we do not consider models to be loaded into mem (only its dependencies) and so it has no reference count
+		{
+
+			if (App->editor3d->selectedGameObjs.empty())//if the resource is not a model & we have no selected object we cannot load the resource into mem
+			{
+				LOG("[warning] This resource cannot be loaded if there is no selected object to apply the resource to it");//TODO discuss if we should just create an empty and assign the resource to it with adri
+				return false;
+			}
+
+			bool ret = false;
+			GameObject* currObj = App->editor3d->selectedGameObjs.back();
+
+			switch (resType)
+			{
+			case ResourceType::TEXTURE:
+			{
+				C_Material* mat = currObj->GetComponent<C_Material>();
+				//if it has the component, just change its resource otherwise create the component first
+				if (!mat)
+				{
+					mat = (C_Material*)currObj->CreateComponent(ComponentType::MATERIAL);
+				}
+				mat->SetNewResource(uid);
+				ret = true;
+			}
+			break;
+			case ResourceType::MESH://TODO mesh don't needed (for now) as we are loading from assets & we do not have meshes in assets (the plan is to display the meshes associated with each fbx in the assets panel in the future)
+			{
+				C_Mesh* mesh = currObj->GetComponent<C_Mesh>();
+				//if it has the component, just change its resource otherwise create the component first
+				if (!mesh)
+				{
+					mesh = (C_Mesh*)currObj->CreateComponent(ComponentType::MESH);
+				}
+				mesh->SetNewResource(uid);
+				ret = true;
+			}
+			break;
+			}
+
+			return ret;
+		}
+		else
+		{
+			LoadResourceIntoMem(it->second);
+			return true;
+		}
+
+	}
+
+	LOG("[error] The requested resource with ID: %i, doesn't exist", uid);
+	return false;
+}
+
 ActiveResources ModuleResourceManager::GetActiveResources(bool getAll)
 {
 	ActiveResources res;
@@ -404,8 +465,11 @@ void ModuleResourceManager::LoadAssetsRecursively(std::string dir)
 	for (std::vector<std::string>::const_iterator it = dirs.begin(); it != dirs.end(); ++it)
 	{
 		const std::string& str = *it;
-		std::string newDir = dir + str + "/";
-		LoadAssetsRecursively(newDir);
+		if (str != "wwise")
+		{
+			std::string newDir = dir + str + "/";
+			LoadAssetsRecursively(newDir);
+		}
 	}
 }
 
@@ -659,6 +723,7 @@ Resource* ModuleResourceManager::CreateNewResource(const char* assetsFile, Resou
 		}
 
 		ret->SetAssetPath(assetsFile);
+		ret->SetName(GenNameFromPath(*ret));
 		ret->SetLibPath(GenLibPath(*ret));
 	}
 
@@ -704,6 +769,20 @@ std::string ModuleResourceManager::GenLibPath(Resource& res)
 	return path;
 }
 
+std::string ModuleResourceManager::GenNameFromPath(Resource& res)
+{
+	std::string path = res.GetAssetFile();
+	std::string name = "";
+	if (path != "")
+	{
+		App->fileSystem->SeparatePath(path, nullptr, &name);
+		App->fileSystem->SeparateExtension(name, nullptr, &name);
+	}
+
+
+	return name;
+}
+
 ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 {
 	ResourceType ret = ResourceType::UNKNOWN;
@@ -736,21 +815,6 @@ ResourceType ModuleResourceManager::ResourceTypeFromPath(std::string path)
 	return ret;
 }
 
-Resource* ModuleResourceManager::TryToLoadResource(unsigned int uid)
-{
-	Resource* res = nullptr;
-	//find resource path and load resource into the engine here
-	std::string result = "";
-	FindFileRecursively(std::to_string(uid), LIB_PATH, result);
-	if (result != "")
-	{
-		//TODO Load resource with path from lib (result) and assign it to "res" aka Importer::Load (not Import!!!)
-	}
-
-
-
-	return res;
-}
 
 bool ModuleResourceManager::ReleaseSingleResource(unsigned int uid)
 {
@@ -765,7 +829,9 @@ bool ModuleResourceManager::ReleaseSingleResource(unsigned int uid)
 		//release resource here TODO
 
 		ret = true;
-	}	return ret;
+	}
+
+	return ret;
 }
 
 void ModuleResourceManager::SaveResource(Resource& r)

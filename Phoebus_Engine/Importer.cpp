@@ -34,6 +34,9 @@
 #include "C_Material.h"
 #include "C_Transform.h"
 #include "C_Camera.h"
+#include "C_AudioSource.h"
+#include "C_Control.h"
+#include "C_ReverbZone.h"
 #include "Config.h"
 #include "ModuleResourceManager.h"
 #include "Color.h"
@@ -173,12 +176,13 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 		const aiScene* scene = aiImportFileFromMemory(Buffer, Length, aiProcessPreset_TargetRealtime_MaxQuality, nullptr); //nullptr as we need no external libs to hepl import
 
 											//aiImportFileFromMemory										
-		LOG("Importing 3D asset from buffer: %s", Buffer);
+		LOG("Importing 3D asset from buffer");
 
 		if (scene != nullptr)
 		{
 			std::string pathWithoutFile;
-			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
+			std::string filename;
+			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, &filename);
 			// Use scene->mNumMeshes to iterate on scene->mMeshes array
 
 			std::vector<ResourceMesh*> meshesToAssign;
@@ -186,7 +190,15 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 			for (int i = 0; i < scene->mNumMeshes; i++)
 			{
 				//scene->mMeshes[i]->mName; TODO GET MESH NAME TO ASSIGN IT TO THE RESOURCE
-				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+				std::string meshName = scene->mMeshes[i]->mName.C_Str();
+				if (meshName == "")
+					meshName = "Untitled Mesh";
+
+				meshName = filename + "(" + std::to_string(i) + ")/" + meshName;
+
+				unsigned int newUID = res->GetUID() + 1 + i;
+				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH, newUID);
+				currMesh->SetName(meshName);
 				Mesh::ImportRMesh(scene->mMeshes[i], *currMesh); //Take the mesh out of the fbx in assets and plop it into engine
 				char* auxB;
 				if (Mesh::SaveMesh(*currMesh, &auxB) > 0) //Here we save to lib the mesh portion of our model (from engine to lib)
@@ -426,7 +438,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 		createdGameObjects[gameObject->ID] = gameObject;
 		gameObject->isActive = gameObject_node.GetBool("Active");
 		gameObject->focused = gameObject_node.GetBool("Focused");
-
+		gameObject->selected = gameObject_node.GetBool("Selected");
 		//get the components
 		Config_Array components = gameObject_node.GetArray("Components");
 
@@ -438,6 +450,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 			{
 				//Resource* newR = App->rManager->RequestNewResource(comp.GetNumber("ResourceID"));
 				unsigned int newUID = comp.GetNumber("ResourceID");
+				std::string resourceName = comp.GetString("ResourceName");
 				Resource* r = nullptr;
 				switch (type)
 				{
@@ -446,18 +459,18 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 					break;
 				case ComponentType::MESH:
 				{
+					//check if the component has a resource (resourceid!=0)
 					if (newUID != 0)
 					{
 
-						//TODO check if the component has a resource here? (resourceid!=0)
 						r = App->rManager->FindResInMemory(newUID);
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							r->SetName(resourceName);
 							App->rManager->LoadResourceIntoMem(r);
 						}
 
-						//component.chutame_la_mesh
 						component->SetNewResource(newUID);
 					}
 
@@ -465,7 +478,7 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 				break;
 				case ComponentType::MATERIAL:
 				{
-					//TODO check if the component has a resource here? (resourceid!=0)
+					//check if the component has a resource here (resourceid!=0)
 					if (newUID != 0)
 					{
 
@@ -479,9 +492,9 @@ bool Importer::Model::LoadModel(const char* libPath, GameObject* root, bool only
 							if (fullpath != "")
 							{
 								r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+								r->SetName(resourceName);
 								App->rManager->LoadResourceIntoMem(r);
 
-								//component.chutame_la_tex
 							}
 						}
 						component->SetNewResource(newUID);
@@ -705,29 +718,9 @@ unsigned int Importer::Texture::SaveTexture(Resource& texture)
 
 	return 0;
 }
-//
-//char* Importer::SaveTransform(C_Transform* aux) //TODO DEPRECATED? should we use game object to store the transform?
-//{
-//	float4x4 values[1] = { aux->GetGlobalTransform() };
-//
-//	unsigned int size = sizeof(values);
-//	char* fileBuffer = new char[size]; // Allocate
-//	char* cursor = fileBuffer;
-//
-//	// First store values
-//	unsigned int bytes = sizeof(values);
-//	memcpy(cursor, values, bytes);
-//	cursor += bytes;
-//
-//	App->fileSystem->SavePHO("testingTransform.pho", fileBuffer, size);
-//
-//	return fileBuffer;
-//}
 
 unsigned int Importer::Camera::SaveCamera(C_Camera* aux, char* buffer)
 {
-	//TODO: this is jurassic code
-
 	//float nearPlaneDist;
 	//float farPlaneDist;
 	//float FoV;
@@ -758,6 +751,11 @@ void Importer::Camera::SaveComponentCamera(Config& config, Component* cam)
 	config.SetNumber("FarPlane", camera->GetFarPlaneDist());
 	config.SetNumber("AspectRatio", camera->GetAspectRatio());
 	config.SetBool("IsCulling", camera->GetIsCulling());
+	Color c = camera->GetBackgroundCol();
+	config.SetNumber("BG R", c.r);
+	config.SetNumber("BG G", c.g);
+	config.SetNumber("BG B", c.b);
+	config.SetNumber("BG A", c.a);
 	//config.SetBool("MainCamera",camera->main);
 }
 
@@ -791,11 +789,8 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 
 	// Load indices
 	bytes = sizeof(uint) * num_indices;
-	indices.resize(num_indices); //TODO: THIS IS THE LESS GHETTO WAY TO DO IT
-	//for (int i = 0; i < num_indices; i++)
-	//{
-	//	indices.push_back(1); //TODO: ask Oscar a less ghetto way to do this
-	//}
+	indices.resize(num_indices); //THIS IS THE LESS GHETTO WAY TO DO IT
+
 	memcpy(&indices[0], cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
 	cursor += bytes;
 
@@ -803,11 +798,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load vertex
 	bytes = sizeof(float) * num_vertices;
 	vertices.resize(num_vertices);
-	//for (int i = 0; i < num_vertices; i++)
-	//{
-	//	vertices.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+
 	memcpy(&vertices[0], cursor, bytes);
 	cursor += bytes;
 
@@ -815,22 +806,14 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load normals
 	bytes = sizeof(float) * num_normals;
 	normals.resize(num_normals);
-	//for (int i = 0; i < num_normals; i++)
-	//{
-	//	normals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+
 	memcpy(&normals[0], cursor, bytes);
 	cursor += bytes;
 
 	// Load smoothed normals
 	bytes = sizeof(float) * num_smoothedNormals;
 	smoothedNormals.resize(num_smoothedNormals);
-	//for (int i = 0; i < num_smoothedNormals; i++)
-	//{
-	//	smoothedNormals.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+
 	memcpy(&smoothedNormals[0], cursor, bytes);
 	cursor += bytes;
 
@@ -838,11 +821,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	// Load texcoords
 	bytes = sizeof(float) * num_tex;
 	texCoords.resize(num_tex);
-	//for (int i = 0; i < num_tex; i++)
-	//{
-	//	texCoords.push_back(1.0f); //TODO: ask Oscar a less ghetto way to do this
-	//}
-	//ret.indices = new uint[num_indices];
+
 	memcpy(&texCoords[0], cursor, bytes);
 	cursor += bytes;
 
@@ -854,7 +833,6 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	meshToFill->normals = normals;
 	meshToFill->texCoords = texCoords;
 	meshToFill->smoothedNormals = smoothedNormals;
-	//meshToFill->GenerateSmoothedNormals();
 	meshToFill->GenerateBuffers();
 
 	if (!meshToFill->vertices.empty() && !meshToFill->indices.empty()) { return true; }
@@ -864,30 +842,7 @@ bool Importer::Mesh::LoadMesh(char* buffer, unsigned int Length, Resource& meshT
 	};
 
 }
-//
-//bool Importer::LoadMaterialFromPho(char* buffer, unsigned int Lenght, std::string path)
-//{
-//
-//	char* cursor = buffer; //where in memory does the file start (pointer to first memory access)
-//
-//	// path
-//	unsigned int values[1]; //necessarily hardcoded
-//	unsigned int bytes = sizeof(values);
-//	memcpy(values, cursor, bytes);
-//	cursor += bytes;
-//
-//	// Load path;
-//	bytes = values[0];
-//	std::string NewPath;
-//	NewPath.resize(bytes);
-//	memcpy(&NewPath.at(0), cursor, bytes); //&indices[0] since we only need to point where he needs to start writing. bytes will tell it when to stop
-//	cursor += bytes;
-//
-//	//Remake the Material
-//	// TODO: we have the path to the texture, now do all the Ilbind image stuff
-//
-//	return true;
-//}
+
 
 bool Importer::Camera::LoadCameraFromPho(char* buffer, unsigned int Lenght)
 {
@@ -917,6 +872,7 @@ void Importer::SerializeGameObject(Config& config, GameObject* gameObject) //ser
 	config.SetString("Name", gameObject->GetName().c_str());
 	config.SetBool("Active", gameObject->isActive);
 	config.SetBool("Focused", gameObject->focused);
+	config.SetBool("Selected", gameObject->selected);
 
 	//Global transform
 	const C_Transform* transform = gameObject->GetComponent<C_Transform>();
@@ -934,10 +890,6 @@ void Importer::SerializeGameObject(Config& config, GameObject* gameObject) //ser
 
 unsigned int Importer::SerializeScene(GameObject* root, char** TrueBuffer)	 //serialize scene
 {
-	/*
-	TODO: Look at Marc Json functions?? -> class config + class configarray
-										config has own destructor, no worries there
-	*/
 	/*
 	1: search for children
 	2. save gameobject -> UID,UID of parent (0 if root, ghetto Alex), save components as children
@@ -967,6 +919,9 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	{
 		App->renderer3D->activeCam->SetAsCullingCam(false);
 	}
+
+	App->audioManager->UnRegisterAllAudioObjs();
+
 	if (!App->editor3d->selectedGameObjs.empty())
 	{
 		App->editor3d->SetSelectedGameObject(nullptr);
@@ -979,6 +934,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 	//the map is a correlation between ID nad GO. It comes useful later. Thanks Marc!
 	std::map<int, GameObject*> createdGameObjects;
 	Config_Array gameObjects_array = file.GetArray("GameObjects");
+	GameObject* focusedGameObject = nullptr;
 	for (uint i = 0; i < gameObjects_array.GetSize(); ++i)
 	{
 		//Pinpoint the GO 
@@ -1002,11 +958,16 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		createdGameObjects[gameObject->ID] = gameObject;
 		gameObject->isActive = gameObject_node.GetBool("Active");
 		gameObject->focused = gameObject_node.GetBool("Focused");
+		gameObject->selected = gameObject_node.GetBool("Selected");
 
 		//TODO for the future here we will load every selected obj and we will store the focused one to add it at the end of the load
-		if (gameObject->focused)
+		if (gameObject->selected)
 		{
-			App->editor3d->SetSelectedGameObject(gameObject);
+			App->editor3d->SetSelectedGameObject(gameObject, true);
+			if (gameObject->focused)
+			{
+				focusedGameObject = gameObject;
+			}
 		}
 
 		//get the components
@@ -1017,11 +978,13 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 			Config comp = components.GetNode(i);
 			ComponentType type = (ComponentType)((int)comp.GetNumber("ComponentType"));
 
-			if (Component * component = gameObject->CreateComponent(type))
+			if (Component * component = gameObject->CreateComponent(type, comp.GetNumber("ID")))
 			{
-				component->ID = comp.GetNumber("ID");
-				unsigned int newUID = comp.GetNumber("ResourceID");
+				//component->ID = comp.GetNumber("ID");
+				component->SetActive(comp.GetBool("Active"));
 
+				unsigned int newUID = comp.GetNumber("ResourceID");
+				std::string resourceName = comp.GetString("ResourceName");
 
 				Resource* r = nullptr;
 
@@ -1037,6 +1000,14 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					cam->SetNewFoV(comp.GetNumber("FOV"));
 					bool isCulling = comp.GetBool("IsCulling");
 					if (isCulling)cam->SetAsCullingCam(true);
+
+					Color c;
+					c.r = comp.GetNumber("BG R");
+					c.g = comp.GetNumber("BG G");
+					c.b = comp.GetNumber("BG B");
+					c.a = comp.GetNumber("BG A");
+					cam->SetBackgroundCol(c);
+
 				}
 				break;
 				case ComponentType::MESH:
@@ -1046,6 +1017,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::MESH, newUID);//TODO asset path should be FBX asset path
+							r->SetName(resourceName);
 							App->rManager->LoadResourceIntoMem(r);
 						}
 
@@ -1063,6 +1035,7 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 						if (r == nullptr)//if not found in memory find it in lib
 						{
 							r = App->rManager->CreateNewResource("UntitledForNow", ResourceType::TEXTURE, newUID);//TODO asset path should be texture asset path
+							r->SetName(resourceName);
 							App->rManager->LoadResourceIntoMem(r);
 						}
 						//component.chutame_la_tex
@@ -1075,10 +1048,52 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					m->matCol.a = comp.GetNumber("Color A");
 				}
 				break;
-
+				case ComponentType::AUDIO_LISTENER:
+				{
+					//TODO load audio listener in here
+					C_AudioListener* listener = (C_AudioListener*)component;
+					bool isListener = comp.GetBool("IsListener");
+					if (isListener)listener->SetAsListener(true);
+				}
+				break;
+				case ComponentType::AUDIO_SOURCE:
+				{
+					C_AudioSource* source = (C_AudioSource*)component;
+					//TODO load audio source in here
+					source->SetVolume(comp.GetNumber("Volume"));
+					source->SetSecondsToChangeMusic(comp.GetNumber("SecondsToNextMusic"));
+					source->SetUserPitch(comp.GetNumber("UserPitch"));
+					Config_Array confArray = comp.GetArray("Events");
+					for (int j = 0; j < confArray.GetSize(); j++)
+					{
+						Config& eventConf = confArray.GetNode(j);
+						std::string evName = eventConf.GetString("Name");
+						AudioEventType evType = (AudioEventType)(int)eventConf.GetNumber("Type");
+						source->CreateAudioEvent(evName, evType);
+					}
+				}
+				break;
+				case ComponentType::REVERB_ZONE:
+				{
+					C_ReverbZone* reverb = (C_ReverbZone*)component;
+					reverb->targetBus = comp.GetString("TargetBus");
+					reverb->revValue = comp.GetNumber("RevValue");
+					reverb->SetReverbZone(float3(
+						comp.GetNumber("DimensionsX"),
+						comp.GetNumber("DimensionsY"),
+						comp.GetNumber("DimensionsZ")));
+				}
+				break;
 				case ComponentType::TRANSFORM:
 					//Nothing: this is already done in constructor
 					break;
+				case ComponentType::CONTROL:
+				{
+
+					C_Control* control = (C_Control*)component;
+					control->SetSpeed(comp.GetNumber("Speed"));
+					break;
+				}
 				default:
 					LOG("[error] Tried to load a model, but the material with ID %i of Game Object %s had an unexpected type", component->ID, component->owner->GetName());
 					break;
@@ -1093,6 +1108,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 		}
 		//Marc calls some Update funcs here; we don't need to since we set it up on GO constructor
 	}
+
+	App->editor3d->SetSelectedGameObject(focusedGameObject, true);
 
 }
 
@@ -1110,7 +1127,19 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 {
 	config.SetNumber("ComponentType", (int)component->GetType());
 	config.SetNumber("ID", (int)component->ID);
-	config.SetNumber("ResourceID", component->GetResourceID());
+	config.SetBool("Active", component->IsActive());
+	unsigned int resID = component->GetResourceID();
+	config.SetNumber("ResourceID", resID);
+
+	std::string resName = "";
+	Resource* currResource = App->rManager->FindResInMemory(resID);
+	if (currResource)
+	{
+		resName = currResource->GetName();
+	}
+	config.SetString("ResourceName", resName.c_str());
+
+
 	switch (component->GetType())
 	{
 	case ComponentType::CAMERA:
@@ -1125,7 +1154,18 @@ void Importer::SaveComponentRaw(Config& config, Component* component)
 	case ComponentType::TRANSFORM:
 		//we're already saving it as an array
 		break;
-
+	case ComponentType::AUDIO_LISTENER:
+		Audio::SaveComponentAudioListener(config, component);
+		break;
+	case ComponentType::AUDIO_SOURCE:
+		Audio::SaveComponentAudioSource(config, component);
+		break;
+	case ComponentType::REVERB_ZONE:
+		Audio::SaveComponentReverbZone(config, component);
+		break;
+	case ComponentType::CONTROL:
+		Controller::SaveComponentController(config, component);
+		break;
 	default:
 		//how did you even get here smh
 		LOG("[error] Trying to save component with ID %i from Game Object %s but the type is invalid", component->ID, component->owner->GetName());
@@ -1226,4 +1266,46 @@ void Importer::Mesh::ImportRMesh(aiMesh* fbxMesh, ResourceMesh& resToFill)
 	}
 }
 
+void Importer::Audio::SaveComponentAudioListener(Config& config, Component* audioListener)
+{
+	C_AudioListener* listener = (C_AudioListener*)audioListener;
+	//TODO complete this method
+	config.SetBool("IsListener", listener->GetIsListener());
 
+}
+
+void Importer::Audio::SaveComponentAudioSource(Config& config, Component* audioSource)
+{
+	C_AudioSource* source = (C_AudioSource*)audioSource;
+	//TODO complete this method
+	config.SetNumber("Volume", source->GetVolume());
+	config.SetNumber("SecondsToNextMusic", source->GetSecondsToChangeMusic());
+	config.SetNumber("UserPitch", source->GetUserPitch());
+	Config_Array eventsArray = config.SetArray("Events");
+	const std::vector<AudioEvent*> events = source->GetEvents();
+	for (int i = 0; i < events.size(); i++)
+	{
+		Config& c = eventsArray.AddNode();
+		c.SetString("Name", events[i]->GetEventName().c_str());
+		c.SetNumber("Type", (int)events[i]->GetType());
+	}
+
+}
+
+void Importer::Audio::SaveComponentReverbZone(Config& config, Component* reverbZone)
+{
+	C_ReverbZone* reverb = (C_ReverbZone*)reverbZone;
+	float3 dimensions = reverb->GetDimensions();
+	config.SetNumber("DimensionsX", dimensions.x);
+	config.SetNumber("DimensionsY", dimensions.y);
+	config.SetNumber("DimensionsZ", dimensions.z);
+	config.SetString("TargetBus", reverb->targetBus.c_str());
+	config.SetNumber("RevValue", reverb->revValue);
+
+}
+
+void Importer::Controller::SaveComponentController(Config& config, Component* controller)
+{
+	C_Control* control = (C_Control*)controller;
+	config.SetNumber("Speed", control->GetSpeed());
+}

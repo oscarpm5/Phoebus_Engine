@@ -10,6 +10,8 @@ class ResourceTexture;
 class C_Material;
 class C_Transform;
 class C_Camera;
+class C_AudioSource;
+class C_AudioListener;
 struct JSON_Object;
 class Config;
 class Component;
@@ -20,7 +22,7 @@ namespace Importer
 
 	namespace Model
 	{
-		//Take a saved buffer in memory and loads it into a model resource, also imports dependencies if needed (aka meshes / textures) TODO
+		//Take a saved buffer in memory and loads it into a model resource, also imports dependencies if needed (aka meshes / textures)
 		bool ImportModel(const char* Buffer, unsigned int Length, const char* relativePath, Resource * res);
 		bool LoadModel(const char* libPath, GameObject* root, bool onlyBase=false);//revise if needed
 		unsigned int SaveModel(GameObject* root, Resource* ret);//returns buffer size; it cals upon SavePHO on its own
@@ -28,7 +30,7 @@ namespace Importer
 
 	namespace Mesh
 	{
-		void ImportRMesh(aiMesh* fbxMesh, ResourceMesh& meshToFill);//TODO
+		void ImportRMesh(aiMesh* fbxMesh, ResourceMesh& meshToFill);
 		bool LoadMesh(char* Buffer, unsigned int Length, Resource& meshToFill);
 		unsigned int SaveMesh(Resource & aux, char** buffer);//returns buffer 
 	}
@@ -36,7 +38,7 @@ namespace Importer
 	namespace Texture
 	{
 		//path required for display in the inspector. froma ssets to lib
-		bool ImportImage(const char* Buffer, unsigned int Length, Resource& textureToFill);//TODO needs completion
+		bool ImportImage(const char* Buffer, unsigned int Length, Resource& textureToFill);
 
 
 		//from lib to engine
@@ -46,7 +48,7 @@ namespace Importer
 		void SaveComponentMaterial(Config& config, Component* Mat);
 
 		//Testing own file format. from engine to lib
-		unsigned int SaveTexture(Resource& texture);//TODO all
+		unsigned int SaveTexture(Resource& texture);
 
 	}
 
@@ -54,7 +56,7 @@ namespace Importer
 	{
 		//Import camera will exist when we load Cameras from Fbx, NOT NOW
 		//Own file format
-		unsigned int SaveCamera(C_Camera* aux, char* buffer);
+		unsigned int SaveCamera(C_Camera* aux, char* buffer);//TODO this method is unused??? ASK ADRI
 		//Used in GameObject serialization. Never call this "raw"
 		void SaveComponentCamera(Config& config, Component* camera);
 		//Own file format
@@ -62,9 +64,18 @@ namespace Importer
 
 	}
 
-	//Kill me already please
-	GameObject* LoadGameObjFromAiMesh(ResourceMesh* m,aiMesh* _mesh, const aiScene* scene, aiNode* currNode, GameObject* parent, std::string relPath);
+	namespace Audio
+	{
+		void SaveComponentAudioListener(Config& config, Component* audioListener);
+		void SaveComponentAudioSource(Config& config, Component* audioSource);
+		void SaveComponentReverbZone(Config& config, Component* reverbZone);
+	}
 
+
+	namespace Controller
+	{
+		void SaveComponentController(Config& config, Component* controller);
+	}
 
 
 	//Dont use this directly

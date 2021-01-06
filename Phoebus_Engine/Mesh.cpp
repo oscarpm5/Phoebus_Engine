@@ -14,7 +14,7 @@
 
 
 ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> texCoords, unsigned int UID) :
-	Resource(UID, ResourceType::MESH),idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+	Resource(UID, ResourceType::MESH), idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -24,8 +24,8 @@ ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int
 	GenerateBuffers();
 }
 
-ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords, unsigned int UID):
-	Resource(UID, ResourceType::MESH),idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int> indices, std::vector<float> normals, std::vector<float> smoothedNormals, std::vector<float> texCoords, unsigned int UID) :
+	Resource(UID, ResourceType::MESH), idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 	this->vertices = vertices;
 	this->indices = indices;
@@ -35,11 +35,11 @@ ResourceMesh::ResourceMesh(std::vector<float> vertices, std::vector<unsigned int
 	GenerateBuffers();
 }
 
-ResourceMesh::ResourceMesh(unsigned int UID) :Resource(UID,ResourceType::MESH), idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
+ResourceMesh::ResourceMesh(unsigned int UID) :Resource(UID, ResourceType::MESH), idVertex(0), idIndex(0), idNormals(0), idTexCoords(0)
 {
 }
 
-ResourceMesh::ResourceMesh(const ResourceMesh& other):Resource(App->renderer3D->seed.Int() ,ResourceType::MESH)
+ResourceMesh::ResourceMesh(const ResourceMesh& other) : Resource(App->renderer3D->seed.Int(), ResourceType::MESH)
 {
 	this->vertices = other.vertices;
 	this->indices = other.indices;
@@ -127,7 +127,6 @@ void ResourceMesh::GenerateSmoothedNormals()
 	}
 
 
-	//TODO FOR OSCAR still need to check if 2 vertices are in the same place and merge normals accordingly
 	//TODO FOR OSCAR this code can be optimized, don't check already visited indices
 	for (int i = 0; i < vertices.size(); i += 3)//if 2 vertices are in the same place merge their normals
 	{
@@ -153,7 +152,7 @@ void ResourceMesh::GenerateSmoothedNormals()
 
 		if (averagedNormal.size() > 1) //if there is more than one normal to average, average them
 		{
-			float3 newAverage = {0.0f,0.0f,0.0f};
+			float3 newAverage = { 0.0f,0.0f,0.0f };
 
 			for (int i = 0; i < averagedNormal.size(); i++)
 			{
@@ -164,8 +163,8 @@ void ResourceMesh::GenerateSmoothedNormals()
 			for (int i = 0; i < normalsToChange.size(); i++)
 			{
 				smoothedNormals[normalsToChange[i]] = newAverage.x;
-				smoothedNormals[normalsToChange[i]+1] = newAverage.y;
-				smoothedNormals[normalsToChange[i]+2] = newAverage.z;
+				smoothedNormals[normalsToChange[i] + 1] = newAverage.y;
+				smoothedNormals[normalsToChange[i] + 2] = newAverage.z;
 			}
 		}
 
@@ -176,20 +175,31 @@ void ResourceMesh::GenerateBuffers()
 {
 
 	//gen buffers=========================================
+	if (!this->vertices.empty())
+	{
 
-	//vertex buffer
-	glGenBuffers(1, &idVertex);
-	glBindBuffer(GL_ARRAY_BUFFER, idVertex);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+		//vertex buffer
+		glGenBuffers(1, &idVertex);
+		glBindBuffer(GL_ARRAY_BUFFER, idVertex);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), &vertices[0], GL_STATIC_DRAW);
+	}
+	/*else
+	{
+		LOG("[warning] Vertices vector of resource with id %i is empty", this->uid);
+	}*/
 
 
-
-	//index buffer
-	glGenBuffers(1, &idIndex);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-
+	if (!this->indices.empty())
+	{
+		//index buffer
+		glGenBuffers(1, &idIndex);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIndex);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	}
+	/*else
+	{
+		LOG("[warning] Indices vector of resource with id %i is empty", this->uid);
+	}*/
 	if (!this->normals.empty())
 	{
 		//normal buffer
@@ -197,6 +207,10 @@ void ResourceMesh::GenerateBuffers()
 		glBindBuffer(GL_ARRAY_BUFFER, idNormals);
 		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(float), &normals[0], GL_STATIC_DRAW);
 	}
+	/*else
+	{
+		LOG("[warning] Normals vector of resource with id %i is empty", this->uid);
+	}*/
 
 	if (!this->texCoords.empty())
 	{
@@ -205,6 +219,10 @@ void ResourceMesh::GenerateBuffers()
 		glBindBuffer(GL_ARRAY_BUFFER, idTexCoords);
 		glBufferData(GL_ARRAY_BUFFER, texCoords.size() * sizeof(float), &texCoords[0], GL_STATIC_DRAW);
 	}
+	/*else
+	{
+		LOG("[warning] Texture Coordinates vector of resource with id %i is empty", this->uid);
+	}*/
 
 	//clear buffers
 	glBindBuffer(GL_ARRAY_BUFFER, 0);

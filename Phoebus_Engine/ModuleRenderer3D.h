@@ -16,7 +16,9 @@
 #define MAX_LIGHTS 8
 #define INDEX_CUBE 36
 
+//class C_Camera;
 class ResourceMesh;
+
 
 class ModuleRenderer3D : public Module
 {
@@ -30,8 +32,6 @@ public:
 	bool CleanUp();
 
 	void OnResize(int width, int height);
-	void TestingRender();
-	void TestingRenderAtStart();
 	void GenerateBuffers(int width, int height);
 	void Draw3D();
 	void DrawOutline();
@@ -56,7 +56,7 @@ private:
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
 
-	bool ExpandMeshVerticesByScale(ResourceMesh& m, float newScale);//returns false if scaling cannot be done
+	bool ExpandMeshVerticesByScale(ResourceMesh& m, float newScale, float3 objScale = float3(1.0f, 1.0f, 1.0f));//returns false if scaling cannot be done
 
 private:
 	unsigned int exampleMeshIdentifier;

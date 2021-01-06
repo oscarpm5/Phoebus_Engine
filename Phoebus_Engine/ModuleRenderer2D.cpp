@@ -122,7 +122,7 @@ bool ModuleRenderer2D::Init()
 	}
 	// Setup Platform/Renderer bindings
 	ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer3D->context);
-	ImGui_ImplOpenGL3_Init("#version 140"); //TODO: this is hardcoded. Deal with it.
+	ImGui_ImplOpenGL3_Init("#version 140"); //this is hardcoded. Deal with it.
 
 	//fps goodness
 	fps_log.resize(maxFPShown);
@@ -174,7 +174,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				showLoadScenes = true;
 			}
-
+			if (ImGui::MenuItem("New", "Scene"))
+			{
+				App->editor3d->StartNewScene();
+			}
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
 				showAboutWindowbool = true;
@@ -376,6 +379,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				App->fileSystem->SavePHO(auxPath.c_str(), auxB, size);
 				RELEASE_ARRAY(auxB);
 				auxB = nullptr;
+				App->audioManager->StopAllSounds();
 			}
 		}
 		if (isGamePlaying)
@@ -518,20 +522,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::Button("OK", ImVec2(50, 20)))
 			{
-				LOG("Loading absolute scene");
-				delete App->editor3d->root; App->editor3d->root = nullptr;
-				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
-
-				char* aux = "";
-				std::string selected = selectedScene;
-				int size = App->fileSystem->Load(selected.c_str(), &aux);
-
-				if (size != 0)
-				{
-					Importer::LoadScene(aux, App->editor3d->root);
-					RELEASE_ARRAY(aux);
-					aux = nullptr;
-				}
+				std::string newSceneName = selectedScene;
+				App->fileSystem->SeparatePath(newSceneName, nullptr, &newSceneName);
+				App->editor3d->LoadSceneIntoEditor(newSceneName);
 				selectedScene[0] = '\0';
 				showLoadScenes = false;
 			}
@@ -573,7 +566,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::Button("Load##fileExplorer", ImVec2(50, 20)))
 			{
-				//TODO Call load asset here??
+				//TODO Depending on what you want to load (ex. PNG), load it into the selected object
 				std::string selected = selectedFile;
 				if (selected != "")
 				{
@@ -581,7 +574,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 					Resource* r = App->rManager->ManageAssetUpdate(selected.c_str());
 					if (r != nullptr)
 					{
-						App->rManager->RequestNewResource(r->GetUID());
+						App->rManager->TryLoadResIntoScene(r->GetUID());
 					}
 				}
 				else
@@ -704,7 +697,7 @@ bool ModuleRenderer2D::CleanUp()
 	if (OscarID != 0) glDeleteTextures(1, &OscarID); OscarID = 0;
 	if (AdriID != 0) glDeleteTextures(1, &AdriID);	AdriID = 0;
 	if (PhoebusIcon != 0) glDeleteTextures(1, &PhoebusIcon);	PhoebusIcon = 0;
-	//TODO: Void functions, no return, no check possible. FIX!
+	//Void functions, no return, no check possible.
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplSDL2_Shutdown();
 	ImGui::DestroyContext();
@@ -929,7 +922,12 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::Text("FrameCount: %u", App->GetFrameCount());
 		ImGui::Text("GameClock:  %.3f", App->GetTime());
 		ImGui::Text("Game DT:    %.3f", App->GetGameDT());
-		ImGui::Text("TimeScale:  %.3f", App->GetTimeScale());
+
+		float timeScale = App->GetTimeScale();
+		if (ImGui::SliderFloat("TimeScale", &timeScale,0.25f,4.0f))
+		{
+			App->SetNewTimeScale(timeScale);
+		}
 		ImGui::Spacing();
 		ImGui::Spacing();
 		ImGui::Text("RealClock:  %.3f", App->GetRealTime());
@@ -1224,6 +1222,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 		//std::sort(act.textures.begin(), act.textures.end());
 		//std::sort(act.scenes.begin(), act.scenes.end());
 
+		std::string selectableString = "";
 
 		if (ImGui::CollapsingHeader("Textures##resources"))
 		{
@@ -1233,7 +1232,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.textures[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.textures[i]->GetLibraryFile().c_str());
+				selectableString = act.textures[i]->GetName() + "##" + std::to_string(act.textures[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 
 				//DragDropSource Begin
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -1245,22 +1245,27 @@ bool ModuleRenderer2D::ShowResourcesActive()
 					// Display preview (could be anything, e.g. when dragging an image we could decide to display
 					// the filename and a small preview of the image, etc.)
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4 FOCUSED_COLOR);
-					ImGui::Text("%s", act.textures[i]->GetAssetFile().c_str());
+					ImGui::Text("%s", act.textures[i]->GetName().c_str());
 					ImGui::PopStyleColor();
 
 					ImGui::EndDragDropSource();
 				}
 				//DragDropSource End
 
-				if (ImGui::IsItemHovered())
+				if (ImGui::IsItemHovered())//TODO the tooltip is the same for every case, consider creating a method
 				{
 					ImGui::BeginTooltip();
 
 					std::string count = std::to_string(act.textures[i]->referenceCount);
 					std::string ID = std::to_string(act.textures[i]->GetUID());
+					std::string assetPath = act.textures[i]->GetAssetFile();
+					std::string libPath = act.textures[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
+
 
 					ImGui::EndTooltip();
 				}
@@ -1277,7 +1282,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.meshes[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.meshes[i]->GetLibraryFile().c_str());
+				selectableString = act.meshes[i]->GetName() + "##" + std::to_string(act.meshes[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 
 				//DragDropSource Begin
 				if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
@@ -1289,7 +1295,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 					// Display preview (could be anything, e.g. when dragging an image we could decide to display
 					// the filename and a small preview of the image, etc.)
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4 FOCUSED_COLOR);
-					ImGui::Text("%s", act.meshes[i]->GetAssetFile().c_str());
+					ImGui::Text("%s", act.meshes[i]->GetName().c_str());
 					ImGui::PopStyleColor();
 
 					ImGui::EndDragDropSource();
@@ -1302,9 +1308,13 @@ bool ModuleRenderer2D::ShowResourcesActive()
 
 					std::string count = std::to_string(act.meshes[i]->referenceCount);
 					std::string ID = std::to_string(act.meshes[i]->GetUID());
+					std::string assetPath = act.meshes[i]->GetAssetFile();
+					std::string libPath = act.meshes[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
 
 					ImGui::EndTooltip();
 				}
@@ -1321,16 +1331,21 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.scenes[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.scenes[i]->GetLibraryFile().c_str());
+				selectableString = act.scenes[i]->GetName() + "##" + std::to_string(act.scenes[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 
 					std::string count = std::to_string(act.scenes[i]->referenceCount);
 					std::string ID = std::to_string(act.scenes[i]->GetUID());
+					std::string assetPath = act.scenes[i]->GetAssetFile();
+					std::string libPath = act.scenes[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
 
 					ImGui::EndTooltip();
 				}
@@ -1347,16 +1362,21 @@ bool ModuleRenderer2D::ShowResourcesActive()
 				if (!act.models[i]->IsLoadedInMemory())
 					ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.6f, 0.6f, 0.6f, 1.0f));
 
-				ImGui::Selectable(act.models[i]->GetLibraryFile().c_str());
+				selectableString = act.models[i]->GetName() + "##" + std::to_string(act.models[i]->GetUID());
+				ImGui::Selectable(selectableString.c_str());
 				if (ImGui::IsItemHovered())
 				{
 					ImGui::BeginTooltip();
 
 					std::string count = std::to_string(act.models[i]->referenceCount);
 					std::string ID = std::to_string(act.models[i]->GetUID());
+					std::string assetPath = act.models[i]->GetAssetFile();
+					std::string libPath = act.models[i]->GetLibraryFile();
 
 					ImGui::Text("ID: %s", ID.c_str());
 					ImGui::Text("References: %s", count.c_str());
+					ImGui::Text("Asset Path: %s", assetPath.c_str());
+					ImGui::Text("Lib Path: %s", libPath.c_str());
 
 					ImGui::EndTooltip();
 				}
@@ -1367,8 +1387,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 		}
 
 		//ImGui::PopStyleColor();
-		ImGui::End();
 	}
+		ImGui::End();
 	return true;
 }
 
@@ -1407,7 +1427,7 @@ void ModuleRenderer2D::DrawDirectoryTree(const char* newDir)
 
 		if (extension != ".meta")
 		{
-			//TODO if it has no meta don't bother drawing it
+			//if it has no meta don't bother drawing it
 			std::string directory = newDir;
 			std::string metapath = directory + "/" + str + ".meta";
 			if (App->fileSystem->DoesFileExist(metapath.c_str()))
@@ -1733,7 +1753,6 @@ bool ModuleRenderer2D::Show3DWindow()
 	imgPos.y = imgPos.y + lastCursorPos.y;
 
 
-	//TODO imgSize gets bugged when the main app window size is changed, (change imgSize for the actual window size & the problem shows in a different way)
 	ImGui::Image((ImTextureID)App->renderer3D->renderTex, imgSize, ImVec2(0, 1), ImVec2(1, 0));
 
 	GuizmoEditTransform();

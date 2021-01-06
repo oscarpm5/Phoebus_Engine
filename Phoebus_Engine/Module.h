@@ -2,7 +2,7 @@
 #include "Globals.h"
 class Module
 {
-private :
+protected :
 	bool enabled;
 
 public:
@@ -15,6 +15,11 @@ public:
 	virtual bool Init() 
 	{
 		return true; 
+	}
+
+	virtual bool GameInit()
+	{
+		return true;
 	}
 
 	virtual bool Start()
@@ -33,6 +38,11 @@ public:
 	}
 
 	virtual update_status PostUpdate(float dt)
+	{
+		return UPDATE_CONTINUE;
+	}
+
+	virtual update_status GameUpdate(float dt)
 	{
 		return UPDATE_CONTINUE;
 	}

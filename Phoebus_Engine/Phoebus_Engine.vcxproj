@@ -48,7 +48,8 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Wwise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -67,7 +68,9 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\Wwise;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_MBCS;AK_OPTIMIZED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -81,13 +84,18 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="AudioEvent.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Console.h" />
+    <ClInclude Include="C_AudioListener.h" />
+    <ClInclude Include="C_AudioSource.h" />
     <ClInclude Include="C_Camera.h" />
+    <ClInclude Include="C_Control.h" />
     <ClInclude Include="C_Material.h" />
     <ClInclude Include="C_Mesh.h" />
+    <ClInclude Include="C_ReverbZone.h" />
     <ClInclude Include="C_Transform.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Globals.h" />
@@ -167,6 +175,7 @@
     <ClInclude Include="MathGeoLib\include\Math\TransformOps.h" />
     <ClInclude Include="MathGeoLib\include\Time\Clock.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="ModuleAudioManager.h" />
     <ClInclude Include="ModuleCamera3D.h" />
     <ClInclude Include="ModuleEditor3D.h" />
     <ClInclude Include="ModuleFileSystem.h" />
@@ -185,15 +194,62 @@
     <ClInclude Include="Resources.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Timer.h" />
+    <ClInclude Include="Wwise\AK\Plugin\AkRoomVerbFXFactory.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkAtomic.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkBytesCount.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkBytesMem.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkCallback.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkCommonDefs.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkDynamicDialogue.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkDynamicSequence.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkFPUtilities.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkMemoryMgr.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkMidiTypes.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkModule.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkQueryParameters.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkSimd.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkSimdMath.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkSoundEngine.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkSoundEngineExport.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkSpeakerConfig.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkSpeakerVolumes.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkStreamMgrModule.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkTypes.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\AkVirtualAcoustics.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkMixerPlugin.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkPlatformContext.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkPlugin.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkPluginMemAlloc.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkProcessorFeatures.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkRTPCSubscriber.h" />
+    <ClInclude Include="Wwise\AK\SoundEngine\Common\IAkStreamMgr.h" />
+    <ClInclude Include="Wwise\low_level_IO\Common\AkDefaultLowLevelIODispatcher.h" />
+    <ClInclude Include="Wwise\low_level_IO\Common\AkFileLocationBase.h" />
+    <ClInclude Include="Wwise\low_level_IO\Common\AkFilePackage.h" />
+    <ClInclude Include="Wwise\low_level_IO\Common\AkFilePackageLowLevelIO.h" />
+    <ClInclude Include="Wwise\low_level_IO\Common\AkFilePackageLUT.h" />
+    <ClInclude Include="Wwise\low_level_IO\Common\AkMultipleFileLocation.h" />
+    <ClInclude Include="Wwise\low_level_IO\Win32\AkDefaultIOHookBlocking.h" />
+    <ClInclude Include="Wwise\low_level_IO\Win32\AkDefaultIOHookDeferred.h" />
+    <ClInclude Include="Wwise\low_level_IO\Win32\AkFileHelpers.h" />
+    <ClInclude Include="Wwise\low_level_IO\Win32\AkFilePackageLowLevelIOBlocking.h" />
+    <ClInclude Include="Wwise\low_level_IO\Win32\AkFilePackageLowLevelIODeferred.h" />
+    <ClInclude Include="Wwise\low_level_IO\Win32\stdafx.h" />
+    <ClInclude Include="wwise_libraries.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="AudioEvent.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Config.cpp" />
+    <ClCompile Include="C_AudioListener.cpp" />
+    <ClCompile Include="C_AudioSource.cpp" />
     <ClCompile Include="C_Camera.cpp" />
+    <ClCompile Include="C_Control.cpp" />
     <ClCompile Include="C_Material.cpp" />
     <ClCompile Include="C_Mesh.cpp" />
+    <ClCompile Include="C_ReverbZone.cpp" />
     <ClCompile Include="C_Transform.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Hierarchy.cpp" />
@@ -242,6 +298,7 @@
     <ClCompile Include="MathGeoLib\include\Math\TransformOps.cpp" />
     <ClCompile Include="MathGeoLib\include\Time\Clock.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="ModuleAudioManager.cpp" />
     <ClCompile Include="ModuleCamera3D.cpp" />
     <ClCompile Include="ModuleEditor3D.cpp" />
     <ClCompile Include="ModuleFileSystem.cpp" />
@@ -256,6 +313,15 @@
     <ClCompile Include="Resources.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Common\AkDefaultLowLevelIODispatcher.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Common\AkFileLocationBase.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Common\AkFilePackage.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Common\AkFilePackageLUT.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Common\AkMultipleFileLocation.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Win32\AkDefaultIOHookBlocking.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Win32\AkDefaultIOHookDeferred.cpp" />
+    <ClCompile Include="Wwise\low_level_IO\Win32\stdafx.cpp" />
+    <ClCompile Include="wwise_libraries.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="imgui\LICENSE.txt" />
@@ -269,6 +335,7 @@
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_CPP.inl" />
     <None Include="MathGeoLib\include\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MathGeoLib\include\Math\Matrix.inl" />
+    <None Include="Wwise\low_level_IO\Common\AkFilePackageLowLevelIO.inl" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Phoebus_Engine.rc" />

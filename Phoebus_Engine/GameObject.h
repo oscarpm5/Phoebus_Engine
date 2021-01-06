@@ -19,8 +19,10 @@ public:
 	GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB = true, bool isLocalTrans = true);
 	
 	void Awake();
+	void GameInit();
 
 	void Update(float dt);
+	void GameUpdate(float gameDt);
 
 	~GameObject();
 
@@ -28,7 +30,7 @@ public:
 
 	void RemoveChildren(GameObject* toRemove);
 
-	void ChangeParent(GameObject* newParent);//TODO
+	void ChangeParent(GameObject* newParent);
 
 	void RemoveMyselfFromParent();
 
@@ -80,6 +82,7 @@ private:
 public:
 	bool isActive;
 	bool focused;
+	bool selected;
 	bool displayBoundingBox;
 	bool bbHasToUpdate;
 	std::vector<GameObject*> children; //we need them public for hierarchy

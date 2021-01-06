@@ -4,6 +4,10 @@
 #include "C_Mesh.h"
 #include "C_Material.h"
 #include "C_Camera.h"
+#include "C_AudioSource.h"
+#include "C_AudioListener.h"
+#include "C_Control.h"
+#include "C_ReverbZone.h"
 #include "Application.h"
 #include "imgui/imgui.h"
 
@@ -14,7 +18,7 @@
 int GameObject::numberOfObjects = 0;
 
 
-GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false), displayBoundingBox(showAABB)
+GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform, bool showAABB, bool isLocalTrans) :name(name), transform(nullptr), focused(false), selected(false), displayBoundingBox(showAABB)
 {
 	App->editor3d->AddObjName(this->name);
 	this->parent = parent;
@@ -38,6 +42,23 @@ GameObject::GameObject(GameObject* parent, std::string name, float4x4 transform,
 void GameObject::Awake()
 {
 }
+
+void GameObject::GameInit()
+{
+	for (int i = 0; i < components.size(); i++)
+	{
+
+		components[i]->GameInit();
+
+	}
+	for (int i = 0; i < children.size(); i++)
+	{
+
+		children[i]->GameInit();
+
+	}
+}
+
 
 void GameObject::Update(float dt)
 {
@@ -78,6 +99,31 @@ void GameObject::Update(float dt)
 			UpdateBoundingBox();
 		}
 		DrawGameObject();
+	}
+}
+
+void GameObject::GameUpdate(float gameDt)
+{
+	if (isActive)
+	{
+
+		for (int i = 0; i < components.size(); i++)
+		{
+			if (components[i]->IsActive())
+			{
+				components[i]->GameUpdate(gameDt);
+			}
+		}
+
+
+
+		for (int i = 0; i < children.size(); i++)
+		{
+			if (children[i]->isActive)
+			{
+				children[i]->GameUpdate(gameDt);
+			}
+		}
 	}
 }
 
@@ -184,6 +230,24 @@ Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 		if (GetComponent<C_Camera>() == nullptr)
 			ret = new C_Camera(this, compID);
 		break;
+	case ComponentType::AUDIO_LISTENER:
+		//only one instance of a listener for a certain gameObj
+		if (GetComponent<C_AudioListener>() == nullptr)
+			ret = new C_AudioListener(this, compID);
+		break;
+	case ComponentType::AUDIO_SOURCE:
+		//only one instance of a audio source for a certain gameObj - DON'T THINK SO BUDDY
+		//if (GetComponent<C_AudioSource>() == nullptr)
+			ret = new C_AudioSource(this, compID);
+		break;
+	case ComponentType::CONTROL:
+		if (GetComponent<C_Control>() == nullptr)
+			ret = new C_Control(this, compID);
+		break;
+	case ComponentType::REVERB_ZONE:
+		if (GetComponent<C_ReverbZone>() == nullptr)
+			ret = new C_ReverbZone(this, compID);
+		break;
 	default:
 		break;
 	}
@@ -251,7 +315,7 @@ void GameObject::UpdateBoundingBox()
 	if (mesh != nullptr)
 	{
 		globalOBB = mesh->GetAABB();
-		globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());//TODO we need to fork with float4x4 and not mat4x4
+		globalOBB.Transform(GetComponent< C_Transform>()->GetGlobalTransform());
 
 		globalAABB.SetNegativeInfinity();
 		globalAABB.Enclose(globalOBB);
@@ -259,7 +323,7 @@ void GameObject::UpdateBoundingBox()
 	else
 	{
 		globalAABB.SetNegativeInfinity();
-		globalAABB.SetFromCenterAndSize((float3)transform->GetGlobalPosition(), float3(1, 1, 1));//todo we need to return float3 not vec3
+		globalAABB.SetFromCenterAndSize(transform->GetGlobalPosition(), float3(1, 1, 1));
 		globalOBB = globalAABB;
 	}
 
@@ -335,9 +399,9 @@ void GameObject::DrawOnEditorAllComponents()
 	ImGui::Separator();
 
 	int buttonWidth = 150;
-	float wWidth=ImGui::GetWindowWidth();
+	float wWidth = ImGui::GetWindowWidth();
 	ImVec2 cursPos = ImGui::GetCursorPos();
-	cursPos.x = cursPos.x + (wWidth * 0.5f)-(buttonWidth*0.5f); //60 is half button width
+	cursPos.x = cursPos.x + (wWidth * 0.5f) - (buttonWidth * 0.5f); //60 is half button width
 	ImGui::SetCursorPos(cursPos);
 
 	if (ImGui::Button("Add Component##objComponent", ImVec2(buttonWidth, 20)))
@@ -354,21 +418,39 @@ void GameObject::DrawOnEditorAllComponents()
 		//TODO this can be made pretty in the future
 		if (GetComponent<C_Mesh>() == nullptr)//support multiple meshes in the future?
 		{
-			if(ImGui::Selectable("Mesh Component##addComponent"))
-			CreateComponent(ComponentType::MESH);
+			if (ImGui::Selectable("Mesh Component##addComponent"))
+				CreateComponent(ComponentType::MESH);
 		}
 		if (GetComponent<C_Material>() == nullptr)
 		{
-			if(ImGui::Selectable("Material Component##addComponent"))
-			CreateComponent(ComponentType::MATERIAL);
+			if (ImGui::Selectable("Material Component##addComponent"))
+				CreateComponent(ComponentType::MATERIAL);
 		}
 		if (GetComponent<C_Camera>() == nullptr)
 		{
-			if(ImGui::Selectable("Camera Component##addComponent"))
-			CreateComponent(ComponentType::CAMERA);
+			if (ImGui::Selectable("Camera Component##addComponent"))
+				CreateComponent(ComponentType::CAMERA);
 		}
-
-
+		if (GetComponent<C_AudioListener>() == nullptr)
+		{
+			if (ImGui::Selectable("Audio Listener Component##addComponent"))
+				CreateComponent(ComponentType::AUDIO_LISTENER);
+		}
+		//if (GetComponent<C_AudioSource>() == nullptr)
+		{
+			if (ImGui::Selectable("Audio Source Component##addComponent"))
+				CreateComponent(ComponentType::AUDIO_SOURCE);
+		}
+		if (GetComponent<C_Control>() == nullptr)
+		{
+			if (ImGui::Selectable("Control Component##addComponent"))
+				CreateComponent(ComponentType::CONTROL);
+		}
+		if (GetComponent<C_ReverbZone>() == nullptr)
+		{
+			if (ImGui::Selectable("ReverbZone Component##addComponent"))
+				CreateComponent(ComponentType::REVERB_ZONE);
+		}
 
 		ImGui::EndPopup();
 	}
@@ -381,7 +463,6 @@ std::vector<Component*> GameObject::GetAllComponents()
 
 void GameObject::DrawGameObject()
 {
-	//TODO test if inside camera cull
 	std::vector<float3> aabbVec;
 	GetPointsFromAABB(globalAABB, aabbVec);
 
@@ -401,7 +482,7 @@ void GameObject::DrawGameObject()
 		{
 			if (meshes[i]->IsActive() && meshes[i]->GetMesh() != nullptr)
 			{
-				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(), focused);//TODO change focused for selected in the future when we have more than 1 selection
+				App->renderer3D->AddMeshToDraw(meshes[i], mat, transform->GetGlobalTransform(), selected);
 			}
 
 		}
@@ -409,17 +490,19 @@ void GameObject::DrawGameObject()
 
 	}
 
-	if ( App->editor3d->root!=this &&(App->renderer3D->displayAABBs || (displayBoundingBox && focused)))
+	if (App->editor3d->root != this && (App->renderer3D->displayAABBs || (displayBoundingBox && (focused || selected))))
 	{
-		Color c = Color(1.0f,1.0f,1.0f,1.0f);
-		if(focused)
+		Color c = Color(1.0f, 1.0f, 1.0f, 1.0f);
+		if (focused)
 			c = Color FOCUSED_COLOR;
+		else if (selected)
+			c = Color SELECTED_COLOR;
 
 		App->renderer3D->AddBoxToDraw(aabbVec, c);
 	}
 
 	C_Camera* cam = GetComponent<C_Camera>();
-	if (cam&&cam->IsActive())
+	if (cam && cam->IsActive())
 	{
 		std::vector<float3> vec;
 		cam->GetFrustumPoints(vec);
@@ -427,7 +510,7 @@ void GameObject::DrawGameObject()
 		if (cam->GetIsCulling())
 			c = Color(0.0f, 0.75f, 0.75f, 1.0f);
 
-		App->renderer3D->AddBoxToDraw(vec,c);
+		App->renderer3D->AddBoxToDraw(vec, c);
 	}
 }
 
