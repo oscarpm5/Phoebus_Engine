@@ -174,7 +174,10 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				showLoadScenes = true;
 			}
-
+			if (ImGui::MenuItem("New", "Scene"))
+			{
+				App->editor3d->StartNewScene();
+			}
 			if (ImGui::MenuItem("About", "...")) {
 				ImGui::SetNextWindowSize(ImVec2(435, 800));
 				showAboutWindowbool = true;
@@ -519,20 +522,9 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 
 			if (ImGui::Button("OK", ImVec2(50, 20)))
 			{
-				LOG("Loading absolute scene");
-				delete App->editor3d->root; App->editor3d->root = nullptr;
-				App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
-
-				char* aux = "";
-				std::string selected = selectedScene;
-				int size = App->fileSystem->Load(selected.c_str(), &aux);
-
-				if (size != 0)
-				{
-					Importer::LoadScene(aux, App->editor3d->root);
-					RELEASE_ARRAY(aux);
-					aux = nullptr;
-				}
+				std::string newSceneName = selectedScene;
+				App->fileSystem->SeparatePath(newSceneName, nullptr, &newSceneName);
+				App->editor3d->LoadSceneIntoEditor(newSceneName);
 				selectedScene[0] = '\0';
 				showLoadScenes = false;
 			}

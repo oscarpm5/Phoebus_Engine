@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "Mesh.h"
+#include "Importer.h"
 
 
 #include <map>
@@ -169,7 +170,7 @@ bool ModuleEditor3D::RemoveGameObjFromSelected(GameObject* toRemove)
 
 	if (wasFocused)
 	{
-		for (int i = selectedGameObjs.size()-1; i >=0; i--)//focus on the last selected object
+		for (int i = selectedGameObjs.size() - 1; i >= 0; i--)//focus on the last selected object
 		{
 			if (selectedGameObjs[i]->selected)
 			{
@@ -406,6 +407,34 @@ void ModuleEditor3D::TestRayHitObj(LineSegment line)
 	hitObjAABBs.clear();
 
 }
+
+void ModuleEditor3D::LoadSceneIntoEditor(std::string sceneName)
+{
+	LOG("Loading scene");
+
+	char* aux = "";
+	std::string scenePath = SCENE_PATH + sceneName;
+	int size = App->fileSystem->Load(scenePath.c_str(), &aux);
+
+	if (size != 0)
+	{
+		StartNewScene();
+		Importer::LoadScene(aux, App->editor3d->root);
+		RELEASE_ARRAY(aux);
+		aux = nullptr;
+	}
+}
+
+void ModuleEditor3D::StartNewScene()
+{
+	if (App->editor3d->root != nullptr)
+	{
+		delete App->editor3d->root;
+		App->editor3d->root = nullptr;
+	}
+	App->editor3d->root = new GameObject(nullptr, "SceneRoot", float4x4::identity, false); //born in the ghetto
+}
+
 
 int ModuleEditor3D::DoesNameExist(std::string name)
 {

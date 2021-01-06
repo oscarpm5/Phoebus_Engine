@@ -34,6 +34,8 @@ public:
 	void ChangeObjName(std::string oldName, std::string& newName); //modifies a name from the vector
 
 	void TestRayHitObj(LineSegment ray);
+	void LoadSceneIntoEditor(std::string sceneName);
+	void StartNewScene();
 
 private:
 	int DoesNameExist(std::string name); //returns an index of where the current name is, defaults in -1
