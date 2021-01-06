@@ -104,7 +104,7 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 
 # Audio System
 <p align="justify">Phoebus Engine has a focus on it's audio department. Thanks to a Wwise integration in our engine, we're able to use funcionts and structures derived from the Wwise application directly into our engine. In order to do so, we've implemented the following components and systems:</p>
-
+<br>
 ## Listener
 <p align="justify">The Listener component can be assigned to any Gaame Object to (you guessed it) listen to the audios in scene. In games, this component would we assigned to the player character (plural, if more than one player). If thaat's the case, a passive-active listener hierarchy has to be implemented in-game. We've already taken care of that problem for you; and the listener component can be flagged both as Active/Nonactive and ActiveListener/PassiveListener.</p>
 <br>
@@ -116,12 +116,11 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 <p align="justify">In order to make some adjustment possibles in-engine, we've added some utility functions and options:</p>
 <br>
 ### Volume
-<p align="justify">Each sound/music has it's own volume, apart from the total volume of the user. Real volume will be calculated taking both into account (+ possible effects applied)</p>
+<p align="justify">Each sound/music has it's own volume, apart from the total volume of the user. Real volume will be calculated taking both into account (+ possible effects applied)</p><br>
 ### Pitch
-<p align="justify">Although the Engine has a PlaySpeed option (config->FPS) if you want to implement slow motion mechanics, each audio has it's own self-pitch RTCP. This makes it possible to slow down select sounds while keeping others normal (if you want to have music keep the same, or have slow-mo effects apply only to some characters).</p>
+<p align="justify">Although the Engine has a PlaySpeed option (config->FPS) if you want to implement slow motion mechanics, each audio has it's own self-pitch RTCP. This makes it possible to slow down select sounds while keeping others normal (if you want to have music keep the same, or have slow-mo effects apply only to some characters).</p><br>
 ### Blend
-<p align="justify">We have a pre-determined Blend RTCP into our music tracks, so you can decide when does a transition occur. By default, this transition is linear, but it can be changed and modified inside the Wwise project.</p>
-<br>
+<p align="justify">We have a pre-determined Blend RTCP into our music tracks, so you can decide when does a transition occur. By default, this transition is linear, but it can be changed and modified inside the Wwise project.</p><br>
 ## Reverb Zone / Mod Zone
 asdf
 ![](/Revzone.gif)
