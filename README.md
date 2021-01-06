@@ -157,6 +157,10 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
  
 ### Third Assignment
 * Objects support multiSelection from the hierarchy & 3D Viewport (see Controls section for more details).
+* Multiple listeners can be in scene, controlled by a MainListener flag
+* ReverbZone can be modified to apply any kind of effect (Just change the Bus)
+* Pitch implementation takes into account both audio settings, source settings and engine playspeed
+* Blend options are custoimizable inside Wwise via RTCP (already linked in the engine)
 
 ## Aditional comments for the teacher:
 
@@ -188,6 +192,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 * Do NOT delete "wwise" folder located in "Assets/" because the audio system depends on it.
 * The system where the user has to input the events names in the Audio Source component has been implemented to make the designer handle all the work and to not depend on a programmer when implementing sounds.
 * You can add more than 1 Audio Source component for each object, that allows the sounds in a single object to be customized further as each component has its own settings.
+* A GO can be both source and listener, however this will couse spatial audio to be somewhat useless (obvious reasons)
+* Reverb zones are linked to a pair of Listener-Source; therefore it's effects are unnoticed if there isn't a listener
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.
