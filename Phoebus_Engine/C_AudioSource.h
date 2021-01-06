@@ -30,7 +30,6 @@ public:
 	float GetSecondsToChangeMusic()const;
 	void SetUserPitch(float newPitch);
 	float GetUserPitch()const;
-	float PitchCalculationFromDT(float gamedt)const;
 	float RTPCValCalculationFromPitch(float overallPitch)const;
 	bool CheckReverbZones();
 	void ApplyReverb(float revValue, const char* targetBus);
@@ -41,7 +40,6 @@ private:
 	float musicTimeCounter;//just a timer
 	float volume;
 	float userPitch;
-	float scalingMod; //used to scale pitch modification
 	char newEvName[250] = "";
 	std::vector<AudioEvent*> events;
 };

@@ -11,7 +11,7 @@
 #include "AK/SoundEngine/Common/AkTypes.h"
 
 C_AudioSource::C_AudioSource(GameObject* owner, unsigned int ID) :Component(ComponentType::AUDIO_SOURCE, owner, ID), volume(50.0f),
-musicChangeTime(30.0f), musicTimeCounter(0.0f), userPitch(1.0f), scalingMod(50)
+musicChangeTime(30.0f), musicTimeCounter(0.0f), userPitch(1.0f)
 {
 	App->audioManager->RegisterNewAudioObj(this->ID);
 }
@@ -289,21 +289,7 @@ bool C_AudioSource::GameUpdate(float gameDT)
 
 		//Changes audio pitch
 		float overallPitch = userPitch * App->GetTimeScale();
-		//overallPitch->0.25	== "SoundPitch"->0
-		//overallPitch->1		== "SoundPitch"->100
-		//overallPitch->4		== "SoundPitch"->200
 		float res= RTPCValCalculationFromPitch(overallPitch);
-
-		//float modifier = userPitch * App->GetTimeScale() * PitchCalculationFromDT(App->GetGameDT());
-
-		//userPitch = the individual pitcxh of each source
-		//timeScale = the game speed that affects everything. Acces it in-engine via config
-		// pitch calculations = taking into account if engine is NOT going at 60fps
-
-
-		//float secs = 60 * gameDT * App->GetTimeScale();
-		//float overallPitch = (secs * 100);//TODO take into account user pitch too
-		//userPitch
 
 		App->audioManager->ChangeRTPCValue(this->ID, "SoundPitch", res);
 
@@ -440,25 +426,12 @@ float C_AudioSource::GetUserPitch() const
 	return userPitch;
 }
 
-float C_AudioSource::PitchCalculationFromDT(float gamedt) const
-{
-	//60 FPS is target and will be considered speed x1
-
-	/*
-	
-	speed x1 --- 1s / 60f == 0.016º dt		inverse correlation -> dt is 1/dt therefore -> (1/60) is to 1 AS (1/ dt) is to N
-	speed xN --- dt
-	
-	
-	*/
-	float ratio = 1.0/60.0;
-	float mod = ratio / gamedt;
-
-	return mod;
-}
-
 float C_AudioSource::RTPCValCalculationFromPitch(float overallPitch) const
 {
+	//overallPitch->0.25	== "SoundPitch"->0
+	//overallPitch->1		== "SoundPitch"->100
+	//overallPitch->4		== "SoundPitch"->200
+
 	//1.01395949 this is the num with enough precision to make it nearly exact
 	return Log(1.01396, overallPitch) + 100;
 }
