@@ -93,6 +93,24 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 	- Use Scale Gizmo
 
 
+Specific Controls for controller component:
+
+* I key
+	- Move forward (positive Z)
+
+* K key
+	- Move forward (negative Z)
+
+* J key
+	- Move left (positive x)
+
+* L key
+	- Move right (negative x)
+
+* Left Shift (hold)
+	- Increase movement speed 3x
+
+
 
 
 ## Aditional functionality:
@@ -167,6 +185,8 @@ Ex2: filled cube - Global draw mode wireframe: All the meshes will be shown as w
 ### Third Assignment
 
 * Do NOT delete "wwise" folder located in "Assets/" because the audio system depends on it.
+* The system where the user has to input the events names in the Audio Source component has been implemented to make the designer handle all the work and to not depend on a programmer when implementing sounds.
+* You can add more than 1 Audio Source component for each object, that allows the sounds in a single object to be customized further as each component has its own settings.
 
 ## Licenses
 * The license for the project is included in a separated .md file in the same directory as this readme.

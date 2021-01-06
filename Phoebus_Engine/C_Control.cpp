@@ -114,28 +114,28 @@ bool C_Control::ManageMovement(float dt)
 		auxSpeed *= 3;
 	}
 
-	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_K) == KEY_REPEAT)
 	{
 		auxPos.z -= auxSpeed;
 		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z - speed * dt));
 		//owner->UpdateChildTransforms();
 	}
-	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_I) == KEY_REPEAT)
 	{
 		auxPos.z += auxSpeed;
 		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z + speed * dt));
 		//owner->UpdateChildTransforms();
 	}
-	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT)
 	{
 		auxPos.x += auxSpeed;
 		ret = true;
 		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x + speed * dt, auxPos.y, auxPos.z));
 		//owner->UpdateChildTransforms();
 	}
-	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
 	{
 		auxPos.x -= auxSpeed;
 		ret = true;
