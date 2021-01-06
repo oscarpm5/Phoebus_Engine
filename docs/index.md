@@ -114,7 +114,6 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 ![](/House.gif)
 <br>
 <p align="justify">In order to make some adjustment possibles in-engine, we've added some utility functions and options:</p>
-<br>
 ### Volume
 <p align="justify">Each sound/music has it's own volume, apart from the total volume of the user. Real volume will be calculated taking both into account (+ possible effects applied)</p><br>
 ### Pitch
@@ -122,10 +121,8 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 ### Blend
 <p align="justify">We have a pre-determined Blend RTCP into our music tracks, so you can decide when does a transition occur. By default, this transition is linear, but it can be changed and modified inside the Wwise project.</p><br>
 ## Reverb Zone / Mod Zone
-asdf
+This component defines an area in-game in which sounds reverberate. The "type" of reverberation is defined in Wwise using an auxiliary Bus, but things such as shape, volume or intensity of effect can be controlled in-game. This component can be used to apply effects that are not reverb effects; to do so, create a new auxiliary bus in your Wwise project and apply your wished effects. ASfterthat, include the related plugins in-engine. Add the reverb component and change the bus from default to the name of the bus you created (remember to update soundbanks). Phoebus engine will detect the bus and use it as the effect modifier instead of a classic reverb.
 ![](/Revzone.gif)
-
-
 
 <br><br>
 # Meet the Team
@@ -135,20 +132,17 @@ asdf
     <th>Member</th>
     <th>Portrait</th>
     <th>Linkedin</th>
-    <th>Work</th>
   </tr>
   <tr> 
     <tr>
     <td><a href="https://github.com/oscarpm5">Oscar Pérez</a></td>
     <td><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/OPM.png?token=ALMIHWSZQ4YUMH2ZFV4HRWK77GR3U" alt="Oscar" class="inline"></td>
     <td> <a href="https://www.linkedin.com/in/oscar-p%C3%A9rez-mart%C3%ADn-94a3a5196/">Linkedin!</a></td>
-    <td> Here goes what I've done </td>
     </tr>
     <tr>
     <td><a href="https://github.com/adriaserrano97">Adrià Serrano</a></td>
     <td><img src="https://raw.githubusercontent.com/oscarpm5/Phoebus_Engine/master/Phoebus_Engine/Game/Assets/our_pics/ASL.png?token=ALMIHWS2U63RUBCC2TWBUNK77GR32" alt="Adrià" class="inline"></td>
     <td><a href="https://www.linkedin.com/in/adri%C3%A0-serrano-l%C3%B3pez-7196a91a3/">Linkedin!</a></td>
-    <td> Here goes what I've done </td>
     </tr>
    </tr>
 </table>
