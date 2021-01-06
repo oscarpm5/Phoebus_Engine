@@ -151,6 +151,24 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 </table>
 
 <br><br>
+
+# Work division
+
+Disclaimer: Making an Engine (at our currelt level) proved to demand an ungodly amount of time and effort. Not a single feature was done alone without the help, guidance and support of the other member. Nevertheless, some systems were "assigned" to one individual to take the blunt of the workload and the responsability of that feature's functioning. These assigments are as follows:
+
+* Importer - Adrià
+* File System - Adrià
+* Component System - Oscar
+* Primitives - Adrià
+* OpenGL implementation - Oscar
+* Wwise Implementation - Oscar
+* Wwise project - True 50/50
+* Engine Configuration Options - True 50/50
+* Game Object Structure - Oscar
+* Camera work - Oscar
+* Resource Manager - True 50/50
+* Scene editor - True 50/50
+
 # License
 MIT License
 
