@@ -24,10 +24,7 @@ Although our focus is in the Audio System, Phouebus Engine does have the basic u
 - Scene viewer and editor
 - Real time rendering (scene managed: pause - play - stop)
 
-<br><br>
-<video width="540" height="360" controls>
-  <source type="video/mp4" src="https://www.youtube.com/watch?v=HzbuzyZ3If8&ab_channel=Adri%C3%A0Serrano">
-</video>
+[Video demonstration](https://www.youtube.com/watch?v=HzbuzyZ3If8&ab_channel=Adri%C3%A0Serrano)
 
 <br><br>
 
@@ -97,8 +94,9 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 # Audio System
 Audio detailed explanation (add at east 2 gifs)
 
-<iframe src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/docs/Revzone.gif" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
-<iframe src="https://github.com/oscarpm5/Phoebus_Engine/blob/master/docs/House.gif" width="480" height="360" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+![](/Revzone.gif)
+
+![](House.gif.gif)
 
 <br><br>
 # Meet the Team
