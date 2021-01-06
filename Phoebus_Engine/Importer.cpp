@@ -176,7 +176,7 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 		const aiScene* scene = aiImportFileFromMemory(Buffer, Length, aiProcessPreset_TargetRealtime_MaxQuality, nullptr); //nullptr as we need no external libs to hepl import
 
 											//aiImportFileFromMemory										
-		LOG("Importing 3D asset from buffer: %s", Buffer);
+		LOG("Importing 3D asset from buffer");
 
 		if (scene != nullptr)
 		{

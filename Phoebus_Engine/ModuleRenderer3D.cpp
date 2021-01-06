@@ -58,7 +58,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	displayAABBs = true;
 	//Just making sure this is initialized
 	gridLength = 500.f;
-	outlineScale = 1.1f;
+	outlineScale = 1.01f;
 }
 
 // Destructor
