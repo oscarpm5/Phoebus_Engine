@@ -1387,8 +1387,8 @@ bool ModuleRenderer2D::ShowResourcesActive()
 		}
 
 		//ImGui::PopStyleColor();
-		ImGui::End();
 	}
+		ImGui::End();
 	return true;
 }
 
