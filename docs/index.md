@@ -121,8 +121,11 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 ### Blend
 <p align="justify">We have a pre-determined Blend RTCP into our music tracks, so you can decide when does a transition occur. By default, this transition is linear, but it can be changed and modified inside the Wwise project.</p><br>
 ## Reverb Zone / Mod Zone
-This component defines an area in-game in which sounds reverberate. The "type" of reverberation is defined in Wwise using an auxiliary Bus, but things such as shape, volume or intensity of effect can be controlled in-game. This component can be used to apply effects that are not reverb effects; to do so, create a new auxiliary bus in your Wwise project and apply your wished effects. ASfterthat, include the related plugins in-engine. Add the reverb component and change the bus from default to the name of the bus you created (remember to update soundbanks). Phoebus engine will detect the bus and use it as the effect modifier instead of a classic reverb.
+<p align="justify">This component defines an area in-game in which sounds reverberate. The "type" of reverberation is defined in Wwise using an auxiliary Bus, but things such as shape, volume or intensity of effect can be controlled in-game. </p><br>
 ![](/Revzone.gif)
+<br>
+<p align="justify">This component can be used to apply effects that are not reverb effects; to do so, create a new auxiliary bus in your Wwise project and apply your wished effects. After that, include the related plugins in-engine. Add the reverb component and change the bus from default to the name of the bus you created (remember to update soundbanks). Phoebus engine will detect the bus and use it as the effect modifier instead of a classic reverb.</p>
+
 
 <br><br>
 # Meet the Team
