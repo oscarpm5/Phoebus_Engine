@@ -103,24 +103,24 @@ If you have a Component Control on a Game Object AND Engine is Playing:
 <br><br>
 
 # Audio System
-Phoebus Engine has a focus on it's audio department. Thanks to a Wwise integration in our engine, we're able to use funcionts and structures derived from the Wwise application directly into our engine. In order to do so, we've implemented the following components and systems:
+<p align="justify">Phoebus Engine has a focus on it's audio department. Thanks to a Wwise integration in our engine, we're able to use funcionts and structures derived from the Wwise application directly into our engine. In order to do so, we've implemented the following components and systems:</p>
 
 ## Listener
-The Listener component can be assigned to any Gaame Object to (you guessed it) listen to the audios in scene. In games, this component would we assigned to the player character (plural, if more than one player). If thaat's the case, a passive-active listener hierarchy has to be implemented in-game. We've already taken care of that problem for you; and the listener component can be flagged both as Active/Nonactive and ActiveListener/PassiveListener.
+<p align="justify">The Listener component can be assigned to any Gaame Object to (you guessed it) listen to the audios in scene. In games, this component would we assigned to the player character (plural, if more than one player). If thaat's the case, a passive-active listener hierarchy has to be implemented in-game. We've already taken care of that problem for you; and the listener component can be flagged both as Active/Nonactive and ActiveListener/PassiveListener.</p>
 <br>
 ## Source
-The Source component correlates to a sound emitter. This sounds (be it SFX or Music) must have been pre-stablished in your Wwise project previously linked tom the engine. Once those sounds have been defined in Wwise, you only need to create a Play-Type event inside Wwise. The *name* of the event is what you need to type into this component. The engine will handle all the rest.
+<p align="justify">The Source component correlates to a sound emitter. This sounds (be it SFX or Music) must have been pre-stablished in your Wwise project previously linked tom the engine. Once those sounds have been defined in Wwise, you only need to create a Play-Type event inside Wwise. The *name* of the event is what you need to type into this component. The engine will handle all the rest.</p>
 <br>
 ![](/House.gif)
 <br>
-In order to make some adjustment possibles in-engine, we've added some utility functions and options:
+<p align="justify">In order to make some adjustment possibles in-engine, we've added some utility functions and options:</p>
 <br>
 ### Volume
-Each sound/music has it's own volume, apart from the total volume of the user. Real volume will be calculated taking both into account (+ possible effects applied)
+<p align="justify">Each sound/music has it's own volume, apart from the total volume of the user. Real volume will be calculated taking both into account (+ possible effects applied)</p>
 ### Pitch
-Although the Engine has a PlaySpeed option (config->FPS) if you want to implement slow motion mechanics, each audio has it's own self-pitch RTCP. This makes it possible to slow down select sounds while keeping others normal (if you want to have music keep the same, or have slow-mo effects apply only to some characters).
+<p align="justify">Although the Engine has a PlaySpeed option (config->FPS) if you want to implement slow motion mechanics, each audio has it's own self-pitch RTCP. This makes it possible to slow down select sounds while keeping others normal (if you want to have music keep the same, or have slow-mo effects apply only to some characters).</p>
 ### Blend
-We have a pre-determined Blend RTCP into our music tracks, so you can decide when does a transition occur. By default, this transition is linear, but it can be changed and modified inside the Wwise project.
+<p align="justify">We have a pre-determined Blend RTCP into our music tracks, so you can decide when does a transition occur. By default, this transition is linear, but it can be changed and modified inside the Wwise project.</p>
 <br>
 ## Reverb Zone / Mod Zone
 asdf
