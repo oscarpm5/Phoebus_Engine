@@ -181,7 +181,8 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 		if (scene != nullptr)
 		{
 			std::string pathWithoutFile;
-			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, nullptr);
+			std::string filename;
+			App->fileSystem->SeparatePath(relativePath, &pathWithoutFile, &filename);
 			// Use scene->mNumMeshes to iterate on scene->mMeshes array
 
 			std::vector<ResourceMesh*> meshesToAssign;
@@ -193,7 +194,10 @@ bool Importer::Model::ImportModel(const char* Buffer, unsigned int Length, const
 				if (meshName == "")
 					meshName = "Untitled Mesh";
 
-				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH);
+				meshName = filename + "(" + std::to_string(i) + ")/" + meshName;
+
+				unsigned int newUID = res->GetUID() + 1 + i;
+				ResourceMesh* currMesh = (ResourceMesh*)App->rManager->CreateNewResource(relativePath, ResourceType::MESH, newUID);
 				currMesh->SetName(meshName);
 				Mesh::ImportRMesh(scene->mMeshes[i], *currMesh); //Take the mesh out of the fbx in assets and plop it into engine
 				char* auxB;
@@ -1075,8 +1079,8 @@ void Importer::LoadScene(char* buffer, GameObject* sceneRoot)
 					reverb->targetBus = comp.GetString("TargetBus");
 					reverb->revValue = comp.GetNumber("RevValue");
 					reverb->SetReverbZone(float3(
-						comp.GetNumber("DimensionsX"), 
-						comp.GetNumber("DimensionsY"), 
+						comp.GetNumber("DimensionsX"),
+						comp.GetNumber("DimensionsY"),
 						comp.GetNumber("DimensionsZ")));
 				}
 				break;
