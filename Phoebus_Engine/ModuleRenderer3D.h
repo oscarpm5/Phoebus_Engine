@@ -56,7 +56,7 @@ private:
 	//sets all the config options(depth testing, cull faces,etc...) to their bool values
 	void SetGLRenderingOptions();
 
-	bool ExpandMeshVerticesByScale(ResourceMesh& m, float newScale);//returns false if scaling cannot be done
+	bool ExpandMeshVerticesByScale(ResourceMesh& m, float newScale, float3 objScale = float3(1.0f, 1.0f, 1.0f));//returns false if scaling cannot be done
 
 private:
 	unsigned int exampleMeshIdentifier;

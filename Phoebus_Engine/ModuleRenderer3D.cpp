@@ -383,6 +383,7 @@ void ModuleRenderer3D::DrawOutline()
 		}
 
 		float4x4 transfMat = transf->GetGlobalTransform();
+		float3 meshScale = transf->GetGlobalScale();
 		for (int j = 0; j < meshes.size(); j++)
 		{
 			if (meshes[j]->IsActive() && meshes[j]->GetMesh() != nullptr)
@@ -628,7 +629,7 @@ void ModuleRenderer3D::SetGLRenderingOptions()
 	//wireframe here too?
 }
 
-bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale)
+bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale,float3 objScale)
 {
 	if (m.smoothedNormals.empty())
 		return false;
@@ -637,11 +638,20 @@ bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale
 	for (int i = 0; i < m.vertices.size(); i += 3)
 	{
 		float3 currVertex = float3(m.vertices[i], m.vertices[i + 1], m.vertices[i + 2]);
-
+		float3 expandVector = float3(m.smoothedNormals[i], m.smoothedNormals[i + 1], m.smoothedNormals[i + 2]);
+		
+		/*if(expandVector.x!=0.0f&&objScale.x!=0.0f)
+		expandVector.x /=  objScale.x;
+		if (expandVector.y != 0.0f && objScale.y != 0.0f)
+		expandVector.y /= objScale.y;
+		if (expandVector.z != 0.0f && objScale.z != 0.0f)
+		expandVector.z /= objScale.z;*/
+		
 		//if newScale is 1 it means the scale should remain the same
-		currVertex.x += (m.smoothedNormals[i] * (newScale - 1.0f));
-		currVertex.y += (m.smoothedNormals[i + 1] * (newScale - 1.0f));
-		currVertex.z += (m.smoothedNormals[i + 2] * (newScale - 1.0f));
+		expandVector *= (newScale - 1.0f);
+
+		currVertex += expandVector;
+		
 		m.vertices[i] = currVertex.x;
 		m.vertices[i + 1] = currVertex.y;
 		m.vertices[i + 2] = currVertex.z;
