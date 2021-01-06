@@ -243,11 +243,11 @@ Component* GameObject::CreateComponent(ComponentType type, unsigned int compID)
 	case ComponentType::CONTROL:
 		if (GetComponent<C_Control>() == nullptr)
 			ret = new C_Control(this, compID);
-
+		break;
 	case ComponentType::REVERB_ZONE:
 		if (GetComponent<C_ReverbZone>() == nullptr)
 			ret = new C_ReverbZone(this, compID);
-
+		break;
 	default:
 		break;
 	}
