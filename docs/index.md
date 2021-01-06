@@ -95,8 +95,8 @@ Holding Shift when dragging the Far/Near plane buttons in the config/camera pane
 Audio detailed explanation (add at east 2 gifs)
 
 ![](/Revzone.gif)
-
-![](House.gif.gif)
+<br><br>
+![](/House.gif)
 
 <br><br>
 # Meet the Team
