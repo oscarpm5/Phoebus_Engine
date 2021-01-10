@@ -1,8 +1,6 @@
 #include "ModuleAudioManager.h"
-#include <assert.h> //TODO change asserts for logs
 #include "wwise_libraries.h"
 #include "Wwise/low_level_IO/Win32/AkFilePackageLowLevelIOBlocking.h"
-//#include "AK/DefaultIO/Win32/AkFilePackageLowLevelIOBlocking.h"
 
 
 //Testing Includes:
@@ -37,7 +35,7 @@ bool ModuleAudioManager::Init()
 	if (AK::MemoryMgr::Init(&memSettings) != AK_Success)
 	{
 
-		assert(!"Could not create the memory manager.");
+		LOG("[error] Could not create the memory manager.");
 
 		return false;
 
@@ -56,7 +54,7 @@ bool ModuleAudioManager::Init()
 	if (!AK::StreamMgr::Create(stmSettings))
 	{
 
-		assert(!"Could not create the Streaming Manager");
+		LOG("[error] Could not create the Streaming Manager");
 
 		return false;
 
@@ -77,7 +75,7 @@ bool ModuleAudioManager::Init()
 
 	if (g_lowLevelIO.Init(deviceSettings) != AK_Success)
 	{
-		assert(!"Could not create the streaming device and Low-Level I/O system");
+		LOG("[error] Could not create the streaming device and Low-Level I/O system");
 		return false;
 
 	}
@@ -97,7 +95,7 @@ bool ModuleAudioManager::Init()
 
 	if (AK::SoundEngine::Init(&initSettings, &platformInitSettings) != AK_Success)
 	{
-		assert(!"Could not initialize the Sound Engine.");
+		LOG("[error] Could not initialize the Sound Engine.");
 		return false;
 	}
 
@@ -110,7 +108,7 @@ bool ModuleAudioManager::Init()
 
 	if (AK::MusicEngine::Init(&musicInit) != AK_Success)
 	{
-		assert(!"Could not initialize the Music Engine.");
+		LOG("[error] Could not initialize the Music Engine.");
 		return false;
 	}
 
@@ -121,7 +119,7 @@ bool ModuleAudioManager::Init()
 
 	if (AK::SpatialAudio::Init(settings) != AK_Success) //TODO settings was passed as a reference but triggered an error
 	{
-		assert(!"Could not initialize the Spatial Audio.");
+		LOG("[error] Could not initialize the Spatial Audio.");
 		return false;
 	}
 
@@ -134,7 +132,7 @@ bool ModuleAudioManager::Init()
 
 	if (AK::Comm::Init(commSettings) != AK_Success)
 	{
-		assert(!"Could not initialize communication.");
+		LOG("[error] Could not initialize communication.");
 		return false;
 	}
 
@@ -157,19 +155,26 @@ bool ModuleAudioManager::Init()
 	AkBankID bankID; // Not used. These banks can be unloaded with their file name.
 
 	AKRESULT eResult = AK::SoundEngine::LoadBank("Init.bnk", bankID);
-
-	//assert(eResult != AK_Success);
-
+	if (eResult == AK_Success)
+	{
+		LOG("Bank 'Init.bnk' has been loaded successfully");
+	}
+	else
+	{
+		LOG("[error] Loading 'Init.bnk'");
+	}
 
 
 
 	eResult = AK::SoundEngine::LoadBank("Main.bnk", bankID);
-
-	//assert(eResult != AK_Success);
-
-
-
-
+	if (eResult == AK_Success)
+	{
+		LOG("Bank 'Main.bnk' has been loaded successfully");
+	}
+	else
+	{
+		LOG("[error] Loading 'Main.bnk'");
+	}
 
 	return true;
 }
@@ -178,34 +183,17 @@ bool ModuleAudioManager::GameInit()
 {
 
 	UpdateListener();
-	/*AkGameObjectID id = 0;
-	if (activeListener != nullptr)
-	{
-		id = activeListener->ID;
-	}*/
-	//AK::SoundEngine::PostEvent("Laser_Player", id); //plays Laser sound (from the listener for the moment)
 
 	return true;
 }
 
 bool ModuleAudioManager::Start()
 {
-	//AkGameObjectID id = App->editor3d->root->ID;
-
-	//// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
-	//AK::SoundEngine::RegisterGameObj(id);
-
-	//UpdateListener();
-
 	return true;
 }
 
 update_status ModuleAudioManager::Update(float dt)
 {
-	//UpdateListener();
-	// Register the main listener. //TODO this will change in the near future, also for now the main listener is also the player
-	//AK::SoundEngine::RegisterGameObj(id);
-
 	return UPDATE_CONTINUE;
 }
 
@@ -241,10 +229,6 @@ update_status ModuleAudioManager::PostUpdate(float dt)
 
 update_status ModuleAudioManager::GameUpdate(float dt)
 {
-
-	//// Process bank requests, events, positions, RTPC, etc.
-	//AK::SoundEngine::RenderAudio();
-
 	return UPDATE_CONTINUE;
 }
 
@@ -274,7 +258,7 @@ bool ModuleAudioManager::CleanUp()
 
 	AK::SoundEngine::UnregisterAllGameObj();
 
-
+	AK::SoundEngine::ClearBanks();
 
 	// Terminate Communication Services
 #ifndef AK_OPTIMIZED

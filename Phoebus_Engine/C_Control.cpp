@@ -6,9 +6,7 @@
 #include "ModuleInput.h"
 
 C_Control::C_Control(GameObject* owner, unsigned int ID) :Component(ComponentType::CONTROL, owner, ID), speed(1)
-{
-	//App->editor3d->selectedGameObjs.push_back(owner);
-}
+{}
 
 C_Control::~C_Control()
 {
@@ -41,7 +39,7 @@ void C_Control::OnEditor()
 		ImGui::Indent();
 		ImGui::Spacing();
 		ImGui::Spacing();
-		//TODO actual Component code here
+		//actual Component code here
 
 		actualname = "Speed" + suffixLabel;
 		if (ImGui::SliderFloat(actualname.c_str(), &speed, 0.0f, 10.0f))
@@ -100,7 +98,6 @@ bool C_Control::GameUpdate(float gameDT)
 
 bool C_Control::GameInit()
 {
-	//speed = 1;
 	return true;
 }
 
@@ -118,35 +115,26 @@ bool C_Control::ManageMovement(float dt)
 	{
 		auxPos.z -= auxSpeed;
 		ret = true;
-		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z - speed * dt));
-		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_I) == KEY_REPEAT)
 	{
 		auxPos.z += auxSpeed;
 		ret = true;
-		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x, auxPos.y, auxPos.z + speed * dt));
-		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_J) == KEY_REPEAT)
 	{
 		auxPos.x += auxSpeed;
 		ret = true;
-		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x + speed * dt, auxPos.y, auxPos.z));
-		//owner->UpdateChildTransforms();
 	}
 	if (App->input->GetKey(SDL_SCANCODE_L) == KEY_REPEAT)
 	{
 		auxPos.x -= auxSpeed;
 		ret = true;
-		//owner->GetComponent<C_Transform>()->SetGlobalPosition(float3(auxPos.x - speed * dt, auxPos.y, auxPos.z));
-		//owner->UpdateChildTransforms();
 	}
 
 	if (ret == true) {
 		auxPos = owner->GetComponent<C_Transform>()->GetGlobalPosition() + auxPos;
 		owner->GetComponent<C_Transform>()->SetGlobalPosition(auxPos);
-		//owner->UpdateChildTransforms();
 	}
 
 	return ret;

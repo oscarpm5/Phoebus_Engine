@@ -216,7 +216,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 			{
 				selectedOnSpawn = new GameObject(App->editor3d->root, "Camera", float4x4::identity);
 				selectedOnSpawn->CreateComponent(ComponentType::CAMERA);
-				
+
 			}
 
 
@@ -226,7 +226,7 @@ update_status ModuleRenderer2D::PreUpdate(float dt)
 				App->editor3d->SetSelectedGameObject(selectedOnSpawn);
 				selectedOnSpawn = nullptr;
 			}
-			
+
 
 			ImGui::EndMenu();
 		}
@@ -924,7 +924,7 @@ bool ModuleRenderer2D::showConfigFunc()
 		ImGui::Text("Game DT:    %.3f", App->GetGameDT());
 
 		float timeScale = App->GetTimeScale();
-		if (ImGui::SliderFloat("TimeScale", &timeScale,0.25f,4.0f))
+		if (ImGui::SliderFloat("TimeScale", &timeScale, 0.25f, 4.0f))
 		{
 			App->SetNewTimeScale(timeScale);
 		}
@@ -1388,7 +1388,7 @@ bool ModuleRenderer2D::ShowResourcesActive()
 
 		//ImGui::PopStyleColor();
 	}
-		ImGui::End();
+	ImGui::End();
 	return true;
 }
 
@@ -1831,7 +1831,7 @@ void ModuleRenderer2D::GuizmoEditTransform()
 {
 	//operation type
 	static ImGuizmo::OPERATION mCurrentGizmoOperation(ImGuizmo::ROTATE);
-	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::WORLD);
+	static ImGuizmo::MODE mCurrentGizmoMode(ImGuizmo::LOCAL);
 
 	if (App->input->GetMouseButton(SDL_BUTTON_RIGHT) == KEY_IDLE)//TODO we have to check this to not make camera inputs not overlap with gizmo ones, we should change this or camera inputs to not make the same checks
 	{
@@ -1851,12 +1851,19 @@ void ModuleRenderer2D::GuizmoEditTransform()
 	}
 
 	GameObject* currGameObj = App->editor3d->selectedGameObjs.back();
+	if (currGameObj->GetComponent<C_Transform>()->localMode)
+	{
+		mCurrentGizmoMode = ImGuizmo::LOCAL;
+	}
+	else
+	{
+		mCurrentGizmoMode = ImGuizmo::WORLD;
+	}
 
 
 
 	float4x4 editMat = currGameObj->GetComponent<C_Transform>()->GetGlobalTransform().Transposed();
 	float4x4 viewMat = App->camera->editorCam->GetViewMat();
-
 	ImGuizmo::SetDrawlist();
 
 	float2 viewportPos;

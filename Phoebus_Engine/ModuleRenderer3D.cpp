@@ -58,7 +58,7 @@ ModuleRenderer3D::ModuleRenderer3D(bool start_enabled) : Module(start_enabled), 
 	displayAABBs = true;
 	//Just making sure this is initialized
 	gridLength = 500.f;
-	outlineScale = 1.01f;
+	outlineScale = 1.075f;
 }
 
 // Destructor
@@ -390,7 +390,7 @@ void ModuleRenderer3D::DrawOutline()
 			{
 
 				ResourceMesh* m = new ResourceMesh(*meshes[j]->GetMesh());
-				ExpandMeshVerticesByScale(*m, outlineScale);//TODO make the user adjust this from the config panel
+				ExpandMeshVerticesByScale(*m, outlineScale,meshScale);//TODO make the user adjust this from the config panel
 				m->FreeBuffers();
 				m->GenerateBuffers();
 
@@ -635,17 +635,18 @@ bool ModuleRenderer3D::ExpandMeshVerticesByScale(ResourceMesh& m, float newScale
 		return false;
 
 
+
 	for (int i = 0; i < m.vertices.size(); i += 3)
 	{
 		float3 currVertex = float3(m.vertices[i], m.vertices[i + 1], m.vertices[i + 2]);
 		float3 expandVector = float3(m.smoothedNormals[i], m.smoothedNormals[i + 1], m.smoothedNormals[i + 2]);
 		
-		/*if(expandVector.x!=0.0f&&objScale.x!=0.0f)
+		if(expandVector.x!=0.0f&&objScale.x!=0.0f)
 		expandVector.x /=  objScale.x;
 		if (expandVector.y != 0.0f && objScale.y != 0.0f)
 		expandVector.y /= objScale.y;
 		if (expandVector.z != 0.0f && objScale.z != 0.0f)
-		expandVector.z /= objScale.z;*/
+		expandVector.z /= objScale.z;
 		
 		//if newScale is 1 it means the scale should remain the same
 		expandVector *= (newScale - 1.0f);

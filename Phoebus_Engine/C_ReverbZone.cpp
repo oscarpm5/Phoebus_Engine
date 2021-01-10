@@ -10,7 +10,7 @@
 #include "ModuleRenderer3D.h"
 
 C_ReverbZone::C_ReverbZone(GameObject* owner, unsigned int ID) : Component(ComponentType::REVERB_ZONE, owner, ID),
-dimensions(1.0f, 1.0f, 1.0f), dirtyUpdate(false), targetBus("ReverbBus"), revValue(1)
+dimensions(1.0f, 1.0f, 1.0f), targetBus("ReverbBus"), revValue(1)
 {
 	UpdateReverbZoneDimension();
 	App->audioManager->AddRevZone(this);
@@ -47,7 +47,7 @@ void C_ReverbZone::OnEditor()
 		ImGui::Indent();
 		ImGui::Spacing();
 		ImGui::Spacing();
-		//TODO actual Component code here
+		//actual Component code here
 
 		actualname = "Dimensions" + suffixLabel;
 		float auxDimensions[3] = { dimensions.x,dimensions.y,dimensions.z };
@@ -55,12 +55,7 @@ void C_ReverbZone::OnEditor()
 		if (ImGui::DragFloat3(actualname.c_str(), auxDimensions, 0.1f, 0.0f, 1000.0f))
 		{
 			SetReverbZone(float3(auxDimensions[0], auxDimensions[1], auxDimensions[2]));
-			dirtyUpdate = true;//Dirty update not needed??
 		}
-		/*if (ImGui::SliderFloat(actualname.c_str(), &radius, 0.0f, 100.0f))
-		{
-			dirtyUpdate = true;
-		}*/
 
 		//Thanks to Carlos Cabreira for clarifying the "targetBus" logic
 		char* bus_name = new char[41];
@@ -107,7 +102,6 @@ void C_ReverbZone::OnEditor()
 		{
 			actualname = "Delete ReverbZone Component" + suffixLabel;
 			ImGui::OpenPopup(actualname.c_str());
-			dirtyUpdate = true;
 		}
 
 		if (!activeAux)ImGui::PopStyleColor();
@@ -128,10 +122,7 @@ bool C_ReverbZone::GameInit()
 
 bool C_ReverbZone::Update(float dt)
 {
-	/*if (dirtyUpdate == true) {
-		dirtyUpdate = false;
-		UpdateReverbZoneDimension();
-	}*/
+	
 	UpdateReverbZoneDimension();//we will update its position every frame to make it easy for now
 
 
@@ -157,13 +148,11 @@ void C_ReverbZone::UpdateReverbZoneDimension()
 	{
 		auxPos = this->owner->GetComponent<C_Transform>()->GetGlobalPosition();
 	}
-
-		//should we clear memory of previous AABB or since we're rewriting over it it's not necessary? TODO -> (OSCAR) Not necessary if we do not use Enclose()
-		//revZone = AABB(Sphere(this->owner->GetComponent<C_Transform>()->GetGlobalPosition(), radius));
 	revZone = AABB::FromCenterAndSize(auxPos, dimensions);
 }
 
-void C_ReverbZone::GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector)//TODO This code is copied from somewhere else in the code??? consider making a single method
+//TODO This code is copied from somewhere else in the code??? consider making a single method
+void C_ReverbZone::GetAABBPoints(AABB& aabb, std::vector<float3>& emptyVector)
 {
 	float3* frustrumPoints = new float3[8];
 	memset(frustrumPoints, NULL, sizeof(float3) * 8);
